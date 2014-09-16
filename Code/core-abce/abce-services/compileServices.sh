@@ -3,8 +3,10 @@
 #Stop script if an error occurs
 set -e
 
+mvn clean
+
 echo "Running: mvn -P issuance-service clean install -DskipTests"
-mvn -P issuance-service clean install -DskipTests
+mvn -P issuance-service install -DskipTests
 
 echo "Running: mvn -P selfcontained-issuance-service install -DskipTests"
 mvn -P selfcontained-issuance-service install -DskipTests
