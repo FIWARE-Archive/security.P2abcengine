@@ -5,6 +5,18 @@
     xsi:schemaLocation="http://abc4trust.eu/wp2/abcschemav1.0 ../../../../../../../../abc4trust-xml/src/main/resources/xsd/schema.xsd">
 
     <abc:IssuancePolicy Version="1.0">
+    <abc:PresentationPolicy PolicyUID="http://thebestbank.com/creditcards/issuance/policy">
+      <abc:Message>
+        <abc:Nonce>KNsRu9cGzkaeabogeRVV</abc:Nonce>
+        <abc:ApplicationData>
+          <abc:TestApplicationData>
+          <abc:Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xsi:type="xs:string">Some data</abc:Data>
+          </abc:TestApplicationData>
+        </abc:ApplicationData>
+      </abc:Message>
+      </abc:PresentationPolicy>
+
       <abc:CredentialTemplate>
         <abc:CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec/</abc:CredentialSpecUID>
         <abc:IssuerParametersUID>http://mroman.ch/RoomReservation/issuance:idemix</abc:IssuerParametersUID>
