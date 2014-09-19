@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PresentationPolicyAlternativesAndPresentationToken xmlns="http://abc4trust.eu/wp2/abcschemav1.0" Version="1.0"> <PresentationPolicyAlternatives>
+<PresentationPolicy PolicyUID="http://mroman.ch/RoomReservation/presPolicy"><Message><Nonce>Il/+Qv9mNnxYpA==</Nonce><ApplicationData>        RoomReservation-Policy      </ApplicationData></Message><Credential Alias="#reservation"><CredentialSpecAlternatives><CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec/</CredentialSpecUID></CredentialSpecAlternatives><IssuerAlternatives><IssuerParametersUID>http://mroman.ch/RoomReservation/issuance:idemix</IssuerParametersUID></IssuerAlternatives><DisclosedAttribute AttributeType="RoomNumber"/></Credential></PresentationPolicy>
+</PresentationPolicyAlternatives>
+<PresentationToken>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>Error 400 Bad Request</title>
+</head>
+<body><h2>HTTP ERROR 400</h2>
+<p>Problem accessing /user/createPresentationTokenUi/. Reason:
+<pre>    Bad Request</pre></p><hr /><i><small>Powered by Jetty://</small></i><br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+
+</body>
+</html>
+</PresentationToken>
+</PresentationPolicyAlternativesAndPresentationToken>

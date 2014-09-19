@@ -16,7 +16,7 @@
     </abc:Message>
     <abc:Credential Alias="#reservation">
       <abc:CredentialSpecAlternatives>
-        <abc:CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec</abc:CredentialSpecUID>
+        <abc:CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec/</abc:CredentialSpecUID>
       </abc:CredentialSpecAlternatives>
       <abc:IssuerAlternatives>
         <abc:IssuerParametersUID>http://mroman.ch/RoomReservation/issuance:idemix</abc:IssuerParametersUID>

@@ -7,7 +7,7 @@
   <abc:ParametersUID>http://mroman.ch/RoomReservation/issuance:idemix</abc:ParametersUID>
   <abc:FriendlyIssuerDescription lang="en">Issuer parameters for RoomReservation</abc:FriendlyIssuerDescription>
   <abc:AlgorithmID>urn:abc4trust:1.0:algorithm:idemix</abc:AlgorithmID>
-  <abc:CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec</abc:CredentialSpecUID>
+  <abc:CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec/</abc:CredentialSpecUID>
   <abc:HashAlgorithm>urn:abc4trust:1.0:hashalgorithm:sha-256</abc:HashAlgorithm>
 </abc:IssuerParametersInput>
 
