@@ -14,17 +14,17 @@ cat ./out/storeCredentialSpecificationAtIssuerResponce.xml
 # Store credential specification at user.
 # This method is not specified in H2.2.
 echo "Store credential specification at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9100/issuer/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtUserResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9200/user/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtUserResponce.xml
 cat ./out/storeCredentialSpecificationAtUserResponce.xml
 
 # Store credential specification at verifier.
 # This method is not specified in H2.2.
 echo "Store credential specification at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9100/issuer/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9300/verification/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
 cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 
 echo "!! Credential Spec should now have been stored at Issuer, User and Verifier !!!"
-read -p "Press [Enter] to continue.."
+#read -p "Press [Enter] to continue.."
 
 # Store System parameters at User.
 # This method is not specified in H2.2.
@@ -45,15 +45,20 @@ curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml '
 # Store Issuer Parameters at user.
 # This method is not specified in H2.2.
 echo "Store Issuer Parameters at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:9200/user/storeIssuerParameters/http%3A%2F%2Fticketcompany%2FMyFavoriteSoccerTeam%2Fissuance%3Aidemix'  > ./out/storeIssuerParametersAtUser.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:9200/user/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2FRoomReservation%2Fissuance%3Aidemix'  > ./out/storeIssuerParametersAtUser.xml
 
 # Store Issuer Parameters at verifier.
 # This method is not specified in H2.2.
 echo "Store Issuer Parameters at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:9300/verification/storeIssuerParameters/http%3A%2F%2Fticketcompany%2FMyFavoriteSoccerTeam%2Fissuance%3Aidemix'  > ./out/storeIssuerParametersAtVerifier.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:9300/verification/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2FRoomReservation%2Fissuance%3Aidemix'  > ./out/storeIssuerParametersAtVerifier.xml
+
+# Create smartcard at user.
+# This method is not specified in H2.2.
+echo "Create smartcard at user"
+curl -X POST --header 'Content-Type: text/xml' 'http://localhost:9200/user/createSmartcard/http%3A%2F%2Fmroman.ch%2FRoomReservation%2Fissuance%3Aidemix'
 
 echo "!!! Issuer Parameters should now have been set !!!"
-read -p "Press [Enter] to continue..."
+#read -p "Press [Enter] to continue..."
 
 # Init issuance protocol (first step for the issuer).
 echo "Init issuance protocol"
@@ -97,7 +102,7 @@ echo "Create presentation UI return"
 curl -X POST --header 'Content-Type: text/xml' -d @./out/presentationPolicyAlternatives.xml 'http://localhost:9200/user/createPresentationToken/' > ./out/presentationReturn.xml
 
 # Setup uiPresentationReturn.xml.
-UiContext=`cat presentationReturn.xml | sed 's/^.*<uiContext>//' | sed 's/<\/uiContext>.*//'`
+UiContext=`cat ./out/presentationReturn.xml | sed 's/^.*<uiContext>//' | sed 's/<\/uiContext>.*//'`
 # echo ${UiContext}
 cat ./uiPresentationReturn.xml | sed "s#REPLACE-THIS-CONTEXT#${UiContext}#" > ./out/uiPresentationReturn.xml
   

@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://abc4trust.eu/wp2/abcschemav1.0 ../../../../../../../../abc4trust-xml/src/main/resources/xsd/schema.xsd">
 
     <abc:IssuancePolicy Version="1.0">
-    <abc:PresentationPolicy PolicyUID="http://thebestbank.com/creditcards/issuance/policy">
+      <abc:PresentationPolicy PolicyUID="http://thebestbank.com/creditcards/issuance/policy">
       <abc:Message>
         <abc:Nonce>KNsRu9cGzkaeabogeRVV</abc:Nonce>
         <abc:ApplicationData>
@@ -25,7 +25,7 @@
     </abc:IssuancePolicy>
 
     <abc:Attribute>
-      <abc:AttributeUID>-1231744817504418817</abc:AttributeUID>
+      <abc:AttributeUID>1231744817504418817</abc:AttributeUID>
       <abc:AttributeDescription Type="RoomNumber" DataType="xs:integer" Encoding="urn:abc4trust:1.0:encoding:integer:unsigned">
         <abc:FriendlyAttributeName lang="en">RoomNumber</abc:FriendlyAttributeName>
       </abc:AttributeDescription>

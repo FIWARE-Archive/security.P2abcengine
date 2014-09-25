@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PresentationPolicyAlternativesAndPresentationToken xmlns="http://abc4trust.eu/wp2/abcschemav1.0" Version="1.0"> <PresentationPolicyAlternatives>
-<PresentationPolicy PolicyUID="http://mroman.ch/RoomReservation/presPolicy"><Message><Nonce>Il/+Qv9mNnxYpA==</Nonce><ApplicationData>        RoomReservation-Policy      </ApplicationData></Message><Credential Alias="#reservation"><CredentialSpecAlternatives><CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec/</CredentialSpecUID></CredentialSpecAlternatives><IssuerAlternatives><IssuerParametersUID>http://mroman.ch/RoomReservation/issuance:idemix</IssuerParametersUID></IssuerAlternatives><DisclosedAttribute AttributeType="RoomNumber"/></Credential></PresentationPolicy>
+<PresentationPolicy PolicyUID="http://mroman.ch/RoomReservation/presPolicy"><Message><Nonce>xWVXqJpgaJ8euQ==</Nonce><ApplicationData>        RoomReservation-Policy      </ApplicationData></Message><Credential Alias="#reservation"><CredentialSpecAlternatives><CredentialSpecUID>http://mroman.ch/RoomReservation/credSpec/</CredentialSpecUID></CredentialSpecAlternatives><IssuerAlternatives><IssuerParametersUID>http://mroman.ch/RoomReservation/issuance:idemix</IssuerParametersUID></IssuerAlternatives><DisclosedAttribute AttributeType="RoomNumber"/></Credential></PresentationPolicy>
 </PresentationPolicyAlternatives>
 <PresentationToken>
 <html>
