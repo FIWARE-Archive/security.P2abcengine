@@ -60,9 +60,10 @@ public class Main {
         server.addHandler(context);
         try {
             server.start();
-            System.in.read();
-            server.stop();
-            server.join();
+            System.out.println("Waiting for readline...");
+            while(true) { Thread.sleep(10000); System.out.println("heartbeat..."); }
+            //server.stop();
+            //server.join();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(100);
