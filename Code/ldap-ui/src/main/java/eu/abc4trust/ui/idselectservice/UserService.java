@@ -21,23 +21,34 @@ import ch.mroman.ldap.*;
 import javax.naming.*;
 import javax.naming.directory.*;
 import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.charset.*;
 
 
-@Path("/")
+@javax.ws.rs.Path("/")
 public class UserService {
 	@javax.ws.rs.core.Context
 	ServletContext context;
 
 
    	@GET()
-	@Path("/test")
-	@Produces(MediaType.APPLICATION_XML)
-	public MyJaxbBean test(@QueryParam("name") String name, @QueryParam("age") int age) {
-		return new MyJaxbBean(name, age);
+	@javax.ws.rs.Path("/test")
+	@Produces("text/html")
+	public String test() {
+		try {
+			Path path = Paths.get("/var/www/index.html");
+			String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+			return contents;
+		}
+		catch(Exception e) {
+			return "error";
+		}
 	}
 
 	@GET()
-	@Path("/schemaDump")
+	@javax.ws.rs.Path("/schemaDump")
 	@Produces("application/xml")
 	public ObjectClass schemaDump(@QueryParam("oc") String objectClass) throws NamingException {
 		LdapConnectionConfig cfg = new LdapConnectionConfig(10389,"localhost");
@@ -67,22 +78,26 @@ public class UserService {
 	}
 }
 
-@XmlRootElement
+@XmlRootElement(name="attribute")
 class ObjectClassAttribute {
 	public String name;
 	public String syntax;
+	public boolean include;
 
 	public ObjectClassAttribute() {}
 
 	public ObjectClassAttribute(String name, String syntax) {
 		this.name = name;
 		this.syntax = syntax;
+		this.include = false;
 	}
 }
 
-@XmlRootElement
+@XmlRootElement(name="class")
 class ObjectClass {
 	public String name;
+	@XmlElementWrapper(name = "attributes")
+	@XmlElement(name = "attribute")
 	public List<ObjectClassAttribute> attributes = new ArrayList<ObjectClassAttribute>();
 
 	public ObjectClass() { 

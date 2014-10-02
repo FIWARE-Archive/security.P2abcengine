@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+	border-collapse: collapse;
+}
+
+#tablediv {
+	background-color: #BEBEEE;
+	border-radius: 2em;
+	padding: 2em;
+	display: inline-block;
+}
+
+#dump_content {
+	width: 50%;
+	margin: auto;
+	border: solid 2px #BEBEEE;
+	border-radius: 3em;
+	text-align: center;
+}
+
+td {
+	padding: 0.2em;
+}
+
+tbody tr {
+	border-bottom: solid 1px black;
+}
+
+thead tr {
+	border-bottom: solid 2px black;
+	font-weight: bold;
+}
+
+
+</style>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script>
+function load() {
+	$.ajax({
+
+    url : 'http://localhost:8888/ldap-ui-service/schemaDump?oc=person',
+    type : 'GET',
+    success : function(data) {
+	var classNode = data.getElementsByTagName('class')[0];
+	if(classNode.hasChildNodes()) {
+		var childNodes = classNode.childNodes;
+		for(var i = 0; i < childNodes.length; i++) {
+			if(childNodes[i].nodeName == 'name') {
+				$("#class").text(childNodes[i].textContent);
+			}
+			else if(childNodes[i].nodeName == 'attributes') {
+				if(!childNodes[i].hasChildNodes()) {
+					alert("ERROR: attributes needs child nodes!");
+					return;
+				}
+				var attrChildNodes = childNodes[i].childNodes;
+				for(var j = 0; j < attrChildNodes.length; j++) {
+					var attrChildNode = attrChildNodes[j];
+					var attrNames = attrChildNode.getElementsByTagName('name');
+					var attrSyntax = attrChildNode.getElementsByTagName('syntax');
+					var attrInclude = attrChildNode.getElementsByTagName('include');
+					if(attrNames.length == 1 && attrSyntax.length == 1 && attrInclude.length == 1) {
+						var tr = $('<tr>');
+						tr.append($('<td>').text(attrNames[0].textContent));
+						tr.append($('<td>').text(attrSyntax[0].textContent));
+						if(attrInclude[0].textContent == 'true') {
+							tr.append('<input type="checkbox" name="attr' + j + '" value="true" id="check' + j + '">');
+						}
+						else {
+							tr.append('<input type="checkbox" name="attr' + j + '" value="false" id="check' + j + '">');
+						}
+						$('#table').find('tbody').append(tr);
+					}
+				}
+			}
+			else {
+				alert("ERROR: Unknown tag encountered!");
+				return;
+			}
+		}
+	}
+	//alert(data.getElementsByTagName('class').length);
+	//$("#class").text(data.getElementsByTagName('class')[0].childNodes[0].textContent);
+	//        alert('Data: '+data.getElementsByTagName('class')[0].childNodes[0].textContent);
+    },
+    error : function(request,error)
+    {
+        alert("Request: "+JSON.stringify(request));
+    }
+});
+}
+</script>
+<script>
+function loadXMLDoc()
+{
+alert('hoi');
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  } 
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4)
+    {
+	//alert(xmlhttp.responseText);
+    document.getElementById("bar").innerHTML=xmlhttp.responseText.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+}
+xmlhttp.open("GET","http://localhost:8888/ldap-ui-service/schemaDump?oc=person",true);
+xmlhttp.setRequestHeader ("Accept", "application/xml");
+xmlhttp.send(null); 
+}
+</script>
+</head>
+<body>
+<div id="dump_content">
+	<h1 id="class"></h1>
+	<div id="tablediv">
+	<table id="table">
+	<thead>
+		<tr><td>Name</td><td>Syntax</td><td>Include</td></tr>
+	</thead>
+	<tbody>
+	</tbody>
+	</table>
+	</div><div></div>
+	<button type="button" onclick="load()">Request the data</button>
+</div>
+</body>
+</html>
