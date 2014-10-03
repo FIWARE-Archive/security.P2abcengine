@@ -6,28 +6,26 @@ table {
 	border-collapse: collapse;
 }
 
-#tablediv {
+#c { }
+
+.tablediv {
 	background-color: #BEBEEE;
 	border-radius: 2em;
 	padding: 2em;
 	display: inline-block;
+	margin: 1em;
 }
 
 #dump_content {
-	width: 50%;
-	margin: auto;
 	border: solid 2px #BEBEEE;
-	border-radius: 3em;
-	text-align: center;
 }
 
 td {
 	padding: 0.2em;
 }
 
-tbody tr {
-	border-bottom: solid 1px black;
-}
+tr td:first-child { font-weight: bold; text-align: left; }
+tr td:last-child { text-align: right; padding-left: 1em; }
 
 thead tr {
 	border-bottom: solid 2px black;
@@ -42,7 +40,7 @@ thead tr {
 function load() {
 	$.ajax({
 
-    url : 'http://localhost:8888/ldap-ui-service/schemaDump?oc=person',
+    url : 'http://localhost:8888/ldap-ui-service/schemaDump?oc=account',
     type : 'GET',
     success : function(data) {
 	var classNode = data.getElementsByTagName('class')[0];
@@ -63,19 +61,49 @@ function load() {
 					var attrNames = attrChildNode.getElementsByTagName('name');
 					var attrSyntax = attrChildNode.getElementsByTagName('syntax');
 					var attrInclude = attrChildNode.getElementsByTagName('include');
-					if(attrNames.length == 1 && attrSyntax.length == 1 && attrInclude.length == 1) {
-						var tr = $('<tr>');
-						tr.append($('<td>').text(attrNames[0].textContent));
-						tr.append($('<td>').text(attrSyntax[0].textContent));
+					var attrMapping = attrChildNode.getElementsByTagName('mapping');
+					var attrEncoding = attrChildNode.getElementsByTagName('encoding');
+					if(attrNames.length == 1 && attrSyntax.length == 1 && attrInclude.length == 1
+						&& attrMapping.length == 1 && attrEncoding.length == 1) {
+						var trName = $('<tr>');
+						trName.append($('<td>').text('Name'));
+						trName.append($('<td>').text(attrNames[0].textContent));
+						var trSyntax = $('<tr>');
+						trSyntax.append($('<td>').text('Syntax'));
+						trSyntax.append($('<td>').text(attrSyntax[0].textContent));
+						var trInclude = $('<tr>');
+						trInclude.append($('<td>').text('Include'));
+						var temp = $('<td>');
 						if(attrInclude[0].textContent == 'true') {
-							tr.append('<input type="checkbox" name="attr' + j + '" value="true" id="check' + j + '">');
+							temp.append('<input type="checkbox" name="attr' + j + 
+								'" value="true" id="check' + j + '">');
 						}
 						else {
-							tr.append('<input type="checkbox" name="attr' + j + '" value="false" id="check' + j + '">');
+							temp.append('<input type="checkbox" name="attr' + j + 
+								'" value="false" id="check' + j + '">');
 						}
-						$('#table').find('tbody').append(tr);
+						trInclude.append(temp);
+						var trMapping = $('<tr>');
+						trMapping.append($('<td>').text('Mapping'));
+						trMapping.append($('<td>').text(attrMapping[0].textContent));
+						var trEncoding = $('<tr>');
+						trEncoding.append($('<td>').text('Encoding'));
+						trEncoding.append($('<td>').text(attrEncoding[0].textContent));
+						var table = $('<table class="attr">');
+						table.append(trName);
+						table.append(trSyntax);
+						table.append(trInclude);
+						table.append(trMapping);
+						table.append(trEncoding);
+						var div = $('<div class="tablediv" style="float: left;">');
+						div.append(table);
+						var divw = $('<div>');
+						divw.append(div);
+						$('#c').append(div);
+						
 					}
 				}
+				$('#c').append('<div style="clear: both">');
 			}
 			else {
 				alert("ERROR: Unknown tag encountered!");
@@ -116,7 +144,7 @@ xmlhttp.onreadystatechange=function()
     document.getElementById("bar").innerHTML=xmlhttp.responseText.replace(/</g,"&lt;").replace(/>/g,"&gt;");
     }
 }
-xmlhttp.open("GET","http://localhost:8888/ldap-ui-service/schemaDump?oc=person",true);
+xmlhttp.open("GET","http://localhost:8888/ldap-ui-service/schemaDump?oc=abcPerson",true);
 xmlhttp.setRequestHeader ("Accept", "application/xml");
 xmlhttp.send(null); 
 }
@@ -125,16 +153,8 @@ xmlhttp.send(null);
 <body>
 <div id="dump_content">
 	<h1 id="class"></h1>
-	<div id="tablediv">
-	<table id="table">
-	<thead>
-		<tr><td>Name</td><td>Syntax</td><td>Include</td></tr>
-	</thead>
-	<tbody>
-	</tbody>
-	</table>
-	</div><div></div>
 	<button type="button" onclick="load()">Request the data</button>
+	<div style="text-align: center;"><div id="c"></div></div>
 </div>
 </body>
 </html>

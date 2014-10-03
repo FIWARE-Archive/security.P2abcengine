@@ -32,6 +32,31 @@ public class UserService {
 	@javax.ws.rs.core.Context
 	ServletContext context;
 
+	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
+	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
+	/* Mapping encodings determine how we encode the values (for the syntax mapping) in the credential */
+	public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
+
+	static {
+		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.15", new ArrayList<String>());
+		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.50", new ArrayList<String>());
+		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.27", new ArrayList<String>());
+
+
+		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.15").add("string");
+                syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.50").add("string");
+		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.27").add("integer");
+
+		mappingEncodings.put("string", new ArrayList<String>());
+		mappingEncodings.put("integer", new ArrayList<String>());
+
+		mappingEncodings.get("string").add("urn:abc4trust:1.0:encoding:string:sha-256");
+		mappingEncodings.get("integer").add("urn:abc4trust:1.0:encoding:integer:signed");
+	}
+
+	public UserService() {
+	}
+
 
    	@GET()
 	@javax.ws.rs.Path("/test")
@@ -82,6 +107,8 @@ public class UserService {
 class ObjectClassAttribute {
 	public String name;
 	public String syntax;
+	public String mapping;
+	public String encoding;
 	public boolean include;
 
 	public ObjectClassAttribute() {}
@@ -90,6 +117,14 @@ class ObjectClassAttribute {
 		this.name = name;
 		this.syntax = syntax;
 		this.include = false;
+		if(UserService.syntaxMappings.containsKey(syntax))
+			this.mapping = UserService.syntaxMappings.get(syntax).get(0);
+		else
+			this.mapping = "string"; //use string as default mapping
+		if(UserService.mappingEncodings.containsKey(this.mapping))
+			this.encoding = UserService.mappingEncodings.get(this.mapping).get(0);
+		else
+			throw new RuntimeException("ObjectClassAttribute. Can't determine encoding for mapping!");
 	}
 }
 
@@ -108,6 +143,8 @@ class ObjectClass {
 	}
 
 	public void addAttribute(String name, String syntax) {
+		/* Filter {n} out */
+		syntax = syntax.replaceAll("\\{\\d+\\}$","");
 		attributes.add(new ObjectClassAttribute(name, syntax));
 	}
 }
