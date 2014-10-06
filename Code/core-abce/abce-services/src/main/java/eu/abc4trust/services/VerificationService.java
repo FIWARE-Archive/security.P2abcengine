@@ -113,7 +113,7 @@ public class VerificationService {
         }
         VerificationHelper verficationHelper = VerificationHelper.getInstance();
         URI uid = URI
-                .create("http://ticketcompany/MyFavoriteSoccerTeam/issuance:idemix");
+                .create("http://mroman.ch/RoomReservation/issuance:idemix");
         try {
             IssuerParameters ip = verficationHelper.keyManager
                     .getIssuerParameters(uid);
