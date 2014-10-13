@@ -39,7 +39,7 @@ import java.util.*;
 import java.math.BigInteger;
 
 @javax.ws.rs.Path("/")
-public class UserService {
+public class LdapService {
 	@javax.ws.rs.core.Context
 	ServletContext context;
 
