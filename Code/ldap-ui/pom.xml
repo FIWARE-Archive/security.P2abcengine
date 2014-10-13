@@ -54,6 +54,11 @@
         <artifactId>abce-jetty-package</artifactId>
         <version>patras-1.0.14-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>eu.abc4trust.ri</groupId>
+      <artifactId>abc4trust-xml</artifactId>
+	  <version>patras-1.0.14-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>ldap-ui-service</finalName>
