@@ -36,6 +36,7 @@ import eu.abc4trust.xml.IssuancePolicyAndAttributes;
 import java.net.*;
 import javax.xml.bind.JAXBElement;
 import java.util.*;
+import java.math.BigInteger;
 
 @javax.ws.rs.Path("/")
 public class UserService {
@@ -56,15 +57,15 @@ public class UserService {
 		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.27", new ArrayList<String>());
 
 
-		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.15").add("string");
-		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.50").add("string");
-		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.27").add("integer");
+		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.15").add("xs:string");
+		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.50").add("xs:string");
+		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.27").add("xs:integer");
 
-		mappingEncodings.put("string", new ArrayList<String>());
-		mappingEncodings.put("integer", new ArrayList<String>());
+		mappingEncodings.put("xs:string", new ArrayList<String>());
+		mappingEncodings.put("xs:integer", new ArrayList<String>());
 
-		mappingEncodings.get("string").add("urn:abc4trust:1.0:encoding:string:sha-256");
-		mappingEncodings.get("integer").add("urn:abc4trust:1.0:encoding:integer:signed");
+		mappingEncodings.get("xs:string").add("urn:abc4trust:1.0:encoding:string:sha-256");
+		mappingEncodings.get("xs:integer").add("urn:abc4trust:1.0:encoding:integer:signed");
 	}
 
 	public UserService() {
@@ -102,7 +103,13 @@ public class UserService {
 			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
 			List<eu.abc4trust.xml.Attribute> attributes = ipa.getAttribute();
 			for(AttributeDescription attrDesc : descriptions) {
-				String value = (String)srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
+				Object value = (String)srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
+			
+				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */
+				if(attrDesc.getDataType().toString().equals("xs:integer")) {
+					value = BigInteger.valueOf((Integer.parseInt(((String)value))));
+				}
+
 				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
 				attrib.setAttributeDescription(attrDesc);
 				attrib.setAttributeValue(value);
