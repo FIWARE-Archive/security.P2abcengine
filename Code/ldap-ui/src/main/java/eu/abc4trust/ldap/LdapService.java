@@ -100,14 +100,12 @@ public class LdapService {
 	@javax.ws.rs.Path("/genIssuanceAttributes")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     @Produces(MediaType.TEXT_XML)
-	public JAXBElement<IssuancePolicyAndAttributes> generateIssuanceAttributes(CredentialSpecificationAndSystemParameters credSpecParams, @QueryParam("srch") String query) {
+	public JAXBElement<IssuancePolicyAndAttributes> generateIssuanceAttributes(CredentialSpecification credSpec, @QueryParam("srch") String query) {
 		try {
 			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
 			cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
 			LdapConnection con = cfg.newConnection();
 			LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
-			
-			CredentialSpecification credSpec = credSpecParams.getCredentialSpecification();
 
 			AttributeDescriptions attrDescs = credSpec.getAttributeDescriptions();
 			List<AttributeDescription> descriptions = attrDescs.getAttributeDescription();
@@ -146,12 +144,10 @@ public class LdapService {
 	@javax.ws.rs.Path("/genCredSpec")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     @Produces(MediaType.TEXT_XML)
-	public JAXBElement<CredentialSpecificationAndSystemParameters> generateCredentialSpecification(ObjectClass oc) {
+	public JAXBElement<CredentialSpecification> generateCredentialSpecification(ObjectClass oc) {
 		try {
 			CredentialSpecification credSpec = of.createCredentialSpecification();
 			credSpec.setSpecificationUID(new URI("abc4trust:ldap:" + oc.name));
-			CredentialSpecificationAndSystemParameters credSysParams = of.createCredentialSpecificationAndSystemParameters();
-			credSysParams.setCredentialSpecification(credSpec);
 
 			credSpec.setVersion("1.0");
 			credSpec.setKeyBinding(false);
@@ -181,7 +177,7 @@ public class LdapService {
 
 			credSpec.setAttributeDescriptions(attrDescs);
 
-			return of.createCredentialSpecificationAndSystemParameters(credSysParams);
+			return of.createCredentialSpecification(credSpec);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
