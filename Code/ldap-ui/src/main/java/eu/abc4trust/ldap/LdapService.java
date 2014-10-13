@@ -103,11 +103,17 @@ public class UserService {
 			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
 			List<eu.abc4trust.xml.Attribute> attributes = ipa.getAttribute();
 			for(AttributeDescription attrDesc : descriptions) {
-				Object value = (String)srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
+				Object value = srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
 			
 				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */
-				if(attrDesc.getDataType().toString().equals("xs:integer")) {
+				if(attrDesc.getDataType().toString().equals("xs:integer") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
 					value = BigInteger.valueOf((Integer.parseInt(((String)value))));
+				}
+				else if(attrDesc.getDataType().toString().equals("xs:string") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:string:sha-256") {
+					value = (String)value;
+				}
+				else {
+					throw new RuntimeException("Unsupported combination of encoding and dataType!");
 				}
 
 				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
