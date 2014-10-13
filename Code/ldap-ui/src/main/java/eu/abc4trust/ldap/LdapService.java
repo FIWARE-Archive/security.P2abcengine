@@ -9,7 +9,7 @@
 //* disclosure restricted by GSA ADP Schedule Contract with IBM Corp. *
 //*/**/****************************************************************
 
-package eu.abc4trust.ui.idselectservice;
+package eu.abc4trust.ldap;
 
 
 import javax.servlet.ServletContext;
@@ -68,7 +68,7 @@ public class LdapService {
 		mappingEncodings.get("xs:integer").add("urn:abc4trust:1.0:encoding:integer:signed");
 	}
 
-	public UserService() {
+	public LdapService() {
 	}
 
 
@@ -238,12 +238,12 @@ class ObjectClassAttribute {
 		this.name = name;
 		this.syntax = syntax;
 		this.include = false;
-		if(UserService.syntaxMappings.containsKey(syntax))
-			this.mapping = UserService.syntaxMappings.get(syntax).get(0);
+		if(LdapService.syntaxMappings.containsKey(syntax))
+			this.mapping = LdapService.syntaxMappings.get(syntax).get(0);
 		else
 			this.mapping = "string"; //use string as default mapping
-		if(UserService.mappingEncodings.containsKey(this.mapping))
-			this.encoding = UserService.mappingEncodings.get(this.mapping).get(0);
+		if(LdapService.mappingEncodings.containsKey(this.mapping))
+			this.encoding = LdapService.mappingEncodings.get(this.mapping).get(0);
 		else
 			throw new RuntimeException("ObjectClassAttribute. Can't determine encoding for mapping!");
 	}
