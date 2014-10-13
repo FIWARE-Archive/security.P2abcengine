@@ -106,10 +106,10 @@ public class LdapService {
 				Object value = srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
 			
 				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */
-				if(attrDesc.getDataType().toString().equals("xs:integer") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
+				if(attrDesc.getDataType().toString().equals("xs:integer") && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
 					value = BigInteger.valueOf((Integer.parseInt(((String)value))));
 				}
-				else if(attrDesc.getDataType().toString().equals("xs:string") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
+				else if(attrDesc.getDataType().toString().equals("xs:string") && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
 					value = (String)value;
 				}
 				else {
