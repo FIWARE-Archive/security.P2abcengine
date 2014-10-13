@@ -25,12 +25,23 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.charset.*;
-
+import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.CredentialSpecificationAndSystemParameters;
+import eu.abc4trust.xml.ObjectFactory;
+import eu.abc4trust.xml.AttributeDescriptions;
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.FriendlyDescription;
+import java.net.*;
+import javax.xml.bind.JAXBElement;
+import java.util.*;
 
 @javax.ws.rs.Path("/")
 public class UserService {
 	@javax.ws.rs.core.Context
 	ServletContext context;
+
+	ObjectFactory of = new ObjectFactory();
+
 
 	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
 	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
@@ -72,6 +83,53 @@ public class UserService {
 		}
 	}
 
+	@POST()
+	@javax.ws.rs.Path("/genCredSpec")
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Produces(MediaType.TEXT_XML)
+	public JAXBElement<CredentialSpecificationAndSystemParameters> generadeCredentialSpecification(ObjectClass oc) {
+		try {
+			CredentialSpecification credSpec = of.createCredentialSpecification();
+			credSpec.setSpecificationUID(new URI("abc4trust:ldap:" + oc.name));
+			CredentialSpecificationAndSystemParameters credSysParams = of.createCredentialSpecificationAndSystemParameters();
+			credSysParams.setCredentialSpecification(credSpec);
+
+			credSpec.setVersion("1.0");
+			credSpec.setKeyBinding(false);
+			credSpec.setRevocable(false);
+
+			AttributeDescriptions attrDescs = of.createAttributeDescriptions();
+			attrDescs.setMaxLength(256);
+			List<AttributeDescription> descriptions = attrDescs.getAttributeDescription();
+
+			for(ObjectClassAttribute oca : oc.attributes) {
+
+				AttributeDescription attr = of.createAttributeDescription();
+				attr.setType(new URI(oca.name));
+				attr.setDataType(new URI(oca.mapping));
+				attr.setEncoding(new URI(oca.encoding));
+				descriptions.add(attr);
+
+				List<FriendlyDescription> friendlies = attr.getFriendlyAttributeName();
+				for(LanguageValuePair lvp : oca.friendlyDescriptions) {
+					FriendlyDescription friendlyDesc = of.createFriendlyDescription();
+					friendlyDesc.setLang(lvp.language);
+					friendlyDesc.setValue(lvp.value);
+					friendlies.add(friendlyDesc);
+				}
+
+			}
+
+			credSpec.setAttributeDescriptions(attrDescs);
+
+			return of.createCredentialSpecificationAndSystemParameters(credSysParams);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	@GET()
 	@javax.ws.rs.Path("/schemaDump")
 	@Produces("application/xml")
@@ -103,6 +161,19 @@ public class UserService {
 	}
 }
 
+@XmlRootElement(name="langValuePair")
+class LanguageValuePair {
+	public String language;
+	public String value;
+
+	public LanguageValuePair() {}
+
+	public LanguageValuePair(String l, String v) {
+		this.language = l;
+		this.value = v;
+	}
+}
+
 @XmlRootElement(name="attribute")
 class ObjectClassAttribute {
 	public String name;
@@ -110,6 +181,9 @@ class ObjectClassAttribute {
 	public String mapping;
 	public String encoding;
 	public boolean include;
+	@XmlElementWrapper(name = "friendlyDescriptions")
+	@XmlElement(name = "friendlyDescriptions")
+	public List<LanguageValuePair> friendlyDescriptions = new ArrayList<LanguageValuePair>();
 
 	public ObjectClassAttribute() {}
 
@@ -125,6 +199,10 @@ class ObjectClassAttribute {
 			this.encoding = UserService.mappingEncodings.get(this.mapping).get(0);
 		else
 			throw new RuntimeException("ObjectClassAttribute. Can't determine encoding for mapping!");
+	}
+
+	public void addFriendlyDescription(String language, String value) {
+		friendlyDescriptions.add(new LanguageValuePair(language, value));
 	}
 }
 
@@ -145,6 +223,8 @@ class ObjectClass {
 	public void addAttribute(String name, String syntax) {
 		/* Filter {n} out */
 		syntax = syntax.replaceAll("\\{\\d+\\}$","");
-		attributes.add(new ObjectClassAttribute(name, syntax));
+		ObjectClassAttribute attr = new ObjectClassAttribute(name, syntax);
+		attr.addFriendlyDescription("en", name + " attribute");
+		attributes.add(attr);
 	}
 }
