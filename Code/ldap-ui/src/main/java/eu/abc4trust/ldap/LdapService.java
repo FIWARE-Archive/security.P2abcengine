@@ -119,6 +119,7 @@ public class LdapService {
 				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
 				attrib.setAttributeDescription(attrDesc);
 				attrib.setAttributeValue(value);
+				attrib.setAttributeUID(new URI("abc4trust:attributeuid:ldap:" + attrDesc.getType().toString()));
 				attributes.add(attrib);
 			}
 			return of.createIssuancePolicyAndAttributes(ipa);
