@@ -109,7 +109,7 @@ public class UserService {
 				if(attrDesc.getDataType().toString().equals("xs:integer") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
 					value = BigInteger.valueOf((Integer.parseInt(((String)value))));
 				}
-				else if(attrDesc.getDataType().toString().equals("xs:string") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:string:sha-256") {
+				else if(attrDesc.getDataType().toString().equals("xs:string") && attrDesc.getEncoding().equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
 					value = (String)value;
 				}
 				else {
