@@ -31,6 +31,8 @@ import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.Attribute;
+import eu.abc4trust.xml.IssuancePolicyAndAttributes;
 import java.net.*;
 import javax.xml.bind.JAXBElement;
 import java.util.*;
@@ -55,7 +57,7 @@ public class UserService {
 
 
 		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.15").add("string");
-                syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.50").add("string");
+		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.50").add("string");
 		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.27").add("integer");
 
 		mappingEncodings.put("string", new ArrayList<String>());
@@ -84,10 +86,42 @@ public class UserService {
 	}
 
 	@POST()
+	@javax.ws.rs.Path("/genIssuanceAttributes")
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Produces(MediaType.TEXT_XML)
+	public JAXBElement<IssuancePolicyAndAttributes> generateIssuanceAttributes(CredentialSpecificationAndSystemParameters credSpecParams, @QueryParam("srch") String query) {
+		try {
+			LdapConnectionConfig cfg = new LdapConnectionConfig(10389,"localhost");
+			LdapConnection con = cfg.newConnection();
+			LdapSearch srch = con.newSearch().setName("dc=example, dc=com");
+			
+			CredentialSpecification credSpec = credSpecParams.getCredentialSpecification();
+
+			AttributeDescriptions attrDescs = credSpec.getAttributeDescriptions();
+			List<AttributeDescription> descriptions = attrDescs.getAttributeDescription();
+			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
+			List<eu.abc4trust.xml.Attribute> attributes = ipa.getAttribute();
+			for(AttributeDescription attrDesc : descriptions) {
+				String value = (String)srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
+				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
+				attrib.setAttributeDescription(attrDesc);
+				attrib.setAttributeValue(value);
+				attributes.add(attrib);
+			}
+			return of.createIssuancePolicyAndAttributes(ipa);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+
+	@POST()
 	@javax.ws.rs.Path("/genCredSpec")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     @Produces(MediaType.TEXT_XML)
-	public JAXBElement<CredentialSpecificationAndSystemParameters> generadeCredentialSpecification(ObjectClass oc) {
+	public JAXBElement<CredentialSpecificationAndSystemParameters> generateCredentialSpecification(ObjectClass oc) {
 		try {
 			CredentialSpecification credSpec = of.createCredentialSpecification();
 			credSpec.setSpecificationUID(new URI("abc4trust:ldap:" + oc.name));
@@ -142,8 +176,8 @@ public class UserService {
 		DirContext schema = ctx.getSchema("ou=schema");
 		
 		Attributes answer = schema.getAttributes("ClassDefinition/" + objectClass);
-		Attribute must = answer.get("must");
-		Attribute may = answer.get("may");
+		javax.naming.directory.Attribute must = answer.get("must");
+		javax.naming.directory.Attribute may = answer.get("may");
 
 		ObjectClass oc = new ObjectClass(objectClass);
 		
