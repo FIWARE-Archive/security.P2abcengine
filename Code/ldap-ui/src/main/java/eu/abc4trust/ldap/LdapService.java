@@ -37,6 +37,7 @@ import java.net.*;
 import javax.xml.bind.JAXBElement;
 import java.util.*;
 import java.math.BigInteger;
+import java.util.Properties;
 
 @javax.ws.rs.Path("/")
 public class LdapService {
@@ -45,6 +46,8 @@ public class LdapService {
 
 	ObjectFactory of = new ObjectFactory();
 
+	private static LdapServiceConfig ldapSrvConf;
+
 
 	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
 	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
@@ -52,6 +55,13 @@ public class LdapService {
 	public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
 	static {
+		String ldapSrvConfPath = System.getProperties().getProperty("abc4trust-ldapSrvConfPath");
+
+		if(ldapSrvConfPath == null)
+			ldapSrvConfPath = "/etc/abc4trust/ldapServiceConfig.xml";
+
+		ldapSrvConf = LdapServiceConfig.fromFile("/etc/abc4trust/ldapServiceConfig.xml");
+
 		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.15", new ArrayList<String>());
 		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.50", new ArrayList<String>());
 		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.27", new ArrayList<String>());
@@ -92,9 +102,10 @@ public class LdapService {
     @Produces(MediaType.TEXT_XML)
 	public JAXBElement<IssuancePolicyAndAttributes> generateIssuanceAttributes(CredentialSpecificationAndSystemParameters credSpecParams, @QueryParam("srch") String query) {
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(10389,"localhost");
+			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
+			cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
 			LdapConnection con = cfg.newConnection();
-			LdapSearch srch = con.newSearch().setName("dc=example, dc=com");
+			LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
 			
 			CredentialSpecification credSpec = credSpecParams.getCredentialSpecification();
 
@@ -182,9 +193,10 @@ public class LdapService {
 	@javax.ws.rs.Path("/schemaDump")
 	@Produces("application/xml")
 	public ObjectClass schemaDump(@QueryParam("oc") String objectClass) throws NamingException {
-		LdapConnectionConfig cfg = new LdapConnectionConfig(10389,"localhost");
+		LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
+		cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
 		LdapConnection con = cfg.newConnection();
-		LdapSearch srch = con.newSearch().setName("dc=example, dc=com");
+		LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
 		
 		DirContext ctx = con.getInitialDirContext();
 		DirContext schema = ctx.getSchema("ou=schema");
