@@ -196,7 +196,7 @@ public class UserService {
 
         try {
             URI uid = URI
-                    .create("http://ticketcompany/MyFavoriteSoccerTeam/issuance:idemix");
+                    .create("http://mroman.ch/RoomReservation/issuance:idemix");
             IssuerParameters ip = instance.keyManager.getIssuerParameters(uid);
             String s = XmlUtils.toXml(this.of.createIssuerParameters(ip));
             System.out.println(s);
@@ -649,7 +649,7 @@ public class UserService {
         }
         UserHelper instance = UserHelper.getInstance();
         URI uid = URI
-                .create("http://ticketcompany/MyFavoriteSoccerTeam/issuance:idemix");
+                .create("http://mroman.ch/RoomReservation/issuance:idemix");
         new UserDebugger(instance).validate(uid);
     }
 

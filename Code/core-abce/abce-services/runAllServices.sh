@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Wiping storage (otherwise stuff breaks for whatever stupid reason)"
+rm -rf target/issuer_*
+rm -rf target/abce-services/target/*_*
+
 echo "Starting all services... (selfcontained)"
 
 cd ./target/
