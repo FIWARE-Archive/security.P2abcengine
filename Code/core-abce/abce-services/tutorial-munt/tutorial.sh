@@ -8,23 +8,28 @@ curl -X POST --header 'Content-Type: text/xml' 'http://localhost:9100/issuer/set
 
 # Store credential specification at issuer.
 echo "Store credential specification at issuer"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9100/issuer/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtIssuerResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9100/issuer/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2Fspec' > ./out/storeCredentialSpecificationAtIssuerResponce.xml
 cat ./out/storeCredentialSpecificationAtIssuerResponce.xml
 
 # Store credential specification at user.
 # This method is not specified in H2.2.
 echo "Store credential specification at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9200/user/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtUserResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9200/user/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2Fspec' > ./out/storeCredentialSpecificationAtUserResponce.xml
 cat ./out/storeCredentialSpecificationAtUserResponce.xml
 
 # Store credential specification at verifier.
 # This method is not specified in H2.2.
 echo "Store credential specification at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9300/verification/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2FcredSpec%2F' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./credentialSpecificationRoomReservation.xml 'http://localhost:9300/verification/storeCredentialSpecification/http%3A%2F%2Fmroman.ch%2FRoomReservation%2Fspec' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
 cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 
 echo "!! Credential Spec should now have been stored at Issuer, User and Verifier !!!"
 #read -p "Press [Enter] to continue.."
+
+# Store System parameters at Revocation Authority.
+# This method is not specified in H2.2.
+echo "Store System parameters at Revocation Authority"
+curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:9500/revocation/storeSystemParameters/' > ./out/storeSystemParametersResponceAtRevocationAutority.xml
 
 # Store System parameters at User.
 # This method is not specified in H2.2.
@@ -35,6 +40,26 @@ curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'h
 # This method is not specified in H2.2.
 echo "Store System parameters at Verifier"
 curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:9300/verification/storeSystemParameters/' > ./out/storeSystemParametersResponceAtVerifier.xml
+
+
+# Setup Revocation Authority Parameters.
+echo "Setup Revocation Authority Parameters"
+curl -X POST --header 'Content-Type: text/xml' -d @./revocationReferences.xml 'http://localhost:9500/revocation/setupRevocationAuthorityParameters?keyLength=1024&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix&uid=http%3A%2F%2Fticketcompany%2Frevocation' > ./out/revocationAuthorityParameters.xml
+
+# Store Revocation Authority Parameters at issuer.
+# This method is not specified in H2.2.
+echo "Store Revocation Authority Parameters at issuer"
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/revocationAuthorityParameters.xml 'http://localhost:9100/issuer/storeRevocationAuthorityParameters/http%3A%2F%2Ftmroman.ch%2FRoomReservation%2Frevocation'  > ./out/storeRevocationAuthorityParameters.xml
+
+# Store Revocation Authority Parameters at user.
+# This method is not specified in H2.2.
+echo "Store Revocation Authority Parameters at user"
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/revocationAuthorityParameters.xml 'http://localhost:9200/user/storeRevocationAuthorityParameters/http%3A%2F%2Ftmroman.ch%2FRoomReservation%2Frevocation'  > ./out/storeRevocationAuthorityParametersAtUserResponce.xml
+
+# Store Revocation Authority Parameters at verifier.
+# This method is not specified in H2.2.
+echo "Store Revocation Authority Parameters at verifier"
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/revocationAuthorityParameters.xml 'http://localhost:9300/verification/storeRevocationAuthorityParameters/http%3A%2F%2Ftmroman.ch%2FRoomReservation%2Frevocation'  > ./out/storeRevocationAuthorityParametersAtVerifierResponce.xml
 
 
 # Setup issuer parameters.
