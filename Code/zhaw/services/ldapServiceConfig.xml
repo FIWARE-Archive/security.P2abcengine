@@ -4,4 +4,5 @@
 	<name>dc=example, dc=com</name>
 	<auth-id>uid=admin, ou=system</auth-id>
 	<auth-pw>secret</auth-pw>
+	<magic-cookie>CaroleKing</magic-cookie>
 </ldap-service-config>
