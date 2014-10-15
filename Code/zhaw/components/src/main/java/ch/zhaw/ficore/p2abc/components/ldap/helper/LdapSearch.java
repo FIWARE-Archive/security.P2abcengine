@@ -1,4 +1,5 @@
-package ch.mroman.ldap;
+package ch.zhaw.ficore.p2abc.ldap.helper;
+
 import javax.naming.*;
 import javax.naming.directory.*;
 
@@ -127,7 +128,7 @@ public class LdapSearch {
 		NamingEnumeration<SearchResult> answer = this.search(name, filter);
 		while(answer.hasMore()) {
 			SearchResult sr = (SearchResult)answer.next();
-			NamingEnumeration<Attribute> attrs = (NamingEnumeration<Attribute>) sr.getAttributes().getAll();
+			NamingEnumeration<? extends Attribute> attrs = sr.getAttributes().getAll();
 			while(attrs.hasMoreElements()) {
 				System.out.println(attrs.next());
 			}

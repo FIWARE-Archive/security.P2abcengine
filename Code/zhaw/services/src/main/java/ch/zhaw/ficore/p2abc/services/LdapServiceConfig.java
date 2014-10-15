@@ -1,9 +1,11 @@
-package eu.abc4trust.ldap;
+package ch.zhaw.ficore.p2abc.services;
 
-import javax.xml.bind.*;
-import javax.xml.bind.annotation.*;
-import javax.xml.*;
-import java.io.*;
+import java.io.File;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="ldap-service-config")
 public class LdapServiceConfig {

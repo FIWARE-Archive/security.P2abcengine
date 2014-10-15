@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>eu.abc4trust.ldapui</groupId>
-  <artifactId>ldap-ui</artifactId>
+  <groupId>ch.zhaw.ficore.p2abc.services</groupId>
+  <artifactId>zhaw-webservices</artifactId>
   <packaging>war</packaging>
-  <version>1.1.0-SNAPSHOT</version>
-  <name>ldap-ui</name>
-  <description>ldap-ui</description>
+  <version>0.1</version>
+  <name>zhaw-webservices</name>
+  <description>zhaw-webservices</description>
    <properties>
     <jersey.version>1.10</jersey.version>
     <jetty.version>6.1.26</jetty.version>
@@ -40,9 +40,9 @@
         <version>${jetty.version}</version>
     </dependency>
 	<dependency>
-        <groupId>ch.mroman.ldap</groupId>
-        <artifactId>ldap-helper</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <groupId>ch.zhaw.ficore.p2abc.components</groupId>
+        <artifactId>zhaw-components</artifactId>
+        <version>0.1</version>
     </dependency>
     <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -61,7 +61,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>ldap-ui-service</finalName>
+    <finalName>zhaw-p2abc-webservices</finalName>
     <plugins>
        <plugin>
           <groupId>org.apache.maven.plugins</groupId>

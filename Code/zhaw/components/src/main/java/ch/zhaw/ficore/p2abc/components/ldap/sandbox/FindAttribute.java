@@ -1,14 +1,9 @@
-package ch.mroman.sandbox.ldap;
+package ch.zhaw.ficore.p2abc.ldap.sandbox;
 
 import javax.naming.*;
 import javax.naming.directory.*;
 
-import ch.mroman.ldap.LdapAttributes;
-import ch.mroman.ldap.LdapConnection;
-import ch.mroman.ldap.LdapConnectionConfig;
-import ch.mroman.ldap.LdapException;
-import ch.mroman.ldap.LdapSearch;
-import ch.mroman.ldap.LdapStatic;
+import ch.zhaw.ficore.p2abc.ldap.helper.*;
 
 public class FindAttribute {
 	public static void main(String... args) throws NamingException, LdapException {

@@ -9,35 +9,43 @@
 //* disclosure restricted by GSA ADP Schedule Contract with IBM Corp. *
 //*/**/****************************************************************
 
-package eu.abc4trust.ldap;
+package ch.zhaw.ficore.p2abc.services;
 
 
-import javax.servlet.ServletContext;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.xml.bind.*;
-import javax.xml.bind.annotation.*;
-import ch.mroman.ldap.*;
-import javax.naming.*;
-import javax.naming.directory.*;
-import java.util.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.nio.charset.*;
-import eu.abc4trust.xml.CredentialSpecification;
-import eu.abc4trust.xml.CredentialSpecificationAndSystemParameters;
-import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.AttributeDescriptions;
-import eu.abc4trust.xml.AttributeDescription;
-import eu.abc4trust.xml.FriendlyDescription;
-import eu.abc4trust.xml.Attribute;
-import eu.abc4trust.xml.IssuancePolicyAndAttributes;
-import java.net.*;
-import javax.xml.bind.JAXBElement;
-import java.util.*;
 import java.math.BigInteger;
-import java.util.Properties;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import ch.zhaw.ficore.p2abc.ldap.helper.*;
+
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.AttributeDescriptions;
+import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.IssuancePolicyAndAttributes;
+import eu.abc4trust.xml.ObjectFactory;
 
 @javax.ws.rs.Path("/")
 public class LdapService {
@@ -48,7 +56,10 @@ public class LdapService {
 
 	private static LdapServiceConfig ldapSrvConf;
 
-
+	private static final String directoryStringOid = "1.3.6.1.4.1.1466.115.121.1.15";
+	private static final String telephoneNumberOid = "1.3.6.1.4.1.1466.115.121.1.50";
+	private static final String integerOid = "1.3.6.1.4.1.1466.115.121.1.27";
+	
 	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
 	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
 	/* Mapping encodings determine how we encode the values (for the syntax mapping) in the credential */
@@ -62,14 +73,14 @@ public class LdapService {
 
 		ldapSrvConf = LdapServiceConfig.fromFile("/etc/abc4trust/ldapServiceConfig.xml");
 
-		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.15", new ArrayList<String>());
-		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.50", new ArrayList<String>());
-		syntaxMappings.put("1.3.6.1.4.1.1466.115.121.1.27", new ArrayList<String>());
+		syntaxMappings.put(directoryStringOid, new ArrayList<String>());
+		syntaxMappings.put(telephoneNumberOid, new ArrayList<String>());
+		syntaxMappings.put(integerOid, new ArrayList<String>());
 
 
-		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.15").add("xs:string");
-		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.50").add("xs:string");
-		syntaxMappings.get("1.3.6.1.4.1.1466.115.121.1.27").add("xs:integer");
+		syntaxMappings.get(directoryStringOid).add("xs:string");
+		syntaxMappings.get(telephoneNumberOid).add("xs:string");
+		syntaxMappings.get(integerOid).add("xs:integer");
 
 		mappingEncodings.put("xs:string", new ArrayList<String>());
 		mappingEncodings.put("xs:integer", new ArrayList<String>());
@@ -192,7 +203,7 @@ public class LdapService {
 		LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
 		cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
 		LdapConnection con = cfg.newConnection();
-		LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
+		//LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
 		
 		DirContext ctx = con.getInitialDirContext();
 		DirContext schema = ctx.getSchema("ou=schema");
