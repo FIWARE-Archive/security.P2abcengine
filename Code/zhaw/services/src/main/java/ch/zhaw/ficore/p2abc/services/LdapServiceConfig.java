@@ -13,32 +13,32 @@ public class LdapServiceConfig {
 	 * Hostname of the LDAP Server.
 	 */
 	@XmlElement(name="host")
-	public String host;
+	private String host;
 
 	/**
 	 * Port used by the LDAP Server.
 	 */
 	@XmlElement(name="port")
-	public int port;
+	private int port;
 
 	/**
 	 * Used for searches (serves as the basis for LDAP
 	 * searches done by the LDAP-binding)
 	 */
 	@XmlElement(name="name")
-	public String name;
+	private String name;
 
 	/**
 	 * Auth. Id. The username that the LDAP connection will use to bind.
 	 */
 	@XmlElement(name="auth-id")
-	public String authId;
+	private String authId;
 
 	/**
 	 * Auth. Pw. The password that the LDAP connection will use to bind.
 	 */
 	@XmlElement(name="auth-pw")
-	public String authPw;
+	private String authPw;
 
 	/**
 	 * A magic value that only trusted administrators of the webservices
@@ -46,7 +46,33 @@ public class LdapServiceConfig {
 	 * the webservice.
 	 */
 	@XmlElement(name="magic-cookie")
-	public String magicCookie;
+	private String magicCookie;
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getAuthId() {
+		return authId;
+	}
+
+	public String getAuthPw() {
+		return authPw;
+	}
+
+	public String getMagicCookie() {
+		return magicCookie;
+	}
+
+
 
 	/**
 	 * Verifies that the loaded configuration is valid and sane.

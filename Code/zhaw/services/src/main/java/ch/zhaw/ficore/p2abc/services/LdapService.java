@@ -119,10 +119,10 @@ public class LdapService {
     @Produces(MediaType.TEXT_XML)
 	public JAXBElement<IssuancePolicyAndAttributes> generateIssuanceAttributes(CredentialSpecification credSpec, @QueryParam("srch") String query) {
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
-			cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
+			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.getPort(), ldapSrvConf.getHost());
+			cfg.setAuth(ldapSrvConf.getAuthId(), ldapSrvConf.getAuthPw());
 			LdapConnection con = cfg.newConnection();
-			LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
+			LdapSearch srch = con.newSearch().setName(ldapSrvConf.getName());
 
 			AttributeDescriptions attrDescs = credSpec.getAttributeDescriptions();
 			List<AttributeDescription> descriptions = attrDescs.getAttributeDescription();
@@ -208,10 +208,10 @@ public class LdapService {
 	@javax.ws.rs.Path("/schemaDump")
 	@Produces("application/xml")
 	public ObjectClass schemaDump(@QueryParam("oc") String objectClass) throws NamingException {
-		LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
-		cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
+		LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.getPort(), ldapSrvConf.getHost());
+		cfg.setAuth(ldapSrvConf.getAuthId(), ldapSrvConf.getAuthPw());
 		LdapConnection con = cfg.newConnection();
-		//LdapSearch srch = con.newSearch().setName(ldapSrvConf.name);
+		//LdapSearch srch = con.newSearch().setName(ldapSrvConf.getName());
 		
 		DirContext ctx = con.getInitialDirContext();
 		DirContext schema = ctx.getSchema("ou=schema");
