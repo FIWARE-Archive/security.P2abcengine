@@ -1,4 +1,4 @@
-package eu.abc4trust.ldap;
+package ch.zhaw.ficore.p2abc.services;
 
 import java.io.File;
 

@@ -9,7 +9,7 @@
 //* disclosure restricted by GSA ADP Schedule Contract with IBM Corp. *
 //*/**/****************************************************************
 
-package eu.abc4trust.ldap;
+package ch.zhaw.ficore.p2abc.services;
 
 
 import java.math.BigInteger;
