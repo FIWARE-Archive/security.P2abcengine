@@ -40,7 +40,7 @@
         <version>${jetty.version}</version>
     </dependency>
 	<dependency>
-        <groupId>ch.zhaw.ficore.p2abc.components</groupId>
+        <groupId>ch.zhaw.ficore.p2abc</groupId>
         <artifactId>zhaw-components</artifactId>
         <version>0.1</version>
     </dependency>
