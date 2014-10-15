@@ -1,4 +1,4 @@
-package ch.mroman.ldap;
+package ch.zhaw.ficore.p2abc.ldap.helper;
 
 import java.util.Hashtable;
 
