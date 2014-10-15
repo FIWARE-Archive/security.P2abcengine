@@ -40,9 +40,9 @@
         <version>${jetty.version}</version>
     </dependency>
 	<dependency>
-        <groupId>ch.mroman.ldap</groupId>
+        <groupId>ch.zhaw.ficore.p2abc.ldap</groupId>
         <artifactId>ldap-helper</artifactId>
-        <version>0.5</version>
+        <version>0.1</version>
     </dependency>
     <dependency>
         <groupId>org.mortbay.jetty</groupId>

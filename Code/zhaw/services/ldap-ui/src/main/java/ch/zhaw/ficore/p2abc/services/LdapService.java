@@ -38,9 +38,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ch.mroman.ldap.LdapConnection;
-import ch.mroman.ldap.LdapConnectionConfig;
-import ch.mroman.ldap.LdapSearch;
+import ch.zhaw.ficore.p2abc.ldap.helper.*;
+
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
