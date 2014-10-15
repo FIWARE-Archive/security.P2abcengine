@@ -6,7 +6,9 @@ package ch.mroman.ldap;
  *
  */
 public class LdapException extends Exception {
-	public LdapException(String msg) {
+  private static final long serialVersionUID = -8312060122280210119L;
+
+  public LdapException(String msg) {
 		super(msg);
 	}
 }
