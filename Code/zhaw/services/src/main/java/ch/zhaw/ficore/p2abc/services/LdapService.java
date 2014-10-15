@@ -47,7 +47,7 @@ import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuancePolicyAndAttributes;
 import eu.abc4trust.xml.ObjectFactory;
 
-@javax.ws.rs.Path("/")
+@javax.ws.rs.Path("/foo")
 public class LdapService {
 	@javax.ws.rs.core.Context
 	ServletContext context;

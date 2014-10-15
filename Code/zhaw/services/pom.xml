@@ -77,7 +77,7 @@
   </build>
 
   <profiles>
- <profile>
+  <profile>
     <id>ldap-ui-service</id>
     <properties>
       <packaging.type>war</packaging.type>
@@ -92,7 +92,6 @@
           <artifactId>maven-war-plugin</artifactId>
           <version>2.1.1</version>
           <configuration>
-            <packagingExcludes>**/InspectService.*,**/InspectService$1.class,**/IssuanceService.*,**/RevocationService$1.class,**/RevocationService.class,**/VerificationService$1.class,**/VerificationService.class</packagingExcludes>
           </configuration>
         </plugin>
       </plugins>
