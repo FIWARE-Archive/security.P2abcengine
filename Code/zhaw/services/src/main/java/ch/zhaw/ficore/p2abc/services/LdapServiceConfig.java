@@ -9,30 +9,63 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="ldap-service-config")
 public class LdapServiceConfig {
+	/**
+	 * Hostname of the LDAP Server.
+	 */
 	@XmlElement(name="host")
 	public String host;
 
+	/**
+	 * Port used by the LDAP Server.
+	 */
 	@XmlElement(name="port")
 	public int port;
 
+	/**
+	 * Used for searches (serves as the basis for LDAP
+	 * searches done by the LDAP-binding)
+	 */
 	@XmlElement(name="name")
 	public String name;
 
+	/**
+	 * Auth. Id. The username that the LDAP connection will use to bind.
+	 */
 	@XmlElement(name="auth-id")
 	public String authId;
 
+	/**
+	 * Auth. Pw. The password that the LDAP connection will use to bind.
+	 */
 	@XmlElement(name="auth-pw")
 	public String authPw;
 
+	/**
+	 * A magic value that only trusted administrators of the webservices
+	 * should know. It's used as a means of authorization to re-configure
+	 * the webservice.
+	 */
 	@XmlElement(name="magic-cookie")
 	public String magicCookie;
 
+	/**
+	 * Verifies that the loaded configuration is valid and sane.
+	 *
+	 * @return true if configuration is valid and sane, false otherwise
+	 */
 	public boolean verify() {
 		return (host != null) && (port != 0) && (name != null) && (authId != null) && (authPw != null) &&
 				(magicCookie != null);
 	}
 
-
+	/**
+	 * Loads an LdapServiceConfig from an xml-file.
+	 * This method will call System.exit if configuration could not
+	 * be loaded. 
+	 *
+	 * @param path Path the the configuration xml-file.
+	 * @return an instance of LdapServiceConfig
+	 */
 	public static LdapServiceConfig fromFile(String path) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(LdapServiceConfig.class);
@@ -45,5 +78,15 @@ public class LdapServiceConfig {
 			System.exit(-1);
 		}
 		return null;
+	}
+
+	/**
+	 * Checks if the given magicCookie is the same as the one
+	 * in this configuration. 
+	 *
+	 * @return true if magicCookie is correct, false otherwise.
+	 */
+	public boolean isMagicCookieCorrect(String magicCookie) {
+		return magicCookie.equals(this.magicCookie);
 	}
 }
