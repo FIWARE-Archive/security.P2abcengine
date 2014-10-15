@@ -1,8 +1,9 @@
 package ch.mroman.ldap;
 
 import java.util.Hashtable;
-import javax.naming.directory.*;
-import javax.naming.*;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
 
 /**
  * Contains the configuration of a connection.
