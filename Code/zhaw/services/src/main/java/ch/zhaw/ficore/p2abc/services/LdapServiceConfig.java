@@ -11,17 +11,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LdapServiceConfig {
 	@XmlElement(name="host")
 	public String host;
+
 	@XmlElement(name="port")
 	public int port;
+
 	@XmlElement(name="name")
 	public String name;
+
 	@XmlElement(name="auth-id")
 	public String authId;
+
 	@XmlElement(name="auth-pw")
 	public String authPw;
 
+	@XmlElement(name="magic-cookie")
+	public String magicCookie;
+
 	public boolean verify() {
-		return (host != null) && (port != 0) && (name != null) && (authId != null) && (authPw != null);
+		return (host != null) && (port != 0) && (name != null) && (authId != null) && (authPw != null) &&
+				(magicCookie != null);
 	}
 
 
