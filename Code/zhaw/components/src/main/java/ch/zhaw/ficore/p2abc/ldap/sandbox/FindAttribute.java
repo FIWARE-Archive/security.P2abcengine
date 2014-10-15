@@ -1,9 +1,17 @@
 package ch.zhaw.ficore.p2abc.ldap.sandbox;
 
-import javax.naming.*;
-import javax.naming.directory.*;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
 
-import ch.zhaw.ficore.p2abc.ldap.helper.*;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapAttributes;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapException;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapSearch;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapStatic;
 
 public class FindAttribute {
 	public static void main(String... args) throws NamingException, LdapException {
