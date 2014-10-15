@@ -3,7 +3,8 @@
 mvn clean install
 ~/web/web1/bin/shutdown.sh
 rm -rf ~/web/web1/webapps/ldap-ui-service/
-cp -f ./target/ldap-ui-service.war ~/web/web1/webapps/ldap-ui-service.war
+rm -f ~/web/web1/webapps/*.war
+cp -f ./target/zhaw-p2abc-webservices.war ~/web/web1/webapps/zhaw-p2abc-webservices.war
 cp -rf ./target/ldap-ui-service ~/web/web1/webapps/
 cp -f ./src-web/ldapui.html ~/web/web1/webapps/ROOT/ldapui.html
 cp -f ldapServiceConfig.xml /etc/abc4trust/ldapServiceConfig.xml
