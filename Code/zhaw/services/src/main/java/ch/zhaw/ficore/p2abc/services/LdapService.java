@@ -60,33 +60,39 @@ public class LdapService {
 	private static final String telephoneNumberOid = "1.3.6.1.4.1.1466.115.121.1.50";
 	private static final String integerOid = "1.3.6.1.4.1.1466.115.121.1.27";
 	
+	private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
+	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
+	
+  private static final String xmlSchemaString = "xs:string";
+  private static final String xmlSchemaInteger = "xs:integer";
+	
 	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
 	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
+	
 	/* Mapping encodings determine how we encode the values (for the syntax mapping) in the credential */
 	public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
 	static {
-		String ldapSrvConfPath = System.getProperties().getProperty("abc4trust-ldapSrvConfPath");
+		String ldapSrvConfPath = System.getProperties().getProperty(ldapConfigPathProperty);
 
 		if(ldapSrvConfPath == null)
-			ldapSrvConfPath = "/etc/abc4trust/ldapServiceConfig.xml";
+			ldapSrvConfPath = ldapConfigPathDefault;
 
-		ldapSrvConf = LdapServiceConfig.fromFile("/etc/abc4trust/ldapServiceConfig.xml");
+		ldapSrvConf = LdapServiceConfig.fromFile(ldapSrvConfPath);
 
 		syntaxMappings.put(directoryStringOid, new ArrayList<String>());
 		syntaxMappings.put(telephoneNumberOid, new ArrayList<String>());
 		syntaxMappings.put(integerOid, new ArrayList<String>());
 
+		syntaxMappings.get(directoryStringOid).add(xmlSchemaString);
+		syntaxMappings.get(telephoneNumberOid).add(xmlSchemaString);
+		syntaxMappings.get(integerOid).add(xmlSchemaInteger);
 
-		syntaxMappings.get(directoryStringOid).add("xs:string");
-		syntaxMappings.get(telephoneNumberOid).add("xs:string");
-		syntaxMappings.get(integerOid).add("xs:integer");
+		mappingEncodings.put(xmlSchemaString, new ArrayList<String>());
+		mappingEncodings.put(xmlSchemaInteger, new ArrayList<String>());
 
-		mappingEncodings.put("xs:string", new ArrayList<String>());
-		mappingEncodings.put("xs:integer", new ArrayList<String>());
-
-		mappingEncodings.get("xs:string").add("urn:abc4trust:1.0:encoding:string:sha-256");
-		mappingEncodings.get("xs:integer").add("urn:abc4trust:1.0:encoding:integer:signed");
+		mappingEncodings.get(xmlSchemaString).add("urn:abc4trust:1.0:encoding:string:sha-256");
+		mappingEncodings.get(xmlSchemaInteger).add("urn:abc4trust:1.0:encoding:integer:signed");
 	}
 
 	public LdapService() {
@@ -126,10 +132,12 @@ public class LdapService {
 				Object value = srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
 			
 				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */
-				if(attrDesc.getDataType().toString().equals("xs:integer") && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
+				if(attrDesc.getDataType().toString().equals("xs:integer")
+				    && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
 					value = BigInteger.valueOf((Integer.parseInt(((String)value))));
 				}
-				else if(attrDesc.getDataType().toString().equals("xs:string") && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
+				else if(attrDesc.getDataType().toString().equals("xs:string")
+				    && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
 					value = (String)value;
 				}
 				else {
