@@ -59,6 +59,16 @@
       <artifactId>abc4trust-xml</artifactId>
 	  <version>patras-1.0.14-SNAPSHOT</version>
     </dependency>
+    <dependency>
+    	<groupId>org.apache.logging.log4j</groupId>
+    	<artifactId>log4j-core</artifactId>
+    	<version>2.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.3.2</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>zhaw-p2abc-webservices</finalName>

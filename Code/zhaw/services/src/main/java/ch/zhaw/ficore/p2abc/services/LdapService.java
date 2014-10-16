@@ -1,14 +1,5 @@
-//* Licensed Materials - Property of IBM, Miracle A/S, and            *
-//* Alexandra Instituttet A/S                                         *
-//* eu.abc4trust.pabce.1.0                                            *
-//* (C) Copyright IBM Corp. 2012. All Rights Reserved.                *
-//* (C) Copyright Miracle A/S, Denmark. 2012. All Rights Reserved.    *
-//* (C) Copyright Alexandra Instituttet A/S, Denmark. 2012. All       *
-//* Rights Reserved.                                                  *
-//* US Government Users Restricted Rights - Use, duplication or       *
-//* disclosure restricted by GSA ADP Schedule Contract with IBM Corp. *
-//*/**/****************************************************************
-
+/* Copyright 2014 Zurich University of Applied Sciences. All rights
+ * reserved. */
 package ch.zhaw.ficore.p2abc.services;
 
 
@@ -39,7 +30,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.zhaw.ficore.p2abc.ldap.helper.*;
-
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
@@ -49,76 +39,101 @@ import eu.abc4trust.xml.ObjectFactory;
 
 @javax.ws.rs.Path("/")
 public class LdapService {
-	@javax.ws.rs.core.Context
+
+  @javax.ws.rs.core.Context
 	ServletContext context;
 
 	ObjectFactory of = new ObjectFactory();
 
-	private static LdapServiceConfig ldapSrvConf;
+	private static final LdapServiceConfig ldapSrvConf;
 
-	private static final String directoryStringOid = "1.3.6.1.4.1.1466.115.121.1.15";
-	private static final String telephoneNumberOid = "1.3.6.1.4.1.1466.115.121.1.50";
-	private static final String integerOid = "1.3.6.1.4.1.1466.115.121.1.27";
+	/** Object identifier for a Directory String (an ordinary string, for you and me). */
+	private static final String DIRECTORY_STRING_OID = "1.3.6.1.4.1.1466.115.121.1.15";
+
+	 /** Object identifier for a telephone number. */
+	private static final String TELEPHONE_NUMBER_OID = "1.3.6.1.4.1.1466.115.121.1.50";
+
+  /** Object identifier for an integer. */
+	private static final String INTEGER_OID = "1.3.6.1.4.1.1466.115.121.1.27";
 	
-	private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
-	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
+  /** Name of the configuration file property. 
+   * 
+   * If this property exists, it should contain the path name where this
+   * service's configuration file can be found.
+   */
+	private static final String LDAP_CONFIG_PATH_PROPERTY = "abc4trust-ldapSrvConfPath";
 	
-  private static final String xmlSchemaString = "xs:string";
-  private static final String xmlSchemaInteger = "xs:integer";
+	/** Default configuration file name. */
+	private static final String LDAP_CONFIG_PATH_DEFAULT = "/etc/abc4trust/ldapServiceConfig.xml";
 	
-	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
-	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
+	/** How strings are designated in XML schemas. */
+  private static final String XML_SCHEMA_STRING_NAME = "xs:string";
+  
+  /** How integers are designated in XML schemas. */
+  private static final String XML_SCHEMA_INTEGER_NAME = "xs:integer";
+	
+  /** How we encode strings and similar objectsin XML. */
+  private static final String XML_STRING_ENCODING_NAME = "urn:abc4trust:1.0:encoding:string:sha-256";
+  
+  /** How we encode integers in XML. */
+  private static final String XML_INTEGER_ENCODING_NAME = "urn:abc4trust:1.0:encoding:integer:signed";
+
+  /** Credential specification version that we support. */
+  private static final String CRED_SPEC_VERSION = "1.0";
+
+  /* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
+	public static final Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
 	
 	/* Mapping encodings determine how we encode the values (for the syntax mapping) in the credential */
-	public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
+	public static final Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
 	static {
-		String ldapSrvConfPath = System.getProperties().getProperty(ldapConfigPathProperty);
+		String ldapSrvConfPath = System.getProperties().getProperty(LDAP_CONFIG_PATH_PROPERTY);
 
 		if(ldapSrvConfPath == null)
-			ldapSrvConfPath = ldapConfigPathDefault;
+			ldapSrvConfPath = LDAP_CONFIG_PATH_DEFAULT;
 
 		ldapSrvConf = LdapServiceConfig.fromFile(ldapSrvConfPath);
 
-		syntaxMappings.put(directoryStringOid, new ArrayList<String>());
-		syntaxMappings.put(telephoneNumberOid, new ArrayList<String>());
-		syntaxMappings.put(integerOid, new ArrayList<String>());
+		syntaxMappings.put(DIRECTORY_STRING_OID, new ArrayList<String>());
+		syntaxMappings.put(TELEPHONE_NUMBER_OID, new ArrayList<String>());
+		syntaxMappings.put(INTEGER_OID, new ArrayList<String>());
 
-		syntaxMappings.get(directoryStringOid).add(xmlSchemaString);
-		syntaxMappings.get(telephoneNumberOid).add(xmlSchemaString);
-		syntaxMappings.get(integerOid).add(xmlSchemaInteger);
+		syntaxMappings.get(DIRECTORY_STRING_OID).add(XML_SCHEMA_STRING_NAME);
+		syntaxMappings.get(TELEPHONE_NUMBER_OID).add(XML_SCHEMA_STRING_NAME);
+		syntaxMappings.get(INTEGER_OID).add(XML_SCHEMA_INTEGER_NAME);
 
-		mappingEncodings.put(xmlSchemaString, new ArrayList<String>());
-		mappingEncodings.put(xmlSchemaInteger, new ArrayList<String>());
+		mappingEncodings.put(XML_SCHEMA_STRING_NAME, new ArrayList<String>());
+		mappingEncodings.put(XML_SCHEMA_INTEGER_NAME, new ArrayList<String>());
 
-		mappingEncodings.get(xmlSchemaString).add("urn:abc4trust:1.0:encoding:string:sha-256");
-		mappingEncodings.get(xmlSchemaInteger).add("urn:abc4trust:1.0:encoding:integer:signed");
+		mappingEncodings.get(XML_SCHEMA_STRING_NAME).add(XML_STRING_ENCODING_NAME);
+		mappingEncodings.get(XML_SCHEMA_INTEGER_NAME).add(XML_INTEGER_ENCODING_NAME);
 	}
 
 	public LdapService() {
 	}
 
 
-   	@GET()
+  @GET()
 	@javax.ws.rs.Path("/test")
 	@Produces("text/html")
 	public String test() {
+    String ret = null;
 		try {
 			Path path = Paths.get("/var/www/index.html");
-			String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-			return contents;
+			ret = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+		} catch(Exception e) {
+			ret = "error";
 		}
-		catch(Exception e) {
-			return "error";
-		}
+		return ret;
 	}
 
 	@POST()
 	@javax.ws.rs.Path("/genIssuanceAttributes")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
+  @Produces(MediaType.TEXT_XML)
 	public JAXBElement<IssuancePolicyAndAttributes> generateIssuanceAttributes(CredentialSpecification credSpec, @QueryParam("srch") String query) {
-		try {
+	  try {
 			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.port, ldapSrvConf.host);
 			cfg.setAuth(ldapSrvConf.authId, ldapSrvConf.authPw);
 			LdapConnection con = cfg.newConnection();
@@ -132,15 +147,16 @@ public class LdapService {
 				Object value = srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
 			
 				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */
-				if(attrDesc.getDataType().toString().equals("xs:integer")
-				    && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:integer:signed")) {
+				if(attrDesc.getDataType().toString().equals(XML_SCHEMA_INTEGER_NAME)
+				    && attrDesc.getEncoding().toString().equals(XML_INTEGER_ENCODING_NAME)) {
 					value = BigInteger.valueOf((Integer.parseInt(((String)value))));
 				}
-				else if(attrDesc.getDataType().toString().equals("xs:string")
-				    && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
+				else if(attrDesc.getDataType().toString().equals(XML_SCHEMA_STRING_NAME)
+				    && attrDesc.getEncoding().toString().equals(XML_STRING_ENCODING_NAME)) {
 					value = (String)value;
 				}
 				else {
+				  // TODO: How do we return the correct HTTP error here?
 					throw new RuntimeException("Unsupported combination of encoding and dataType!");
 				}
 
@@ -153,6 +169,7 @@ public class LdapService {
 			return of.createIssuancePolicyAndAttributes(ipa);
 		}
 		catch(Exception e) {
+      // TODO: How do we return the correct HTTP error here?
 			e.printStackTrace();
 			return null;
 		}
@@ -167,8 +184,7 @@ public class LdapService {
 		try {
 			CredentialSpecification credSpec = of.createCredentialSpecification();
 			credSpec.setSpecificationUID(new URI("abc4trust:ldap:" + oc.name));
-
-			credSpec.setVersion("1.0");
+			credSpec.setVersion(CRED_SPEC_VERSION);
 			credSpec.setKeyBinding(false);
 			credSpec.setRevocable(false);
 
