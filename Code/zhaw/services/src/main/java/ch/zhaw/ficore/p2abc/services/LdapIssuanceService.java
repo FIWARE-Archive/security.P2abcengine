@@ -15,18 +15,29 @@ public class LdapIssuanceService {
 	@Context
 	ServletContext context;
 
-	private LdapServiceConfig ldapSrvConf;
 	private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
 	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
+	private static Object configLock = new Object();
+
+	private static LdapServiceConfig ldapSrvConf;
+
+	static {
+		loadConfig();
+	}
+
+	public synchronized static void loadConfig() {
+		synchronized(configLock) {
+			String ldapSrvConfPath = System.getProperties().getProperty(ldapConfigPathProperty);
+
+			if(ldapSrvConfPath == null)
+				ldapSrvConfPath = ldapConfigPathDefault;
+
+			ldapSrvConf = LdapServiceConfig.fromFile(ldapSrvConfPath);
+		}
+	}
 
 	public LdapIssuanceService() {
-		String ldapSrvConfPath = System.getProperties().getProperty(ldapConfigPathProperty);
-
-		if(ldapSrvConfPath == null)
-			ldapSrvConfPath = ldapConfigPathDefault;
-
-		ldapSrvConf = LdapServiceConfig.fromFile(ldapSrvConfPath);
 	}
 
 	@GET()
@@ -52,10 +63,32 @@ public class LdapIssuanceService {
 	@GET()
 	@Path("/showConfig/{magicCookie}")
 	public Response verifyMagicCookie(@PathParam("magicCookie") String magicCookie) {
-		if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
-		    return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+		synchronized(configLock) {
+			if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
+				return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+			}
 		}
+
 		return Response.ok(ldapSrvConf, MediaType.APPLICATION_XML).build();
+	}
+
+	@GET()
+	@Path("/reloadConfig/{magicCookie}")
+	public Response reloadConfig(@PathParam("magicCookie") String magicCookie) {
+		synchronized(configLock) {
+			if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
+				return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+			}
+		}
+
+		try {
+			loadConfig();
+			return Response.ok().entity("OK").build();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return Response.serverError().entity(e.toString()).build();
+		}
 	}
 
 	/**
@@ -72,13 +105,18 @@ public class LdapIssuanceService {
 	@GET()
 	@Path("/schemaDump/{magicCookie}/{oc}")
 	public Response schemaDump(@PathParam("magicCookie") String magicCookie, @PathParam("oc") String objectClass) {
-		if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
-		    return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+		synchronized(configLock) {
+			if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
+				return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+			}
 		}
 
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.getPort(), ldapSrvConf.getHost());
-			cfg.setAuth(ldapSrvConf.getAuthId(), ldapSrvConf.getAuthPw());
+			LdapConnectionConfig cfg = null;
+			synchronized(configLock) {
+				cfg = new LdapConnectionConfig(ldapSrvConf.getPort(), ldapSrvConf.getHost());
+				cfg.setAuth(ldapSrvConf.getAuthId(), ldapSrvConf.getAuthPw());
+			}
 			LdapConnection con = cfg.newConnection();
 		
 			DirContext ctx = con.getInitialDirContext();
