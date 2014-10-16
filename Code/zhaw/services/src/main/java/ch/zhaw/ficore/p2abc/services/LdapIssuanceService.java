@@ -32,8 +32,10 @@ public class LdapIssuanceService {
 
 	/**
 	 * /showConfig/{magicCookie} will send the client
-	 * the configuration if this service if and only if 
-	 * the supplied magicCookie is correct.
+	 * the configuration of this service if and only if 
+	 * the supplied magicCookie is correct (which means
+	 * the supplied magicCookie matches the magicCookie
+	 * in the configuration of this service.)
 	 * 
 	 * Status: - FORBIDDEN if magicCookie is not correct.
 	 *         - OK otherwise.
