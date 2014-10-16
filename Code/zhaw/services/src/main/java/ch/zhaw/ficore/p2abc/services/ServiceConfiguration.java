@@ -30,7 +30,7 @@ public class ServiceConfiguration {
   /** What identity source will we be using for the issuer? */
   public enum IdentitySource {
     KEYROCK,  /** Use keyrock as the identity source. */
-    LDAP,     /** Use an LDAP srever as the identity source. */
+    LDAP,     /** Use an LDAP server as the identity source. */
   }
   
   /** This class is implemented as a singleton. */
