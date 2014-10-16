@@ -4,6 +4,12 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.servlet.ServletContext;
 
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+
+import ch.zhaw.ficore.p2abc.ldap.helper.*;
+
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
 	@Context
@@ -12,6 +18,7 @@ public class LdapIssuanceService {
 	private LdapServiceConfig ldapSrvConf;
 	private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
 	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
+	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 
 	public LdapIssuanceService() {
 		String ldapSrvConfPath = System.getProperties().getProperty(ldapConfigPathProperty);
@@ -39,13 +46,65 @@ public class LdapIssuanceService {
 	 * 
 	 * Status: - FORBIDDEN if magicCookie is not correct.
 	 *         - OK otherwise.
+	 *
+	 * @param magicCookie - the magicCookie
 	 */
 	@GET()
 	@Path("/showConfig/{magicCookie}")
 	public Response verifyMagicCookie(@PathParam("magicCookie") String magicCookie) {
 		if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
-		    return Response.status(Response.Status.FORBIDDEN).entity("Magic-Cookie is not correct").build();
+		    return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
 		}
 		return Response.ok(ldapSrvConf, MediaType.APPLICATION_XML).build();
+	}
+
+	/**
+	 * Creates an XML representation of an LDAP objectClass
+	 * that may be processed by an UI and sent back to this 
+	 * service to generate a corresponding crendentialSpecification.
+	 *
+	 * STATUS: - ERROR if something went wrong.
+	 *         - OK otherwise
+	 * 
+	 * @param magicCookie the magicCookie
+	 * @param objectClass name of the objectClass (LDAP)
+	 */
+	@GET()
+	@Path("/schemaDump/{magicCookie}/{oc}")
+	public Response schemaDump(@PathParam("magicCookie") String magicCookie, @PathParam("oc") String objectClass) {
+		if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
+		    return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+		}
+
+		try {
+			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapSrvConf.getPort(), ldapSrvConf.getHost());
+			cfg.setAuth(ldapSrvConf.getAuthId(), ldapSrvConf.getAuthPw());
+			LdapConnection con = cfg.newConnection();
+		
+			DirContext ctx = con.getInitialDirContext();
+			DirContext schema = ctx.getSchema("ou=schema");
+		
+			Attributes answer = schema.getAttributes("ClassDefinition/" + objectClass);
+			javax.naming.directory.Attribute must = answer.get("must");
+			javax.naming.directory.Attribute may = answer.get("may");
+
+			ObjectClass oc = new ObjectClass(objectClass);
+		
+			for(int i = 0; i < must.size(); i++) {
+				Attributes attrAnswer = schema.getAttributes("AttributeDefinition/" + must.get(i));
+				oc.addAttribute(must.get(i).toString(), attrAnswer.get("syntax").get(0).toString());
+			}
+	
+			for(int i = 0; i < may.size(); i++) {
+				Attributes attrAnswer = schema.getAttributes("AttributeDefinition/" + may.get(i));
+				oc.addAttribute(may.get(i).toString(), attrAnswer.get("syntax").get(0).toString());
+			}
+
+			return Response.ok(oc, MediaType.APPLICATION_XML).build();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 	}
 }
