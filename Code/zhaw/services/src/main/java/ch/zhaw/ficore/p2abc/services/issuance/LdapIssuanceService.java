@@ -11,6 +11,8 @@ import javax.naming.directory.DirContext;
 import ch.zhaw.ficore.p2abc.ldap.helper.*;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
+import eu.abc4trust.xml.ObjectFactory;
+
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
 	@Context
@@ -22,9 +24,11 @@ public class LdapIssuanceService {
 	private static Object configLock = new Object();
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
+	private ObjectFactory of = new ObjectFactory(); 
 
 	static {
-		ServiceConfiguration.getInstance().setLdapParameters(false, "localhost", 10389, "", "");
+		//ServiceConfiguration.getInstance().setLdapParameters(false, "localhost", 10389, "", "");
+		ServiceConfiguration.getInstance().setFakeParameters();
 		initializeWithConfiguration();
 	}
 	
@@ -123,9 +127,11 @@ public class LdapIssuanceService {
 	 * in LDAP. However, the exact behaviour of <em>name</em> depends on the configuration
 	 * of this service. 
 	 * 
+	 * This function is protected by the magic cookie.
+	 * 
 	 * @param magicCookie the magic cookie
 	 * @param name name (see description of this method above)
-	 * @return response
+	 * @return an AttributeInfoCollection as application/xml.
 	 */
 	@GET()
 	@Path("/attributeInfoCollection/{magicCookie}/{name}")
@@ -133,6 +139,30 @@ public class LdapIssuanceService {
 			@PathParam("name") String name) {
 		if(!ServiceConfiguration.getInstance().isMagicCookieCorrect(magicCookie))
 			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
-		return Response.ok(attribInfoProvider.getAttributes(name)).build();
+		
+		return Response.ok(attribInfoProvider.getAttributes(name), MediaType.APPLICATION_XML).build();
+	}
+	
+	/**
+	 * Generates (or creates) the corresponding CredentialSpecification
+	 * for a given AttributeInfoCollection. This function assumes that the
+	 * given AttributeInfoCollection is sane. 
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param attrInfoColl the AttributeInfoCollection
+	 * @return a CredentialSpecification
+	 */
+	@POST()
+	@Path("/genCredSpec/{magicCookie}")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response genCredSpec(@PathParam("magicCookie") String magicCookie, AttributeInfoCollection attrInfoCol) {
+		if(!ServiceConfiguration.getInstance().isMagicCookieCorrect(magicCookie))
+			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+		
+		return Response.ok(of.createCredentialSpecification(new CredentialSpecGenerator().
+					generateCredentialSpecification(attrInfoCol)),
+				MediaType.APPLICATION_XML).build();
 	}
 }
