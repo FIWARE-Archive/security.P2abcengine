@@ -107,8 +107,11 @@ public class LdapIssuanceService {
 	}
 	
 	@GET()
-	@Path("/attributeInfoCollection/{name}")
-	public Response attributeInfoCollection(@PathParam("name") String name) {
+	@Path("/attributeInfoCollection/{magicCookie}/{name}")
+	public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
+			@PathParam("name") String name) {
+		if(!ServiceConfiguration.getInstance().isMagicCookieCorrect(magicCookie))
+			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
 		return Response.ok(attribInfoProvider.getAttributes(name)).build();
 	}
 }

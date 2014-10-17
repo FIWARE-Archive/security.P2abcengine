@@ -94,7 +94,7 @@ public class ServiceConfiguration {
    * @param magicCookie The value to check against
    * @return true or false.
    */
-  private boolean isMagicCookieCorrect(String magicCookie) {
+  public boolean isMagicCookieCorrect(String magicCookie) {
 	  return this.magicCookie.equals(magicCookie);
   }
   
@@ -103,7 +103,7 @@ public class ServiceConfiguration {
    * 
    * @param magicCookie the new value of the magic cookie.
    */
-  private void setMagicCookie(String magicCookie) {
+  public void setMagicCookie(String magicCookie) {
 	  this.magicCookie = magicCookie;
   }
   
