@@ -21,6 +21,9 @@ public class CredentialSpecGenerator {
 	
 	/**
 	 * Creates a CredentialSpecification from an AttributeInfoCollection.
+	 * As of now this method DOES NOT perform any sanity check and assumes
+	 * that all mappings, encodings etc. of attributes in the AttributeInfoCollection
+	 * are sane and correct. 
 	 * 
 	 * @param attrInfoCol an AttributeInfoCollectin
 	 * @return corresponding CredentialSpecification
@@ -29,7 +32,7 @@ public class CredentialSpecGenerator {
 		ObjectFactory of = new ObjectFactory();
 		try {
 			CredentialSpecification credSpec = of.createCredentialSpecification();
-			credSpec.setSpecificationUID(new URI("abc4trust:ldap:" + attrInfoCol.name));
+			credSpec.setSpecificationUID(new URI("urn:abc4trust:credspec:ldap:" + attrInfoCol.name));
 
 			credSpec.setVersion("1.0");
 			credSpec.setKeyBinding(false);
