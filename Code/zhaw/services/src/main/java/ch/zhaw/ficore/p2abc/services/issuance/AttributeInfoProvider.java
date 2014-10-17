@@ -13,6 +13,12 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
  */
 public abstract class AttributeInfoProvider {
 	
+	protected ServiceConfiguration srvcCfg;
+	
+	public AttributeInfoProvider(ServiceConfiguration srvcCfg) {
+		this.srvcCfg = srvcCfg;
+	}
+	
 	/**
 	 * Factory method to construct an AttributeInfoProvider for a given
 	 * ServiceConfiguration. The AttributeInfoProvider will receive
@@ -22,7 +28,10 @@ public abstract class AttributeInfoProvider {
 	 * @return an implementation of an AttributeInfoProvider
 	 */
 	public static AttributeInfoProvider getAttributeInfoProvider(ServiceConfiguration srvcCfg) {
-		//TODO: Factory method
+		switch(srvcCfg.getIdentitySource()) {
+		case FAKE:
+			return new FakeAttributeInfoProvider(srvcCfg);
+		}
 		return null;
 	}
 	

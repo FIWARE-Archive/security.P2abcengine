@@ -21,6 +21,7 @@ public class LdapIssuanceService {
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 	private static Object configLock = new Object();
 	private static AuthenticationProvider authProvider;
+	private static AttributeInfoProvider attribInfoProvider;
 
 	static {
 		ServiceConfiguration.defaultConfiguration(); //use defaultConfiguration
@@ -30,6 +31,7 @@ public class LdapIssuanceService {
 	
 	public static void initializeWithConfiguration() {
 		authProvider = AuthenticationProvider.getAuthenticationProvider(ServiceConfiguration.getInstance());
+		attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(ServiceConfiguration.getInstance());
 	}
 
 
@@ -103,5 +105,11 @@ public class LdapIssuanceService {
 			return Response.ok("OK").build();
 		else
 			return Response.status(Response.Status.FORBIDDEN).entity("ERR").build();
+	}
+	
+	@GET()
+	@Path("/attributeInfoCollection/{name}")
+	public Response attributeInfoCollection(@PathParam("name") String name) {
+		return Response.ok(attribInfoProvider.getAttributes(name)).build();
 	}
 }

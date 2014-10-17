@@ -11,16 +11,14 @@ public class AttributeInformation {
 	public String name;
 	public String mapping;
 	public String encoding;
-	public boolean include;
 	@XmlElementWrapper(name = "friendlyDescriptions")
-	@XmlElement(name = "friendlyDescriptions")
+	@XmlElement(name = "friendlyDescription")
 	public List<LanguageValuePair> friendlyDescriptions = new ArrayList<LanguageValuePair>();
 
 	public AttributeInformation() {}
 
 	public AttributeInformation(String name, String mapping, String encoding) {
 		this.name = name;
-		this.include = false;
 		this.mapping = mapping;
 		this.encoding = encoding;
 	}
