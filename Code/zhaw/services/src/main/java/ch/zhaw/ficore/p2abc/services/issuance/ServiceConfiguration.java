@@ -1,4 +1,4 @@
-package ch.zhaw.ficore.p2abc.services;
+package ch.zhaw.ficore.p2abc.services.issuance;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.logging.log4j.LogManager;

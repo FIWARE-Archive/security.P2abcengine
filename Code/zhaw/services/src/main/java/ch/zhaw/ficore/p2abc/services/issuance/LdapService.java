@@ -1,6 +1,6 @@
 /* Copyright 2014 Zurich University of Applied Sciences. All rights
  * reserved. */
-package ch.zhaw.ficore.p2abc.services;
+package ch.zhaw.ficore.p2abc.services.issuance;
 
 
 import java.math.BigInteger;

@@ -1,4 +1,4 @@
-package ch.zhaw.ficore.p2abc.services;
+package ch.zhaw.ficore.p2abc.services.issuance;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
