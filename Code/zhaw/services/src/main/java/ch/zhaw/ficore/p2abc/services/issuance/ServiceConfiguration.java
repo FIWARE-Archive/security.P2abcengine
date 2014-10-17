@@ -130,6 +130,8 @@ public class ServiceConfiguration {
       if (ldapServerPort != 0)
         logger.warn("LDAP server port " + ldapServerPort + " out of range; "
             + "using " + configuration.ldapParameters.ldapServerPort + " instead");
+    } else {
+    	configuration.ldapParameters.ldapServerPort = ldapServerPort; 
     }
     
     configuration.ldapParameters.ldapUser = ldapUser;

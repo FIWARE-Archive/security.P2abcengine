@@ -29,8 +29,10 @@ public abstract class AuthenticationProvider {
 		switch(srvcCfg.getIdentitySource()) {
 		case FAKE:
 			return new FakeAuthenticationProvider(srvcCfg);
+		case LDAP:
+			return new LdapAuthenticationProvider(srvcCfg);
 		}
-		throw new RuntimeException(srvcCfg.getIdentitySource().toString());
+		throw new RuntimeException(srvcCfg.getIdentitySource().toString() + " is not a supported AuthenticationProvider!");
 	}
 	
 	/**

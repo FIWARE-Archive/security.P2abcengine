@@ -24,8 +24,7 @@ public class LdapIssuanceService {
 	private static AttributeInfoProvider attribInfoProvider;
 
 	static {
-		ServiceConfiguration.defaultConfiguration(); //use defaultConfiguration
-		ServiceConfiguration.getInstance().setFakeParameters();
+		ServiceConfiguration.getInstance().setLdapParameters(false, "localhost", 10389, "", "");
 		initializeWithConfiguration();
 	}
 	
