@@ -96,6 +96,14 @@ public class LdapIssuanceService {
 		return Response.ok(new AuthenticationRequest(new AuthInfoSimple("hi","there"))).build();
 	}
 	
+	/**
+	 * This function can be used to test the authentication.
+	 * It returns a response with status code OK if the authentication
+	 * was successful, otherwise it returns a response with status code FORBIDDEN.
+	 * 
+	 * @param authReq an AuthenticationRequest
+	 * @return response
+	 */
 	@POST()
 	@Path("/testAuthentication")
 	@Consumes({MediaType.APPLICATION_XML})
@@ -106,6 +114,19 @@ public class LdapIssuanceService {
 			return Response.status(Response.Status.FORBIDDEN).entity("ERR").build();
 	}
 	
+	/**
+	 * This function can be used to obtain the AttributeInfoCollection
+	 * that may later be converted into a CredentialSpecification. 
+	 * This function contacts the identity source to obtain the necessary
+	 * attributes for <em>name</em>. <em>name</em> refers to a <em>kind</em> of credential
+	 * a user can get issued. For example <em>name</em> may refer to an objectClass
+	 * in LDAP. However, the exact behaviour of <em>name</em> depends on the configuration
+	 * of this service. 
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param name name (see description of this method above)
+	 * @return response
+	 */
 	@GET()
 	@Path("/attributeInfoCollection/{magicCookie}/{name}")
 	public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
