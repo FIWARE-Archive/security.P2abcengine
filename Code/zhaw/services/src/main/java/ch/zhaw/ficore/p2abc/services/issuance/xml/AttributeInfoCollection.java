@@ -7,21 +7,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 
 @XmlRootElement(name="class")
-public class ObjectClass {
+public class AttributeInfoCollection {
 	public String name;
 	@XmlElementWrapper(name = "attributes")
 	@XmlElement(name = "attribute")
-	public List<ObjectClassAttribute> attributes = new ArrayList<ObjectClassAttribute>();
+	public List<AttributeInformation> attributes = new ArrayList<AttributeInformation>();
 
-	public ObjectClass() { 
-	} // JAXB needs this
+	public AttributeInfoCollection() {}
  
-	public ObjectClass(String name) {
+	public AttributeInfoCollection(String name) {
 		this.name = name;
 	}
 
 	public void addAttribute(String name, String mapping, String encoding) {
-		ObjectClassAttribute attr = new ObjectClassAttribute(name, mapping, encoding);
+		AttributeInformation attr = new AttributeInformation(name, mapping, encoding);
 		attr.addFriendlyDescription("en", name + " attribute");
 		attributes.add(attr);
 	}

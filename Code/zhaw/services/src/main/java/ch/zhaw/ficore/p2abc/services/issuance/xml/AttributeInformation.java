@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 
 @XmlRootElement(name="attribute")
-public class ObjectClassAttribute {
+public class AttributeInformation {
 	public String name;
 	public String mapping;
 	public String encoding;
@@ -16,9 +16,9 @@ public class ObjectClassAttribute {
 	@XmlElement(name = "friendlyDescriptions")
 	public List<LanguageValuePair> friendlyDescriptions = new ArrayList<LanguageValuePair>();
 
-	public ObjectClassAttribute() {}
+	public AttributeInformation() {}
 
-	public ObjectClassAttribute(String name, String mapping, String encoding) {
+	public AttributeInformation(String name, String mapping, String encoding) {
 		this.name = name;
 		this.include = false;
 		this.mapping = mapping;
