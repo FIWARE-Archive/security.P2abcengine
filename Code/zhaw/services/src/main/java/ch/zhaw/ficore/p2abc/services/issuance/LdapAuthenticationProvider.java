@@ -45,7 +45,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 		ServiceConfiguration.LdapParameters ldapParams = srvcCfg.getLdapParameters();
 		
 		if(ldapParams.ldapUseTls)
-			throw new RuntimeException("TLS not supported yet :(");
+			throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 		
 		try {
 			LdapConnectionConfig cfg = new LdapConnectionConfig(ldapParams.ldapServerPort, ldapParams.ldapServerName);
