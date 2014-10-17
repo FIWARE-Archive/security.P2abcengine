@@ -72,6 +72,8 @@ public class LdapIssuanceService {
 		return Response.ok(ldapSrvConf, MediaType.APPLICATION_XML).build();
 	}
 
+	/**
+	 */
 	@GET()
 	@Path("/reloadConfig/{magicCookie}")
 	public Response reloadConfig(@PathParam("magicCookie") String magicCookie) {
