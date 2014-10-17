@@ -31,6 +31,7 @@ public class ServiceConfiguration {
   public enum IdentitySource {
     KEYROCK,  /** Use keyrock as the identity source. */
     LDAP,     /** Use an LDAP server as the identity source. */
+    FAKE,	  /** Use a fake identity source. */
   }
   
   /** This class is implemented as a singleton. */
@@ -74,6 +75,10 @@ public class ServiceConfiguration {
   /** What identity source should we use? */
   private IdentitySource identitySource;
   
+  public IdentitySource getIdentitySource() {
+	  return identitySource;
+  }
+  
   private ServiceConfiguration() {
     logger = LogManager.getLogger(ServiceConfiguration.class.getName());
     ldapParameters = new LdapParameters();
@@ -94,6 +99,11 @@ public class ServiceConfiguration {
 
     configuration.logger.exit();
   }
+  
+  public synchronized void setFakeParameters() {
+	  this.identitySource = IdentitySource.FAKE;
+  }
+  
 
   /** Sets LDAP parameters and switches to LDAP as the identity source. 
    * 
@@ -158,7 +168,7 @@ public class ServiceConfiguration {
     return logger.exit(ret);
   }
   
-  public ServiceConfiguration getInstance() {
+  public static ServiceConfiguration getInstance() {
     return configuration;
   }
   

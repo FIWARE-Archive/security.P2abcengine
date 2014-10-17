@@ -20,23 +20,18 @@ public class LdapIssuanceService {
 	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 	private static Object configLock = new Object();
-
-	private static LdapServiceConfig ldapSrvConf;
+	private static AuthenticationProvider authProvider;
 
 	static {
-		loadConfig();
+		ServiceConfiguration.defaultConfiguration(); //use defaultConfiguration
+		ServiceConfiguration.getInstance().setFakeParameters();
+		initializeWithConfiguration();
+	}
+	
+	public static void initializeWithConfiguration() {
+		authProvider = AuthenticationProvider.getAuthenticationProvider(ServiceConfiguration.getInstance());
 	}
 
-	public synchronized static void loadConfig() {
-		synchronized(configLock) {
-			String ldapSrvConfPath = System.getProperties().getProperty(ldapConfigPathProperty);
-
-			if(ldapSrvConfPath == null)
-				ldapSrvConfPath = ldapConfigPathDefault;
-
-			ldapSrvConf = LdapServiceConfig.fromFile(ldapSrvConfPath);
-		}
-	}
 
 	public LdapIssuanceService() {
 	}
@@ -60,7 +55,7 @@ public class LdapIssuanceService {
 	 *         - OK otherwise.
 	 *
 	 * @param magicCookie - the magicCookie
-	 */
+	 *//*
 	@GET()
 	@Path("/showConfig/{magicCookie}")
 	public Response verifyMagicCookie(@PathParam("magicCookie") String magicCookie) {
@@ -71,10 +66,10 @@ public class LdapIssuanceService {
 		}
 
 		return Response.ok(ldapSrvConf, MediaType.APPLICATION_XML).build();
-	}
+	}*/
 
 	/**
-	 */
+	 *//*
 	@GET()
 	@Path("/reloadConfig/{magicCookie}")
 	public Response reloadConfig(@PathParam("magicCookie") String magicCookie) {
@@ -92,11 +87,21 @@ public class LdapIssuanceService {
 			e.printStackTrace();
 			return Response.serverError().entity(e.toString()).build();
 		}
-	}
+	}*/
 	
 	@GET()
 	@Path("/test")
 	public Response test() {
-		return Response.ok(new AuthentificationRequest(new AuthInfoSimple("hi","there"))).build();
+		return Response.ok(new AuthenticationRequest(new AuthInfoSimple("hi","there"))).build();
+	}
+	
+	@POST()
+	@Path("/testAuthentication")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response testAuthentication(AuthenticationRequest authReq) {
+		if(authProvider.authenticate(authReq.authInfo))
+			return Response.ok("OK").build();
+		else
+			return Response.status(Response.Status.FORBIDDEN).entity("ERR").build();
 	}
 }

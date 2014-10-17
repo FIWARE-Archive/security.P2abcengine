@@ -7,8 +7,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.zhaw.ficore.p2abc.services.issuance.*;
 
 @XmlRootElement(name="auth-info-simple")
-public class AuthInfoSimple extends AuthentificationInformation {
+public class AuthInfoSimple extends AuthenticationInformation {
+	@XmlElement(name="username", required=true)
 	public String username;
+	
+	@XmlElement(name="password", required=true)
 	public String password;
 	
 	public AuthInfoSimple(){}

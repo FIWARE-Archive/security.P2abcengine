@@ -9,15 +9,15 @@ import javax.xml.bind.annotation.XmlElements;
 import ch.zhaw.ficore.p2abc.services.issuance.*;
 
 @XmlRootElement(name="auth-request")
-public class AuthentificationRequest {
+public class AuthenticationRequest {
 	@XmlElements({
-		@XmlElement(type=AuthInfoSimple.class, name="auth-info-simple")
+		@XmlElement(type=AuthInfoSimple.class, name="auth-info-simple", required=true)
 	})
-	public AuthentificationInformation authInfo;
+	public AuthenticationInformation authInfo;
 	
-	public AuthentificationRequest() {}
+	public AuthenticationRequest() {}
 	
-	public AuthentificationRequest(AuthentificationInformation authInfo) {
+	public AuthenticationRequest(AuthenticationInformation authInfo) {
 		this.authInfo = authInfo;
 	}
 }

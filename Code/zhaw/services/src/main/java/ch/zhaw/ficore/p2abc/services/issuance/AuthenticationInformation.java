@@ -11,6 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mroman
  */
 @XmlRootElement(name="auth-info")
-public abstract class AuthentificationInformation {
+public abstract class AuthenticationInformation {
 	
 }
