@@ -75,6 +75,38 @@ public class ServiceConfiguration {
   /** What identity source should we use? */
   private IdentitySource identitySource;
   
+  /** Magic Cookie
+   * The Magic Cookie is used for service administration such as changing
+   * or reloading the configuration as well as storing or creating
+   * CredentialSpecifications and more.
+   * 
+   * The default value is <b>*magic*</b>. It's <b>HIGHLY</b> recommended
+   * to change it to a secure value and to change it frequently.
+   * Please only communicate over secure channels and secure applications
+   * when transmitting the magic cookie. 
+   */
+  private String magicCookie = "*magic*";
+  
+  /**
+   * Verifies the correctness of the magic cookie (i.e. if it matches
+   * the one stored in this configuration.)
+   * 
+   * @param magicCookie The value to check against
+   * @return true or false.
+   */
+  private boolean isMagicCookieCorrect(String magicCookie) {
+	  return this.magicCookie.equals(magicCookie);
+  }
+  
+  /**
+   * Sets the magic cookie to the given value.
+   * 
+   * @param magicCookie the new value of the magic cookie.
+   */
+  private void setMagicCookie(String magicCookie) {
+	  this.magicCookie = magicCookie;
+  }
+  
   public IdentitySource getIdentitySource() {
 	  return identitySource;
   }
