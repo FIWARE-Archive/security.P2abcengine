@@ -13,7 +13,8 @@ public abstract class AuthentificationProvider {
 	
 	/**
 	 * Factory method to construct an AuthentificationProvider for a given
-	 * ServiceConfiguration.
+	 * ServiceConfiguration. The AuthentificationProvider will receive a copy
+	 * of the ServiceConfiguration.
 	 * 
 	 * @param srvcCfg a ServiceConfiguration
 	 * @return an implementation of an AuthentificationProvider
@@ -31,4 +32,10 @@ public abstract class AuthentificationProvider {
 	 * @return true if AuthentificationInformation is correct (e.g. username, password is correct)
 	 */
 	public abstract boolean authenticate(AuthentificationInformation authInfo);
+	
+	/**
+	 * Called when this AuthentificationProvider is no longer required. 
+	 * Providers should close open sockets/connections/files etc. on shutdown.
+	 */
+	public abstract void shutdown();
 }

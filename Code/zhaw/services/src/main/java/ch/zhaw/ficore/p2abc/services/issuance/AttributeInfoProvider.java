@@ -12,7 +12,8 @@ public abstract class AttributeInfoProvider {
 	
 	/**
 	 * Factory method to construct an AttributeInfoProvider for a given
-	 * ServiceConfiguration.
+	 * ServiceConfiguration. The AttributeInfoProvider will receive
+	 * a copy of the ServiceConfiguration.
 	 * 
 	 * @param srvcCfg a ServiceConfiguration
 	 * @return an implementation of an AttributeInfoProvider
@@ -21,4 +22,10 @@ public abstract class AttributeInfoProvider {
 		//TODO: Factory method
 		return null;
 	}
+	
+	/**
+	 * Called when this AttributeInfoProvider is no longer required. 
+	 * Providers should close open sockets/connections/files etc. on shutdown.
+	 */
+	public abstract void shutdown();
 }

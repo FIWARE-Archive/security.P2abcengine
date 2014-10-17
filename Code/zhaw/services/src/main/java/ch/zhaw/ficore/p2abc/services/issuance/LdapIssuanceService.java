@@ -9,6 +9,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
 import ch.zhaw.ficore.p2abc.ldap.helper.*;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
@@ -91,5 +92,11 @@ public class LdapIssuanceService {
 			e.printStackTrace();
 			return Response.serverError().entity(e.toString()).build();
 		}
+	}
+	
+	@GET()
+	@Path("/test")
+	public Response test() {
+		return Response.ok(new AuthentificationRequest(new AuthInfoSimple("hi","there"))).build();
 	}
 }
