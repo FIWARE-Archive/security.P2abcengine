@@ -1,14 +1,18 @@
 package ch.zhaw.ficore.p2abc.services;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.servlet.ServletContext;
-
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
+import javax.servlet.ServletContext;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import ch.zhaw.ficore.p2abc.ldap.helper.*;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
 
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
