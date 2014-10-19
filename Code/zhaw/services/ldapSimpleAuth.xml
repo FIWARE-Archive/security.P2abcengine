@@ -1,0 +1,6 @@
+<auth-request>
+<auth-info-simple>
+<username>uid=admin, ou=system</username>
+<password>secret</password>
+</auth-info-simple>
+</auth-request>

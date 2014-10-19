@@ -1,7 +1,10 @@
-package ch.zhaw.ficore.p2abc.services;
+package ch.zhaw.ficore.p2abc.services.issuance;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.services.ConfigurationData;
+import ch.zhaw.ficore.p2abc.services.ConfigurationData.IdentitySource;
 
 /** Holds the configuration for all the services.
  * 
@@ -32,15 +35,36 @@ public class ServiceConfiguration implements Cloneable {
   /** Default port for LDAP when TLS is not used. */
   private static final int LDAP_DEFAULT_PORT = 389;
   
-  /** What identity source will we be using for the issuer? */
-  public enum IdentitySource {
-    KEYROCK,  /** Use keyrock as the identity source. */
-    LDAP,     /** Use an LDAP srever as the identity source. */
-  }
-  
   private static ConfigurationData configuration = new ConfigurationData();
   
   private static Logger logger = LogManager.getLogger(ServiceConfiguration.class.getName());
+  
+  /**
+   * Verifies the correctness of the magic cookie (i.e. if it matches
+   * the one stored in this configuration.)
+   * 
+   * @param magicCookie The value to check against
+   * @return true or false.
+   */
+  public static synchronized boolean isMagicCookieCorrect(String magicCookie) {
+	  return configuration.magicCookie.equals(magicCookie);
+  }
+  
+  /**
+   * Sets the magic cookie to the given value.
+   * 
+   * @param magicCookie the new value of the magic cookie.
+   */
+  public static synchronized void setMagicCookie(String magicCookie) {
+	  configuration.magicCookie = magicCookie;
+  }
+  
+  public static synchronized IdentitySource getIdentitySource() {
+	  return configuration.identitySource;
+  }
+  
+  private ServiceConfiguration() {
+  }
   
   /** Returns a copy of the current configuration parameters.
    * 
@@ -61,7 +85,7 @@ public class ServiceConfiguration implements Cloneable {
       ret = ServiceConfiguration.configuration.clone();
     } catch (CloneNotSupportedException e) {
       ServiceConfiguration.logger.error("Service configuration can't be cloned: \""
-            + e.getMessage() + "\". This is decidedly unexpected!");
+           + e.getMessage() + "\". This is decidedly unexpected!");
     }
     
     return ServiceConfiguration.logger.exit(ret);
@@ -74,8 +98,8 @@ public class ServiceConfiguration implements Cloneable {
         || config.ldapServerPort >= (1 << 16)) {
       if (config.ldapServerPort != 0)
         ServiceConfiguration.logger.warn("LDAP server port "
-            + config.ldapServerPort + " out of range; "
-            + "using " + config.ldapServerPort + " instead");
+           + config.ldapServerPort + " out of range; "
+           + "using " + config.ldapServerPort + " instead");
       config.ldapServerPort = config.ldapUseTls
           ? LDAP_TLS_DEFAULT_PORT : LDAP_DEFAULT_PORT;      
     }
@@ -106,15 +130,19 @@ public class ServiceConfiguration implements Cloneable {
         ServiceConfiguration.logger.info("New configuration: " + configuration);
       } catch (CloneNotSupportedException e) {
         ServiceConfiguration.logger.error("Service configuration can't be cloned: \""
-            + e.getMessage() + "\". This is decidedly unexpected!");
+           + e.getMessage() + "\". This is decidedly unexpected!");
         ServiceConfiguration.logger.warn("Attempt to configure services unsuccessful");
       }
     } else {
       ServiceConfiguration.logger.warn("Problems detected with service"
-          + " configuration; the configuration was NOT overwritten and"
-          + " the old configuration is still in effect.");
+         + " configuration; the configuration was NOT overwritten and"
+         + " the old configuration is still in effect.");
     }
     ServiceConfiguration.logger.exit();
   }
-  
+
+  public static synchronized void setFakeParameters() {
+    configuration.identitySource = IdentitySource.FAKE;
+    // TODO: Set more parameters?
+  }
 }
