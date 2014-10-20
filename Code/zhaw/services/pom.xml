@@ -84,6 +84,11 @@
       <artifactId>service-helper</artifactId>
 	  <version>patras-1.0.14-SNAPSHOT</version>
      </dependency>
+	<dependency>
+	  <groupId>org.xerial</groupId>
+	  <artifactId>sqlite-jdbc</artifactId>
+	  <version>3.8.7</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>zhaw-p2abc-webservices</finalName>

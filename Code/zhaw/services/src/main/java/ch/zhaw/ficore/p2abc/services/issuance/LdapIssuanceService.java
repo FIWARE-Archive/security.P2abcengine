@@ -249,6 +249,9 @@ public class LdapIssuanceService {
 					IssuanceHelper.getFileStoragePrefix(this.fileStoragePrefix,
 					CryptoEngine.IDEMIX));
 			
+			System.out.println("WOOT: " + IssuanceHelper.getFileStoragePrefix(this.fileStoragePrefix,
+					CryptoEngine.IDEMIX));
+			
 			CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
 			
 			if(credSpec == null) {
