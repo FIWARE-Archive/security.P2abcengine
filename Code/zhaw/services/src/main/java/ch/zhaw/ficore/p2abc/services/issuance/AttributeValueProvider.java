@@ -25,11 +25,12 @@ public abstract class AttributeValueProvider {
 	 * specific. This constructor calls the <em>protected loadAttributes</em> method. 
 	 * 
 	 * @param configuration Configuration.
+	 * @param authInfo AuthenticationInformation of the user
 	 * @param query Query (see description above)
 	 */
-	public AttributeValueProvider(ConfigurationData configuration, String query) {
+	public AttributeValueProvider(ConfigurationData configuration, AuthenticationInformation authInfo, String query) {
 		this.configuration = configuration;
-		loadAttributes(query);
+		loadAttributes(authInfo, query);
 	}
 	
 	/**
@@ -71,7 +72,8 @@ public abstract class AttributeValueProvider {
 	 * E.g. for LDAP query might be an LDAP-Search query. The exact behaviour of <em>query</em> is provider
 	 * specific. 
 	 * 
+	 * @param authInfo AuthenticationInformation of the user.
 	 * @param query Query (see description above) 
 	 */
-	protected abstract void loadAttributes(String query);
+	protected abstract void loadAttributes(AuthenticationInformation authInfo, String query);
 }
