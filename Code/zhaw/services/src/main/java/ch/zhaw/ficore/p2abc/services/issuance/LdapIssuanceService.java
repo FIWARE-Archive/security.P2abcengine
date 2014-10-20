@@ -210,6 +210,8 @@ public class LdapIssuanceService {
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
 		
+		logger.entry();
+		
         logger.info("IssuanceService - storeCredentialSpecification: \""
                 + credentialSpecifationUid + "\"");
 
@@ -222,19 +224,42 @@ public class LdapIssuanceService {
             boolean r1 = keyManager.storeCredentialSpecification(
                     credentialSpecifationUid, credSpec);
 
-            engine = CryptoEngine.UPROVE;
-            keyManager = UserStorageManager.getKeyManager(IssuanceHelper
-                    .getFileStoragePrefix(this.fileStoragePrefix, engine));
-
-            boolean r2 = keyManager.storeCredentialSpecification(
-                    credentialSpecifationUid, credSpec);
-
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r1 && r2);
+            createABCEBoolean.setValue(r1);
 
-            return Response.ok(of.createABCEBoolean(createABCEBoolean), MediaType.APPLICATION_XML).build();
+            return logger.exit(
+            		Response.ok(of.createABCEBoolean(createABCEBoolean), MediaType.APPLICATION_XML).build());
         } catch (Exception ex) {
-            return Response.serverError().build();
+        	logger.catching(ex);
+            return logger.exit(Response.serverError().build());
         }
     }
+	
+	@GET()
+	@Path("/getCredentialSpecification/{magicCookie}/{credentialSpecificationUid}")
+	public Response getCredentialSpecification(
+			@PathParam("magicCookie") String magicCookie,
+			@PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
+		logger.entry();
+		
+		logger.info("IssuanceService - getCredentialSpecification: " + credentialSpecificationUid);
+		
+		try {
+			KeyManager keyManager = UserStorageManager.getKeyManager(
+					IssuanceHelper.getFileStoragePrefix(this.fileStoragePrefix,
+					CryptoEngine.IDEMIX));
+			
+			CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
+			
+			if(credSpec == null) {
+				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+			}
+			else
+				return logger.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
+		} 
+		catch(Exception ex) {
+			logger.catching(ex);
+			return logger.exit(Response.serverError().build());
+		}
+	}
 }
