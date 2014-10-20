@@ -85,6 +85,7 @@ public class ServiceConfiguration implements Cloneable {
     } catch (CloneNotSupportedException e) {
       ServiceConfiguration.logger.error("Service configuration can't be cloned: \""
            + e.getMessage() + "\". This is decidedly unexpected!");
+      System.out.println("Clone wasn't so good;");
     }
     
     return ServiceConfiguration.logger.exit(ret);

@@ -14,10 +14,10 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
  */
 public abstract class AttributeInfoProvider {
 	
-	protected ConfigurationData srvcCfg;
+	protected ConfigurationData configuration;
 	
 	public AttributeInfoProvider(ConfigurationData configuration) {
-		this.srvcCfg = configuration;
+		this.configuration = configuration;
 	}
 	
 	/**
@@ -32,6 +32,8 @@ public abstract class AttributeInfoProvider {
 		switch(configuration.identitySource) {
 		case FAKE:
 			return new FakeAttributeInfoProvider(configuration);
+		case LDAP:
+			return new LdapAttributeInfoProvider(configuration);
 		}
 		return null;
 	}

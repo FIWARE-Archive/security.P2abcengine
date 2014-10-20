@@ -13,10 +13,10 @@ import ch.zhaw.ficore.p2abc.services.ConfigurationData;
  */
 public abstract class AuthenticationProvider {
 	
-	protected ConfigurationData srvcCfg;
+	protected ConfigurationData configuration;
 	
 	public AuthenticationProvider(ConfigurationData configuration) {
-		this.srvcCfg = configuration;
+		this.configuration = configuration;
 	}
 	
 	/**

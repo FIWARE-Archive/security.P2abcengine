@@ -32,13 +32,19 @@ public class LdapIssuanceService {
 	private ObjectFactory of = new ObjectFactory(); 
 
 	static {
-		//ServiceConfiguration.getInstance().setLdapParameters(false, "localhost", 10389, "", "");
-		ServiceConfiguration.setFakeParameters();
+		ConfigurationData cfgData = new ConfigurationData();
+		cfgData.ldapUseTls = false;
+		cfgData.ldapServerName = "localhost";
+		cfgData.ldapServerPort = 10389;
+		cfgData.ldapUser = "uid=admin, ou=system";
+		cfgData.ldapPassword = "secret";
+		cfgData.identitySource = ConfigurationData.IdentitySource.LDAP;
+		ServiceConfiguration.setServiceConfiguration(cfgData);
 		initializeWithConfiguration();
 	}
 	
 	public static void initializeWithConfiguration() {
-	  ConfigurationData configuration = ServiceConfiguration.getServiceConfiguration();
+		ConfigurationData configuration = ServiceConfiguration.getServiceConfiguration();
 		authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 		attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 	}

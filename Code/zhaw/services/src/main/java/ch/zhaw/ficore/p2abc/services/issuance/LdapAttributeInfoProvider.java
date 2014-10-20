@@ -1,0 +1,127 @@
+package ch.zhaw.ficore.p2abc.services.issuance;
+
+import ch.zhaw.ficore.p2abc.services.ConfigurationData;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
+import ch.zhaw.ficore.p2abc.ldap.helper.*;
+
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+
+import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
+
+/**
+ * An AttributeInfoProvider that is capable of providing
+ * attribute meta-information over LDAP.
+ * 
+ * @author mroman
+ */
+public class LdapAttributeInfoProvider extends AttributeInfoProvider {
+	
+	/* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
+	public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
+	/* Mapping encodings determine how we encode the values (for the syntax mapping) in the credential */
+	public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
+	
+	private Logger logger;
+	
+	/* Ldap Syntax Constants */
+	private static final String directoryStringOid = "1.3.6.1.4.1.1466.115.121.1.15";
+	private static final String telephoneNumberOid = "1.3.6.1.4.1.1466.115.121.1.50";
+	private static final String integerOid = "1.3.6.1.4.1.1466.115.121.1.27";
+
+	static {
+		syntaxMappings.put(directoryStringOid, new ArrayList<String>());
+		syntaxMappings.put(telephoneNumberOid, new ArrayList<String>());
+		syntaxMappings.put(integerOid, new ArrayList<String>());
+
+
+		syntaxMappings.get(directoryStringOid).add("xs:string");
+		syntaxMappings.get(telephoneNumberOid).add("xs:string");
+		syntaxMappings.get(integerOid).add("xs:integer");
+
+		mappingEncodings.put("xs:string", new ArrayList<String>());
+		mappingEncodings.put("xs:integer", new ArrayList<String>());
+
+		mappingEncodings.get("xs:string").add("urn:abc4trust:1.0:encoding:string:sha-256");
+		mappingEncodings.get("xs:integer").add("urn:abc4trust:1.0:encoding:integer:signed");
+	}
+	
+	/**
+	 * Constructor
+	 */
+	public LdapAttributeInfoProvider(ConfigurationData configuration) {
+		super(configuration);
+		logger = LogManager.getLogger(LdapAttributeInfoProvider.class.getName());
+	}
+	
+	/**
+	 * No Operation.
+	 */
+	public void shutdown() {
+		
+	}
+	
+	/**
+	 * Returns a AttributeInfoCollection filled with dummy attributes.
+	 * 
+	 * @return an AttributeInfoCollection, null if something went wrong
+	 */
+	public AttributeInfoCollection getAttributes(String name) {
+		logger.entry();
+		
+		try {
+			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.ldapServerPort, configuration.ldapServerName);
+			cfg.setAuth(configuration.ldapUser, configuration.ldapPassword);
+			LdapConnection con = cfg.newConnection();
+			
+			DirContext ctx = con.getInitialDirContext();
+			DirContext schema = ctx.getSchema("ou=schema");
+
+			Attributes answer = schema.getAttributes("ClassDefinition/" + name);
+			javax.naming.directory.Attribute must = answer.get("must");
+			javax.naming.directory.Attribute may = answer.get("may");
+
+			AttributeInfoCollection aic = new AttributeInfoCollection(name);
+
+			for(int i = 0; i < must.size(); i++) {
+				Attributes attrAnswer = schema.getAttributes("AttributeDefinition/" + must.get(i));
+				String mapping = getMapping(attrAnswer.get("syntax").get(0).toString());
+				String encoding = getEncoding(mapping);
+				aic.addAttribute(must.get(i).toString(), mapping, encoding);
+			}
+
+			for(int i = 0; i < may.size(); i++) {
+				Attributes attrAnswer = schema.getAttributes("AttributeDefinition/" + may.get(i));
+				String mapping = getMapping(attrAnswer.get("syntax").get(0).toString());
+				String encoding = getEncoding(mapping);
+				aic.addAttribute(may.get(i).toString(), mapping, encoding);
+			}
+			
+			return logger.exit(aic);
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(null);
+		}
+	}
+	
+	private String getMapping(String syntax) {
+		if(syntaxMappings.containsKey(syntax))
+			return syntaxMappings.get(syntax).get(0);
+		else
+			return "xs:string"; //use string as default mapping
+	}
+	
+	private String getEncoding(String mapping) {
+		if(mappingEncodings.containsKey(mapping))
+			return mappingEncodings.get(mapping).get(0);
+		else
+			throw new RuntimeException("Can not determine encoding for mapping: " + mapping);
+	}
+}
