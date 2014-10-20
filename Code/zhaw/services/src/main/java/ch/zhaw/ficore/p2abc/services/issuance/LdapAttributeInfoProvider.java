@@ -35,6 +35,12 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	private static final String telephoneNumberOid = "1.3.6.1.4.1.1466.115.121.1.50";
 	private static final String integerOid = "1.3.6.1.4.1.1466.115.121.1.27";
 
+	/*
+	 * This sets up the dictionaries with recommended mappings for LDAP data types to
+	 * p2abc data types and encodings for those mappings. For example
+	 * 1.3.6.1.4.1.1466.115.121.1.27 will be mapped to xs:integer and xs:integer
+	 * will be encoded per default as urn:abc4trust:1.0:encoding:integer:signed
+	 */
 	static {
 		syntaxMappings.put(directoryStringOid, new ArrayList<String>());
 		syntaxMappings.put(telephoneNumberOid, new ArrayList<String>());
@@ -111,6 +117,13 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 		}
 	}
 	
+	/**
+	 * This function 'translates' an LDAP-Syntax into a Type supported by p2abc.
+	 * (p2abc uses XML-Types).
+	 * 
+	 * @param syntax LDAP-Syntax
+	 * @return mapping (that is, to which XML-Type shall the LDAP-Type be mapped to)
+	 */
 	private String getMapping(String syntax) {
 		if(syntaxMappings.containsKey(syntax))
 			return syntaxMappings.get(syntax).get(0);
@@ -118,6 +131,13 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 			return "xs:string"; //use string as default mapping
 	}
 	
+	/**
+	 * This function returns the recommended encoding used by the p2abc to encode
+	 * XML-Types. 
+	 * 
+	 * @param mapping An mapping as returned by getMapping.
+	 * @return the recommended encoding
+	 */
 	private String getEncoding(String mapping) {
 		if(mappingEncodings.containsKey(mapping))
 			return mappingEncodings.get(mapping).get(0);
