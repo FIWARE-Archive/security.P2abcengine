@@ -23,9 +23,9 @@ public abstract class AttributeInfoProvider {
 	/**
 	 * Factory method to construct an AttributeInfoProvider for a given
 	 * ServiceConfiguration. The AttributeInfoProvider will receive
-	 * a copy of the ServiceConfiguration.
+	 * a reference to the configuration.
 	 * 
-	 * @param configuration a ServiceConfiguration
+	 * @param configuration Configuration
 	 * @return an implementation of an AttributeInfoProvider
 	 */
 	public static AttributeInfoProvider getAttributeInfoProvider(ConfigurationData configuration) {
