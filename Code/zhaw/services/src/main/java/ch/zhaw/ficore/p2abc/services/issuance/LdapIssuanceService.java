@@ -4,19 +4,37 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
 
 import ch.zhaw.ficore.p2abc.services.ConfigurationData;
 import ch.zhaw.ficore.p2abc.services.ServiceConfiguration;
+import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/abce-services (COPY)
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
+
 import eu.abc4trust.xml.ObjectFactory;
+import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.CredentialSpecification;
+import javax.xml.bind.JAXBElement;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
+import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.ri.servicehelper.issuer.IssuanceHelper;
+
+
+
+import java.net.URI;
 
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
@@ -30,6 +48,10 @@ public class LdapIssuanceService {
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
+	
+	private final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
+	
+	private Logger logger;
 
 	static {
 		ConfigurationData cfgData = new ConfigurationData();
@@ -51,6 +73,7 @@ public class LdapIssuanceService {
 
 
 	public LdapIssuanceService() {
+		logger = LogManager.getLogger(LdapIssuanceService.class.getName());
 	}
 
 	@GET()
@@ -177,4 +200,41 @@ public class LdapIssuanceService {
 					generateCredentialSpecification(attrInfoCol)),
 				MediaType.APPLICATION_XML).build();
 	}
+	
+	//This function was copied from the original IssuanceService in Code/core-abce/abce-services
+	@PUT()
+    @Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
+    @Consumes({ MediaType.APPLICATION_XML })
+    public Response storeCredentialSpecification(
+    		@PathParam("magicCookie") String magicCookie, 
+            @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
+            CredentialSpecification credSpec) {
+		
+        logger.info("IssuanceService - storeCredentialSpecification: \""
+                + credentialSpecifationUid + "\"");
+
+        try {
+            CryptoEngine engine = CryptoEngine.IDEMIX;
+            KeyManager keyManager = UserStorageManager
+                    .getKeyManager(IssuanceHelper.getFileStoragePrefix(
+                            this.fileStoragePrefix, engine));
+
+            boolean r1 = keyManager.storeCredentialSpecification(
+                    credentialSpecifationUid, credSpec);
+
+            engine = CryptoEngine.UPROVE;
+            keyManager = UserStorageManager.getKeyManager(IssuanceHelper
+                    .getFileStoragePrefix(this.fileStoragePrefix, engine));
+
+            boolean r2 = keyManager.storeCredentialSpecification(
+                    credentialSpecifationUid, credSpec);
+
+            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
+            createABCEBoolean.setValue(r1 && r2);
+
+            return Response.ok(of.createABCEBoolean(createABCEBoolean), MediaType.APPLICATION_XML).build();
+        } catch (Exception ex) {
+            return Response.serverError().build();
+        }
+    }
 }
