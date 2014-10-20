@@ -74,6 +74,16 @@
         <artifactId>guice</artifactId>
         <version>3.0</version>
      </dependency>
+    <dependency>
+        <groupId>eu.abc4trust.ri</groupId>
+        <artifactId>abce-components</artifactId>
+        <version>patras-1.0.14-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.abc4trust.ri</groupId>
+      <artifactId>service-helper</artifactId>
+	  <version>patras-1.0.14-SNAPSHOT</version>
+     </dependency>
   </dependencies>
   <build>
     <finalName>zhaw-p2abc-webservices</finalName>
