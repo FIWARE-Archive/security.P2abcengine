@@ -74,7 +74,8 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	}
 	
 	/**
-	 * Returns a AttributeInfoCollection filled with dummy attributes.
+	 * Returns an AttributeInfoCollection filled with the attributes of an objectClass
+	 * in LDAP.
 	 * 
 	 * @return an AttributeInfoCollection, null if something went wrong
 	 */
