@@ -1,6 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
 
 /** Serves as a Factory for AuthenticationProviders.
  * 
@@ -13,9 +12,9 @@ import ch.zhaw.ficore.p2abc.services.ConfigurationData;
  */
 public abstract class AuthenticationProvider {
 	
-	protected ConfigurationData srvcCfg;
+	protected IssuanceConfigurationData srvcCfg;
 	
-	public AuthenticationProvider(ConfigurationData configuration) {
+	public AuthenticationProvider(IssuanceConfigurationData configuration) {
 		this.srvcCfg = configuration;
 	}
 	
@@ -27,7 +26,7 @@ public abstract class AuthenticationProvider {
 	 * @param configuration a ServiceConfiguration
 	 * @return an implementation of an AuthenticationProvider
 	 */
-	public static AuthenticationProvider getAuthenticationProvider(ConfigurationData configuration) {
+	public static AuthenticationProvider getAuthenticationProvider(IssuanceConfigurationData configuration) {
 		switch(configuration.identitySource) {
 		case FAKE:
 			return new FakeAuthenticationProvider(configuration);

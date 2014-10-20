@@ -1,6 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
 
@@ -14,9 +13,9 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
  */
 public abstract class AttributeInfoProvider {
 	
-	protected ConfigurationData srvcCfg;
+	protected IssuanceConfigurationData srvcCfg;
 	
-	public AttributeInfoProvider(ConfigurationData configuration) {
+	public AttributeInfoProvider(IssuanceConfigurationData configuration) {
 		this.srvcCfg = configuration;
 	}
 	
@@ -28,7 +27,7 @@ public abstract class AttributeInfoProvider {
 	 * @param configuration a ServiceConfiguration
 	 * @return an implementation of an AttributeInfoProvider
 	 */
-	public static AttributeInfoProvider getAttributeInfoProvider(ConfigurationData configuration) {
+	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfigurationData configuration) {
 		switch(configuration.identitySource) {
 		case FAKE:
 			return new FakeAttributeInfoProvider(configuration);

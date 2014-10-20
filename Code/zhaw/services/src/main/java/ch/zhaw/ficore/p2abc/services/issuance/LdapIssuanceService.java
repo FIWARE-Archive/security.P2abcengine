@@ -11,8 +11,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.ServiceConfiguration;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration.ServiceType;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
@@ -26,19 +26,20 @@ public class LdapIssuanceService {
 	private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
 	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
-	private static Object configLock = new Object();
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
 
 	static {
 		//ServiceConfiguration.getInstance().setLdapParameters(false, "localhost", 10389, "", "");
-		ServiceConfiguration.setFakeParameters();
+		ServicesConfiguration.setFakeIssuanceParameters();
 		initializeWithConfiguration();
 	}
 	
 	public static void initializeWithConfiguration() {
-	  ConfigurationData configuration = ServiceConfiguration.getServiceConfiguration();
+	  IssuanceConfigurationData configuration 
+	    = (IssuanceConfigurationData) ServicesConfiguration.getConfigurationFor(
+	        ServiceType.ISSUANCE);
 		authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 		attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 	}
@@ -143,7 +144,7 @@ public class LdapIssuanceService {
 	@Path("/attributeInfoCollection/{magicCookie}/{name}")
 	public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
 			@PathParam("name") String name) {
-		if(!ServiceConfiguration.isMagicCookieCorrect(magicCookie))
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
 			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
 		
 		return Response.ok(attribInfoProvider.getAttributes(name), MediaType.APPLICATION_XML).build();
@@ -164,7 +165,7 @@ public class LdapIssuanceService {
 	@Path("/genCredSpec/{magicCookie}")
 	@Consumes({MediaType.APPLICATION_XML})
 	public Response genCredSpec(@PathParam("magicCookie") String magicCookie, AttributeInfoCollection attrInfoCol) {
-		if(!ServiceConfiguration.isMagicCookieCorrect(magicCookie))
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
 			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
 		
 		return Response.ok(of.createCredentialSpecification(new CredentialSpecGenerator().

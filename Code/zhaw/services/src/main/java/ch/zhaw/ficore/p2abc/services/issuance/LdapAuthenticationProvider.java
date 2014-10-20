@@ -1,7 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.ServiceConfiguration;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration.ServiceType;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 import ch.zhaw.ficore.p2abc.ldap.helper.*;
 
@@ -20,7 +20,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	/**
 	 * Constructor
 	 */
-	public LdapAuthenticationProvider(ConfigurationData configuration) {
+	public LdapAuthenticationProvider(IssuanceConfigurationData configuration) {
 		super(configuration);
 		logger = LogManager.getLogger(LdapAuthenticationProvider.class.getName());
 	}
@@ -44,7 +44,9 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 			return logger.exit(false);
 		
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
-		ConfigurationData configuration = ServiceConfiguration.getServiceConfiguration();
+		IssuanceConfigurationData configuration
+		  = (IssuanceConfigurationData) ServicesConfiguration.getConfigurationFor(
+		      ServiceType.ISSUANCE);
 		if(configuration.ldapUseTls)
 			throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 		

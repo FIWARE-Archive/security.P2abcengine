@@ -1,6 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
 /**
@@ -14,7 +13,7 @@ public class FakeAttributeInfoProvider extends AttributeInfoProvider {
 	/**
 	 * Constructor
 	 */
-	public FakeAttributeInfoProvider(ConfigurationData configuration) {
+	public FakeAttributeInfoProvider(IssuanceConfigurationData configuration) {
 		super(configuration);
 	}
 	
