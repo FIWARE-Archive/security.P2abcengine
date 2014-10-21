@@ -28,7 +28,7 @@ public class IssuanceConfigurationData implements ConfigurationData {
     FAKE,     /** Use a fake identity source. */
   }
 
-  private static Logger logger = LogManager.getLogger(IssuanceConfigurationData.class);
+  private Logger logger;
 
   /** What identity source should we use? */
   public IdentitySource identitySource;
@@ -50,6 +50,10 @@ public class IssuanceConfigurationData implements ConfigurationData {
   /** Password for LDAP user. Used only if identitySource == LDAP. */
   public String ldapPassword;
     
+  public IssuanceConfigurationData() {
+    logger = LogManager.getLogger();
+  }
+  
   @Override
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this).
@@ -75,20 +79,26 @@ public class IssuanceConfigurationData implements ConfigurationData {
 
   @Override
   public boolean isGood() {
-    IssuanceConfigurationData.logger.entry();
+    logger.entry();
     boolean ret = true;
     
     if (ldapServerPort <= 0
         || ldapServerPort >= (1 << 16)) {
       if (ldapServerPort != 0)
-        IssuanceConfigurationData.logger.warn("LDAP server port "
+        logger.warn("LDAP server port "
            + ldapServerPort + " out of range; "
            + "using " + ldapServerPort + " instead");
       ldapServerPort = ldapUseTls
           ? LDAP_TLS_DEFAULT_PORT : LDAP_DEFAULT_PORT;      
     }
 
-    return IssuanceConfigurationData.logger.exit(ret);
+    return logger.exit(ret);
+  }
+  
+  @Override
+  public IssuanceConfigurationData clone() throws CloneNotSupportedException {
+    IssuanceConfigurationData ret = (IssuanceConfigurationData) super.clone();
+    return ret;
   }
 
 }

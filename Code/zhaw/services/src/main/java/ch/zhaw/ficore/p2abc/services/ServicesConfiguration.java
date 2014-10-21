@@ -43,7 +43,7 @@ public class ServicesConfiguration {
   /** Configuration data for issuance service. */
   private static UserConfigurationData userConfiguration = new UserConfigurationData();
   
-  private static Logger logger = LogManager.getLogger(ServicesConfiguration.class);
+  private static Logger logger = LogManager.getLogger();
 
   /** Magic Cookie
    * The Magic Cookie is used for service administration such as changing
@@ -152,8 +152,8 @@ public class ServicesConfiguration {
       logger.info("Old configuration: " + configuration);
       
       try {
-        issuanceConfiguration = newConfig.clone();
-        logger.info("New configuration: " + issuanceConfiguration);
+        configuration = newConfig.clone();
+        logger.info("New configuration: " + configuration);
       } catch (CloneNotSupportedException e) {
         logger.error("Service configuration can't be cloned: \""
            + e.getMessage() + "\". This is decidedly unexpected!");
@@ -170,64 +170,5 @@ public class ServicesConfiguration {
   public static synchronized void setFakeIssuanceParameters() {
     issuanceConfiguration.identitySource = IdentitySource.FAKE;
     // TODO: Set more parameters?
-  }
-
-  /** Returns a copy of the current verification parameters.
-   * 
-   * We return a <em>copy</em> of the configuration parameters
-   * instead of a reference to the configuration parameters themselves
-   * because we don't want to enable the caller to change these
-   * parameters without our knowledge.
-   *  
-   * @return the current configuration parameters, or <code>null</code>
-   *    if there was a problem cloning the current configuration. 
-   */
-  public static synchronized VerificationConfigurationData getVerificationConfiguration() {
-    logger.entry();
-    
-    VerificationConfigurationData ret = null;
-    
-    try {
-      ret = verificationConfiguration.clone();
-    } catch (CloneNotSupportedException e) {
-      logger.error("Service configuration can't be cloned: \""
-           + e.getMessage() + "\". This is decidedly unexpected!");
-    }
-    
-    return logger.exit(ret);
-  }
-
-  /** Replaces the current issuance configuration. 
-   * 
-   * The new configuration is scrutinised and, if all sanity checks are
-   * passed, the old configuration is replaced with the new one.  If there
-   * is something wrong with the configuration, the current configuration
-   * is retained.
-   *
-   * It is possible to pass 0 for ldapServerPort.  In this case, the
-   * correct default port is chosen, depending on whether TLS is to
-   * be used or not.
-   * 
-   * @param newConfig the new configuration
-   */
-  public static synchronized void setVerificationConfiguration(VerificationConfigurationData newConfig) {
-    logger.entry();
-  
-    logger.info("Old configuration: " + verificationConfiguration);
-    if (VerificationConfigurationData.isGoodVerificationConfiguration(newConfig)) {
-      try {
-        verificationConfiguration = newConfig.clone();
-        logger.info("New configuration: " + verificationConfiguration);
-      } catch (CloneNotSupportedException e) {
-        logger.error("Service configuration can't be cloned: \""
-           + e.getMessage() + "\". This is decidedly unexpected!");
-        logger.warn("Attempt to configure services unsuccessful");
-      }
-    } else {
-      logger.warn("Problems detected with service"
-         + " configuration; the configuration was NOT overwritten and"
-         + " the old configuration is still in effect.");
-    }
-    logger.exit();
   }
 }
