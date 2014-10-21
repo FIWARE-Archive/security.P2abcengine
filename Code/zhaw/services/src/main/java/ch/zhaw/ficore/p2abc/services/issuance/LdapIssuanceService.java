@@ -37,9 +37,7 @@ public class LdapIssuanceService {
 	}
 	
 	public static void initializeWithConfiguration() {
-	  IssuanceConfigurationData configuration 
-	    = (IssuanceConfigurationData) ServicesConfiguration.getConfigurationFor(
-	        ServiceType.ISSUANCE);
+	  IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
 		authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 		attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 	}

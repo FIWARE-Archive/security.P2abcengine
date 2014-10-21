@@ -91,17 +91,26 @@ public class ServicesConfiguration {
    * @return the current issuance parameters, or <code>null</code>
    *    if there was a problem cloning the current configuration. 
    */
-  public static synchronized ConfigurationData getConfigurationFor(ServiceType type) {
+  public static synchronized IssuanceConfigurationData getIssuanceConfiguration() {
+    return (IssuanceConfigurationData) getConfigurationFor(ServiceType.ISSUANCE);
+  }
+  
+  public static synchronized VerificationConfigurationData getVerificationConfiguration() {
+    return (VerificationConfigurationData) getConfigurationFor(ServiceType.VERIFICATION);
+  }
+  
+  public static synchronized UserConfigurationData getUserConfiguration() {
+    return (UserConfigurationData) getConfigurationFor(ServiceType.USER);
+  }
+  
+  private static synchronized ConfigurationData getConfigurationFor(ServiceType type) {
     logger.entry();
     
     ConfigurationData ret = null;
+    ConfigurationData src = getConfigurationReferenceFor(type);
     
     try {
-      switch (type) {
-      case ISSUANCE: ret = issuanceConfiguration.clone(); break;
-      case VERIFICATION: ret = verificationConfiguration.clone(); break;
-      case USER: ret = userConfiguration.clone(); break;
-      }
+      ret = src.clone();
     } catch (CloneNotSupportedException e) {
       logger.error("Service configuration can't be cloned: \""
            + e.getMessage() + "\". This is decidedly unexpected!");
@@ -110,6 +119,17 @@ public class ServicesConfiguration {
     return logger.exit(ret);
   }
   
+  private static ConfigurationData getConfigurationReferenceFor(ServiceType type) {
+    ConfigurationData ret = null;
+
+    switch (type) {
+    case ISSUANCE: ret = issuanceConfiguration; break;
+    case VERIFICATION: ret = verificationConfiguration; break;
+    case USER: ret = userConfiguration; break;
+    }
+    
+    return ret;
+  }
   
   private static boolean serviceTypeMatchesObjectType(ServiceType type, ConfigurationData newConfig) {
     return type == ServiceType.ISSUANCE && newConfig instanceof IssuanceConfigurationData
@@ -123,14 +143,22 @@ public class ServicesConfiguration {
    * passed, the old configuration is replaced with the new one.  If there
    * is something wrong with the configuration, the current configuration
    * is retained.
-   *
-   * It is possible to pass 0 for ldapServerPort.  In this case, the
-   * correct default port is chosen, depending on whether TLS is to
-   * be used or not.
    * 
    * @param newConfig the new configuration
    */
-  public static synchronized void setConfigurationFor(ServiceType type, ConfigurationData newConfig) {
+  public static synchronized void setIssuanceConfiguration(IssuanceConfigurationData newConfig) {
+    setConfigurationFor(ServiceType.ISSUANCE, newConfig);
+  }
+  
+  public static synchronized void setVerificationConfiguration(ConfigurationData newConfig) {
+    setConfigurationFor(ServiceType.VERIFICATION, newConfig);    
+  }
+  
+  public static synchronized void setUserConfiguration(UserConfigurationData newConfig) {
+    setConfigurationFor(ServiceType.USER, newConfig);
+  }
+  
+  private static synchronized void setConfigurationFor(ServiceType type, ConfigurationData newConfig) {
     logger.entry();
     boolean typesMatch = true;
     
@@ -141,18 +169,17 @@ public class ServicesConfiguration {
     }
 
     if (typesMatch && newConfig.isGood()) {
-      ConfigurationData configuration = null;
-      
-      switch (type) {
-      case ISSUANCE: configuration = issuanceConfiguration; break;
-      case VERIFICATION: configuration = verificationConfiguration; break;
-      case USER: configuration = userConfiguration; break;
-      }
-
+      ConfigurationData configuration = getConfigurationReferenceFor(type);
       logger.info("Old configuration: " + configuration);
       
       try {
-        configuration = newConfig.clone();
+        ConfigurationData newData = newConfig.clone();
+        switch (type) {
+        case ISSUANCE: issuanceConfiguration = (IssuanceConfigurationData) newData; break;
+        case VERIFICATION: verificationConfiguration = (VerificationConfigurationData) newData; break;
+        case USER: userConfiguration = (UserConfigurationData) newData; break;
+        }
+
         logger.info("New configuration: " + configuration);
       } catch (CloneNotSupportedException e) {
         logger.error("Service configuration can't be cloned: \""
@@ -168,7 +195,7 @@ public class ServicesConfiguration {
   }
 
   public static synchronized void setFakeIssuanceParameters() {
-    issuanceConfiguration.identitySource = IdentitySource.FAKE;
+    issuanceConfiguration.setIdentitySource(IdentitySource.FAKE);
     // TODO: Set more parameters?
   }
 }

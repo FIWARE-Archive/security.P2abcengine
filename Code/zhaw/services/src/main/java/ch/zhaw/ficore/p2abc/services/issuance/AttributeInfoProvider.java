@@ -1,6 +1,9 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
 
 /** Serves as a Factory for AttributeInfoProviders.
@@ -12,7 +15,8 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
  * @author mroman
  */
 public abstract class AttributeInfoProvider {
-	
+  private static final Logger logger = LogManager.getLogger();;
+  
 	protected IssuanceConfigurationData srvcCfg;
 	
 	public AttributeInfoProvider(IssuanceConfigurationData configuration) {
@@ -28,11 +32,16 @@ public abstract class AttributeInfoProvider {
 	 * @return an implementation of an AttributeInfoProvider
 	 */
 	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfigurationData configuration) {
-		switch(configuration.identitySource) {
+	  logger.entry();
+	  
+		switch(configuration.getIdentitySource()) {
 		case FAKE:
-			return new FakeAttributeInfoProvider(configuration);
+			return logger.exit(new FakeAttributeInfoProvider(configuration));
+		default:
+		  logger.error("Identity source " + configuration.getIdentitySource() +
+		      " not supported");
+		  return logger.exit(null);
 		}
-		return null;
 	}
 	
 	/**

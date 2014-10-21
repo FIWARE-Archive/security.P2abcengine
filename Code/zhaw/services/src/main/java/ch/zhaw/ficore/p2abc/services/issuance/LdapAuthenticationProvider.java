@@ -44,14 +44,12 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 			return logger.exit(false);
 		
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
-		IssuanceConfigurationData configuration
-		  = (IssuanceConfigurationData) ServicesConfiguration.getConfigurationFor(
-		      ServiceType.ISSUANCE);
-		if(configuration.ldapUseTls)
+		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+		if(configuration.doesLdapUseTls())
 			throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 		
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.ldapServerPort, configuration.ldapServerName);
+			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.getLdapServerPort(), configuration.getLdapServerName());
 			cfg.setAuth(simpleAuth.username, simpleAuth.password);
 			LdapConnection con = cfg.newConnection();
 			return logger.exit(true);

@@ -12,6 +12,6 @@ public interface ConfigurationData {
    * @return true if this configuration is good, false otherwise.
    */
   public boolean isGood();
-  
+    
   public ConfigurationData clone() throws CloneNotSupportedException;
 }

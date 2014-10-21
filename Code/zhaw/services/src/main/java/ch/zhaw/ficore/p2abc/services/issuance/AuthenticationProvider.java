@@ -27,13 +27,13 @@ public abstract class AuthenticationProvider {
 	 * @return an implementation of an AuthenticationProvider
 	 */
 	public static AuthenticationProvider getAuthenticationProvider(IssuanceConfigurationData configuration) {
-		switch(configuration.identitySource) {
+		switch(configuration.getIdentitySource()) {
 		case FAKE:
 			return new FakeAuthenticationProvider(configuration);
 		case LDAP:
 			return new LdapAuthenticationProvider(configuration);
 		default:
-	    throw new RuntimeException(configuration.identitySource.toString() + " is not a supported AuthenticationProvider!");
+	    throw new RuntimeException(configuration.getIdentitySource() + " is not a supported AuthenticationProvider!");
 		}
 	}
 	
