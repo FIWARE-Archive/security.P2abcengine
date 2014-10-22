@@ -58,5 +58,5 @@ public interface URIBytesStorage {
 	 * @param URI uri (key)
 	 * @return true if successfully deleted, false otherwise
 	 */
-	public boolean delet(URI uri);
+	public boolean delete(URI uri);
 }
