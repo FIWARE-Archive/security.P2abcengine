@@ -29,6 +29,32 @@ public class SqliteURIBytesStorage {
 		}
 	}
 	
+	public void put(URI uri, byte[] bytes) throws SQLException {
+		if(!containsKey(uri))
+			putNew(uri, bytes); //delegate to putNew if no such entry exists.
+		
+		PreparedStatement pStmt = null;
+		try {
+			pStmt = con.prepareStatement("UPDATE " + table + " SET uri = ?, value = ? WHERE " +
+							" hash = ?");
+			
+			String hash = DigestUtils.sha1Hex(uri.toString());
+			
+			pStmt.setString(3, hash);
+			pStmt.setString(1, uri.toString());
+			pStmt.setBytes(2, bytes);
+			
+			pStmt.executeUpdate();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Storage failure!");
+		}
+		finally {
+			if(pStmt != null) pStmt.close();
+		}
+	}
+	
 	public void putNew(URI uri, byte[] bytes) throws SQLException {
 		PreparedStatement pStmt = null;
 		try {
