@@ -54,15 +54,24 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 			}
 			
 			synchronized(con) {
-			
-				Statement stmt = con.createStatement();
-			    String sql = "CREATE TABLE IF NOT EXISTS " + table +
-			                   "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
-			                   " uri           TEXT    NOT NULL, " + 
-			                   " value         BLOB     NOT NULL)";
-			    stmt.executeUpdate(sql);
-			    stmt.close();
-			    this.table = table;
+				Statement stmt = null;
+				try {
+					stmt = con.createStatement();
+				    String sql = "CREATE TABLE IF NOT EXISTS " + table +
+				                   "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
+				                   " uri           TEXT    NOT NULL, " + 
+				                   " value         BLOB     NOT NULL)";
+				    stmt.executeUpdate(sql);
+				    this.table = table;
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					throw e;
+				}
+				finally {
+					if(stmt != null)
+						stmt.close();
+				}
 			}
 		}
 		catch(Exception e) {
