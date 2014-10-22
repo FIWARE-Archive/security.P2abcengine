@@ -29,9 +29,10 @@ public class SqliteURIBytesStorage {
 		}
 	}
 	
-	public void putNew(URI uri, byte[] bytes) {
+	public void putNew(URI uri, byte[] bytes) throws SQLException {
+		PreparedStatement pStmt = null;
 		try {
-			PreparedStatement pStmt = con.prepareStatement("INSERT INTO " + table + "(hash, uri, value) " +
+			pStmt = con.prepareStatement("INSERT INTO " + table + "(hash, uri, value) " +
 							"VALUES(?, ?, ?)");
 			
 			String hash = DigestUtils.sha1Hex(uri.toString());
@@ -45,6 +46,35 @@ public class SqliteURIBytesStorage {
 		catch(Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Storage failure!");
+		}
+		finally {
+			if(pStmt != null) pStmt.close();
+		}
+	}
+	
+	public boolean containsKey(URI uri) throws SQLException {
+		PreparedStatement pStmt = null;
+		ResultSet rst = null;
+		try {
+			pStmt = con.prepareStatement("SELECT EXISTS(SELECT 1 FROM " + table + " WHERE " +
+						" hash = ? LIMIT 1)");
+			String hash = DigestUtils.sha1Hex(uri.toString());
+			pStmt.setString(1, hash);
+			rst = pStmt.executeQuery();
+			int result = rst.getInt(1);
+			
+			if(result == 1)
+				return true;
+			else
+				return false;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Storage failure!");
+		}
+		finally {
+			if(pStmt != null) pStmt.close();
+			if(rst != null) rst.close();
 		}
 	}
 }
