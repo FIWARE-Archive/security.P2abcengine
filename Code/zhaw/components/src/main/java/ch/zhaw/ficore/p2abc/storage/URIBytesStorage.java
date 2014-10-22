@@ -17,7 +17,7 @@ public interface URIBytesStorage {
 	 * @param URI uri (key)
 	 * @param bytes bytes (value)
 	 */
-	public void put(URI uri, byte[] bytes);
+	public void put(URI uri, byte[] bytes) throws Exception;
 	
 	/**
 	 * Put data into storage if and only if no such
@@ -27,7 +27,7 @@ public interface URIBytesStorage {
 	 * @param bytes bytes (value)
 	 * @return true if data was added, false otherwise
 	 */
-	public boolean putNew(URI uri, byte[] bytes);
+	public boolean putNew(URI uri, byte[] bytes) throws Exception;
 	
 	/**
 	 * Retreive a value from the Storage.
@@ -35,14 +35,14 @@ public interface URIBytesStorage {
 	 * @param URI uri (key)
 	 * @return bytes (value)
 	 */
-	public byte[] get(URI uri);
+	public byte[] get(URI uri) throws Exception;
 	
 	/**
 	 * Return a list of all keys (URIs).
 	 * 
 	 * @return List of URIs.
 	 */
-	public List<URI> keys();
+	public List<URI> keys() throws Exception;
 	
 	/**
 	 * Checks whether an entry with a given key exists in the storage.
@@ -50,7 +50,7 @@ public interface URIBytesStorage {
 	 * @param URI uri (key)
 	 * @return true if exists, false otherwise
 	 */
-	public boolean containsKey(URI uri);
+	public boolean containsKey(URI uri) throws Exception;
 	
 	/**
 	 * Deletes an entry with a given key from the storage.
@@ -58,5 +58,5 @@ public interface URIBytesStorage {
 	 * @param URI uri (key)
 	 * @return true if successfully deleted, false otherwise
 	 */
-	public boolean delete(URI uri);
+	public boolean delete(URI uri) throws Exception;
 }

@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.storage;
 
 import java.net.URI;
 import java.util.List;
+import java.util.ArrayList;
 import java.sql.*;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -26,6 +27,36 @@ public class SqliteURIBytesStorage {
 		catch(Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Failed to open storage!");
+		}
+	}
+	
+	public List<URI> keys() throws SQLException {
+		PreparedStatement pStmt = null;
+		ResultSet rst = null;
+		List<URI> uris = new ArrayList<URI>();
+		
+		try {
+			pStmt = con.prepareStatement("SELECT uri FROM " + table);
+			rst = pStmt.executeQuery();
+			while(rst.next()) {
+				try {
+					uris.add(new URI(rst.getString(1)));
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					//We can't do much here. This means that somebody managed to store
+					//an invalid URI in the storage. 
+				}
+			}
+			return uris;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Storage failure!");
+		}
+		finally {
+			if(pStmt != null) pStmt.close();
+			if(rst != null) rst.close();
 		}
 	}
 	
