@@ -30,10 +30,10 @@ public class SqliteURIBytesStorage {
 	}
 	
 	public void put(URI uri, byte[] bytes) throws SQLException {
-		if(!containsKey(uri)) {
-			putNew(uri, bytes); //delegate to putNew if no such entry exists.
+		if(putNew(uri, bytes)) //putNew returns true if it added something
 			return;
-		}
+		
+		//Entry exists, so we need to do an UPDATE instead of an INSERT
 		
 		PreparedStatement pStmt = null;
 		try {
@@ -57,7 +57,10 @@ public class SqliteURIBytesStorage {
 		}
 	}
 	
-	public void putNew(URI uri, byte[] bytes) throws SQLException {
+	public boolean putNew(URI uri, byte[] bytes) throws SQLException {
+		if(containsKey(uri))
+			return false;
+		
 		PreparedStatement pStmt = null;
 		try {
 			pStmt = con.prepareStatement("INSERT INTO " + table + "(hash, uri, value) " +
@@ -70,6 +73,7 @@ public class SqliteURIBytesStorage {
 			pStmt.setBytes(3, bytes);
 			
 			pStmt.executeUpdate();
+			return true;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
