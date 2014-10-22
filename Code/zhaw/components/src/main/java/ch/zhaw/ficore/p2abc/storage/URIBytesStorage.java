@@ -56,7 +56,6 @@ public interface URIBytesStorage {
 	 * Deletes an entry with a given key from the storage.
 	 * 
 	 * @param URI uri (key)
-	 * @return true if successfully deleted, false otherwise
 	 */
-	public boolean delete(URI uri) throws Exception;
+	public void delete(URI uri) throws Exception;
 }

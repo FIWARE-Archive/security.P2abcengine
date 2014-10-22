@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.sql.*;
 import org.apache.commons.codec.digest.DigestUtils;
 
-public class SqliteURIBytesStorage {
+public class SqliteURIBytesStorage implements URIBytesStorage {
 	private Connection con;
 	private String table;
 	
@@ -57,6 +57,45 @@ public class SqliteURIBytesStorage {
 		finally {
 			if(pStmt != null) pStmt.close();
 			if(rst != null) rst.close();
+		}
+	}
+	
+	public byte[] get(URI uri) throws SQLException {
+		PreparedStatement pStmt = null;
+		ResultSet rst = null;
+		
+		try {
+			pStmt = con.prepareStatement("SELECT value FROM " + table + " WHERE hash = ?");
+			String hash = DigestUtils.sha1Hex(uri.toString());
+			pStmt.setString(1, hash);
+			rst = pStmt.executeQuery();
+			while(rst.next()) {
+				return rst.getBytes(1);
+			}
+			return null;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Storage failure!");
+		}
+		finally {
+			if(pStmt != null) pStmt.close();
+			if(rst != null) rst.close();
+		}
+	}
+	
+	public void delete(URI uri) throws SQLException {
+		PreparedStatement pStmt = null;
+		
+		try {
+			pStmt = con.prepareStatement("DELETE FROM " + table + " WHERE hash = ?");
+			String hash = DigestUtils.sha1Hex(uri.toString());
+			pStmt.setString(1, hash);
+			pStmt.executeUpdate();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Storage failure!");
 		}
 	}
 	
