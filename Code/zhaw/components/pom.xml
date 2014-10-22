@@ -9,7 +9,11 @@
   <description>zhaw-components</description>
   
   <dependencies>
-    
+    <dependency>
+	  <groupId>org.xerial</groupId>
+	  <artifactId>sqlite-jdbc</artifactId>
+	  <version>3.7.2</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>zhaw-p2abc-components</finalName>
