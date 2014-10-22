@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.storage;
 import java.net.URI;
 import java.util.List;
 import java.sql.*;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class SqliteURIBytesStorage {
 	private Connection con;
@@ -33,7 +34,7 @@ public class SqliteURIBytesStorage {
 			PreparedStatement pStmt = con.prepareStatement("INSERT INTO " + table + "(hash, uri, value) " +
 							"VALUES(?, ?, ?)");
 			
-			String hash = "foo"; //TODO: Calc hash here :D
+			String hash = DigestUtils.sha1Hex(uri.toString());
 			
 			pStmt.setString(1, hash);
 			pStmt.setString(2, uri.toString());
