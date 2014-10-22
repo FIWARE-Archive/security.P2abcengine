@@ -30,8 +30,10 @@ public class SqliteURIBytesStorage {
 	}
 	
 	public void put(URI uri, byte[] bytes) throws SQLException {
-		if(!containsKey(uri))
+		if(!containsKey(uri)) {
 			putNew(uri, bytes); //delegate to putNew if no such entry exists.
+			return;
+		}
 		
 		PreparedStatement pStmt = null;
 		try {
