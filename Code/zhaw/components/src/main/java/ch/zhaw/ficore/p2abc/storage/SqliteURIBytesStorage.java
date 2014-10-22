@@ -6,10 +6,23 @@ import java.util.ArrayList;
 import java.sql.*;
 import org.apache.commons.codec.digest.DigestUtils;
 
+/**
+ * Implements the URIBytesStorage interface. This class
+ * uses a sqlite database.
+ * 
+ * @author mroman
+ */
 public class SqliteURIBytesStorage implements URIBytesStorage {
 	private Connection con;
 	private String table;
 	
+	/**
+	 * Constructor. This will open and create the database as well as the tables
+	 * if neccessary. 
+	 * 
+	 * @param filePath Path to the database file
+	 * @param table Name of the table to use
+	 */
 	public SqliteURIBytesStorage(String filePath, String table) {
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -30,6 +43,9 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		}
 	}
 	
+	/**
+	 * Lists all keys
+	 */
 	public List<URI> keys() throws SQLException {
 		PreparedStatement pStmt = null;
 		ResultSet rst = null;
@@ -60,6 +76,9 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		}
 	}
 	
+	/**
+	 * Get an entry from the storage
+	 */
 	public byte[] get(URI uri) throws SQLException {
 		PreparedStatement pStmt = null;
 		ResultSet rst = null;
@@ -84,6 +103,9 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		}
 	}
 	
+	/**
+	 * Delete an entry from the storage
+	 */
 	public void delete(URI uri) throws SQLException {
 		PreparedStatement pStmt = null;
 		
@@ -99,6 +121,9 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		}
 	}
 	
+	/**
+	 * Put (and possibly replace) an entry to the storage
+	 */
 	public void put(URI uri, byte[] bytes) throws SQLException {
 		if(putNew(uri, bytes)) //putNew returns true if it added something
 			return;
@@ -127,6 +152,9 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		}
 	}
 	
+	/**
+	 * Add an entry to the storage if and only if it did not exist yet
+	 */
 	public boolean putNew(URI uri, byte[] bytes) throws SQLException {
 		if(containsKey(uri))
 			return false;
@@ -154,6 +182,9 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		}
 	}
 	
+	/**
+	 * Checks if an entry exists in the storage
+	 */
 	public boolean containsKey(URI uri) throws SQLException {
 		PreparedStatement pStmt = null;
 		ResultSet rst = null;
