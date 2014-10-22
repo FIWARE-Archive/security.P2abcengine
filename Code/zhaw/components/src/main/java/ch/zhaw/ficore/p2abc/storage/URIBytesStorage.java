@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.storage;
 
 import java.net.URI;
 import java.util.List;
+import org.apache.commons.lang.SerializationUtils;
 
 /**
  * Interface for storage with a KeyValue-Structure
