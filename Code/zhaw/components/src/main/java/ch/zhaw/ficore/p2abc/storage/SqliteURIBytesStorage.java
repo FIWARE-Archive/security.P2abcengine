@@ -242,6 +242,10 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				String hash = DigestUtils.sha1Hex(uri.toString());
 				pStmt.setString(1, hash);
 				rst = pStmt.executeQuery();
+				
+				if(!rst.next())
+					return false;
+				
 				int result = rst.getInt(1);
 				
 				if(result == 1)
