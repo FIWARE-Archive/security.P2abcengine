@@ -19,6 +19,7 @@ import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/a
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.ABCEBoolean;
@@ -31,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.ri.servicehelper.issuer.IssuanceHelper;
+
+import java.sql.*;
 
 
 
@@ -132,7 +135,8 @@ public class LdapIssuanceService {
 	@GET()
 	@Path("/test")
 	public Response test() {
-		return Response.ok(new AuthenticationRequest(new AuthInfoSimple("hi","there"))).build();
+		new SqliteURIBytesStorage("/tmp/foo.db", "foobar");
+	    return Response.ok().build();
 	}
 	
 	/**
