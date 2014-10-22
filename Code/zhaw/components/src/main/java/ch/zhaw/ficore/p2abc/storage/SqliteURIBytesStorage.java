@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.sql.*;
+
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Implements the URIBytesStorage interface. This class
@@ -24,6 +27,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class SqliteURIBytesStorage implements URIBytesStorage {
 	private Connection con;
 	private String table;
+	
+	private Logger logger;
+	
 	private static Map<String, Connection> connections = new HashMap<String, Connection>();
 	
 	/**
@@ -34,6 +40,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * @param table Name of the table to use
 	 */
 	public SqliteURIBytesStorage(String filePath, String table) {
+		logger = LogManager.getLogger(SqliteURIBytesStorage.class.getName());
 		init(filePath, table);
 	}
 	
@@ -41,6 +48,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * Performs the "connection sharing" logic. 
 	 */
 	private synchronized void init(String filePath, String table) {
+		logger.entry();
 		try {
 			Class.forName("org.sqlite.JDBC");
 			
@@ -65,8 +73,8 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				    this.table = table;
 				}
 				catch(Exception e) {
-					e.printStackTrace();
-					throw e;
+					logger.catching(e);
+					throw logger.throwing(e);
 				}
 				finally {
 					if(stmt != null)
@@ -75,15 +83,17 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Failed to open storage!");
+			logger.catching(e);
+			throw logger.throwing(new RuntimeException("Failed to open storage!"));
 		}
+		logger.exit();
 	}
 	
 	/**
 	 * Lists all keys
 	 */
 	public List<URI> keys() throws SQLException {
+		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 			ResultSet rst = null;
@@ -102,11 +112,11 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 						//an invalid URI in the storage. 
 					}
 				}
-				return uris;
+				return logger.exit(uris);
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Storage failure!");
+				logger.catching(e);
+				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
 				if(pStmt != null) pStmt.close();
@@ -119,6 +129,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * Get an entry from the storage
 	 */
 	public byte[] get(URI uri) throws SQLException {
+		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 			ResultSet rst = null;
@@ -129,13 +140,13 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				pStmt.setString(1, hash);
 				rst = pStmt.executeQuery();
 				while(rst.next()) {
-					return rst.getBytes(1);
+					return logger.exit(rst.getBytes(1));
 				}
-				return null;
+				return logger.exit(null);
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Storage failure!");
+				logger.catching(e);
+				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
 				if(pStmt != null) pStmt.close();
@@ -148,6 +159,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * Delete an entry from the storage
 	 */
 	public void delete(URI uri) throws SQLException {
+		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 			
@@ -158,19 +170,23 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				pStmt.executeUpdate();
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Storage failure!");
+				logger.catching(e);
+				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 		}
+		logger.exit();
 	}
 	
 	/**
 	 * Put (and possibly replace) an entry to the storage
 	 */
 	public void put(URI uri, byte[] bytes) throws SQLException {
+		logger.entry();
 		synchronized(con) {
-			if(putNew(uri, bytes)) //putNew returns true if it added something
+			if(putNew(uri, bytes)) { //putNew returns true if it added something
+				logger.exit();
 				return;
+			}
 	
 			//Entry exists, so we need to do an UPDATE instead of an INSERT
 			
@@ -188,22 +204,24 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				pStmt.executeUpdate();
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Storage failure!");
+				logger.catching(e);
+				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
 				if(pStmt != null) pStmt.close();
 			}
 		}
+		logger.exit();
 	}
 	
 	/**
 	 * Add an entry to the storage if and only if it did not exist yet
 	 */
 	public synchronized boolean putNew(URI uri, byte[] bytes) throws SQLException {
+		logger.entry();
 		synchronized(con) {
 			if(containsKey(uri))
-				return false;
+				return logger.exit(false);
 			
 			PreparedStatement pStmt = null;
 			try {
@@ -217,11 +235,11 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				pStmt.setBytes(3, bytes);
 				
 				pStmt.executeUpdate();
-				return true;
+				return logger.exit(true);
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Storage failure!");
+				logger.catching(e);
+				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
 				if(pStmt != null) pStmt.close();
@@ -233,6 +251,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * Checks if an entry exists in the storage
 	 */
 	public boolean containsKey(URI uri) throws SQLException {
+		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 			ResultSet rst = null;
@@ -244,18 +263,18 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				rst = pStmt.executeQuery();
 				
 				if(!rst.next())
-					return false;
+					return logger.exit(false);
 				
 				int result = rst.getInt(1);
 				
 				if(result == 1)
-					return true;
+					return logger.exit(true);
 				else
-					return false;
+					return logger.exit(false);
 			}
 			catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Storage failure!");
+				logger.catching(e);
+				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
 				if(pStmt != null) pStmt.close();
