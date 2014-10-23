@@ -260,6 +260,9 @@ public class LdapIssuanceService {
 		
 		logger.entry();
 		
+		if(!ServiceConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+		
         logger.info("IssuanceService - storeCredentialSpecification: \""
                 + credentialSpecifationUid + "\"");
 
@@ -289,6 +292,9 @@ public class LdapIssuanceService {
 			@PathParam("magicCookie") String magicCookie,
 			@PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 		logger.entry();
+		
+		if(!ServiceConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 		
 		logger.info("IssuanceService - getCredentialSpecification: " + credentialSpecificationUid);
 		
