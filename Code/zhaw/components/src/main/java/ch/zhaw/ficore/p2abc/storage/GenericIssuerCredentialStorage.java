@@ -9,6 +9,10 @@ public class GenericIssuerCredentialStorage implements CredentialStorage {
 	
 	private URIBytesStorage storage;
 	
+	public GenericIssuerCredentialStorage(URIBytesStorage storage) {
+		this.storage = storage;
+	}
+	
 	public void addIssuerSecret(URI issuerParamsUid, byte[] bytes) throws IOException {
 		try {
 			storage.put(issuerParamsUid, bytes);
