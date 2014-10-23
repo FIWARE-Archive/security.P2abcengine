@@ -117,7 +117,13 @@ public class LdapIssuanceService {
 	}
 	
 	/**
-	 * Store QueryRule
+	 * Store QueryRule.
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid UID of the credSpec
+	 * @return Response
 	 */
 	@PUT()
 	@Path("/storeQueryRule/{magicCookie}/{credentialSpecificationUid}")
@@ -142,7 +148,13 @@ public class LdapIssuanceService {
 	}
 	
 	/**
-	 * Store QueryRule
+	 * Retreive a QueryRule.
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid
+	 * @return QueryRule
 	 */
 	@GET()
 	@Path("/getQueryRule/{magicCookie}/{credentialSpecificationUid}")
@@ -156,6 +168,8 @@ public class LdapIssuanceService {
 			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 		
 		try {
+			if(!queryRules.containsKey(new URI(credentialSpecificationUid)))
+				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
 			QueryRule rule = (QueryRule) SerializationUtils.deserialize(queryRules.get(new URI(credentialSpecificationUid)));
 			return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
 		}
