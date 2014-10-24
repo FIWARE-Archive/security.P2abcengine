@@ -28,9 +28,9 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
+import ch.zhaw.ficore.p2abc.services.helpers.issuer.*;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
-import eu.abc4trust.ri.servicehelper.issuer.IssuanceHelper;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.ObjectFactory;
@@ -258,8 +258,7 @@ public class LdapIssuanceService {
         try {
             CryptoEngine engine = CryptoEngine.IDEMIX;
             KeyManager keyManager = UserStorageManager
-                    .getKeyManager(IssuanceHelper.getFileStoragePrefix(
-                            this.fileStoragePrefix, engine));
+                    .getKeyManager("idemix");
 
             boolean r1 = keyManager.storeCredentialSpecification(
                     credentialSpecifationUid, credSpec);
@@ -275,6 +274,7 @@ public class LdapIssuanceService {
         }
     }
 	
+	//This function was copied from the original IssuanceService in Code/core-abce/abce-services
 	@GET()
 	@Path("/getCredentialSpecification/{magicCookie}/{credentialSpecificationUid}")
 	public Response getCredentialSpecification(
@@ -288,9 +288,7 @@ public class LdapIssuanceService {
 		logger.info("IssuanceService - getCredentialSpecification: " + credentialSpecificationUid);
 		
 		try {
-			KeyManager keyManager = UserStorageManager.getKeyManager(
-					IssuanceHelper.getFileStoragePrefix(this.fileStoragePrefix,
-					CryptoEngine.IDEMIX));
+			KeyManager keyManager = UserStorageManager.getKeyManager("idemix");
 			
 			CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
 			
@@ -305,4 +303,37 @@ public class LdapIssuanceService {
 			return logger.exit(Response.serverError().build());
 		}
 	}
+	
+	/*
+	 * The following section contains code copied from the original issuance service from the tree
+	 * Code/core-abce/abce-service
+	 */
+	
+	/* SECTION */
+	
+	
+	private void initializeHelper(CryptoEngine cryptoEngine) {
+        logger.info("IssuanceService loading...");
+
+        try {
+            if (IssuanceHelper.isInit()) {
+                logger.info("IssuanceHelper is initialized");
+                IssuanceHelper.verifyFiles(false, this.fileStoragePrefix,
+                        cryptoEngine);
+            } else {
+
+                logger.info("Initializing IssuanceHelper...");
+
+                IssuanceHelper.initInstanceForService(cryptoEngine,
+                        "", "");
+
+                logger.info("IssuanceHelper is initialized");
+            }
+        } catch (Exception e) {
+            System.out.println("Create Domain FAILED " + e);
+            e.printStackTrace();
+        }
+    }
+	
+	/* END SECTION */
 }
