@@ -320,21 +320,18 @@ public class LdapIssuanceService {
 
 	/* SECTION */
 
-	/*
+	
 	private void initializeHelper(CryptoEngine cryptoEngine) {
         logger.info("IssuanceService loading...");
 
         try {
             if (IssuanceHelper.isInit()) {
                 logger.info("IssuanceHelper is initialized");
-                IssuanceHelper.verifyFiles(false, this.fileStoragePrefix,
-                        cryptoEngine);
             } else {
 
                 logger.info("Initializing IssuanceHelper...");
 
-                IssuanceHelper.initInstanceForService(cryptoEngine,
-                        "", "");
+                IssuanceHelper.initInstanceForService(cryptoEngine);
 
                 logger.info("IssuanceHelper is initialized");
             }
@@ -342,7 +339,7 @@ public class LdapIssuanceService {
             System.out.println("Create Domain FAILED " + e);
             e.printStackTrace();
         }
-    }*/
+    }
 
 	/* END SECTION */
 }

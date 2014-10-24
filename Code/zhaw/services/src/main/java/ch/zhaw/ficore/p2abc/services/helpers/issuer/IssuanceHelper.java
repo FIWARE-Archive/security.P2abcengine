@@ -63,8 +63,12 @@ public class IssuanceHelper {
 	private KeyManager keyManager;
 	private IssuerAbcEngine singleEngine;
 	
+	public static boolean isInit() {
+		return (instance == null);
+	}
+	
 	public static synchronized IssuanceHelper initInstanceForService(
-			CryptoEngine cryptoEngine, ServicesConfiguration config) throws Exception {
+			CryptoEngine cryptoEngine) throws Exception {
 		
 		logger.entry();
 		
@@ -73,21 +77,20 @@ public class IssuanceHelper {
                     "initInstance can only be called once!"));
         }
 
-        instance = new IssuanceHelper(cryptoEngine, config);
+        instance = new IssuanceHelper(cryptoEngine);
 
         return logger.exit(instance);
     }
 	
-	private IssuanceHelper(CryptoEngine cryptoEngine, ServicesConfiguration config)
+	private IssuanceHelper(CryptoEngine cryptoEngine)
                     throws Exception {
         logger.info("IssuanceHelper : create instance for issuer service "
                 + cryptoEngine);
         
         this.cryptoEngine = cryptoEngine;
-        this.serviceConfig = config;
-
+        
         this.setupSingleEngineForService(
-                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(config, ServicesConfiguration.ServiceType.ISSUANCE));
+                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(ServicesConfiguration.ServiceType.ISSUANCE));
     }
 	
 	private void setupSingleEngineForService(

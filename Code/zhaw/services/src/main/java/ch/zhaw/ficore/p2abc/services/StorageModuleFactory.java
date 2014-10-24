@@ -25,10 +25,10 @@ public class StorageModuleFactory {
 	 * 
 	 * @return Array of Modules that shall be used to overwrite existing guice bindings.
 	 */
-	public static synchronized Module[] getModulesForServiceConfiguration(ServicesConfiguration config, ServicesConfiguration.ServiceType type) {
+	public static synchronized Module[] getModulesForServiceConfiguration(ServicesConfiguration.ServiceType type) {
 		logger.entry();
 		
-		StorageConfiguration storageConfig = config.getStorageConfiguration();
+		StorageConfiguration storageConfig = ServicesConfiguration.getStorageConfiguration();
 		
 		if(storageConfig instanceof SqliteStorageConfiguration) {
 			return logger.exit(new Module[]{new SqliteStorageModule((SqliteStorageConfiguration) storageConfig, type)});
