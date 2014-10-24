@@ -87,7 +87,7 @@ public class IssuanceHelper {
         this.serviceConfig = config;
 
         this.setupSingleEngineForService(
-                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(config));
+                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(config, ServicesConfiguration.ServiceType.ISSUANCE));
     }
 	
 	private void setupSingleEngineForService(

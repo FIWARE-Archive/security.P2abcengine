@@ -31,7 +31,7 @@ public class ServicesConfiguration {
 	public enum ServiceType {
 		ISSUANCE,
 		VERIFICATION,
-		USER,
+		USER
 	}
 
 	/** Configuration data for issuance service. */
@@ -83,6 +83,7 @@ public class ServicesConfiguration {
 	/** Private do-nothing constructor to prevent construction of instances. */
 	private ServicesConfiguration () {
 	}
+	
 	
 	/**
 	 * Returns a copy of the current storage configurotion.
@@ -211,6 +212,7 @@ public class ServicesConfiguration {
 				}
 
 				logger.info("New configuration: " + configuration);
+				
 			} catch (CloneNotSupportedException e) {
 				logger.error("Service configuration can't be cloned: \""
 						+ e.getMessage() + "\". This is decidedly unexpected!");
@@ -221,6 +223,7 @@ public class ServicesConfiguration {
 					+ " was NOT overwritten and the old configuration is still in"
 					+ " effect.");
 		}
+		
 		logger.exit();
 	}
 
