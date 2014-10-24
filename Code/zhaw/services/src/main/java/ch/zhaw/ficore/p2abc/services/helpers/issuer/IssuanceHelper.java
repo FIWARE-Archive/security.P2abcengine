@@ -50,6 +50,7 @@ import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.xml.SystemParameters;
 
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 
 public class IssuanceHelper {
 	private static Logger logger = LogManager.getLogger(IssuanceHelper.class.getName());
@@ -86,7 +87,7 @@ public class IssuanceHelper {
         this.serviceConfig = config;
 
         this.setupSingleEngineForService(
-                cryptoEngine, getModulesForServiceConfiguration(config));
+                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(config, ServicesConfiguration.ServiceType.ISSUANCE));
     }
 	
 	private void setupSingleEngineForService(
@@ -118,9 +119,4 @@ public class IssuanceHelper {
         
         this.random = configuration.getPrng();
     }
-	
-	
-	private static Module[] getModulesForServiceConfiguration(ServicesConfiguration config) {
-		return new Module[]{};
-	}
 }
