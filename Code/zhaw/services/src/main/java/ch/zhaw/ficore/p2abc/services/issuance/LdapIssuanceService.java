@@ -286,6 +286,7 @@ public class LdapIssuanceService {
         }
     }
 	
+	//This function was copied from the original IssuanceService in Code/core-abce/abce-services
 	@GET()
 	@Path("/getCredentialSpecification/{magicCookie}/{credentialSpecificationUid}")
 	public Response getCredentialSpecification(
