@@ -1,11 +1,19 @@
 package ch.zhaw.ficore.p2abc.storage;
 
 import java.net.URI;
-import java.util.List;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
-import java.sql.*;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.DataFormatException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +33,7 @@ import org.apache.logging.log4j.Logger;
  * @author mroman
  */
 public class SqliteURIBytesStorage implements URIBytesStorage {
-	private Connection con;
+  private Connection con;
 	private String table;
 	
 	private Logger logger;
@@ -64,11 +72,12 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 			synchronized(con) {
 				Statement stmt = null;
 				try {
+				  checkIfSafeTableName(table);
 					stmt = con.createStatement();
 				    String sql = "CREATE TABLE IF NOT EXISTS " + table +
 				                   "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
 				                   " uri           TEXT    NOT NULL, " + 
-				                   " value         BLOB     NOT NULL)";
+				                   " value         BLOB    NOT NULL)";
 				    stmt.executeUpdate(sql);
 				    this.table = table;
 				}
@@ -89,7 +98,44 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 		logger.exit();
 	}
 	
-	/**
+	/** Checks if a table name is safe to use in a SQL CREATE TABLE statement.
+	 * 
+	 * This function applies a rather drastic whitelist of characters that
+	 * are allowed in a SQL CREATE TABLE statement.  This is to prevent
+	 * SQL injection at the "create table" stage.  For example, <code>users</code>
+	 * is a valid table name, whereas <code>a; DROP TABLE users</code> is not.
+	 * 
+	 * This function might reject perfectly safe names out of paranoia, but names
+	 * consisting only of ASCII letters are always safe.
+	 * 
+	 * @param tableName the table name to check
+	 * 
+	 * @throws DataFormatException if the table name is not deemed to be safe
+	 */
+  private static void checkIfSafeTableName(String tableName) throws DataFormatException {
+    CharsetEncoder asciiEncoder = StandardCharsets.US_ASCII.newEncoder();
+
+    if (!asciiEncoder.canEncode(tableName)) {
+      throw new DataFormatException("table name " + tableName
+          + " contains non-ASCII characters");      
+    }
+    
+    for (char c : tableName.toCharArray()) {
+      int codePoint = c;
+      
+      /* At this point, codePoint is an ASCII character, hence the
+       * comparisons below are safe. */
+      if ((codePoint >= 'A' && codePoint <= 'Z')
+          || (codePoint >= 'a' && codePoint <= 'z'))
+        ; // empty
+      else {
+        throw new DataFormatException("table name " + tableName
+            + " contains non-letter '" + c + "' (only letters allowed)");
+      }
+    }
+  }
+
+  /**
 	 * Lists all keys
 	 */
 	public List<URI> keys() throws SQLException {
