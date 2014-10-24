@@ -311,7 +311,7 @@ public class LdapIssuanceService {
 	
 	/* SECTION */
 	
-	
+	/*
 	private void initializeHelper(CryptoEngine cryptoEngine) {
         logger.info("IssuanceService loading...");
 
@@ -333,7 +333,7 @@ public class LdapIssuanceService {
             System.out.println("Create Domain FAILED " + e);
             e.printStackTrace();
         }
-    }
+    }*/
 	
 	/* END SECTION */
 }

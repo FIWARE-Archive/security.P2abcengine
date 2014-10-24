@@ -27,16 +27,43 @@ package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
+
+import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
+import eu.abc4trust.abce.external.issuer.IssuerAbcEngine;
+import eu.abc4trust.abce.external.issuer.SynchronizedIssuerAbcEngineImpl;
+import eu.abc4trust.abce.internal.issuer.credentialManager.CredentialManager;
+import eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer;
+import eu.abc4trust.guice.ProductionModule;
+import eu.abc4trust.guice.ProductionModuleFactory;
+import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
+import eu.abc4trust.guice.configuration.AbceConfigurationImpl;
+import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyManagerException;
+import eu.abc4trust.xml.SystemParameters;
+
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+
 public class IssuanceHelper {
 	private static Logger logger = LogManager.getLogger(IssuanceHelper.class.getName());
 	private static IssuanceHelper instance = null;
 	
-	private IssuanceHelper() {
-		logger = LogManager.getLogger(IssuanceHelper.class.getName());
-	}
+	private CryptoEngine cryptoEngine;
+	private ServicesConfiguration serviceConfig;
+	private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
+	private Random random;
+	private KeyManager keyManager;
+	private IssuerAbcEngine singleEngine;
 	
 	public static synchronized IssuanceHelper initInstanceForService(
-            CryptoEngine cryptoEngine) throws Exception {
+			CryptoEngine cryptoEngine, ServicesConfiguration config) throws Exception {
 		
 		logger.entry();
 		
@@ -45,10 +72,55 @@ public class IssuanceHelper {
                     "initInstance can only be called once!"));
         }
 
-        instance = new IssuanceHelper(cryptoEngine,
-                systemAndIssuerParamsPrefix, fileStoragePrefix, new String[0],
-                modules);
+        instance = new IssuanceHelper(cryptoEngine, config);
 
         return logger.exit(instance);
     }
+	
+	private IssuanceHelper(CryptoEngine cryptoEngine, ServicesConfiguration config)
+                    throws Exception {
+        logger.info("IssuanceHelper : create instance for issuer service "
+                + cryptoEngine);
+        
+        this.cryptoEngine = cryptoEngine;
+        this.serviceConfig = config;
+
+        this.setupSingleEngineForService(
+                cryptoEngine, getModulesForServiceConfiguration(config));
+    }
+	
+	private void setupSingleEngineForService(
+            CryptoEngine cryptoEngine,
+            Module... modules)
+                    throws Exception {
+
+        AbceConfigurationImpl configuration = new AbceConfigurationImpl();
+
+        Module newModule = ProductionModuleFactory
+                .newModule(configuration, cryptoEngine);
+        Module combinedModule = Modules.override(newModule).with(modules);
+        Injector injector = Guice.createInjector(combinedModule);
+
+        IssuerAbcEngine engine = injector.getInstance(IssuerAbcEngine.class);
+
+        this.singleEngine = new SynchronizedIssuerAbcEngineImpl(engine);
+
+        this.keyManager = injector.getInstance(KeyManager.class);
+        
+        SystemParameters systemParameters = keyManager.getSystemParameters();
+
+        if (systemParameters == null) {
+            logger.warn("No system parameters loaded");
+        }
+
+        this.issuerStorageManagerList.add(injector
+                .getInstance(TokenStorageIssuer.class));
+        
+        this.random = configuration.getPrng();
+    }
+	
+	
+	private static Module[] getModulesForServiceConfiguration(ServicesConfiguration config) {
+		return new Module[]{};
+	}
 }
