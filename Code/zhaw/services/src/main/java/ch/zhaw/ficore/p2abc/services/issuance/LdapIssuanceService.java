@@ -28,6 +28,7 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
+import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.*;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
@@ -46,7 +47,7 @@ public class LdapIssuanceService {
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
-	private URIBytesStorage queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "query_rules");
+	private URIBytesStorage queryRules;
 	
 	private final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
 	
@@ -71,8 +72,9 @@ public class LdapIssuanceService {
 	}
 
 
-	public LdapIssuanceService() {
-		logger = LogManager.getLogger(LdapIssuanceService.class.getName());
+	public LdapIssuanceService() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+		logger = LogManager.getLogger();
+    queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "query_rules");
 	}
 
 	@GET()
@@ -85,21 +87,21 @@ public class LdapIssuanceService {
 	
 	@GET()
 	@Path("/test")
-	public Response test() throws URISyntaxException, SQLException {
+	public Response test() throws URISyntaxException, SQLException, ClassNotFoundException, UnsafeTableNameException {
 		new SqliteURIBytesStorage("/tmp/foo.db", "foobar").put(new URI("foo"), new byte[]{1,2,3});
 	    return Response.ok().build();
 	}
 	
 	@GET()
 	@Path("/test2/{param}")
-	public Response test2(@PathParam("param") String param) throws URISyntaxException, SQLException {
+	public Response test2(@PathParam("param") String param) throws URISyntaxException, SQLException, ClassNotFoundException, UnsafeTableNameException {
 		boolean b = new SqliteURIBytesStorage("/tmp/foo.db", "foobar").containsKey(new URI(param));
 		return Response.ok(b ? "true" : "false").build();
 	}
 	
 	@GET()
 	@Path("/test3")
-	public Response test3() throws SQLException {
+	public Response test3() throws SQLException, ClassNotFoundException, UnsafeTableNameException {
 		String s = "";
 		for(URI uri : new SqliteURIBytesStorage("/tmp/foo.db", "foobar").keys()) {
 			s += uri.toString() + ";";

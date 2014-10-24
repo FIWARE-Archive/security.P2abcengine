@@ -46,56 +46,61 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * 
 	 * @param filePath Path to the database file
 	 * @param table Name of the table to use
+	 * @throws UnsafeTableNameException 
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public SqliteURIBytesStorage(String filePath, String table) {
+	public SqliteURIBytesStorage(String filePath, String table) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
 		logger = LogManager.getLogger(SqliteURIBytesStorage.class.getName());
 		init(filePath, table);
 	}
 	
 	/**
 	 * Performs the "connection sharing" logic. 
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
+	 * @throws DataFormatException 
+	 * @throws UnsafeTableNameException 
 	 */
-	private synchronized void init(String filePath, String table) {
-		logger.entry();
-		try {
-			Class.forName("org.sqlite.JDBC");
-			
-			String key = filePath;
-			
-			if(connections.containsKey(key))
-				con = connections.get(key);
-			else {
-				con = DriverManager.getConnection("jdbc:sqlite:" + filePath);
-				connections.put(key, con);
-			}
-			
-			synchronized(con) {
-				Statement stmt = null;
-				try {
-				  checkIfSafeTableName(table);
-					stmt = con.createStatement();
-				    String sql = "CREATE TABLE IF NOT EXISTS " + table +
-				                   "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
-				                   " uri           TEXT    NOT NULL, " + 
-				                   " value         BLOB    NOT NULL)";
-				    stmt.executeUpdate(sql);
-				    this.table = table;
-				}
-				catch(Exception e) {
-					logger.catching(e);
-					throw logger.throwing(e);
-				}
-				finally {
-					if(stmt != null)
-						stmt.close();
-				}
-			}
-		}
-		catch(Exception e) {
-			logger.catching(e);
-			throw logger.throwing(new RuntimeException("Failed to open storage!"));
-		}
-		logger.exit();
+	private synchronized void init(String filePath, String table) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+	  logger.entry();
+	  Class.forName("org.sqlite.JDBC");
+
+	  String key = filePath;
+
+	  if(connections.containsKey(key))
+	    con = connections.get(key);
+	  else {
+	    con = DriverManager.getConnection("jdbc:sqlite:" + filePath);
+	    connections.put(key, con);
+	  }
+
+	  synchronized(con) {
+	    Statement stmt = null;
+	    try {
+	      checkIfSafeTableName(table);
+	      stmt = con.createStatement();
+	      String sql = "CREATE TABLE IF NOT EXISTS " + table +
+	          "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
+	          " uri           TEXT    NOT NULL, " + 
+	          " value         BLOB    NOT NULL)";
+	      stmt.executeUpdate(sql);
+	      this.table = table;
+	    }
+	    catch(SQLException e) {
+	       logger.catching(e);
+	        throw logger.throwing(e);
+	    }
+	    catch (UnsafeTableNameException e) {
+        logger.catching(e);
+        throw logger.throwing(e);	      
+	    }
+	    finally {
+	      if(stmt != null)
+	        stmt.close();
+	    }
+	  }
+    logger.exit();
 	}
 	
 	/** Checks if a table name is safe to use in a SQL CREATE TABLE statement.
@@ -112,12 +117,11 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	 * 
 	 * @throws DataFormatException if the table name is not deemed to be safe
 	 */
-  private static void checkIfSafeTableName(String tableName) throws DataFormatException {
+  private static void checkIfSafeTableName(String tableName) throws  UnsafeTableNameException {
     CharsetEncoder asciiEncoder = StandardCharsets.US_ASCII.newEncoder();
 
     if (!asciiEncoder.canEncode(tableName)) {
-      throw new DataFormatException("table name " + tableName
-          + " contains non-ASCII characters");      
+      throw new UnsafeTableNameException(tableName);
     }
     
     for (char c : tableName.toCharArray()) {
@@ -129,8 +133,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
           || (codePoint >= 'a' && codePoint <= 'z'))
         ; // empty
       else {
-        throw new DataFormatException("table name " + tableName
-            + " contains non-letter '" + c + "' (only letters allowed)");
+        throw new UnsafeTableNameException(tableName);
       }
     }
   }
