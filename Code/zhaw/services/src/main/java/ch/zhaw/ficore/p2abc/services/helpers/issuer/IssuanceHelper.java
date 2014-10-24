@@ -35,6 +35,7 @@ import com.google.inject.util.Modules;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.io.IOException;
 
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.abce.external.issuer.IssuerAbcEngine;
@@ -48,6 +49,8 @@ import eu.abc4trust.guice.configuration.AbceConfigurationImpl;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.xml.SystemParameters;
+import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
+import eu.abc4trust.cryptoEngine.idemix.user.IdemixCryptoEngineUserImpl;
 
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
@@ -56,12 +59,27 @@ public class IssuanceHelper {
 	private static Logger logger = LogManager.getLogger(IssuanceHelper.class.getName());
 	private static IssuanceHelper instance = null;
 	
+	private static int UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE = 0; //TODO: so far nobody has found out what this is supposed to be for. 
+	
 	private CryptoEngine cryptoEngine;
 	private ServicesConfiguration serviceConfig;
 	private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
 	private Random random;
 	private KeyManager keyManager;
 	private IssuerAbcEngine singleEngine;
+	private SystemParameters generatedSystemParameters = null;
+	
+	
+	private IssuanceHelper(CryptoEngine cryptoEngine)
+                    throws Exception {
+        logger.info("IssuanceHelper : create instance for issuer service "
+                + cryptoEngine);
+        
+        this.cryptoEngine = cryptoEngine;
+        
+        this.setupSingleEngineForService(
+                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(ServicesConfiguration.ServiceType.ISSUANCE));
+    }
 	
 	public static boolean isInit() {
 		return (instance == null);
@@ -82,15 +100,13 @@ public class IssuanceHelper {
         return logger.exit(instance);
     }
 	
-	private IssuanceHelper(CryptoEngine cryptoEngine)
-                    throws Exception {
-        logger.info("IssuanceHelper : create instance for issuer service "
-                + cryptoEngine);
-        
-        this.cryptoEngine = cryptoEngine;
-        
-        this.setupSingleEngineForService(
-                cryptoEngine, StorageModuleFactory.getModulesForServiceConfiguration(ServicesConfiguration.ServiceType.ISSUANCE));
+	public static synchronized IssuanceHelper getInstance() {
+        logger.info("IssuanceHelper.getInstance : " + instance
+                + (instance == null ? "" : " : " + instance.cryptoEngine));
+        if (instance == null) {
+            throw logger.throwing(new IllegalStateException("getInstance not called before using IssuanceHelper!"));
+        }
+        return instance;
     }
 	
 	private void setupSingleEngineForService(
@@ -121,5 +137,36 @@ public class IssuanceHelper {
                 .getInstance(TokenStorageIssuer.class));
         
         this.random = configuration.getPrng();
+    }
+	
+	public SystemParameters createNewSystemParametersWithIdemixSpecificKeylength(
+            int idemixKeylength, int uproveKeylength) throws IOException,
+            KeyManagerException, Exception {
+
+        return this.createNewSystemParametersWithIdemixSpecificKeylength(
+                idemixKeylength, uproveKeylength, this.keyManager);
+
+    }
+
+    private SystemParameters createNewSystemParametersWithIdemixSpecificKeylength(
+            int idemixKeylength, int uproveKeylength, KeyManager keyManager)
+                    throws IOException,
+                    KeyManagerException, Exception {
+        logger.info("- create new system parameters with keysize: "
+                + idemixKeylength);
+        // ok - we have to generate them from scratch...
+        this.generatedSystemParameters = SystemParametersUtil
+                .generatePilotSystemParameters_WithIdemixSpecificKeySize(
+                        idemixKeylength, uproveKeylength, UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE);
+
+        // store in keyManager
+        keyManager.storeSystemParameters(this.generatedSystemParameters);
+
+        IdemixCryptoEngineUserImpl
+        .loadIdemixSystemParameters(this.generatedSystemParameters);
+
+        logger.info("- new SystemParameters.");
+
+        return this.generatedSystemParameters;
     }
 }
