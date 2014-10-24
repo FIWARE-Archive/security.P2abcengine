@@ -42,6 +42,9 @@ public class ServicesConfiguration {
 
 	/** Configuration data for issuance service. */
 	private static UserConfigurationData userConfiguration = new UserConfigurationData();
+	
+	/** Storage configuration **/
+	private static StorageConfiguration storageConfiguration = new SqliteStorageConfiguration(); //TODO: make more generic -- munt
 
 	private static Logger logger = LogManager.getLogger();
 
@@ -79,6 +82,26 @@ public class ServicesConfiguration {
 
 	/** Private do-nothing constructor to prevent construction of instances. */
 	private ServicesConfiguration () {
+	}
+	
+	/**
+	 * Returns a copy of the current storage configurotion.
+	 * 
+	 * @return copy (StorageConfiguration)
+	 */
+	public static synchronized StorageConfiguration getStorageConfiguration() {
+		logger.entry();
+
+		StorageConfiguration ret = null;
+		
+		try {
+			ret = (StorageConfiguration) storageConfiguration.clone();
+		} catch (CloneNotSupportedException e) {
+			logger.error("Storage configuration can't be cloned: \""
+					+ e.getMessage() + "\". This is decidedly unexpected!");
+		}
+
+		return logger.exit(ret);
 	}
 
 	/** Returns a copy of the current issuance configuration.
