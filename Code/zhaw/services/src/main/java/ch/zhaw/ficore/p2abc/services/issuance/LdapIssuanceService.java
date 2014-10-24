@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import ch.zhaw.ficore.p2abc.services.ConfigurationException;
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/abce-services (COPY)
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
@@ -51,9 +52,9 @@ import com.google.inject.Injector;
 public class LdapIssuanceService {
 	@Context
 	ServletContext context;
-	
+
 	private static final URI CRYPTOMECHANISM_URI_IDEMIX = URI
-            .create("urn:abc4trust:1.0:algorithm:idemix");
+			.create("urn:abc4trust:1.0:algorithm:idemix");
 
 	//private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
 	//private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
@@ -338,7 +339,10 @@ public class LdapIssuanceService {
 
 				logger.info("Initializing IssuanceHelper...");
 
-				IssuanceHelper.initInstanceForService(cryptoEngine);
+				IssuanceHelper.initInstanceForService(cryptoEngine,
+						"", "", 
+						StorageModuleFactory.getModulesForServiceConfiguration(
+								ServicesConfiguration.ServiceType.ISSUANCE));
 
 				logger.info("IssuanceHelper is initialized");
 			}
