@@ -1,7 +1,9 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
 
 /** Serves as a Factory for AttributeInfoProviders.
@@ -13,11 +15,9 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
  * @author mroman
  */
 public abstract class AttributeInfoProvider {
-	
-	protected ConfigurationData configuration;
-	
-	public AttributeInfoProvider(ConfigurationData configuration) {
-		this.configuration = configuration;
+  private static final Logger logger = LogManager.getLogger();;
+  
+	public AttributeInfoProvider(IssuanceConfigurationData configuration) {
 	}
 	
 	/**
@@ -28,14 +28,19 @@ public abstract class AttributeInfoProvider {
 	 * @param configuration Configuration
 	 * @return an implementation of an AttributeInfoProvider
 	 */
-	public static AttributeInfoProvider getAttributeInfoProvider(ConfigurationData configuration) {
-		switch(configuration.identitySource) {
+	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfigurationData configuration) {
+	  logger.entry();
+	  
+		switch(configuration.getIdentitySource()) {
 		case FAKE:
-			return new FakeAttributeInfoProvider(configuration);
-		case LDAP:
-			return new LdapAttributeInfoProvider(configuration);
+			return logger.exit(new FakeAttributeInfoProvider(configuration));
+    case LDAP:
+      return logger.exit(new LdapAttributeInfoProvider(configuration));
+		default:
+		  logger.error("Identity source " + configuration.getIdentitySource() +
+		      " not supported");
+		  return logger.exit(null);
 		}
-		return null;
 	}
 	
 	/**
@@ -46,8 +51,10 @@ public abstract class AttributeInfoProvider {
 	
 	/**
 	 * Returns the collected meta-information about attributes of <em>name</em>.
-	 * <em>Name</em> may and should be used to distinguish between different objects/credentials
-	 * a user can obtain. I.e. <em>name</em> may refer to an objectClass in an LDAP identity source.
+	 * The <em>name</em> may and should be used to distinguish between different
+	 * objects/credentials a user can obtain. I.e. <em>name</em> may refer to an
+	 * objectClass in an LDAP identity source.
+	 * 
 	 * The exact behaviour of <em>name</em> is provider specific.
 	 * 
 	 * @param name <em>name</em>

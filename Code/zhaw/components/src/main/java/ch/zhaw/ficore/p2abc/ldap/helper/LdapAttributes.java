@@ -25,7 +25,7 @@ public class LdapAttributes {
 	 */
 	public static void replaceAttribute(String name, Attribute attribute, LdapConnection con) throws NamingException {
 		DirContext context = con.getInitialDirContext();
-		Attributes attributes = context.getAttributes(name);
+		//Attributes attributes = context.getAttributes(name);
 		ModificationItem[] mods = new ModificationItem[]{
 			new ModificationItem(
 					DirContext.REPLACE_ATTRIBUTE,

@@ -1,12 +1,12 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.ServiceConfiguration;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
-import ch.zhaw.ficore.p2abc.ldap.helper.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 
 /**
  * An AuthenticationProvider for LDAP.
@@ -21,7 +21,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	/**
 	 * Constructor
 	 */
-	public LdapAuthenticationProvider(ConfigurationData configuration) {
+	public LdapAuthenticationProvider(IssuanceConfigurationData configuration) {
 		super(configuration);
 		logger = LogManager.getLogger(LdapAuthenticationProvider.class.getName());
 	}
@@ -45,11 +45,12 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 			return logger.exit(false);
 		
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
-		if(configuration.ldapUseTls)
+		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+		if(configuration.doesLdapUseTls())
 			throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 		
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.ldapServerPort, configuration.ldapServerName);
+			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.getLdapServerPort(), configuration.getLdapServerName());
 			cfg.setAuth(simpleAuth.username, simpleAuth.password);
 			ldapConnection = cfg.newConnection();
 			return logger.exit(true);

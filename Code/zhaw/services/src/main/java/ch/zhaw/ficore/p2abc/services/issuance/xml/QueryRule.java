@@ -1,14 +1,15 @@
 package ch.zhaw.ficore.p2abc.services.issuance.xml;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="query-rule")
 public class QueryRule implements Serializable {
-	@XmlElement(name="query-string")
+  private static final long serialVersionUID = 9154661099255513606L;
+  
+  @XmlElement(name="query-string")
 	public String queryString;
 
 	public QueryRule() {}

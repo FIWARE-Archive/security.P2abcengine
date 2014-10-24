@@ -1,6 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
 
 /** Serves as a Factory for AuthenticationProviders.
  * 
@@ -13,10 +12,7 @@ import ch.zhaw.ficore.p2abc.services.ConfigurationData;
  */
 public abstract class AuthenticationProvider {
 	
-	protected ConfigurationData configuration;
-	
-	public AuthenticationProvider(ConfigurationData configuration) {
-		this.configuration = configuration;
+	public AuthenticationProvider(IssuanceConfigurationData configuration) {
 	}
 	
 	/**
@@ -27,14 +23,14 @@ public abstract class AuthenticationProvider {
 	 * @param configuration a ServiceConfiguration
 	 * @return an implementation of an AuthenticationProvider
 	 */
-	public static AuthenticationProvider getAuthenticationProvider(ConfigurationData configuration) {
-		switch(configuration.identitySource) {
+	public static AuthenticationProvider getAuthenticationProvider(IssuanceConfigurationData configuration) {
+		switch(configuration.getIdentitySource()) {
 		case FAKE:
 			return new FakeAuthenticationProvider(configuration);
 		case LDAP:
 			return new LdapAuthenticationProvider(configuration);
 		default:
-	    throw new RuntimeException(configuration.identitySource.toString() + " is not a supported AuthenticationProvider!");
+	    throw new RuntimeException(configuration.getIdentitySource() + " is not a supported AuthenticationProvider!");
 		}
 	}
 	

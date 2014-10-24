@@ -9,8 +9,8 @@ import javax.naming.NamingException;
  *
  */
 public class LdapStatic {
-	private static LdapConnectionConfig _config;
-	private static LdapConnection _con;
+	private static LdapConnectionConfig config;
+	private static LdapConnection con;
 	
 	/**
 	 * Init LdapStatic with a LdapConnectionConfig. This
@@ -19,14 +19,14 @@ public class LdapStatic {
 	 * @throws NamingException
 	 */
 	public static void init(LdapConnectionConfig config) throws NamingException {
-		_config = config;
-		_con = config.newConnection();
+		LdapStatic.config = config;
+		LdapStatic.con = LdapStatic.config.newConnection();
 	}
 	
 	/**
 	 * @return a new LdapSearch-Object
 	 */
 	public static LdapSearch newSearch() {
-		return _con.newSearch();
+		return con.newSearch();
 	}
 }

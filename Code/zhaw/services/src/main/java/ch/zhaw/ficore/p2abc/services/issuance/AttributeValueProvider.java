@@ -1,7 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
 
 /** Serves as a Factory for AttributeValueProviders.
@@ -16,7 +14,7 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
  */
 public abstract class AttributeValueProvider {
 	
-	protected ConfigurationData configuration;
+	protected IssuanceConfigurationData configuration;
 	
 	/**
 	 * Constructor of an AttributeValueProvider.
@@ -28,7 +26,7 @@ public abstract class AttributeValueProvider {
 	 * @param authInfo AuthenticationInformation of the user
 	 * @param query Query (see description above)
 	 */
-	public AttributeValueProvider(ConfigurationData configuration, AuthenticationInformation authInfo, String query) {
+	public AttributeValueProvider(IssuanceConfigurationData configuration, AuthenticationInformation authInfo, String query) {
 		this.configuration = configuration;
 		loadAttributes(authInfo, query);
 	}
@@ -38,13 +36,13 @@ public abstract class AttributeValueProvider {
 	 * ServiceConfiguration. The AttributeValueProvider will receive
 	 * a reference to the configuration.
 	 * 
-	 * @param configuration Configuration
+	 * @param configuration Issuance configuration
 	 * @return an implementation of an AttributeValueProvider
 	 */
-	public static AttributeValueProvider getAttributeValueProvider(ConfigurationData configuration) {
-		switch(configuration.identitySource) {
-			default:
-				//return null;
+	public static AttributeValueProvider getAttributeValueProvider(IssuanceConfigurationData configuration) {
+		switch(configuration.getIdentitySource()) {
+		default:
+		  //return null;
 		}
 		return null;
 	}
