@@ -40,12 +40,17 @@ import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.IssuerParametersInput;
 import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.IssuanceMessage;
+import eu.abc4trust.xml.IssuanceMessageAndBoolean;
+import eu.abc4trust.xml.IssuancePolicy;
+import eu.abc4trust.xml.IssuancePolicyAndAttributes;
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.util.CryptoUriUtil;
 
@@ -549,6 +554,99 @@ public class LdapIssuanceService {
             throw new IllegalArgumentException("Unknown hashing algorithm");
         }
 
+    }
+    
+    /**
+     * This method is invoked by the Issuer to initiate an issuance protocol
+     * based on the given issuance policy ip and the list of attribute
+     * type-value pairs atts to be embedded in the new credential. It returns an
+     * IssuanceMessage that is to be sent to the User and fed to the
+     * issuanceProtocolStep method on the User’s side. The IssuanceMessage
+     * contains a Context attribute that will be the same for all message
+     * exchanges in this issuance protocol, to facilitate linking the different
+     * flows of the protocol.
+     * 
+     * In case of an issuance “from scratch”, i.e., for which the User does not
+     * have to prove ownership of existing credentials or established
+     * pseudonyms, the given issuance policy ip merely specifies the credential
+     * specification and the issuer parameters for the credential to be issued.
+     * In this case, the returned issuance message is the first message in the
+     * actual cryptographic issuance protocol.
+     * 
+     * In case of an “advanced” issuance, i.e., where the User has to prove
+     * ownership of existing credentials or pseudonyms to carry over attributes,
+     * a user secret, or a device secret, the returned IssuanceMessage is simply
+     * a wrapper around the issuance policy ip with a fresh Context attribute.
+     * The returned boolean indicates whether this is the last flow of the
+     * issuance protocol. If the IssuanceMessage is not the final one, the
+     * Issuer will subsequently invoke its issuanceProtocolStep method on the
+     * next incoming IssuanceMessage from the User. The issuer also returns the
+     * uid of the stored issuance log entry that contains an issuance token
+     * together with the attribute values provided by the issuer to keep track
+     * of the issued credentials.
+     */
+    @POST()
+    @Path("/initIssuanceProtocol/")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Produces(MediaType.TEXT_XML)
+    public JAXBElement<IssuanceMessageAndBoolean> initIssuanceProtocol(
+            IssuancePolicyAndAttributes issuancePolicyAndAttributes)
+                    throws Exception {
+
+        logger.info("IssuanceService - initIssuanceProtocol ");
+
+        IssuancePolicy ip = issuancePolicyAndAttributes.getIssuancePolicy();
+        List<Attribute> attributes = issuancePolicyAndAttributes.getAttribute();
+
+        URI issuerParametersUid = ip.getCredentialTemplate()
+                .getIssuerParametersUID();
+
+        CryptoEngine cryptoEngine = this.getCryptoEngine(issuerParametersUid);
+
+        this.initializeHelper(cryptoEngine);
+
+        this.initIssuanceProtocolValidateInput(issuancePolicyAndAttributes);
+
+        IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
+
+        /*this.loadCredentialSpecifications();
+
+        this.loadIssuerParameters();*/ //commented out by munt. Apparentely these just load
+        //credSpecs from a preconfigured location on the file system. Our cred specs should already
+        //be in the storage used by the keyManager.
+
+        IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper.initIssuanceProtocol(ip, attributes);
+
+        return this.of
+                .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean);
+
+    }
+
+    private CryptoEngine getCryptoEngine(URI issuerParametersUid) {
+        if (issuerParametersUid.toString().endsWith("idemix")) {
+            return CryptoEngine.IDEMIX;
+        }
+
+        throw new IllegalArgumentException(
+                "Unkown crypto engine from issuer parameters uid: \""
+                        + issuerParametersUid + "\"");
+    }
+    
+    private void initIssuanceProtocolValidateInput(
+            IssuancePolicyAndAttributes issuancePolicyAndAttributes) {
+        if (issuancePolicyAndAttributes == null) {
+            throw new IllegalArgumentException(
+                    "\"issuancePolicyAndAttributes\" is required.");
+        }
+
+        if (issuancePolicyAndAttributes.getIssuancePolicy() == null) {
+            throw new IllegalArgumentException(
+                    "\"Issuance policy\" is required.");
+        }
+
+        if (issuancePolicyAndAttributes.getAttribute() == null) {
+            throw new IllegalArgumentException("\"Attributes\" are required.");
+        }
     }
 
 	/* END SECTION */
