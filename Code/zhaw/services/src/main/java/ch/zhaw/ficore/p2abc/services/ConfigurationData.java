@@ -1,6 +1,6 @@
 package ch.zhaw.ficore.p2abc.services;
 
-public interface ConfigurationData {
+public interface ConfigurationData extends Cloneable {
   /** Checks the configuration data for plausibility.
    * 
    * This method checks the itself for plausibility and returns true or false,
@@ -12,6 +12,4 @@ public interface ConfigurationData {
    * @return true if this configuration is good, false otherwise.
    */
   public boolean isGood();
-    
-  public ConfigurationData clone() throws CloneNotSupportedException;
 }

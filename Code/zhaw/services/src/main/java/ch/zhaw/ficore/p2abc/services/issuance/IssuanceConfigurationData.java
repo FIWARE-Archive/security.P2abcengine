@@ -16,7 +16,7 @@ import ch.zhaw.ficore.p2abc.services.ConfigurationException;
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
-public class IssuanceConfigurationData implements ConfigurationData {
+public class IssuanceConfigurationData implements ConfigurationData, Cloneable {
   /** Default port for LDAP when TLS is used. */
   private static final int LDAP_TLS_DEFAULT_PORT = 636;
 
