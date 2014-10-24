@@ -20,6 +20,8 @@
 //* under the License.                                                *
 //*/**/****************************************************************
 
+//This code was copied from the Code/core-abce/service-helper tree
+
 package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
 /**
