@@ -134,7 +134,8 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 			/* At this point, codePoint is an ASCII character, hence the
 			 * comparisons below are safe. */
 			if ((codePoint >= 'A' && codePoint <= 'Z')
-					|| (codePoint >= 'a' && codePoint <= 'z'))
+					|| (codePoint >= 'a' && codePoint <= 'z')
+					|| (codePoint == '_'))
 				; // empty
 			else {
 				throw new UnsafeTableNameException(tableName);
