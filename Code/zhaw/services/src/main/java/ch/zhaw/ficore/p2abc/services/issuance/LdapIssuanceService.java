@@ -1,5 +1,9 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -11,75 +15,57 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.WebApplicationException;
 
-<<<<<<< HEAD
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration.ServiceType;
-=======
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.ServiceConfiguration;
-import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/abce-services (COPY)
->>>>>>> branch 'feature/ldap-issuer' of https://github.engineering.zhaw.ch/neut/p2abcengine.git
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
-
-import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.ABCEBoolean;
-import eu.abc4trust.xml.CredentialSpecification;
-import javax.xml.bind.JAXBElement;
-
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.services.ConfigurationException;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/abce-services (COPY)
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.ri.servicehelper.issuer.IssuanceHelper;
-
-
-
-import java.net.URI;
+import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.ObjectFactory;
 
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
 	@Context
 	ServletContext context;
 
-	private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
-	private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
+	//private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
+	//private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
+	private URIBytesStorage queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "query_rules");
 	
 	private final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
 	
 	private Logger logger;
 
 	static {
-<<<<<<< HEAD
-		//ServiceConfiguration.getInstance().setLdapParameters(false, "localhost", 10389, "", "");
-		ServicesConfiguration.setFakeIssuanceParameters();
-=======
-		ConfigurationData cfgData = new ConfigurationData();
-		cfgData.ldapUseTls = false;
-		cfgData.ldapServerName = "localhost";
-		cfgData.ldapServerPort = 10389;
-		cfgData.ldapUser = "uid=admin, ou=system";
-		cfgData.ldapPassword = "secret";
-		cfgData.identitySource = ConfigurationData.IdentitySource.LDAP;
-		ServiceConfiguration.setServiceConfiguration(cfgData);
->>>>>>> branch 'feature/ldap-issuer' of https://github.engineering.zhaw.ch/neut/p2abcengine.git
+		IssuanceConfigurationData cfgData;
+    try {
+      cfgData = new IssuanceConfigurationData(false, "localhost", 10389,
+          "uid=admin, ou=system", "secret");
+    } catch (ConfigurationException e) {
+      cfgData = null;
+    }
+		ServicesConfiguration.setIssuanceConfiguration(cfgData);
 		initializeWithConfiguration();
 	}
 	
 	public static void initializeWithConfiguration() {
-<<<<<<< HEAD
 	  IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
-=======
-		ConfigurationData configuration = ServiceConfiguration.getServiceConfiguration();
->>>>>>> branch 'feature/ldap-issuer' of https://github.engineering.zhaw.ch/neut/p2abcengine.git
 		authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 		attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 	}
@@ -96,57 +82,94 @@ public class LdapIssuanceService {
         //this.log.info("IssuanceService - status : running");
         return Response.ok().build();
     }
-
-	/**
-	 * /showConfig/{magicCookie} will send the client
-	 * the configuration of this service if and only if 
-	 * the supplied magicCookie is correct (which means
-	 * the supplied magicCookie matches the magicCookie
-	 * in the configuration of this service.)
-	 * 
-	 * Status: - FORBIDDEN if magicCookie is not correct.
-	 *         - OK otherwise.
-	 *
-	 * @param magicCookie - the magicCookie
-	 *//*
-	@GET()
-	@Path("/showConfig/{magicCookie}")
-	public Response verifyMagicCookie(@PathParam("magicCookie") String magicCookie) {
-		synchronized(configLock) {
-			if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
-				return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
-			}
-		}
-
-		return Response.ok(ldapSrvConf, MediaType.APPLICATION_XML).build();
-	}*/
-
-	/**
-	 *//*
-	@GET()
-	@Path("/reloadConfig/{magicCookie}")
-	public Response reloadConfig(@PathParam("magicCookie") String magicCookie) {
-		synchronized(configLock) {
-			if(!ldapSrvConf.isMagicCookieCorrect(magicCookie)) {
-				return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
-			}
-		}
-
-		try {
-			loadConfig();
-			return Response.ok().entity("OK").build();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			return Response.serverError().entity(e.toString()).build();
-		}
-	}*/
 	
 	@GET()
 	@Path("/test")
-	public Response test() {
-		return Response.ok(new AuthenticationRequest(new AuthInfoSimple("hi","there"))).build();
+	public Response test() throws URISyntaxException, SQLException {
+		new SqliteURIBytesStorage("/tmp/foo.db", "foobar").put(new URI("foo"), new byte[]{1,2,3});
+	    return Response.ok().build();
 	}
+	
+	@GET()
+	@Path("/test2/{param}")
+	public Response test2(@PathParam("param") String param) throws URISyntaxException, SQLException {
+		boolean b = new SqliteURIBytesStorage("/tmp/foo.db", "foobar").containsKey(new URI(param));
+		return Response.ok(b ? "true" : "false").build();
+	}
+	
+	@GET()
+	@Path("/test3")
+	public Response test3() throws SQLException {
+		String s = "";
+		for(URI uri : new SqliteURIBytesStorage("/tmp/foo.db", "foobar").keys()) {
+			s += uri.toString() + ";";
+		}
+		return Response.ok(s).build();
+	}
+	
+	/**
+	 * Store QueryRule.
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid UID of the credSpec
+	 * @return Response
+	 */
+	@PUT()
+	@Path("/storeQueryRule/{magicCookie}/{credentialSpecificationUid}")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response storeQueryRule(@PathParam("magicCookie") String magicCookie,
+			@PathParam("credentialSpecificationUid") String credentialSpecificationUid,
+			QueryRule rule) {
+		
+		logger.entry();
+		
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+		
+		try {
+			queryRules.put(new URI(credentialSpecificationUid), SerializationUtils.serialize(rule));
+			return logger.exit(Response.ok("OK").build());
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(Response.serverError().build());
+		}
+	}
+	
+	/**
+	 * Retreive a QueryRule.
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid
+	 * @return QueryRule
+	 */
+	@GET()
+	@Path("/getQueryRule/{magicCookie}/{credentialSpecificationUid}")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response storeQueryRule(@PathParam("magicCookie") String magicCookie,
+			@PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
+		
+		logger.entry();
+		
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+		
+		try {
+			if(!queryRules.containsKey(new URI(credentialSpecificationUid)))
+				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+			QueryRule rule = (QueryRule) SerializationUtils.deserialize(queryRules.get(new URI(credentialSpecificationUid)));
+			return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(Response.serverError().build());
+		}
+	}
+	
 	
 	/**
 	 * This function can be used to test the authentication.
@@ -160,6 +183,7 @@ public class LdapIssuanceService {
 	@Path("/testAuthentication")
 	@Consumes({MediaType.APPLICATION_XML})
 	public Response testAuthentication(AuthenticationRequest authReq) {
+		
 		if(authProvider.authenticate(authReq.authInfo))
 			return Response.ok("OK").build();
 		else
@@ -225,6 +249,9 @@ public class LdapIssuanceService {
 		
 		logger.entry();
 		
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+		
         logger.info("IssuanceService - storeCredentialSpecification: \""
                 + credentialSpecifationUid + "\"");
 
@@ -255,14 +282,14 @@ public class LdapIssuanceService {
 			@PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 		logger.entry();
 		
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+		
 		logger.info("IssuanceService - getCredentialSpecification: " + credentialSpecificationUid);
 		
 		try {
 			KeyManager keyManager = UserStorageManager.getKeyManager(
 					IssuanceHelper.getFileStoragePrefix(this.fileStoragePrefix,
-					CryptoEngine.IDEMIX));
-			
-			System.out.println("WOOT: " + IssuanceHelper.getFileStoragePrefix(this.fileStoragePrefix,
 					CryptoEngine.IDEMIX));
 			
 			CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));

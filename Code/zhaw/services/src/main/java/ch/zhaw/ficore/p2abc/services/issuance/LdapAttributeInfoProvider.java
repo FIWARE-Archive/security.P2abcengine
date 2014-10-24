@@ -1,17 +1,20 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
-import ch.zhaw.ficore.p2abc.ldap.helper.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
-import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
 
 
@@ -83,8 +86,11 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 		logger.entry();
 		
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.ldapServerPort, configuration.ldapServerName);
-			cfg.setAuth(configuration.ldapUser, configuration.ldapPassword);
+		  IssuanceConfigurationData configuration
+		      = ServicesConfiguration.getIssuanceConfiguration();
+			LdapConnectionConfig cfg = new LdapConnectionConfig(
+			    configuration.getLdapServerPort(), configuration.getLdapServerName());
+			cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
 			LdapConnection con = cfg.newConnection();
 			
 			DirContext ctx = con.getInitialDirContext();

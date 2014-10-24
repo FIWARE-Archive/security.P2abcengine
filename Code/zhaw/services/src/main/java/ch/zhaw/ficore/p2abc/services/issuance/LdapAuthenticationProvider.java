@@ -1,12 +1,12 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration.ServiceType;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
-import ch.zhaw.ficore.p2abc.ldap.helper.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
+import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 
 /**
  * An AuthenticationProvider for LDAP.
@@ -45,12 +45,8 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 			return logger.exit(false);
 		
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
-<<<<<<< HEAD
 		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
 		if(configuration.doesLdapUseTls())
-=======
-		if(configuration.ldapUseTls)
->>>>>>> branch 'feature/ldap-issuer' of https://github.engineering.zhaw.ch/neut/p2abcengine.git
 			throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 		
 		try {

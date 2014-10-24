@@ -110,6 +110,7 @@ public class ServicesConfiguration {
     ConfigurationData src = getConfigurationReferenceFor(type);
     
     try {
+      assert src != null;
       ret = src.clone();
     } catch (CloneNotSupportedException e) {
       logger.error("Service configuration can't be cloned: \""
@@ -160,15 +161,21 @@ public class ServicesConfiguration {
   
   private static synchronized void setConfigurationFor(ServiceType type, ConfigurationData newConfig) {
     logger.entry();
-    boolean typesMatch = true;
     
-    if (!serviceTypeMatchesObjectType(type, newConfig)) {
+    boolean nonNull = true;
+    if (newConfig == null) {
+      logger.warn("Trying to set configuration for " + type + " to null; ignored");
+      nonNull = false;
+    }
+    
+    boolean typesMatch = true;
+    if (nonNull && !serviceTypeMatchesObjectType(type, newConfig)) {
       logger.error("Type mismatch: attemtpt to overwrite " + type 
           + " configuration with object of type " + newConfig.getClass());
       typesMatch = false;
     }
 
-    if (typesMatch && newConfig.isGood()) {
+    if (nonNull && typesMatch && newConfig.isGood()) {
       ConfigurationData configuration = getConfigurationReferenceFor(type);
       logger.info("Old configuration: " + configuration);
       

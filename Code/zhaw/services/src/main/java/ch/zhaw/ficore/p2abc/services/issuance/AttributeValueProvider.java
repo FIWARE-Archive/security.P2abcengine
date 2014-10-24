@@ -1,7 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
 
 /** Serves as a Factory for AttributeValueProviders.
