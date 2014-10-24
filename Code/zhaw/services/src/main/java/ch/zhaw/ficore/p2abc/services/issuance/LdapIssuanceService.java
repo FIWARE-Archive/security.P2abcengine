@@ -94,8 +94,8 @@ public class LdapIssuanceService {
 	@GET()
 	@Path("/test")
 	public Response test() throws URISyntaxException, SQLException, ClassNotFoundException, UnsafeTableNameException {
-		Injector injector = Guice.createInjector(new SomeModule());
-		KeyStorage keyStorage = injector.getInstance(KeyStorage.class);
+		//Injector injector = Guice.createInjector(new SomeModule());
+		//KeyStorage keyStorage = injector.getInstance(KeyStorage.class);
 		return Response.ok().build();
 	}
 

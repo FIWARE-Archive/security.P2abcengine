@@ -8,7 +8,7 @@ import eu.abc4trust.keyManager.KeyStorage;
 
 import ch.zhaw.ficore.p2abc.storage.*;
 
-public class SomeModule extends AbstractModule {
+public class SqliteStorageModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		try {
