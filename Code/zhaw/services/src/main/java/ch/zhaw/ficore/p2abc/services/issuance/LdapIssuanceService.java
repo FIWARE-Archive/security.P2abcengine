@@ -17,6 +17,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.List;
+
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +43,11 @@ import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.SystemParameters;
+import eu.abc4trust.xml.IssuerParameters;
+import eu.abc4trust.xml.IssuerParametersInput;
+import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
+import eu.abc4trust.util.CryptoUriUtil;
 
 import javax.xml.bind.JAXBElement;
 
@@ -435,6 +441,115 @@ public class LdapIssuanceService {
 		throw new IllegalArgumentException("Unkown crypto mechanism: \""
 				+ cryptoMechanism + "\"");
 	}
+	
+	// H2.1 Update(jdn): added crypto engine.
+    /**
+     * This method generates a fresh issuance key and the corresponding Issuer
+     * parameters. The issuance key is stored in the Issuer’s key store, the
+     * Issuer parameters are returned as output of the method. The input to this
+     * method specify the credential specification credspec of the credentials
+     * that will be issued with these parameters, the system parameters syspars,
+     * the unique identifier uid of the generated parameters, the hash algorithm
+     * identifier hash, and, optionally, the parameters identifier for any
+     * Issuer-driven Revocation Authority.
+     * 
+     * Currently, the only supported hash algorithm is SHA-256 with identifier
+     * urn:abc4trust:1.0:hashalgorithm:sha-256.
+     * 
+     * @return
+     * @throws Exception
+     */
+    /*
+     * curl --header "Content-Type:application/xml" -X POST -d @credSpecAndSysParams.xml http://localhost:9500/abce-services/issuer/setupIssuerParameters/?cryptoEngine=IDEMIX\&issuerParametersUid=urn%3A%2F%2Ftest%2Ffoobar\&hash=urn:abc4trust:1.0:hashalgorithm:sha-256
+     */
+    @POST()
+    @Path("/setupIssuerParameters/")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Produces(MediaType.TEXT_XML)
+    public JAXBElement<IssuerParameters> setupIssuerParameters(
+            IssuerParametersInput issuerParametersInput)
+                    throws Exception {
+
+        logger.info("IssuanceService - setupIssuerParameters ");
+
+        CryptoEngine cryptoEngine = this
+                .parseCryptoMechanism(issuerParametersInput.getAlgorithmID());
+
+        this.initializeHelper(cryptoEngine);
+
+        this.validateInput(issuerParametersInput);
+        URI hashAlgorithm = issuerParametersInput.getHashAlgorithm();
+
+        String systemAndIssuerParamsPrefix = "";
+
+        IssuanceHelper instance = IssuanceHelper.getInstance();
+
+        KeyManager keyManager = instance.keyManager;
+        SystemParameters systemParameters = keyManager.getSystemParameters();
+
+        URI credentialSpecUid = issuerParametersInput.getCredentialSpecUID();
+        CredentialSpecification credspec = keyManager
+                .getCredentialSpecification(credentialSpecUid);
+
+        if (credspec == null) {
+            throw logger.throwing(new IllegalStateException(
+                    "Could not find credential specification \""
+                            + credentialSpecUid + "\""));
+        }
+
+        URI issuerParametersUid = issuerParametersInput.getParametersUID();
+        URI hash = hashAlgorithm;
+        URI revocationParametersUid = issuerParametersInput
+                .getRevocationParametersUID();
+        List<FriendlyDescription> friendlyDescriptions = issuerParametersInput
+                .getFriendlyIssuerDescription();
+        System.out.println("FriendlyIssuerDescription: "
+                + friendlyDescriptions.size());
+        IssuerParameters issuerParameters = instance.setupIssuerParameters(
+                cryptoEngine, credspec, systemParameters,
+                issuerParametersUid, hash, revocationParametersUid,
+                systemAndIssuerParamsPrefix, friendlyDescriptions);
+
+        logger.info("IssuanceService - issuerParameters generated");
+
+        SystemParameters serializeSp = SystemParametersUtil
+                .serialize(systemParameters);
+
+        issuerParameters.setSystemParameters(serializeSp);
+        return this.of.createIssuerParameters(issuerParameters);
+    }
+
+    private void validateInput(IssuerParametersInput issuerParametersTemplate) {
+        if (issuerParametersTemplate == null) {
+            throw new IllegalArgumentException(
+                    "issuer paramters input is required");
+        }
+
+        if (issuerParametersTemplate.getCredentialSpecUID() == null) {
+            throw new IllegalArgumentException(
+                    "Credential specifation UID is required");
+        }
+
+        if (issuerParametersTemplate.getParametersUID() == null) {
+            throw new IllegalArgumentException(
+                    "Issuer parameters UID is required");
+        }
+
+        if (issuerParametersTemplate.getAlgorithmID() == null) {
+            throw new IllegalArgumentException(
+                    "Crypto Algorithm ID is required");
+        }
+
+        if (issuerParametersTemplate.getHashAlgorithm() == null) {
+            throw new IllegalArgumentException("Hash algorithm is required");
+        }
+
+        if (!issuerParametersTemplate.getHashAlgorithm().equals(
+                CryptoUriUtil.getHashSha256())) {
+            throw new IllegalArgumentException("Unknown hashing algorithm");
+        }
+
+    }
 
 	/* END SECTION */
 }
