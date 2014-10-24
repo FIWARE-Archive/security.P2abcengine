@@ -5,11 +5,15 @@ import eu.abc4trust.keyManager.KeyStorage;
 import java.net.URI;
 import java.io.IOException;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class GenericKeyStorage implements KeyStorage {
 	
 	private URIBytesStorage storage;
 	
-	public GenericKeyStorage(URIBytesStorage storage) {
+	@Inject
+	public GenericKeyStorage(@Named("keyStorage") URIBytesStorage storage) {
 		this.storage = storage;
 	}
 	

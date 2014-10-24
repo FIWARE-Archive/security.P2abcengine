@@ -30,11 +30,17 @@ import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.*;
+import ch.zhaw.ficore.p2abc.services.guice.*;
+
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.ObjectFactory;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
@@ -74,7 +80,7 @@ public class LdapIssuanceService {
 
 	public LdapIssuanceService() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
 		logger = LogManager.getLogger();
-    queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "query_rules");
+		queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "query_rules");
 	}
 
 	@GET()
@@ -88,7 +94,8 @@ public class LdapIssuanceService {
 	@GET()
 	@Path("/test")
 	public Response test() throws URISyntaxException, SQLException, ClassNotFoundException, UnsafeTableNameException {
-		new SqliteURIBytesStorage("/tmp/foo.db", "foobar").put(new URI("foo"), new byte[]{1,2,3});
+		Injector injector = Guice.createInjector(new SomeModule());
+		KeyStorage keyStorage = injector.getInstance(KeyStorage.class);
 	    return Response.ok().build();
 	}
 	
