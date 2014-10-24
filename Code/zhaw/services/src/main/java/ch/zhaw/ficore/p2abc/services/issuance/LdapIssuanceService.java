@@ -148,7 +148,7 @@ public class LdapIssuanceService {
 	}
 
 	/**
-	 * Retreive a QueryRule.
+	 * Retrieve a QueryRule.
 	 * 
 	 * This function is protected by the magic cookie.
 	 * 
