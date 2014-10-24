@@ -51,8 +51,10 @@ public abstract class AttributeInfoProvider {
 	
 	/**
 	 * Returns the collected meta-information about attributes of <em>name</em>.
-	 * <em>Name</em> may and should be used to distinguish between different objects/credentials
-	 * a user can obtain. I.e. <em>name</em> may refer to an objectClass in an LDAP identity source.
+	 * The <em>name</em> may and should be used to distinguish between different
+	 * objects/credentials a user can obtain. I.e. <em>name</em> may refer to an
+	 * objectClass in an LDAP identity source.
+	 * 
 	 * The exact behaviour of <em>name</em> is provider specific.
 	 * 
 	 * @param name <em>name</em>
