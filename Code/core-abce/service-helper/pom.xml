@@ -7,6 +7,7 @@
     <version>patras-1.0.14-SNAPSHOT</version>
   </parent>
   <artifactId>service-helper</artifactId>
+  <packaging>jar</packaging>
   <name>service-helper</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

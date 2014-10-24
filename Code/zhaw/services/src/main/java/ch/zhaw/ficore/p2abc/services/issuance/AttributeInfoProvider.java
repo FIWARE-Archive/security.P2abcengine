@@ -17,18 +17,15 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 public abstract class AttributeInfoProvider {
   private static final Logger logger = LogManager.getLogger();;
   
-	protected IssuanceConfigurationData srvcCfg;
-	
 	public AttributeInfoProvider(IssuanceConfigurationData configuration) {
-		this.srvcCfg = configuration;
 	}
 	
 	/**
 	 * Factory method to construct an AttributeInfoProvider for a given
 	 * ServiceConfiguration. The AttributeInfoProvider will receive
-	 * a copy of the ServiceConfiguration.
+	 * a reference to the configuration.
 	 * 
-	 * @param configuration a ServiceConfiguration
+	 * @param configuration Configuration
 	 * @return an implementation of an AttributeInfoProvider
 	 */
 	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfigurationData configuration) {
@@ -37,6 +34,8 @@ public abstract class AttributeInfoProvider {
 		switch(configuration.getIdentitySource()) {
 		case FAKE:
 			return logger.exit(new FakeAttributeInfoProvider(configuration));
+    case LDAP:
+      return logger.exit(new LdapAttributeInfoProvider(configuration));
 		default:
 		  logger.error("Identity source " + configuration.getIdentitySource() +
 		      " not supported");

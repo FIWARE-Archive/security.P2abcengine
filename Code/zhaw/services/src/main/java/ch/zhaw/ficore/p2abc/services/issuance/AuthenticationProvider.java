@@ -12,10 +12,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
  */
 public abstract class AuthenticationProvider {
 	
-	protected IssuanceConfigurationData srvcCfg;
-	
 	public AuthenticationProvider(IssuanceConfigurationData configuration) {
-		this.srvcCfg = configuration;
 	}
 	
 	/**
