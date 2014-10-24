@@ -36,7 +36,6 @@ import javax.xml.bind.DatatypeConverter;
 public class AttributeValueConverter {
 
     public Object convertValue(String dataType, Object value) {
-        // this.log.info("convertValue : " + dataType + " : " + value);
         try {
             if ("xs:string".equals(dataType)) {
                 return value.toString();
@@ -92,7 +91,6 @@ public class AttributeValueConverter {
                     + " - of class : " + value.getClass()
                     + " - datatype " + dataType);
         }
-        IssuanceHelper.log.info("UNKNON ?? [" + dataType + "]");
 
         throw new IllegalStateException(
                 "Attributes dataType not supported (yet) : " + dataType);

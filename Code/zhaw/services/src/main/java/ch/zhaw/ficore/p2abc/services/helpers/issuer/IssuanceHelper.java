@@ -24,6 +24,31 @@
 
 package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class IssuanceHelper {
+	private static Logger logger = LogManager.getLogger(IssuanceHelper.class.getName());
+	private static IssuanceHelper instance = null;
 	
+	private IssuanceHelper() {
+		logger = LogManager.getLogger(IssuanceHelper.class.getName());
+	}
+	
+	public static synchronized IssuanceHelper initInstanceForService(
+            CryptoEngine cryptoEngine) throws Exception {
+		
+		logger.entry();
+		
+        if (instance != null) {
+            throw logger.throwing(new IllegalStateException(
+                    "initInstance can only be called once!"));
+        }
+
+        instance = new IssuanceHelper(cryptoEngine,
+                systemAndIssuerParamsPrefix, fileStoragePrefix, new String[0],
+                modules);
+
+        return logger.exit(instance);
+    }
 }
