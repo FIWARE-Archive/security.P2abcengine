@@ -13,15 +13,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/** Tests basic functions of SQLite URI storage.
+ * 
+ * Be careful when extending this class with more tests: A new SQLite
+ * database file is created for <em>every</em> test.
+ * 
+ * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
+ * @version 1.0
+ */
 public class TestSqliteURIBytesStorage {
   private static final String table = "TestTable";
+  
   private SqliteURIBytesStorage storage;
   private File storageFile;
+  private URI myUri;
   
   @Before
   public void setUp() throws Exception {
     storageFile = File.createTempFile("test", "sql", new File("."));
     storage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+    myUri = new URI("http://www.zhaw.ch");
   }
 
   @After
@@ -29,15 +40,31 @@ public class TestSqliteURIBytesStorage {
     storageFile.delete();
   }
 
+  @Test(expected=UnsafeTableNameException.class)
+  public void testInvalidTableName() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+    String tableName = "users; DROP TABLE customers";
+    SqliteURIBytesStorage invalidStorage = new SqliteURIBytesStorage("hi", tableName);
+    invalidStorage.get(myUri);
+  }
+  
   @Test
-  public void testSomeKeyOnEmptyStorage() throws SQLException, URISyntaxException {
-    assertFalse(storage.containsKey(new URI("http://www.google.com/")));
+  public void testEmptyKeyOnEmptyStorage() throws SQLException, URISyntaxException {
+    assertFalse(storage.containsKey(new URI("")));
+  }
+  
+  @Test
+  public void testUrnKeyOnEmptyStorage() throws SQLException, URISyntaxException {
+    assertFalse(storage.containsKey(new URI("urn:abc4trust:1.0:encoding:integer:signed")));
+  }
+  
+  @Test
+  public void testHttpKeyOnEmptyStorage() throws SQLException, URISyntaxException {
+    assertFalse(storage.containsKey(myUri));
   }
   
   @Test
   public void testContainsSimpleKey() throws SQLException, URISyntaxException {
     byte[] stored = new byte[] { 0x01 };
-    URI myUri = new URI("http://www.google.com");
     
     storage.putNew(myUri, stored);
     assertTrue(storage.containsKey(myUri));
@@ -46,7 +73,6 @@ public class TestSqliteURIBytesStorage {
   @Test
   public void testSimpleKeyValue() throws SQLException, URISyntaxException {
     byte[] stored = new byte[] { 0x01 };
-    URI myUri = new URI("http://www.google.com");
     
     storage.putNew(myUri, stored);
     byte[] value = storage.get(myUri);
@@ -57,13 +83,12 @@ public class TestSqliteURIBytesStorage {
   
   @Test
   public void testSomeNonexistentKey() throws SQLException, URISyntaxException {
-    storage.putNew(new URI("http://www.google.com"), new byte[] { 0x01 });
+    storage.putNew(myUri, new byte[] { 0x01 });
     assertFalse(storage.containsKey(new URI("http://www.apple.com")));
   }
   
   @Test
   public void testStringStorage() throws SQLException, URISyntaxException {
-    URI myUri = new URI("http://www.google.com");
     String testString = "Hello, world";
     
     storage.put(myUri, testString.getBytes());
