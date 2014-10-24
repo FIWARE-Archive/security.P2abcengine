@@ -80,7 +80,7 @@ public class LdapIssuanceService {
 
 	public LdapIssuanceService() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
 		logger = LogManager.getLogger();
-		queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "query_rules");
+		queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "queryRules");
 	}
 
 	@GET()
