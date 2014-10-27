@@ -30,6 +30,7 @@ import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/a
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
@@ -68,6 +69,10 @@ public class LdapIssuanceService {
 			.create("urn:abc4trust:1.0:algorithm:idemix");
 
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
+	private static final String errNoCredSpec = "CredentialSpecification is missing!";
+	private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
+	private static final String errNoQueryRule = "QueryRule is missing!";
+	
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
@@ -105,6 +110,35 @@ public class LdapIssuanceService {
 	public Response issuerStatus() {
 		//this.log.info("IssuanceService - status : running");
 		return Response.ok().build();
+	}
+	
+	@POST()
+	@Path("/issuanceRequest/")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response issuanceRequest(IssuanceRequest request) {
+		try {
+			IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+			AttributeValueProvider attrValProvider = AttributeValueProvider.getAttributeValueProvider(configuration);
+			
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			IssuanceHelper instance = IssuanceHelper.getInstance();
+			
+			CredentialSpecification credSpec = instance.keyManager.getCredentialSpecification(
+					new URI(request.credentialSpecificationUid));
+			IssuancePolicy ip = instance.issuanceStorage.getIssuancePolicy(
+					new URI(request.credentialSpecificationUid));
+			
+			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
+			
+			ipa.setIssuancePolicy(ip);
+			ipa.getAttribute().addAll(attrValProvider.getAttributes(
+					request.authRequest.authInfo, "", credSpec));
+			
+			return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 
 	/**
