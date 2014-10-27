@@ -11,7 +11,7 @@ public class SqliteStorageConfiguration extends StorageConfiguration implements 
 	private String dbFilePath;
 
 	public SqliteStorageConfiguration() {
-		dbFilePath = System.getProperty("java.io.tmpdir") + File.separator + "p2abc.db";
+		dbFilePath = "/tmp" + File.separator + "p2abc.db";
 	}
 
 	public String getDatabaseFilePath() {

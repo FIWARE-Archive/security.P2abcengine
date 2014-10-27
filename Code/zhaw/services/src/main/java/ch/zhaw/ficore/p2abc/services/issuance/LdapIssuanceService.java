@@ -192,10 +192,11 @@ public class LdapIssuanceService {
 			this.initializeHelper(CryptoEngine.IDEMIX);
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 			
-			if(!queryRules.containsKey(new URI(credentialSpecificationUid)))
-				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
 			QueryRule rule = instance.issuanceStorage.getQueryRule(new URI(credentialSpecificationUid));
-			return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
+			if(rule == null)
+				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+			else
+				return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
 		}
 		catch(Exception e) {
 			logger.catching(e);
