@@ -153,7 +153,7 @@ public class LdapIssuanceService {
 	@GET()
 	@Path("/getQueryRule/{magicCookie}/{credentialSpecificationUid}")
 	@Consumes({MediaType.APPLICATION_XML})
-	public Response storeQueryRule(@PathParam("magicCookie") String magicCookie,
+	public Response getQueryRule(@PathParam("magicCookie") String magicCookie,
 			@PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
 		logger.entry();
@@ -170,6 +170,76 @@ public class LdapIssuanceService {
 				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
 			else
 				return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(Response.serverError().build());
+		}
+	}
+	
+	/**
+	 * Store IssuancePolicy.
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid UID of the credSpec
+	 * @return Response
+	 */
+	@PUT()
+	@Path("/storeIssuancePolicy/{magicCookie}/{credentialSpecificationUid}")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response storeIssuancePolicy(@PathParam("magicCookie") String magicCookie,
+			@PathParam("credentialSpecificationUid") String credentialSpecificationUid,
+			IssuancePolicy policy) {
+
+		logger.entry();
+
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+
+		try {
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			IssuanceHelper instance = IssuanceHelper.getInstance();
+			
+			instance.issuanceStorage.addIssuancePolicy(new URI(credentialSpecificationUid), policy);
+			return logger.exit(Response.ok("OK").build());
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(Response.serverError().build());
+		}
+	}
+
+	/**
+	 * Retrieve an IssuancePolicy
+	 * 
+	 * This function is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid
+	 * @return IssuancePolicy
+	 */
+	@GET()
+	@Path("/getIssuancePolicy/{magicCookie}/{credentialSpecificationUid}")
+	@Consumes({MediaType.APPLICATION_XML})
+	public Response getIssuancePolicy(@PathParam("magicCookie") String magicCookie,
+			@PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
+
+		logger.entry();
+
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+
+		try {
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			IssuanceHelper instance = IssuanceHelper.getInstance();
+			
+			IssuancePolicy policy = instance.issuanceStorage.getIssuancePolicy(new URI(credentialSpecificationUid));
+			if(policy == null)
+				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+			else
+				return logger.exit(Response.ok(of.createIssuancePolicy(policy), MediaType.APPLICATION_XML).build());
 		}
 		catch(Exception e) {
 			logger.catching(e);

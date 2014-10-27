@@ -7,3 +7,5 @@ curl -X GET 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/
 curl -X POST --header 'Content-Type: application/xml' -d @ldapSimpleAuth.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/testAuthentication'
 curl -X PUT --header 'Content-Type: application/xml' -d @queryRule.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/storeQueryRule/*magic*/foo'
 curl -X GET 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/getQueryRule/*magic*/foo' > outQueryRule.xml
+curl -X PUT --header 'Content-Type: application/xml' -d @issuancePolicy.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/storeIssuancePolicy/*magic*/foo'
+curl -X GET 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/getIssuancePolicy/*magic*/foo' > outIssuancePolicy.xml
