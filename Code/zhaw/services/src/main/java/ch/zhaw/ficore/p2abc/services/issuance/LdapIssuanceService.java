@@ -71,7 +71,6 @@ public class LdapIssuanceService {
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
-	private URIBytesStorage queryRules;
 
 	private final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
 
@@ -98,7 +97,6 @@ public class LdapIssuanceService {
 
 	public LdapIssuanceService() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
 		logger = LogManager.getLogger();
-		queryRules = new SqliteURIBytesStorage("/tmp/rules.db", "queryRules");
 	}
 
 	@GET()
@@ -107,31 +105,6 @@ public class LdapIssuanceService {
 	public Response issuerStatus() {
 		//this.log.info("IssuanceService - status : running");
 		return Response.ok().build();
-	}
-
-	@GET()
-	@Path("/test")
-	public Response test() throws URISyntaxException, SQLException, ClassNotFoundException, UnsafeTableNameException {
-		//Injector injector = Guice.createInjector(new SomeModule());
-		//KeyStorage keyStorage = injector.getInstance(KeyStorage.class);
-		return Response.ok().build();
-	}
-
-	@GET()
-	@Path("/test2/{param}")
-	public Response test2(@PathParam("param") String param) throws URISyntaxException, SQLException, ClassNotFoundException, UnsafeTableNameException {
-		boolean b = new SqliteURIBytesStorage("/tmp/foo.db", "foobar").containsKey(new URI(param));
-		return Response.ok(b ? "true" : "false").build();
-	}
-
-	@GET()
-	@Path("/test3")
-	public Response test3() throws SQLException, ClassNotFoundException, UnsafeTableNameException {
-		String s = "";
-		for(URI uri : new SqliteURIBytesStorage("/tmp/foo.db", "foobar").keys()) {
-			s += uri.toString() + ";";
-		}
-		return Response.ok(s).build();
 	}
 
 	/**
@@ -271,8 +244,38 @@ public class LdapIssuanceService {
 				generateCredentialSpecification(attrInfoCol)),
 				MediaType.APPLICATION_XML).build();
 	}
+	
 
-	//This function was copied from the original IssuanceService in Code/core-abce/abce-services
+	/*
+	 * The following section contains code copied from the original issuance service from the tree
+	 * Code/core-abce/abce-service
+	 */
+
+	/* SECTION */
+
+	private void initializeHelper(CryptoEngine cryptoEngine) {
+		logger.info("IssuanceService loading...");
+
+		try {
+			if (IssuanceHelper.isInit()) {
+				logger.info("IssuanceHelper is initialized");
+			} else {
+
+				logger.info("Initializing IssuanceHelper...");
+
+				IssuanceHelper.initInstanceForService(cryptoEngine,
+						"", "", 
+						StorageModuleFactory.getModulesForServiceConfiguration(
+								ServicesConfiguration.ServiceType.ISSUANCE));
+
+				logger.info("IssuanceHelper is initialized");
+			}
+		} catch (Exception e) {
+			System.out.println("Create Domain FAILED " + e);
+			e.printStackTrace();
+		}
+	}
+	
 	@PUT()
 	@Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
 	@Consumes({ MediaType.APPLICATION_XML })
@@ -311,7 +314,6 @@ public class LdapIssuanceService {
 		}
 	}
 
-	//This function was copied from the original IssuanceService in Code/core-abce/abce-services
 	@GET()
 	@Path("/getCredentialSpecification/{magicCookie}/{credentialSpecificationUid}")
 	public Response getCredentialSpecification(
@@ -341,36 +343,6 @@ public class LdapIssuanceService {
 		catch(Exception ex) {
 			logger.catching(ex);
 			return logger.exit(Response.serverError().build());
-		}
-	}
-
-	/*
-	 * The following section contains code copied from the original issuance service from the tree
-	 * Code/core-abce/abce-service
-	 */
-
-	/* SECTION */
-
-	private void initializeHelper(CryptoEngine cryptoEngine) {
-		logger.info("IssuanceService loading...");
-
-		try {
-			if (IssuanceHelper.isInit()) {
-				logger.info("IssuanceHelper is initialized");
-			} else {
-
-				logger.info("Initializing IssuanceHelper...");
-
-				IssuanceHelper.initInstanceForService(cryptoEngine,
-						"", "", 
-						StorageModuleFactory.getModulesForServiceConfiguration(
-								ServicesConfiguration.ServiceType.ISSUANCE));
-
-				logger.info("IssuanceHelper is initialized");
-			}
-		} catch (Exception e) {
-			System.out.println("Create Domain FAILED " + e);
-			e.printStackTrace();
 		}
 	}
 
