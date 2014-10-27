@@ -67,8 +67,6 @@ public class LdapIssuanceService {
 	private static final URI CRYPTOMECHANISM_URI_IDEMIX = URI
 			.create("urn:abc4trust:1.0:algorithm:idemix");
 
-	//private static final String ldapConfigPathProperty = "abc4trust-ldapSrvConfPath";
-	//private static final String ldapConfigPathDefault = "/etc/abc4trust/ldapServiceConfig.xml";
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 	private static AuthenticationProvider authProvider;
 	private static AttributeInfoProvider attribInfoProvider;
@@ -285,9 +283,12 @@ public class LdapIssuanceService {
 				+ credentialSpecifationUid + "\"");
 
 		try {
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			
+			IssuanceHelper instance = IssuanceHelper.getInstance();
+			
 			CryptoEngine engine = CryptoEngine.IDEMIX;
-			KeyManager keyManager = UserStorageManager
-					.getKeyManager("idemix");
+			KeyManager keyManager = instance.keyManager;
 
 			boolean r1 = keyManager.storeCredentialSpecification(
 					credentialSpecifationUid, credSpec);
@@ -315,11 +316,14 @@ public class LdapIssuanceService {
 			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
 		logger.info("IssuanceService - getCredentialSpecification: " + credentialSpecificationUid);
+		
 
 		try {
-			KeyManager keyManager = UserStorageManager.getKeyManager("idemix");
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			
+			IssuanceHelper instance = IssuanceHelper.getInstance();
 
-			CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
+			CredentialSpecification credSpec = instance.keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
 
 			if(credSpec == null) {
 				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
