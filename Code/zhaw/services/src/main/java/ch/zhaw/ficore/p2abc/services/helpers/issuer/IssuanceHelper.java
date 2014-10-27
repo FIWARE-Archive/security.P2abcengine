@@ -82,12 +82,16 @@ import eu.abc4trust.xml.SecretKey;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.util.XmlUtils;
 
+import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
+
 @SuppressWarnings("deprecation")
 public class IssuanceHelper extends AbstractHelper {
 
     static Logger log = Logger.getLogger(IssuanceHelper.class.getName());
 
     private static IssuanceHelper instance;
+    
+    public IssuanceStorage issuanceStorage;
 
     /**
      * @param fileStoragePrefix this prefix will be prepended on storage files needed by the
@@ -450,6 +454,7 @@ public class IssuanceHelper extends AbstractHelper {
         }
 
         this.keyManager = injector.getInstance(KeyManager.class);
+        this.issuanceStorage = injector.getInstance(IssuanceStorage.class);
 
         String systemParametersResource = this.fileStoragePrefix
                 + SYSTEM_PARAMS_NAME_BRIDGED;

@@ -14,14 +14,14 @@ import org.apache.commons.lang.SerializationUtils;
 
 public class GenericIssuanceStorage implements IssuanceStorage {
 	
-	private URIBytesStorage policyStorage;
+	private URIBytesStorage issuancePolicyStorage;
 	private URIBytesStorage queryRuleStorage;
 	
 	@Inject
-	public GenericIssuanceStorage(@Named("policyStorage") URIBytesStorage policyStorage,
+	public GenericIssuanceStorage(@Named("issuancePolicyStorage") URIBytesStorage issuancePolicyStorage,
 			@Named("queryRuleStorage") URIBytesStorage queryRuleStorage) {
 		
-		this.policyStorage = policyStorage;
+		this.issuancePolicyStorage = issuancePolicyStorage;
 		this.queryRuleStorage = queryRuleStorage;
 	}
 	
@@ -38,7 +38,7 @@ public class GenericIssuanceStorage implements IssuanceStorage {
 	public void addIssuancePolicy(URI uri, IssuancePolicy policy) throws IOException {
 		try {
 			byte[] data = SerializationUtils.serialize(policy);
-			policyStorage.put(uri, data);
+			issuancePolicyStorage.put(uri, data);
 		}
 		catch(Exception e) {
 			throw new IOException(e);
@@ -60,10 +60,10 @@ public class GenericIssuanceStorage implements IssuanceStorage {
 	
 	public IssuancePolicy getIssuancePolicy(URI uri) throws IOException {
 		try {
-			if(!policyStorage.containsKey(uri))
+			if(!issuancePolicyStorage.containsKey(uri))
 				return null;
 			
-			byte[] data = policyStorage.get(uri);
+			byte[] data = issuancePolicyStorage.get(uri);
 			return (IssuancePolicy) SerializationUtils.deserialize(data);
 		}
 		catch(Exception e) {

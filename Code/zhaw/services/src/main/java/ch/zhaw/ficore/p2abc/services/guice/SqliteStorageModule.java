@@ -8,6 +8,7 @@ import eu.abc4trust.keyManager.KeyStorage;
 
 import ch.zhaw.ficore.p2abc.storage.*;
 import ch.zhaw.ficore.p2abc.services.*;
+import ch.zhaw.ficore.p2abc.services.issuance.*;
 
 public class SqliteStorageModule extends AbstractModule {
 	
@@ -42,6 +43,14 @@ public class SqliteStorageModule extends AbstractModule {
 				.annotatedWith(Names.named("keyStorage"))
 				.toInstance(new SqliteURIBytesStorage(file, name + "_" + "keyStorage"));
 			this.bind(KeyStorage.class).to(GenericKeyStorage.class).in(Singleton.class);
+			
+			this.bind(URIBytesStorage.class)
+				.annotatedWith(Names.named("issuancePolicyStorage"))
+				.toInstance(new SqliteURIBytesStorage(file, name + "_" + "issuancePolicyStorage"));
+			this.bind(URIBytesStorage.class)
+				.annotatedWith(Names.named("queryRuleStorage"))
+				.toInstance(new SqliteURIBytesStorage(file, name + "_" + "queryRuleStorage"));
+			this.bind(IssuanceStorage.class).to(GenericIssuanceStorage.class).in(Singleton.class);
 		}
 		catch(Exception e) {
 			//TODO: What to do when config fails?? -- munt

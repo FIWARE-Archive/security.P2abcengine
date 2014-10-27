@@ -156,7 +156,10 @@ public class LdapIssuanceService {
 			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
 		try {
-			queryRules.put(new URI(credentialSpecificationUid), SerializationUtils.serialize(rule));
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			IssuanceHelper instance = IssuanceHelper.getInstance();
+			
+			instance.issuanceStorage.addQueryRule(new URI(credentialSpecificationUid), rule);
 			return logger.exit(Response.ok("OK").build());
 		}
 		catch(Exception e) {
@@ -186,9 +189,12 @@ public class LdapIssuanceService {
 			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
 		try {
+			this.initializeHelper(CryptoEngine.IDEMIX);
+			IssuanceHelper instance = IssuanceHelper.getInstance();
+			
 			if(!queryRules.containsKey(new URI(credentialSpecificationUid)))
 				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
-			QueryRule rule = (QueryRule) SerializationUtils.deserialize(queryRules.get(new URI(credentialSpecificationUid)));
+			QueryRule rule = instance.issuanceStorage.getQueryRule(new URI(credentialSpecificationUid));
 			return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
 		}
 		catch(Exception e) {
