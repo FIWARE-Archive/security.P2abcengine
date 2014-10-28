@@ -8,11 +8,18 @@ import java.util.*;
 
 @XmlRootElement(name="attribute")
 public class AttributeInformation {
+	
+	@XmlElement(name="name", required=true)
 	public String name;
+	
+	@XmlElement(name="mapping", required=true)
 	public String mapping;
+	
+	@XmlElement(name="encoding", required=true)
 	public String encoding;
+	
 	@XmlElementWrapper(name = "friendly-descriptions")
-	@XmlElement(name = "friendly-description")
+	@XmlElement(name = "friendly-description", required=true)
 	public List<LanguageValuePair> friendlyDescriptions = new ArrayList<LanguageValuePair>();
 
 	public AttributeInformation() {}

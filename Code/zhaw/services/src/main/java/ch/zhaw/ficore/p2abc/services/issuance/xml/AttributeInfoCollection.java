@@ -6,10 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import java.util.*;
 
-@XmlRootElement(name="class")
+@XmlRootElement(name="attribute-info-collection")
 public class AttributeInfoCollection {
+	
+	@XmlElement(name="name", required=true)
 	public String name;
-	@XmlElementWrapper(name = "attributes")
+	
+	@XmlElementWrapper(name = "attributes", required=true)
 	@XmlElement(name = "attribute")
 	public List<AttributeInformation> attributes = new ArrayList<AttributeInformation>();
 

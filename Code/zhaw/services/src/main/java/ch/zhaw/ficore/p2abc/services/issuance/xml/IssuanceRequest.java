@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="issuance-request")
 public class IssuanceRequest {
 	
-	@XmlElement(name="auth-request")
+	@XmlElement(name="auth-request", required=true)
 	public AuthenticationRequest authRequest;
 	
-	@XmlElement(name="credential-specification-uid")
+	@XmlElement(name="credential-specification-uid", required=true)
 	public String credentialSpecificationUid;
 }

@@ -82,6 +82,7 @@ public class LdapIssuanceService {
 	private Logger logger;
 
 	static {
+		QueryRule.dumpSchema();
 		IssuanceConfigurationData cfgData;
 		try {
 			cfgData = new IssuanceConfigurationData(false, "localhost", 10389,
