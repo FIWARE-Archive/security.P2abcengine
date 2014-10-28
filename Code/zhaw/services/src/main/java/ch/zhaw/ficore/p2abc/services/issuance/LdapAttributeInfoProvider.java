@@ -132,6 +132,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	 * @return mapping (that is, to which XML-Type shall the LDAP-Type be mapped to)
 	 */
 	private String getMapping(String syntax) {
+		syntax = syntax.replaceAll("\\{\\d+\\}$",""); //Strip away length restrictions
 		if(syntaxMappings.containsKey(syntax))
 			return syntaxMappings.get(syntax).get(0);
 		else
