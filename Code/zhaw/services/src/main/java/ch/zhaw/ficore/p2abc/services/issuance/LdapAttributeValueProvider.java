@@ -43,7 +43,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 
 
 			LdapSearch srch = connection.newSearch();
-			srch.setName("dc=example, dc=com");
+			//srch.setName("dc=example, dc=com");
 
 			AttributeDescriptions attrDescs = credSpec.getAttributeDescriptions();
 			List<AttributeDescription> descriptions = attrDescs.getAttributeDescription();
@@ -52,7 +52,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 			for(AttributeDescription attrDesc : descriptions) {
 				System.out.println("attrDesc.getType().toString() = " + attrDesc.getType().toString());
 
-				Object value = srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
+				Object value = srch.getAttribute(query, attrDesc.getType().toString());
 
 				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */
 				if(attrDesc.getDataType().toString().equals("xs:integer") && attrDesc.getEncoding().toString().equals("urn:abc4trust:1.0:encoding:integer:signed")) {

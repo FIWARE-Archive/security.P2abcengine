@@ -74,8 +74,6 @@ public class LdapIssuanceService {
 	private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
 	private static final String errNoQueryRule = "QueryRule is missing!";
 	
-	private static AuthenticationProvider authProvider;
-	private static AttributeInfoProvider attribInfoProvider;
 	private ObjectFactory of = new ObjectFactory(); 
 
 	private final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
@@ -96,8 +94,6 @@ public class LdapIssuanceService {
 
 	public static void initializeWithConfiguration() {
 		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
-		authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
-		attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 	}
 
 
@@ -136,6 +132,10 @@ public class LdapIssuanceService {
 		try {
 			IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
 			AttributeValueProvider attrValProvider = AttributeValueProvider.getAttributeValueProvider(configuration);
+			AuthenticationProvider authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
+			
+			if(!authProvider.authenticate(request.authRequest.authInfo))
+				return Response.status(Response.Status.FORBIDDEN).build();
 			
 			this.initializeHelper(CryptoEngine.IDEMIX);
 			IssuanceHelper instance = IssuanceHelper.getInstance();
@@ -148,7 +148,8 @@ public class LdapIssuanceService {
 			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
 			
 			ipa.setIssuancePolicy(ip);
-			ipa.getAttribute().addAll(attrValProvider.getAttributes("", credSpec));
+			ipa.getAttribute().addAll(attrValProvider.getAttributes(
+					QueryHelper.buildQuery("", authProvider.getUserID()), credSpec));
 			
 			return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
 		}
@@ -312,6 +313,9 @@ public class LdapIssuanceService {
 	@Consumes({MediaType.APPLICATION_XML})
 	public Response testAuthentication(AuthenticationRequest authReq) {
 
+		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+		AuthenticationProvider authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
+		
 		if(authProvider.authenticate(authReq.authInfo))
 			return Response.ok("OK").build();
 		else
@@ -337,6 +341,10 @@ public class LdapIssuanceService {
 	@Path("/attributeInfoCollection/{magicCookie}/{name}")
 	public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
 			@PathParam("name") String name) {
+		
+		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+		AttributeInfoProvider attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
+		
 		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
 			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
 
