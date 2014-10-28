@@ -1,0 +1,9 @@
+<issuance-request>
+	<auth-request>
+		<auth-info-simple>
+			<username>uid=admin, ou=system</username>
+			<password>secret</password>
+		</auth-info-simple>
+	</auth-request>
+	<credential-specification-uid>urn:abc4trust:credspec:ldap:abcPerson</credential-specification-uid>
+</issuance-request>

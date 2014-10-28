@@ -94,7 +94,9 @@ public class LdapSearch {
 		NamingEnumeration<SearchResult> answer = this.search(name, filter);
 		if(!answer.hasMore())
 			throw new LdapException("Result set was empty!");
-		Object val = ((SearchResult)answer.next()).getAttributes().get(attr).get();
+		Object val = ((SearchResult)answer.next()).getAttributes().
+				get(attr).
+					get();
 		answer.close();
 		return val;
 	}

@@ -137,6 +137,7 @@ public class LdapIssuanceService {
 			return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

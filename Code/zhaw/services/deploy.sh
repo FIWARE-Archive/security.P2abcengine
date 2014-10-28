@@ -1,5 +1,9 @@
 #!/bin/sh
 
+cd ../components
+mvn clean install
+cd ../services
+
 mvn clean
 mvn -P ldap-ui-service install
 ~/web/web1/bin/shutdown.sh
