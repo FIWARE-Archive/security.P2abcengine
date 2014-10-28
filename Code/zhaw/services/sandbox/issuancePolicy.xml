@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<IssuancePolicy xmlns="http://abc4trust.eu/wp2/abcschemav1.0">
+<IssuancePolicy xmlns="http://abc4trust.eu/wp2/abcschemav1.0" Version="1.0">
     <PresentationPolicy PolicyUID="http://thebestbank.com/creditcards/issuance/policy">
       <Message>
         <Nonce>KNsRu9cGzkaeabogeRVV</Nonce>
@@ -11,4 +11,9 @@
         </ApplicationData>
       </Message>
       </PresentationPolicy>
+	<CredentialTemplate>
+        <CredentialSpecUID>urn:abc4trust:credspec:ldap:abcPerson</CredentialSpecUID>
+        <IssuerParametersUID>http://mroman.ch/generic/issuance:idemix</IssuerParametersUID>
+        <UnknownAttributes/>
+      </CredentialTemplate>
 </IssuancePolicy>

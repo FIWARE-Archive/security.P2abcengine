@@ -736,6 +736,63 @@ public class LdapIssuanceService {
             throw new IllegalArgumentException("\"Attributes\" are required.");
         }
     }
+    
+    /**
+     * This method performs one step in an interactive issuance protocol. On
+     * input an incoming issuance message m received from the User, it returns
+     * the outgoing issuance message that is to be sent back to the User, a
+     * boolean indicating whether this is the last message in the protocol, and
+     * the uid of the stored issuance log entry that contains an issuance token
+     * together with the attribute values provided by the issuer to keep track
+     * of the issued credentials. The Context attribute of the outgoing message
+     * has the same value as that of the incoming message, allowing the Issuer
+     * to link the different messages of this issuance protocol.
+     */
+    @POST()
+    @Path("/issuanceProtocolStep")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Produces(MediaType.TEXT_XML)
+    public JAXBElement<IssuanceMessageAndBoolean> issuanceProtocolStep(
+            final IssuanceMessage issuanceMessage) {
+
+        logger.info("IssuanceService - step - context : "
+                + issuanceMessage.getContext());
+
+        CryptoEngine engine = this.getCryptoEngine(issuanceMessage);
+
+        this.initializeHelper(engine);
+
+        IssuanceMessageAndBoolean response;
+        try {
+            response = IssuanceHelper.getInstance().issueStep(engine, issuanceMessage);
+        } catch (Exception e) {
+            logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user...");
+            e.printStackTrace();
+            throw new IllegalStateException("Failed to proces IssuanceMessage from user");
+        }
+
+        IssuanceMessage issuanceMessageFromResponce = response
+                .getIssuanceMessage();
+        if (response.isLastMessage()) {
+            logger.info(" - last message for context : "
+                    + issuanceMessageFromResponce.getContext());
+        } else {
+            logger.info(" - more steps context : "
+                    + issuanceMessageFromResponce.getContext());
+        }
+
+        return this.of.createIssuanceMessageAndBoolean(response);
+    }
+
+    private CryptoEngine getCryptoEngine(final IssuanceMessage issuanceMessage) {
+        CryptoEngine engine = CryptoEngine.IDEMIX;
+
+        if (issuanceMessage.getAny().get(0) instanceof JAXBElement) {
+            engine = CryptoEngine.IDEMIX;
+            return engine;
+        }
+        throw new RuntimeException("We only support idemix. Sorry :(");
+    }
 
 	/* END SECTION */
 }

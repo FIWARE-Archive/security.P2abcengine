@@ -35,7 +35,7 @@ public class CredentialSpecGenerator {
 			credSpec.setSpecificationUID(new URI("urn:abc4trust:credspec:ldap:" + attrInfoCol.name));
 
 			credSpec.setVersion("1.0");
-			credSpec.setKeyBinding(false);
+			credSpec.setKeyBinding(true);
 			credSpec.setRevocable(false);
 
 			AttributeDescriptions attrDescs = of.createAttributeDescriptions();
