@@ -86,8 +86,6 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 		logger.entry();
 		
 		try {
-		  IssuanceConfigurationData configuration
-		      = ServicesConfiguration.getIssuanceConfiguration();
 			LdapConnectionConfig cfg = new LdapConnectionConfig(
 			    configuration.getLdapServerPort(), configuration.getLdapServerName());
 			cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());

@@ -60,10 +60,9 @@ public abstract class AttributeValueProvider {
 	 * E.g. for LDAP query might be an LDAP-Search query. The exact behaviour of <em>query</em> is provider
 	 * specific. 
 	 * 
-	 * @param authInfo AuthenticationInformation of the user.
 	 * @param query Query (see description above) 
 	 * @param credSpec CredentialSpecification to obtain attributes for. 
 	 */
-	public abstract List<eu.abc4trust.xml.Attribute> getAttributes(AuthenticationInformation authInfo, String query,
+	public abstract List<eu.abc4trust.xml.Attribute> getAttributes(String query,
 			CredentialSpecification credSpec) throws Exception;
 }

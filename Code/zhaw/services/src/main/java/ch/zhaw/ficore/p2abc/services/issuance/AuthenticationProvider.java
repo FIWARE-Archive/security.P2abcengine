@@ -48,4 +48,13 @@ public abstract class AuthenticationProvider {
 	 * Providers should close open sockets/connections/files etc. on shutdown.
 	 */
 	public abstract void shutdown();
+	
+	/**
+	 * Returns a sequence of characters that uniquely identifies a user (i.e. a username).
+	 * This UserID may be used in queries given to AttributeValueProviders. Note: AttributeValueProviders
+	 * may impose restrictions on UserIDs. 
+	 * 
+	 * @throws IllegalStateException if called before or after an unsuccessful authenticate. 
+	 */
+	public abstract String getUserID() throws IllegalStateException;
 }

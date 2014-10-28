@@ -15,9 +15,12 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
  * @author mroman
  */
 public abstract class AttributeInfoProvider {
-  private static final Logger logger = LogManager.getLogger();;
+	private static final Logger logger = LogManager.getLogger();
+	
+	protected IssuanceConfigurationData configuration;
   
 	public AttributeInfoProvider(IssuanceConfigurationData configuration) {
+		this.configuration = configuration;
 	}
 	
 	/**

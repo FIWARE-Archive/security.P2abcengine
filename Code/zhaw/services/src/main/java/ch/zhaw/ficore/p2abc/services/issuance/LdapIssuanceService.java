@@ -148,8 +148,7 @@ public class LdapIssuanceService {
 			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
 			
 			ipa.setIssuancePolicy(ip);
-			ipa.getAttribute().addAll(attrValProvider.getAttributes(
-					request.authRequest.authInfo, "", credSpec));
+			ipa.getAttribute().addAll(attrValProvider.getAttributes("", credSpec));
 			
 			return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
 		}

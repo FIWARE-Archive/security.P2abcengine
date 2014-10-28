@@ -38,5 +38,9 @@ public class FakeAuthenticationProvider extends AuthenticationProvider {
 			return true;
 		
 		return false;
-	} 
+	}
+	
+	public String getUserID() {
+		return "CaroleKing";
+	}
 }

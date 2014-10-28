@@ -31,14 +31,16 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 
 	}
 
-	public List<eu.abc4trust.xml.Attribute> getAttributes(AuthenticationInformation authInfo, String query,
+	public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
 			CredentialSpecification credSpec) throws Exception {
 
 		try {
 
-			LdapAuthenticationProvider authProvider = new LdapAuthenticationProvider(configuration);
+			LdapConnectionConfig cfg = new LdapConnectionConfig(
+					configuration.getLdapServerPort(), configuration.getLdapServerName());
+			cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
+			LdapConnection connection = cfg.newConnection();
 
-			LdapConnection connection = authProvider.getConnection(authInfo);
 
 			LdapSearch srch = connection.newSearch();
 			srch.setName("dc=example, dc=com");
@@ -49,7 +51,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 			List<eu.abc4trust.xml.Attribute> attributes = ipa.getAttribute();
 			for(AttributeDescription attrDesc : descriptions) {
 				System.out.println("attrDesc.getType().toString() = " + attrDesc.getType().toString());
-				
+
 				Object value = srch.getAttribute("(cn=munt)", attrDesc.getType().toString());
 
 				/* TODO: We can't support arbitrary types here (yet). Currently only integer/string are supported */

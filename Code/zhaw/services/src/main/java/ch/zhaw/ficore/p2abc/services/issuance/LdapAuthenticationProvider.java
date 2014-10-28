@@ -17,6 +17,8 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	
 	private Logger logger;
 	private LdapConnection ldapConnection;
+	private boolean authenticated = false;
+	private String uid;
 	
 	/**
 	 * Constructor
@@ -53,6 +55,8 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.getLdapServerPort(), configuration.getLdapServerName());
 			cfg.setAuth(simpleAuth.username, simpleAuth.password);
 			ldapConnection = cfg.newConnection();
+			authenticated = true;
+			uid = simpleAuth.username;
 			return logger.exit(true);
 		}
 		catch(Exception e) {
@@ -61,15 +65,10 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 		}
 	}
 	
-	/**
-	 * Returns the LdapConnection after a successful authenticate().
-	 * 
-	 * @param authInfo AuthenticationInformation
-	 * @return an LdapConnection if successfully authenticated, Exception otherwise
-	 */
-	public LdapConnection getConnection(AuthenticationInformation authInfo) {
-		if(authenticate(authInfo))
-			return ldapConnection;
-		throw new RuntimeException("Authentication failed!");
+	public String getUserID() {
+		if(!authenticated)
+			throw new IllegalStateException("Must successfully authenticate prior to calling this method!");
+		
+		return uid;
 	}
 }
