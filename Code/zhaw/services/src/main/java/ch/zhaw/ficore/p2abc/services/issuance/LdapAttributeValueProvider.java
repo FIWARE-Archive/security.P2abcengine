@@ -66,7 +66,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
 				attrib.setAttributeDescription(attrDesc);
 				attrib.setAttributeValue(value);
-				attrib.setAttributeUID(new URI("abc4trust:attributeuid:ldap:" + attrDesc.getType().toString()));
+				attrib.setAttributeUID(new URI("urn:abc4trust:attributeuid:ldap:" + attrDesc.getType().toString()));
 				attributes.add(attrib);
 			}
 			return attributes;
