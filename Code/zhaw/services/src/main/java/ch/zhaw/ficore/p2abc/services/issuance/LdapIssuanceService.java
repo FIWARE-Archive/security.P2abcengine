@@ -27,10 +27,7 @@ import ch.zhaw.ficore.p2abc.services.ConfigurationException;
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/abce-services (COPY)
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
@@ -56,6 +53,10 @@ import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.util.CryptoUriUtil;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+import java.io.*;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -82,7 +83,6 @@ public class LdapIssuanceService {
 	private Logger logger;
 
 	static {
-		QueryRule.dumpSchema();
 		IssuanceConfigurationData cfgData;
 		try {
 			cfgData = new IssuanceConfigurationData(false, "localhost", 10389,
@@ -109,7 +109,23 @@ public class LdapIssuanceService {
 	@Path("/status")
 	@Produces({MediaType.TEXT_PLAIN})
 	public Response issuerStatus() {
-		//this.log.info("IssuanceService - status : running");
+		try {
+			JAXBContext jc = JAXBContext.newInstance( new Class[] { QueryRule.class,
+					AuthenticationRequest.class, IssuanceRequest.class, AttributeInfoCollection.class,
+					LanguageValuePair.class, AttributeInformation.class, AuthInfoSimple.class
+			}
+					);
+			jc.generateSchema(new SchemaOutputResolver() {
+				@Override
+				public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
+					File file = new File("/tmp/out.xsd");
+					return new StreamResult(file);
+				}
+			});
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 		return Response.ok().build();
 	}
 	
