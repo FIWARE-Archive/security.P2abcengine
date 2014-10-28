@@ -11,8 +11,8 @@ public class AttributeInformation {
 	public String name;
 	public String mapping;
 	public String encoding;
-	@XmlElementWrapper(name = "friendlyDescriptions")
-	@XmlElement(name = "friendlyDescription")
+	@XmlElementWrapper(name = "friendly-descriptions")
+	@XmlElement(name = "friendly-description")
 	public List<LanguageValuePair> friendlyDescriptions = new ArrayList<LanguageValuePair>();
 
 	public AttributeInformation() {}
