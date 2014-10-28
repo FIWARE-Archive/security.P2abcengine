@@ -114,7 +114,8 @@ public class UProveLauncher {
                     this.uproveProcess, name);
             this.debugOutput = new Thread(this.debugOutputCollector,
                     "DebugCollector");
-            this.debugOutput.start();
+            if(done)
+				this.debugOutput.start();
             // System.out.println("process started");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
