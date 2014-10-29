@@ -123,7 +123,7 @@ public class IssuanceConfigurationData {
 
   public boolean isPlausible() {
     // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
 }
