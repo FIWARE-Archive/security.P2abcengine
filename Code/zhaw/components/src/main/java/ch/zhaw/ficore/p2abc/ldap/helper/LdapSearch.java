@@ -76,6 +76,7 @@ public class LdapSearch {
 	 */
 	public NamingEnumeration<SearchResult> search(String name, String filter) throws NamingException {
 		SearchControls ctls = new SearchControls();
+		ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 		return connection.getInitialDirContext().search(name, filter, 
 				ctls);
 	}
