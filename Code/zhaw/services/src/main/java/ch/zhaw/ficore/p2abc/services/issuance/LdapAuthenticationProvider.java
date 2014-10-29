@@ -3,9 +3,10 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 
 import javax.naming.*;
@@ -28,7 +29,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	 * Constructor
 	 * @throws NamingException 
 	 */
-	public LdapAuthenticationProvider(IssuanceConfigurationData configuration)  {
+	public LdapAuthenticationProvider(IssuanceConfiguration configuration)  {
 		super(configuration);
 		logger = LogManager.getLogger();
 	}
@@ -57,7 +58,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 
 	  if (isGood) {
 	    AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
-	    IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+	    IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
 
 	    LdapConnection adminConnection = null;
 	    LdapConnection userConnection = null;

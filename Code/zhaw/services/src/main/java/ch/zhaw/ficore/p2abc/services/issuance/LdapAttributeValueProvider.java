@@ -5,7 +5,8 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapSearch;
 import eu.abc4trust.xml.AttributeDescription;
@@ -18,7 +19,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 
 	private ObjectFactory of;
 
-	public LdapAttributeValueProvider(IssuanceConfigurationData config) {
+	public LdapAttributeValueProvider(IssuanceConfiguration config) {
 		super(config);
 		of = new ObjectFactory();
 	}

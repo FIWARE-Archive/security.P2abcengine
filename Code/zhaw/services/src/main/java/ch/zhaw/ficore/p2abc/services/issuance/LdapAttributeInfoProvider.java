@@ -10,12 +10,11 @@ import javax.naming.directory.DirContext;
 import javax.naming.*;
 import javax.naming.directory.*;
 
-
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
@@ -67,7 +66,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	/**
 	 * Constructor
 	 */
-	public LdapAttributeInfoProvider(IssuanceConfigurationData configuration) {
+	public LdapAttributeInfoProvider(IssuanceConfiguration configuration) {
 		super(configuration);
 		logger = LogManager.getLogger(LdapAttributeInfoProvider.class.getName());
 	}

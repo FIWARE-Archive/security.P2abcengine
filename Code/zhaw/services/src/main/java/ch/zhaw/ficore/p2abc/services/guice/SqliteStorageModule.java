@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
 import eu.abc4trust.keyManager.KeyStorage;
-
+import ch.zhaw.ficore.p2abc.configuration.SqliteStorageConfiguration;
 import ch.zhaw.ficore.p2abc.storage.*;
 import ch.zhaw.ficore.p2abc.services.*;
 import ch.zhaw.ficore.p2abc.services.issuance.*;
@@ -13,9 +13,9 @@ import ch.zhaw.ficore.p2abc.services.issuance.*;
 public class SqliteStorageModule extends AbstractModule {
 	
 	private SqliteStorageConfiguration configuration;
-	private ServicesConfiguration.ServiceType type;
+	private ServiceType type;
 	
-	public SqliteStorageModule(SqliteStorageConfiguration configuration, ServicesConfiguration.ServiceType type) {
+	public SqliteStorageModule(SqliteStorageConfiguration configuration, ServiceType type) {
 		this.configuration = configuration;
 		this.type = type;
 	}

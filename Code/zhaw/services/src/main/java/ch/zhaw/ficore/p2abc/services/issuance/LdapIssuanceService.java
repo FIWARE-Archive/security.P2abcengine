@@ -27,11 +27,13 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration.IdentitySource;
+import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
-import ch.zhaw.ficore.p2abc.services.issuance.IssuanceConfigurationData.IdentitySource;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
@@ -68,18 +70,18 @@ public class LdapIssuanceService {
 
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 	private static final String errNoCredSpec = "CredentialSpecification is missing!";
-	private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
-	private static final String errNoQueryRule = "QueryRule is missing!";
+	//private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
+	//private static final String errNoQueryRule = "QueryRule is missing!";
 	
 	private ObjectFactory of = new ObjectFactory(); 
 
-	private final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
+	//private static final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
 
 	private Logger logger;
 
 	static {
 		ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret", false);
-		IssuanceConfigurationData cfgData = new IssuanceConfigurationData(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp, "(cn=_UID_)");
+		IssuanceConfiguration cfgData = new IssuanceConfiguration(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp, "(cn=_UID_)");
 		ServicesConfiguration.setIssuanceConfiguration(cfgData);
 	}
 
@@ -117,7 +119,7 @@ public class LdapIssuanceService {
 	@Consumes({MediaType.APPLICATION_XML})
 	public Response issuanceRequest(IssuanceRequest request) {
 		try {
-			IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+			IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
 			AttributeValueProvider attrValProvider = AttributeValueProvider.getAttributeValueProvider(configuration);
 			AuthenticationProvider authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 			
@@ -302,7 +304,7 @@ public class LdapIssuanceService {
 	@Consumes({MediaType.APPLICATION_XML})
 	public Response testAuthentication(AuthenticationRequest authReq) {
 
-		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+		IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
 		AuthenticationProvider authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 		
 		if(authProvider.authenticate(authReq.authInfo))
@@ -331,7 +333,7 @@ public class LdapIssuanceService {
 	public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
 			@PathParam("name") String name) {
 		
-		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
+		IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
 		AttributeInfoProvider attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 		
 		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
@@ -384,7 +386,7 @@ public class LdapIssuanceService {
 				IssuanceHelper.initInstanceForService(cryptoEngine,
 						"", "", 
 						StorageModuleFactory.getModulesForServiceConfiguration(
-								ServicesConfiguration.ServiceType.ISSUANCE));
+								ServiceType.ISSUANCE));
 
 				logger.info("IssuanceHelper is initialized");
 			}
@@ -425,7 +427,6 @@ public class LdapIssuanceService {
 			
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 			
-			CryptoEngine engine = CryptoEngine.IDEMIX;
 			KeyManager keyManager = instance.keyManager;
 
 			boolean r1 = keyManager.storeCredentialSpecification(

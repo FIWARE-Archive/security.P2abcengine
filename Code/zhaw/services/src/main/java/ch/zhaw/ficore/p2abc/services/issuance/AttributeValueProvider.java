@@ -1,7 +1,10 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import eu.abc4trust.xml.CredentialSpecification;
+
 import java.util.List;
+
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 
 
 /** Serves as a Factory for AttributeValueProviders.
@@ -16,7 +19,7 @@ import java.util.List;
  */
 public abstract class AttributeValueProvider {
 
-    protected IssuanceConfigurationData configuration;
+    protected IssuanceConfiguration configuration;
 
     /**
      * Constructor of an AttributeValueProvider.
@@ -26,7 +29,7 @@ public abstract class AttributeValueProvider {
      * 
      * @param configuration Configuration.
      */
-    public AttributeValueProvider(IssuanceConfigurationData configuration) {
+    public AttributeValueProvider(IssuanceConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -38,7 +41,7 @@ public abstract class AttributeValueProvider {
      * @param configuration Issuance configuration
      * @return an implementation of an AttributeValueProvider
      */
-    public static AttributeValueProvider getAttributeValueProvider(IssuanceConfigurationData configuration) {
+    public static AttributeValueProvider getAttributeValueProvider(IssuanceConfiguration configuration) {
         switch(configuration.getAttributeSource()) {
         case LDAP:
             return new LdapAttributeValueProvider(configuration);

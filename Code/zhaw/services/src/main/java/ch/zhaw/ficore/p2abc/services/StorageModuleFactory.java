@@ -3,6 +3,9 @@ package ch.zhaw.ficore.p2abc.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.SqliteStorageConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.StorageConfiguration;
 import ch.zhaw.ficore.p2abc.services.guice.SqliteStorageModule;
 
 import com.google.inject.Module;
@@ -22,7 +25,7 @@ public class StorageModuleFactory {
 	 * 
 	 * @return Array of Modules that shall be used to overwrite existing guice bindings.
 	 */
-	public static synchronized Module[] getModulesForServiceConfiguration(ServicesConfiguration.ServiceType type) {
+	public static synchronized Module[] getModulesForServiceConfiguration(ServiceType type) {
 		logger.entry();
 		
 		StorageConfiguration storageConfig = ServicesConfiguration.getStorageConfiguration();

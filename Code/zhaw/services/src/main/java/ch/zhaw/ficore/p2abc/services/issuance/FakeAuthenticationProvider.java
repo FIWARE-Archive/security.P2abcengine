@@ -1,5 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
 
 /**
@@ -13,7 +14,7 @@ public class FakeAuthenticationProvider extends AuthenticationProvider {
 	/**
 	 * Constructor
 	 */
-	public FakeAuthenticationProvider(IssuanceConfigurationData configuration) {
+	public FakeAuthenticationProvider(IssuanceConfiguration configuration) {
 		super(configuration);
 	}
 	

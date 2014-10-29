@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
 
@@ -17,9 +18,9 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 public abstract class AttributeInfoProvider {
 	private static final Logger logger = LogManager.getLogger();
 	
-	protected IssuanceConfigurationData configuration;
+	protected IssuanceConfiguration configuration;
   
-	public AttributeInfoProvider(IssuanceConfigurationData configuration) {
+	public AttributeInfoProvider(IssuanceConfiguration configuration) {
 		this.configuration = configuration;
 	}
 	
@@ -31,7 +32,7 @@ public abstract class AttributeInfoProvider {
 	 * @param configuration Configuration
 	 * @return an implementation of an AttributeInfoProvider
 	 */
-	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfigurationData configuration) {
+	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfiguration configuration) {
 	  logger.entry();
 	  
 		switch(configuration.getAttributeSource()) {

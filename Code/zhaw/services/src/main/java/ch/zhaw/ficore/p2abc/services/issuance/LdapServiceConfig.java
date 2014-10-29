@@ -79,7 +79,7 @@ public class LdapServiceConfig {
 	 *
 	 * @return true if configuration is valid and sane, false otherwise
 	 */
-	public boolean verify() {
+	public boolean verify1() {
 		return (host != null) && (port != 0) && (name != null) && (authId != null) && (authPw != null) &&
 				(magicCookie != null);
 	}
@@ -92,7 +92,7 @@ public class LdapServiceConfig {
 	 * @param path Path the the configuration xml-file.
 	 * @return an instance of LdapServiceConfig
 	 */
-	public static LdapServiceConfig fromFile(String path) {
+	public static LdapServiceConfig fromFile1(String path) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(LdapServiceConfig.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -112,7 +112,7 @@ public class LdapServiceConfig {
 	 *
 	 * @return true if magicCookie is correct, false otherwise.
 	 */
-	public boolean isMagicCookieCorrect(String magicCookie) {
+	public boolean isMagicCookieCorrect1(String magicCookie) {
 		return magicCookie.equals(this.magicCookie);
 	}
 }
