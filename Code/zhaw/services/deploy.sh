@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm idemix*
+
 cd ../components
 mvn clean install
 cd ../services

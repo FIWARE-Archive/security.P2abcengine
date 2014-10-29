@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
 import eu.abc4trust.keyManager.KeyStorage;
+import eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer;
 
 import ch.zhaw.ficore.p2abc.storage.*;
 import ch.zhaw.ficore.p2abc.services.*;
@@ -51,6 +52,18 @@ public class SqliteStorageModule extends AbstractModule {
 				.annotatedWith(Names.named("queryRuleStorage"))
 				.toInstance(new SqliteURIBytesStorage(file, name + "_" + "queryRuleStorage"));
 			this.bind(IssuanceStorage.class).to(GenericIssuanceStorage.class).in(Singleton.class);
+			
+			this.bind(URIBytesStorage.class)
+			    .annotatedWith(Names.named("tokensStorageIssuer"))
+			    .toInstance(new SqliteURIBytesStorage(file, name + "_" + "tokensStorageIssuer"));
+			this.bind(URIBytesStorage.class)
+                .annotatedWith(Names.named("pseudonymsStorageIssuer"))
+                .toInstance(new SqliteURIBytesStorage(file, name + "_" + "pseudonymsStorageIssuer"));
+			this.bind(URIBytesStorage.class)
+                .annotatedWith(Names.named("logStorageIssuer"))
+                .toInstance(new SqliteURIBytesStorage(file, name + "_" + "logStorageIssuer"));
+			this.bind(TokenStorageIssuer.class).to(GenericTokenStorageIssuer.class).in(Singleton.class);
+			
 		}
 		catch(Exception e) {
 			//TODO: What to do when config fails?? -- munt
