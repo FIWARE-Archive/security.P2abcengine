@@ -31,10 +31,12 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 
 	}
 
-	public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
+	public List<eu.abc4trust.xml.Attribute> getAttributes(String query, String uid,
 			CredentialSpecification credSpec) throws Exception {
 
 		try {
+			
+			query = QueryHelper.buildQuery(query, QueryHelper.ldapSanitize(uid));
 
 			LdapConnectionConfig cfg = new LdapConnectionConfig(
 					configuration.getLdapServerPort(), configuration.getLdapServerName());

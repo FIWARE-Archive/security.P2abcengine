@@ -144,17 +144,19 @@ public class LdapIssuanceService {
 					new URI(request.credentialSpecificationUid));
 			IssuancePolicy ip = instance.issuanceStorage.getIssuancePolicy(
 					new URI(request.credentialSpecificationUid));
+			QueryRule qr = instance.issuanceStorage.getQueryRule(
+					new URI(request.credentialSpecificationUid));
 			
 			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
 			
 			ipa.setIssuancePolicy(ip);
-			ipa.getAttribute().addAll(attrValProvider.getAttributes(
-					QueryHelper.buildQuery("", authProvider.getUserID()), credSpec));
+			ipa.getAttribute().addAll(attrValProvider.getAttributes(qr.queryString,
+					authProvider.getUserID(), credSpec));
 			
 			return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			logger.catching(e);
 			return null;
 		}
 	}

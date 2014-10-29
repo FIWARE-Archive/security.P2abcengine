@@ -1,5 +1,3 @@
 <query-rule>
-	<query-string>
-	test
-	</query-string>
+	<query-string>(cn=_UID_)</query-string>
 </query-rule>

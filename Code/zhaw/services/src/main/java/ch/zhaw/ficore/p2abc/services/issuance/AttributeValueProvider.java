@@ -61,8 +61,9 @@ public abstract class AttributeValueProvider {
 	 * specific. 
 	 * 
 	 * @param query Query (see description above) 
+	 * @param uid UserID
 	 * @param credSpec CredentialSpecification to obtain attributes for. 
 	 */
-	public abstract List<eu.abc4trust.xml.Attribute> getAttributes(String query,
+	public abstract List<eu.abc4trust.xml.Attribute> getAttributes(String query, String uid,
 			CredentialSpecification credSpec) throws Exception;
 }

@@ -8,6 +8,11 @@ import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 
+import javax.naming.*;
+import javax.naming.directory.*;
+
+
+
 /**
  * An AuthenticationProvider for LDAP.
  * 
@@ -53,8 +58,27 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 		
 		try {
 			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.getLdapServerPort(), configuration.getLdapServerName());
-			cfg.setAuth(simpleAuth.username, simpleAuth.password);
+			cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
 			ldapConnection = cfg.newConnection();
+			
+			String bindQuery = QueryHelper.buildQuery(configuration.getBindQuery(), 
+					QueryHelper.ldapSanitize(simpleAuth.username));
+			System.out.println("q:"+bindQuery);
+			
+			NamingEnumeration results = ldapConnection.newSearch().search("", bindQuery);
+            String binddn = null;
+            while (results.hasMore()) {
+                SearchResult sr = (SearchResult) results.next();
+                binddn = sr.getName();
+            }
+            System.out.println(binddn);
+            
+            if(binddn == null)
+            	return logger.exit(false);
+            
+            cfg.setAuth(binddn, simpleAuth.password);
+            ldapConnection.reloadConfig();
+			
 			authenticated = true;
 			uid = simpleAuth.username;
 			return logger.exit(true);
@@ -62,6 +86,16 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 		catch(Exception e) {
 			logger.catching(e);
 			return logger.exit(false);
+		}
+		finally {
+			try {
+				if(ldapConnection != null)
+					ldapConnection.close();
+			}
+			catch(Exception e) {
+				logger.catching(e);
+				return logger.exit(false);
+			}
 		}
 	}
 	

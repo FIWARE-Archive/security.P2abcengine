@@ -54,6 +54,9 @@ public class IssuanceConfigurationData implements ConfigurationData, Cloneable {
 
   /** Password for LDAP user. Used only if identitySource == LDAP. */
   private String ldapPassword;
+  
+  /** Query template used to search for the binddn of a user **/
+  private String bindQuery = "(cn=_UID_)";
     
 
   /** Constructs an empty issuance configuration.
@@ -129,6 +132,14 @@ public class IssuanceConfigurationData implements ConfigurationData, Cloneable {
 
   public int getLdapServerPort() {
     return ldapServerPort;
+  }
+  
+  public String getBindQuery() {
+	  return bindQuery;
+  }
+  
+  public void setBindQuery(String bindQuery) {
+	  this.bindQuery = bindQuery;
   }
 
   /** Sets the LDAP server port.
