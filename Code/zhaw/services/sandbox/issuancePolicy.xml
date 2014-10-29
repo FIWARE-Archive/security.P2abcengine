@@ -12,8 +12,8 @@
       </Message>
       </PresentationPolicy>
 	<CredentialTemplate>
-        <CredentialSpecUID>urn:abc4trust:credspec:ldap:abcPerson</CredentialSpecUID>
+        <CredentialSpecUID>urn:abc4trust:credspec:ldap:person</CredentialSpecUID>
         <IssuerParametersUID>http://mroman.ch/generic/issuance:idemix</IssuerParametersUID>
         <UnknownAttributes/>
-      </CredentialTemplate>
+    </CredentialTemplate>
 </IssuancePolicy>

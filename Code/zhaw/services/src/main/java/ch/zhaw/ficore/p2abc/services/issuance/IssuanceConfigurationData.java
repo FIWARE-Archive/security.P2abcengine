@@ -1,8 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 
@@ -37,6 +35,9 @@ public class IssuanceConfigurationData {
   /** How to connect to the authentication provider? */
   private ConnectionParameters authenticationConnectionParameters;
   
+  /** The binding query. */
+  private String bindQuery;
+  
   /** Constructs an empty issuance configuration.
    * 
    *  @warning: {#isGood()} will return <code>false</code> when using
@@ -50,12 +51,14 @@ public class IssuanceConfigurationData {
   public IssuanceConfigurationData(IdentitySource attributeSource,
       ConnectionParameters attributeConnectionParameters,
       IdentitySource authenticationSource,
-      ConnectionParameters authenticationConnectionParameters) {
+      ConnectionParameters authenticationConnectionParameters,
+      String bindQuery) {
     super();
     this.attributeSource = attributeSource;
     this.attributeConnectionParameters = attributeConnectionParameters;
     this.authenticationSource = authenticationSource;
     this.authenticationConnectionParameters = authenticationConnectionParameters;
+    this.bindQuery = bindQuery;
   }
 
 
@@ -79,6 +82,11 @@ public class IssuanceConfigurationData {
   }
 
 
+  public String getBindQuery() {
+    return bindQuery;
+  }
+
+
   /** Signals that a connection to the attribute provider has been established.
    * 
    * This method causes the stored password for the attribute provider
@@ -96,7 +104,7 @@ public class IssuanceConfigurationData {
   public void authenticationConnectionSucceeded() {
     authenticationConnectionParameters.passwordNoLongerNeeded();
   }
-  
+    
   @Override
   public String toString() {
     return new ToStringBuilder(this)

@@ -6,24 +6,24 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapAttributes;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapException;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapSearch;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapStatic;
 
 public class FindAttribute {
 	public static void main(String... args) throws NamingException, LdapException {
-		LdapConnectionConfig cfg = new LdapConnectionConfig(10389,"localhost");
-		LdapConnection con = cfg.newConnection();
+		ConnectionParameters cfg = new ConnectionParameters("localhost",10389,10389,10389,"uid=admin, ou=system","secret".toCharArray(),false);
+		LdapConnection con = new LdapConnection(cfg);
 		LdapSearch srch = con.newSearch().setName("dc=example, dc=com");
 		
 		System.out.println("testAttribut2 value");
 		System.out.println(srch.getAttribute("(cn=munt)","testAttribut2"));
 	
 		System.out.println("bind...");
-		cfg.setAuth("uid=admin, ou=system","secret");
+		//cfg.setAuth("uid=admin, ou=system","secret");
 		con.reloadConfig();
 		srch.dumpAttributes(srch.getName(), "(cn=munt)");
 	

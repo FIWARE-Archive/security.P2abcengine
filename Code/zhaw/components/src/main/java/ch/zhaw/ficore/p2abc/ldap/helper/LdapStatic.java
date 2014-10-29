@@ -2,6 +2,8 @@ package ch.zhaw.ficore.p2abc.ldap.helper;
 
 import javax.naming.NamingException;
 
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+
 /**
  * Provides some of the helper functions as
  * static methods. 
@@ -9,7 +11,7 @@ import javax.naming.NamingException;
  *
  */
 public class LdapStatic {
-	private static LdapConnectionConfig config;
+	private static ConnectionParameters config;
 	private static LdapConnection con;
 	
 	/**
@@ -18,9 +20,9 @@ public class LdapStatic {
 	 * @param config an LdapConnectionConfig-Object
 	 * @throws NamingException
 	 */
-	public static void init(LdapConnectionConfig config) throws NamingException {
+	public static void init(ConnectionParameters config) throws NamingException {
 		LdapStatic.config = config;
-		LdapStatic.con = LdapStatic.config.newConnection();
+		LdapStatic.con = new LdapConnection(config);
 	}
 	
 	/**

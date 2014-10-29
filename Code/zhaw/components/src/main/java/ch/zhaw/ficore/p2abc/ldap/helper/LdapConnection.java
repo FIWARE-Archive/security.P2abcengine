@@ -1,7 +1,13 @@
 package ch.zhaw.ficore.p2abc.ldap.helper;
 
-import javax.naming.*;
-import javax.naming.directory.*;
+import java.util.Hashtable;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 
 /**
  * Contains an DirContext (LDAPConnection)
@@ -10,14 +16,14 @@ import javax.naming.directory.*;
  */
 public class LdapConnection {
 	private DirContext initialDirContext;
-	private LdapConnectionConfig config;
+	private ConnectionParameters config;
 	
 	/**
-	 * Create a Connection using a LdapConnectionConfig
-	 * @param cfg An LdapConnectionConfig
+	 * Create a Connection using a ConnectionParameters
+	 * @param cfg An ConnectionParameters
 	 * @throws NamingException
 	 */
-	public LdapConnection(LdapConnectionConfig cfg) throws NamingException {
+	public LdapConnection(ConnectionParameters cfg) throws NamingException {
 		config = cfg;
 		reloadConfig();
 	}
@@ -30,26 +36,46 @@ public class LdapConnection {
 	}
 	
 	/**
-	 * Replace the LdapConnectionConfig associated with
+	 * Replace the ConnectionParameters associated with
 	 * this connection and load it.
-	 * @param config A new LdapConnectionConfig
+	 * @param config A new ConnectionParameters
 	 * @throws NamingException
 	 */
-	public void applyConfig(LdapConnectionConfig config) throws NamingException {
+	public void applyConfig(ConnectionParameters config) throws NamingException {
 		this.config = config;
 		reloadConfig();
 	}
 	
 	/**
-	 * Reload the associated LdapConnectionConfig
+	 * Reload the associated ConnectionParameters
 	 * @throws NamingException
 	 */
 	public void reloadConfig() throws NamingException {
 		if(initialDirContext != null)
 			initialDirContext.close();
-		initialDirContext = new InitialDirContext(config.getEnvironment());
+		initialDirContext = new InitialDirContext(makeEnvironment());
 	}
 	
+
+	/**
+	 * Return the environment needed to construct a DirContext
+	 * @return Environment as a Hashtable
+	 */
+	private Hashtable<String, String> makeEnvironment() {
+	  Hashtable<String, String> env = new Hashtable<>();
+	  
+	  env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
+	  env.put(Context.PROVIDER_URL, "ldap://" + config.getServerName() + ":" + config.getServerPort());
+	  if(config.getAuthenticationMethod() != null)
+	    env.put(Context.SECURITY_AUTHENTICATION, config.getAuthenticationMethod());
+	  if(config.getUser() != null)
+	    env.put(Context.SECURITY_PRINCIPAL, config.getUser());
+	  if(config.getPassword() != null)
+	    env.put(Context.SECURITY_CREDENTIALS, config.getPassword().toString());
+	  
+	  return env;
+	}
+
 	/**
 	 * Closes the DirContext
 	 */

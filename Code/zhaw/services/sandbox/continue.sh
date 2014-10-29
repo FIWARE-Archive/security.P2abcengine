@@ -7,7 +7,7 @@
 set -e
 # Setup System Parameters.
 echo "Setup System Parameters"
-curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupSystemParameters/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix' > ./out/systemparameters.xml
+curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupSystemParameters/*magic*/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix' > ./out/systemparameters.xml
 
 # Store credential specification at user.
 # This method is not specified in H2.2.
@@ -34,7 +34,7 @@ curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'h
 
 # Setup issuer parameters.
 echo "Setup issuer parameters"
-curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupIssuerParameters/' > ./out/issuerParameters.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupIssuerParameters/*magic*' > ./out/issuerParameters.xml
 
 
 # Store Issuer Parameters at user.
@@ -54,7 +54,7 @@ curl -X POST --header 'Content-Type: text/xml' 'http://localhost:9200/user/creat
 
 # Init issuance protocol (first step for the issuer).
 echo "Init issuance protocol"
-curl -X POST --header 'Content-Type: text/xml' -d @./outIssuanceRequest.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/initIssuanceProtocol/' > ./out/issuanceMessageAndBoolean.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./outIssuanceRequest.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/initIssuanceProtocol/*magic*' > ./out/issuanceMessageAndBoolean.xml
 
 # Extract issuance message.
 curl -X POST --header 'Content-Type: text/xml' -d @./out/issuanceMessageAndBoolean.xml 'http://localhost:9200/user/extractIssuanceMessage/' > ./out/firstIssuanceMessage.xml
