@@ -35,7 +35,7 @@ import com.google.inject.name.Named;
  * 
  * @author mroman
  */
-public class SqliteURIBytesStorage implements URIBytesStorage {
+public class SqliteURIBytesStorage extends URIBytesStorage {
 	private Connection con;
 	private String table;
 
@@ -146,19 +146,19 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	/**
 	 * Lists all keys
 	 */
-	public List<URI> keys() throws SQLException {
+	public List<String> keysAsStrings() throws SQLException {
 		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 			ResultSet rst = null;
-			List<URI> uris = new ArrayList<URI>();
+			List<String> uris = new ArrayList<String>();
 
 			try {
 				pStmt = con.prepareStatement("SELECT uri FROM " + table);
 				rst = pStmt.executeQuery();
 				while(rst.next()) {
 					try {
-						uris.add(new URI(rst.getString(1)));
+						uris.add(rst.getString(1));
 					}
 					catch(Exception e) {
 						e.printStackTrace();
@@ -182,7 +182,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	/**
 	 * Get an entry from the storage
 	 */
-	public byte[] get(URI uri) throws SQLException {
+	public byte[] get(String key) throws SQLException {
 		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
@@ -190,7 +190,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 
 			try {
 				pStmt = con.prepareStatement("SELECT value FROM " + table + " WHERE hash = ?");
-				String hash = DigestUtils.sha1Hex(uri.toString());
+				String hash = DigestUtils.sha1Hex(key);
 				pStmt.setString(1, hash);
 				rst = pStmt.executeQuery();
 				while(rst.next()) {
@@ -212,14 +212,14 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	/**
 	 * Delete an entry from the storage
 	 */
-	public void delete(URI uri) throws SQLException {
+	public void delete(String key) throws SQLException {
 		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 
 			try {
 				pStmt = con.prepareStatement("DELETE FROM " + table + " WHERE hash = ?");
-				String hash = DigestUtils.sha1Hex(uri.toString());
+				String hash = DigestUtils.sha1Hex(key);
 				pStmt.setString(1, hash);
 				pStmt.executeUpdate();
 			}
@@ -234,10 +234,10 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	/**
 	 * Put (and possibly replace) an entry to the storage
 	 */
-	public void put(URI uri, byte[] bytes) throws SQLException {
+	public void put(String key, byte[] bytes) throws SQLException {
 		logger.entry();
 		synchronized(con) {
-			if(putNew(uri, bytes)) { //putNew returns true if it added something
+			if(putNew(key, bytes)) { //putNew returns true if it added something
 				logger.exit();
 				return;
 			}
@@ -249,10 +249,10 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				pStmt = con.prepareStatement("UPDATE " + table + " SET uri = ?, value = ? WHERE " +
 						" hash = ?");
 
-				String hash = DigestUtils.sha1Hex(uri.toString());
+				String hash = DigestUtils.sha1Hex(key);
 
 				pStmt.setString(3, hash);
-				pStmt.setString(1, uri.toString());
+				pStmt.setString(1, key);
 				pStmt.setBytes(2, bytes);
 
 				pStmt.executeUpdate();
@@ -271,10 +271,10 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	/**
 	 * Add an entry to the storage if and only if it did not exist yet
 	 */
-	public synchronized boolean putNew(URI uri, byte[] bytes) throws SQLException {
+	public synchronized boolean putNew(String key, byte[] bytes) throws SQLException {
 		logger.entry();
 		synchronized(con) {
-			if(containsKey(uri))
+			if(containsKey(key))
 				return logger.exit(false);
 
 			PreparedStatement pStmt = null;
@@ -282,10 +282,10 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 				pStmt = con.prepareStatement("INSERT INTO " + table + "(hash, uri, value) " +
 						"VALUES(?, ?, ?)");
 
-				String hash = DigestUtils.sha1Hex(uri.toString());
+				String hash = DigestUtils.sha1Hex(key);
 
 				pStmt.setString(1, hash);
-				pStmt.setString(2, uri.toString());
+				pStmt.setString(2, key);
 				pStmt.setBytes(3, bytes);
 
 				pStmt.executeUpdate();
@@ -304,7 +304,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 	/**
 	 * Checks if an entry exists in the storage
 	 */
-	public boolean containsKey(URI uri) throws SQLException {
+	public boolean containsKey(String key) throws SQLException {
 		logger.entry();
 		synchronized(con) {
 			PreparedStatement pStmt = null;
@@ -312,7 +312,7 @@ public class SqliteURIBytesStorage implements URIBytesStorage {
 			try {
 				pStmt = con.prepareStatement("SELECT EXISTS(SELECT 1 FROM " + table + " WHERE " +
 						" hash = ? LIMIT 1)");
-				String hash = DigestUtils.sha1Hex(uri.toString());
+				String hash = DigestUtils.sha1Hex(key);
 				pStmt.setString(1, hash);
 				rst = pStmt.executeQuery();
 
