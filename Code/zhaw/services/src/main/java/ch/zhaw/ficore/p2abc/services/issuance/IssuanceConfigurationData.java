@@ -87,24 +87,6 @@ public class IssuanceConfigurationData {
   }
 
 
-  /** Signals that a connection to the attribute provider has been established.
-   * 
-   * This method causes the stored password for the attribute provider
-   * connection to be deleted.
-   */
-  public void attributeConnectionSucceeded() {
-    attributeConnectionParameters.passwordNoLongerNeeded();
-  }
-  
-  /** Signals that a connection to the authentication provider has been established.
-   * 
-   * This method causes the stored password for the authentication provider
-   * connection to be deleted.
-   */
-  public void authenticationConnectionSucceeded() {
-    authenticationConnectionParameters.passwordNoLongerNeeded();
-  }
-    
   @Override
   public String toString() {
     return new ToStringBuilder(this)
@@ -112,6 +94,7 @@ public class IssuanceConfigurationData {
       .append("attributeConnectionParameters", attributeConnectionParameters)
       .append("authenticationSource", authenticationSource)
       .append("authenticationConnectionParameters", authenticationConnectionParameters)
+      .append("bindQuery", bindQuery)
       .toString();
   }
   

@@ -58,8 +58,6 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	  if (isGood) {
 	    AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 	    IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
-	    if(configuration.getAuthenticationConnectionParameters().usesTls())
-	      throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 
 	    LdapConnection adminConnection = null;
 	    LdapConnection userConnection = null;
@@ -86,7 +84,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	      }
 
 	      if (isGood) {
-	        ConnectionParameters userCfg = new ConnectionParameters(adminCfg.getServerName(), adminCfg.getServerPort(), adminCfg.getServerPort(), adminCfg.getServerPort(), binddn, simpleAuth.password.toCharArray(), adminCfg.usesTls());
+	        ConnectionParameters userCfg = new ConnectionParameters(adminCfg.getServerName(), adminCfg.getServerPort(), adminCfg.getServerPort(), adminCfg.getServerPort(), binddn, simpleAuth.password, adminCfg.usesTls());
 	        // Implicit authentication
 	        userConnection = new LdapConnection(userCfg);
 
