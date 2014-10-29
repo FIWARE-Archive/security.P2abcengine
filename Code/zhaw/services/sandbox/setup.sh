@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm ../idemix*
+
 echo 'Downloading AttributeInfoCollection'
 curl -X GET 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/attributeInfoCollection/*magic*/person' > attrInfoCol.xml
 
