@@ -3,8 +3,8 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 
@@ -48,13 +48,12 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 		
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 		IssuanceConfigurationData configuration = ServicesConfiguration.getIssuanceConfiguration();
-		if(configuration.doesLdapUseTls())
+		if(configuration.getAuthenticationConnectionParameters().usesTls())
 			throw logger.throwing(new RuntimeException("TLS not supported yet :("));
 		
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(configuration.getLdapServerPort(), configuration.getLdapServerName());
-			cfg.setAuth(simpleAuth.username, simpleAuth.password);
-			ldapConnection = cfg.newConnection();
+			ConnectionParameters cfg = configuration.getAuthenticationConnectionParameters();
+			ldapConnection = new LdapConnection(cfg);
 			authenticated = true;
 			uid = simpleAuth.username;
 			return logger.exit(true);

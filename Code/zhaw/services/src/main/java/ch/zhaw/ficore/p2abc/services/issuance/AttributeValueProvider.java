@@ -39,11 +39,12 @@ public abstract class AttributeValueProvider {
 	 * @return an implementation of an AttributeValueProvider
 	 */
 	public static AttributeValueProvider getAttributeValueProvider(IssuanceConfigurationData configuration) {
-		switch(configuration.getIdentitySource()) {
+		switch(configuration.getAttributeSource()) {
 		case LDAP:
 			return new LdapAttributeValueProvider(configuration);
+		default:
+	    return null;
 		}
-		return null;
 	}
 	
 	/**

@@ -1,14 +1,11 @@
 package ch.zhaw.ficore.p2abc.services;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.util.Modules;
-
-import ch.zhaw.ficore.p2abc.services.guice.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.services.guice.SqliteStorageModule;
+
+import com.google.inject.Module;
 
 /**
  * Serves as a Factory for StorageModules where a StorageModule

@@ -1,22 +1,18 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.io.IOException;
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
+import java.math.BigInteger;
+import java.net.URI;
+import java.util.List;
 
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
+import ch.zhaw.ficore.p2abc.ldap.helper.LdapSearch;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
-import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuancePolicyAndAttributes;
 import eu.abc4trust.xml.ObjectFactory;
-
-import java.math.BigInteger;
-import java.net.URI;
-import java.util.*;
-
-import ch.zhaw.ficore.p2abc.ldap.helper.*;
 
 public class LdapAttributeValueProvider extends AttributeValueProvider {
 
@@ -35,11 +31,8 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 			CredentialSpecification credSpec) throws Exception {
 
 		try {
-
-			LdapConnectionConfig cfg = new LdapConnectionConfig(
-					configuration.getLdapServerPort(), configuration.getLdapServerName());
-			cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
-			LdapConnection connection = cfg.newConnection();
+			ConnectionParameters cfg = configuration.getAttributeConnectionParameters();
+			LdapConnection connection = new LdapConnection(cfg);
 
 
 			LdapSearch srch = connection.newSearch();

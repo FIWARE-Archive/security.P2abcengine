@@ -1,8 +1,10 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -16,50 +18,45 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 
-import java.util.List;
-
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationException;
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
-import ch.zhaw.ficore.p2abc.services.UserStorageManager; //from Code/core-abce/abce-services (COPY)
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
-import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
-import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
+import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
+import ch.zhaw.ficore.p2abc.services.issuance.IssuanceConfigurationData.IdentitySource;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.LanguageValuePair;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
-import ch.zhaw.ficore.p2abc.services.helpers.issuer.*;
-import ch.zhaw.ficore.p2abc.services.guice.*;
-
+import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
-import eu.abc4trust.keyManager.KeyStorage;
+import eu.abc4trust.util.CryptoUriUtil;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.CredentialSpecification;
-import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.SystemParameters;
-import eu.abc4trust.xml.IssuerParameters;
-import eu.abc4trust.xml.IssuerParametersInput;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
 import eu.abc4trust.xml.IssuancePolicy;
 import eu.abc4trust.xml.IssuancePolicyAndAttributes;
-import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
-import eu.abc4trust.util.CryptoUriUtil;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.*;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
-import java.io.*;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import eu.abc4trust.xml.IssuerParameters;
+import eu.abc4trust.xml.IssuerParametersInput;
+import eu.abc4trust.xml.ObjectFactory;
+import eu.abc4trust.xml.SystemParameters;
+//from Code/core-abce/abce-services (COPY)
 
 @Path("/ldap-issuance-service")
 public class LdapIssuanceService {
@@ -81,13 +78,8 @@ public class LdapIssuanceService {
 	private Logger logger;
 
 	static {
-		IssuanceConfigurationData cfgData;
-		try {
-			cfgData = new IssuanceConfigurationData(false, "localhost", 10389,
-					"uid=admin, ou=system", "secret");
-		} catch (ConfigurationException e) {
-			cfgData = null;
-		}
+		ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret".toCharArray(), false);
+		IssuanceConfigurationData cfgData = new IssuanceConfigurationData(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp);
 		ServicesConfiguration.setIssuanceConfiguration(cfgData);
 		initializeWithConfiguration();
 	}

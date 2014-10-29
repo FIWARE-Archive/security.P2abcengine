@@ -19,9 +19,7 @@ import ch.zhaw.ficore.p2abc.services.verification.VerificationConfigurationData;
  * employ simple getters and setters on fields, for the simple reason that this
  * class is being used from within a servlet container, which means that there
  * may be several threads trying to get information from or change information
- * in this class.  You will have to get and set entire configurations. See
- * {@link #setConfigurationFor(ServiceType)}
- * and {@link #getConfigurationFor(ServiceType)} to see how it's done.
+ * in this class.  You will have to get and set entire configurations.
  * 
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
@@ -35,25 +33,26 @@ public class ServicesConfiguration {
 	}
 
 	/** Configuration data for issuance service. */
-	private static IssuanceConfigurationData issuanceConfiguration = new IssuanceConfigurationData();
+	private static IssuanceConfigurationData issuanceConfiguration;
 
 	/** Configuration data for issuance service. */
-	private static VerificationConfigurationData verificationConfiguration = new VerificationConfigurationData();
+	private static VerificationConfigurationData verificationConfiguration;
 
 	/** Configuration data for issuance service. */
-	private static UserConfigurationData userConfiguration = new UserConfigurationData();
+	private static UserConfigurationData userConfiguration;
 	
 	/** Storage configuration **/
 	private static StorageConfiguration storageConfiguration = new SqliteStorageConfiguration(); //TODO: make more generic -- munt
 
 	private static Logger logger = LogManager.getLogger();
 
-	/** Magic Cookie
+	/** Magic Cookie.
+	 * 
 	 * The Magic Cookie is used for service administration such as changing
 	 * or reloading the configuration as well as storing or creating
 	 * CredentialSpecifications and more.
 	 * 
-	 * The default value is <b>*magic*</b>. It's <b>HIGHLY</b> recommended
+	 * The default value is <b>*magic*</b>. It's <em>HIGHLY</em> recommended
 	 * to change it to a secure value and to change it frequently.
 	 * Please only communicate over secure channels and secure applications
 	 * when transmitting the magic cookie. 
@@ -65,7 +64,7 @@ public class ServicesConfiguration {
 	 * the one stored in this configuration.)
 	 * 
 	 * @param magicCookie The value to check against
-	 * @return true or false.
+	 * @return true iff the parameter is the same as the stored cookie.
 	 */
 	public static synchronized boolean isMagicCookieCorrect(String magicCookie) {
 		return ServicesConfiguration.magicCookie.equals(magicCookie);
@@ -105,62 +104,22 @@ public class ServicesConfiguration {
 		return logger.exit(ret);
 	}
 
-	/** Returns a copy of the current issuance configuration.
-	 * 
-	 * We return a <em>copy</em> of the issuance parameters
-	 * instead of a reference to the issuance parameters themselves
-	 * because we don't want to enable the caller to change these
-	 * parameters without our knowledge.
+	/** Returns the current issuance configuration.
 	 *  
-	 * @return the current issuance parameters, or <code>null</code>
-	 *    if there was a problem cloning the current configuration. 
+	 * @return the current issuance parameters. 
 	 */
 	public static synchronized IssuanceConfigurationData getIssuanceConfiguration() {
-		return (IssuanceConfigurationData) getConfigurationFor(ServiceType.ISSUANCE);
+		return issuanceConfiguration;
 	}
 
 	public static synchronized VerificationConfigurationData getVerificationConfiguration() {
-		return (VerificationConfigurationData) getConfigurationFor(ServiceType.VERIFICATION);
+    return verificationConfiguration;
 	}
 
 	public static synchronized UserConfigurationData getUserConfiguration() {
-		return (UserConfigurationData) getConfigurationFor(ServiceType.USER);
+    return userConfiguration;
 	}
 
-	private static synchronized ConfigurationData getConfigurationFor(ServiceType type) {
-		logger.entry();
-
-		ConfigurationData ret = null;
-		ConfigurationData src = getConfigurationReferenceFor(type);
-
-		try {
-			assert src != null;
-			ret = src.clone();
-		} catch (CloneNotSupportedException e) {
-			logger.error("Service configuration can't be cloned: \""
-					+ e.getMessage() + "\". This is decidedly unexpected!");
-		}
-
-		return logger.exit(ret);
-	}
-
-	private static ConfigurationData getConfigurationReferenceFor(ServiceType type) {
-		ConfigurationData ret = null;
-
-		switch (type) {
-		case ISSUANCE: ret = issuanceConfiguration; break;
-		case VERIFICATION: ret = verificationConfiguration; break;
-		case USER: ret = userConfiguration; break;
-		}
-
-		return ret;
-	}
-
-	private static boolean serviceTypeMatchesObjectType(ServiceType type, ConfigurationData newConfig) {
-		return type == ServiceType.ISSUANCE && newConfig instanceof IssuanceConfigurationData
-				|| type == ServiceType.VERIFICATION && newConfig instanceof VerificationConfigurationData
-				|| type == ServiceType.USER && newConfig instanceof UserConfigurationData;
-	}
 
 	/** Replaces the current issuance configuration. 
 	 * 
@@ -172,63 +131,26 @@ public class ServicesConfiguration {
 	 * @param newConfig the new configuration
 	 */
 	public static synchronized void setIssuanceConfiguration(IssuanceConfigurationData newConfig) {
-		setConfigurationFor(ServiceType.ISSUANCE, newConfig);
+	  logger.entry();
+	  
+	  if (newConfig.isPlausible())
+	    issuanceConfiguration = newConfig;
+	  else
+	    logger.warn("Issuance configuration not plausible, retaining old one");
+
+	  logger.exit();
 	}
 
-	public static synchronized void setVerificationConfiguration(ConfigurationData newConfig) {
-		setConfigurationFor(ServiceType.VERIFICATION, newConfig);    
+	public static synchronized void setVerificationConfiguration(VerificationConfigurationData newConfig) {
+    verificationConfiguration = newConfig;
 	}
 
 	public static synchronized void setUserConfiguration(UserConfigurationData newConfig) {
-		setConfigurationFor(ServiceType.USER, newConfig);
-	}
-
-	private static synchronized void setConfigurationFor(ServiceType type, ConfigurationData newConfig) {
-		logger.entry();
-
-		boolean nonNull = true;
-		if (newConfig == null) {
-			logger.warn("Trying to set configuration for " + type + " to null; ignored");
-			nonNull = false;
-		}
-
-		boolean typesMatch = true;
-		if (nonNull && !serviceTypeMatchesObjectType(type, newConfig)) {
-			logger.error("Type mismatch: attemtpt to overwrite " + type 
-					+ " configuration with object of type " + newConfig.getClass());
-			typesMatch = false;
-		}
-
-		if (nonNull && typesMatch && newConfig.isGood()) {
-			ConfigurationData configuration = getConfigurationReferenceFor(type);
-			logger.info("Old configuration: " + configuration);
-
-			try {
-				ConfigurationData newData = newConfig.clone();
-				switch (type) {
-				case ISSUANCE: issuanceConfiguration = (IssuanceConfigurationData) newData; break;
-				case VERIFICATION: verificationConfiguration = (VerificationConfigurationData) newData; break;
-				case USER: userConfiguration = (UserConfigurationData) newData; break;
-				}
-
-				logger.info("New configuration: " + configuration);
-				
-			} catch (CloneNotSupportedException e) {
-				logger.error("Service configuration can't be cloned: \""
-						+ e.getMessage() + "\". This is decidedly unexpected!");
-				logger.warn("Attempt to configure services unsuccessful");
-			}
-		} else {
-			logger.warn("Problems detected with configuration; the configuration"
-					+ " was NOT overwritten and the old configuration is still in"
-					+ " effect.");
-		}
-		
-		logger.exit();
+    userConfiguration = newConfig;
 	}
 
 	public static synchronized void setFakeIssuanceParameters() {
-		issuanceConfiguration.setIdentitySource(IdentitySource.FAKE);
+    issuanceConfiguration.setFakeSources();
 		// TODO: Set more parameters?
 	}
 }

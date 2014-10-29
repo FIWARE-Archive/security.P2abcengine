@@ -34,13 +34,13 @@ public abstract class AttributeInfoProvider {
 	public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfigurationData configuration) {
 	  logger.entry();
 	  
-		switch(configuration.getIdentitySource()) {
+		switch(configuration.getAttributeSource()) {
 		case FAKE:
 			return logger.exit(new FakeAttributeInfoProvider(configuration));
     case LDAP:
       return logger.exit(new LdapAttributeInfoProvider(configuration));
 		default:
-		  logger.error("Identity source " + configuration.getIdentitySource() +
+		  logger.error("Identity source " + configuration.getAttributeSource() +
 		      " not supported");
 		  return logger.exit(null);
 		}

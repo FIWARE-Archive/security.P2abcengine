@@ -4,8 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.services.ConfigurationData;
-import ch.zhaw.ficore.p2abc.services.ConfigurationException;
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 
 /** Data container for issuance service configuration.
  * 
@@ -16,211 +15,107 @@ import ch.zhaw.ficore.p2abc.services.ConfigurationException;
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
-public class IssuanceConfigurationData implements ConfigurationData, Cloneable {
-  /** Default port for LDAP when TLS is used. */
-  private static final int LDAP_TLS_DEFAULT_PORT = 636;
-
-  /** Default port for LDAP when TLS is not used. */
-  private static final int LDAP_DEFAULT_PORT = 389;
-  
-  /** Maximum legal TCP/UDP port number. */
-  private static final int LDAP_MAX_PORT = (1 << 16) - 1;
-  
-  /** What identity source will we be using for the issuer? */
+public class IssuanceConfigurationData {
+  /** What source will we be using for attributes or authentication? */
   public enum IdentitySource {
-    KEYROCK,  /** Use keyrock as the identity source. */
-    LDAP,     /** Use an LDAP server as the identity source. */
-    FAKE,     /** Use a fake identity source. */
+    KEYROCK,  /** Use keyrock. */
+    LDAP,     /** Use LDAP. */
+    FAKE,     /** Use a fake (testing only). */
   }
 
-  private Logger logger;
+  //private Logger logger;
 
-  /** What identity source should we use? */
-  private IdentitySource identitySource;
+  /** What attribute source should we use? */
+  private IdentitySource attributeSource;
   
-  /** Use TLS with LDAP? */
-  private boolean ldapUseTls;
-
-  /** Name of LDAP server. Used only if identitySource == LDAP. */
-  private String ldapServerName;
-
-  /** LDAP server port. Defaults are 636 if using TLS, 389 if not. 
-   * Used only if identitySource == LDAP. */
-  private int ldapServerPort;
-
-  /** LDAP user that can access all the identity information. Used only if
-   * identitySource == LDAP. */
-  private String ldapUser;
-
-  /** Password for LDAP user. Used only if identitySource == LDAP. */
-  private String ldapPassword;
-    
-
+  /** How to connect to the attribute provider? */
+  private ConnectionParameters attributeConnectionParameters;
+  
+  /** What authentication source should we use? */
+  private IdentitySource authenticationSource;
+  
+  /** How to connect to the authentication provider? */
+  private ConnectionParameters authenticationConnectionParameters;
+  
   /** Constructs an empty issuance configuration.
    * 
    *  @warning: {#isGood()} will return <code>false</code> when using
    *  this constructor.
    */
   public IssuanceConfigurationData() {
-    logger = LogManager.getLogger();
+    //logger = LogManager.getLogger();
   }
   
-  /** Constructs issuance configuration data for LDAP.
+  
+  public IssuanceConfigurationData(IdentitySource attributeSource,
+      ConnectionParameters attributeConnectionParameters,
+      IdentitySource authenticationSource,
+      ConnectionParameters authenticationConnectionParameters) {
+    super();
+    this.attributeSource = attributeSource;
+    this.attributeConnectionParameters = attributeConnectionParameters;
+    this.authenticationSource = authenticationSource;
+    this.authenticationConnectionParameters = authenticationConnectionParameters;
+  }
+
+
+  public IdentitySource getAttributeSource() {
+    return attributeSource;
+  }
+
+
+  public ConnectionParameters getAttributeConnectionParameters() {
+    return attributeConnectionParameters;
+  }
+
+
+  public IdentitySource getAuthenticationSource() {
+    return authenticationSource;
+  }
+
+
+  public ConnectionParameters getAuthenticationConnectionParameters() {
+    return authenticationConnectionParameters;
+  }
+
+
+  /** Signals that a connection to the attribute provider has been established.
    * 
-   * @param ldapUseTls whether to use TLS or not
-   * @param ldapServerName the LDAP srever's name
-   * @param ldapServerPort the port number to use on the LDAP server. This
-   *   port number may be zero, in which case an appropriate default is chosen.
-   * @param ldapUser the user name that has access to all the attributes
-   * @param ldapPassword the user's password
+   * This method causes the stored password for the attribute provider
+   * connection to be deleted.
    */
-  public IssuanceConfigurationData(boolean ldapUseTls, String ldapServerName,
-      int ldapServerPort, String ldapUser, String ldapPassword) 
-          throws ConfigurationException {
-    this();
-  
-    this.identitySource = IdentitySource.LDAP;
-    
-    this.ldapUseTls = ldapUseTls;
-    this.ldapServerName = ldapServerName;
-    this.ldapServerPort = ldapServerPort;
-    this.ldapUser = ldapUser;
-    this.ldapPassword = ldapPassword;
-    
-    if (ldapServerPort == 0) {
-      this.ldapServerPort = ldapUseTls ? LDAP_TLS_DEFAULT_PORT : LDAP_DEFAULT_PORT;
-    }
+  public void attributeConnectionSucceeded() {
+    attributeConnectionParameters.passwordNoLongerNeeded();
   }
   
-  /** Constructs issuance configuration data for the fake provider.
+  /** Signals that a connection to the authentication provider has been established.
    * 
-   * @param fake any boolean
+   * This method causes the stored password for the authentication provider
+   * connection to be deleted.
    */
-  public IssuanceConfigurationData(boolean fake) {
-    this();
-    
-    this.identitySource = IdentitySource.FAKE;
-  }
-  
-  
-  public IdentitySource getIdentitySource() {
-    return identitySource;
-  }
-
-  public void setIdentitySource(IdentitySource identitySource) {
-    this.identitySource = identitySource;
-  }
-
-  public boolean doesLdapUseTls() {
-    return ldapUseTls;
-  }
-
-  public void setLdapUseTls(boolean ldapUseTls) {
-    this.ldapUseTls = ldapUseTls;
-  }
-
-  public String getLdapServerName() {
-    return ldapServerName;
-  }
-
-  public void setLdapServerName(String ldapServerName) {
-    this.ldapServerName = ldapServerName;
-  }
-
-  public int getLdapServerPort() {
-    return ldapServerPort;
-  }
-
-  /** Sets the LDAP server port.
-  *
-  * It is possible to pass 0 for ldapServerPort.  In this case, the
-  * correct default port is chosen, depending on whether TLS is to
-  * be used or not.
-  */
-  public void setLdapServerPort(int ldapServerPort) {
-    logger.entry();
-    
-    if (ldapServerPort == 0) {
-      this.ldapServerPort = ldapUseTls ? LDAP_TLS_DEFAULT_PORT : LDAP_DEFAULT_PORT;
-    } else if (ldapServerPort > 0 && ldapServerPort <= LDAP_MAX_PORT) {
-      this.ldapServerPort = ldapServerPort;
-    } else {
-      logger.warn("Trying to set LDAP server port to illegal value "
-          + ldapServerPort + "; keeping old value " + this.ldapServerPort);
-    }
-  }
-
-  public String getLdapUser() {
-    return ldapUser;
-  }
-
-  public void setLdapUser(String ldapUser) {
-    this.ldapUser = ldapUser;
-  }
-
-  public String getLdapPassword() {
-    return ldapPassword;
-  }
-
-  public void setLdapPassword(String ldapPassword) {
-    this.ldapPassword = ldapPassword;
-  }
-
-  @Override
-  public String toString() {
-    ToStringBuilder builder = new ToStringBuilder(this).
-      append("identitySource", identitySource);
-    
-    if (identitySource == IdentitySource.LDAP) {
-      builder = builder
-          .append("ldapUseTls", ldapUseTls)
-          .append("ldapServerName", ldapServerName)
-          .append("ldapServerPort", ldapServerPort)
-          .append("ldapUser", ldapUser)
-          .append("ldapPassword", "(not disclosed)");
-    } else if (identitySource == IdentitySource.KEYROCK) {
-      // TODO: Default message for now, since we don't know what the
-      // configuration parameters for Keyrock are.
-      builder = builder
-          .append("noKeyrockConfiguration", true);
-    } else if (identitySource == IdentitySource.FAKE) {
-      builder = builder
-          .append("fake", true);
-    } else {
-      builder = builder
-          .append("unhandled identity source", true);
-    }
-
-    return builder.toString();
-  }
-
- @Override
-  public boolean isGood() {
-    boolean ret = true;
-    logger.entry();
-
-    if (ldapServerPort < 0
-        || ldapServerPort >= (1 << 16)) {
-      logger.error("LDAP server port "
-          + ldapServerPort + " out of range");
-      }
-
-    return logger.exit(ret);    
+  public void authenticationConnectionSucceeded() {
+    authenticationConnectionParameters.passwordNoLongerNeeded();
   }
   
   @Override
-  public IssuanceConfigurationData clone() throws CloneNotSupportedException {
-    logger.entry();
-    
-    IssuanceConfigurationData ret = (IssuanceConfigurationData) super.clone();
-    ret.identitySource = identitySource;
-    ret.ldapUseTls = ldapUseTls;
-    ret.ldapServerName = ldapServerName;
-    ret.ldapServerPort = ldapServerPort;
-    ret.ldapUser = ldapUser;
-    ret.ldapPassword = ldapPassword;
-    
-    return logger.exit(ret);
+  public String toString() {
+    return new ToStringBuilder(this)
+      .append("attributeSource", attributeSource)
+      .append("attributeConnectionParameters", attributeConnectionParameters)
+      .append("authenticationSource", authenticationSource)
+      .append("authenticationConnectionParameters", authenticationConnectionParameters)
+      .toString();
+  }
+  
+  public void setFakeSources() {
+    attributeSource = IdentitySource.FAKE;
+    authenticationSource = IdentitySource.FAKE;
+  }
+
+
+  public boolean isPlausible() {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

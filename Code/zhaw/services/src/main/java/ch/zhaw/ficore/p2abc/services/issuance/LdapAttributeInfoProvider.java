@@ -11,9 +11,8 @@ import javax.naming.directory.DirContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnectionConfig;
-import ch.zhaw.ficore.p2abc.services.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
 
@@ -86,10 +85,9 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 		logger.entry();
 		
 		try {
-			LdapConnectionConfig cfg = new LdapConnectionConfig(
-			    configuration.getLdapServerPort(), configuration.getLdapServerName());
-			cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
-			LdapConnection con = cfg.newConnection();
+			ConnectionParameters cfg = configuration.getAuthenticationConnectionParameters();
+			//cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
+			LdapConnection con = new LdapConnection(cfg);
 			
 			DirContext ctx = con.getInitialDirContext();
 			DirContext schema = ctx.getSchema("ou=schema");
