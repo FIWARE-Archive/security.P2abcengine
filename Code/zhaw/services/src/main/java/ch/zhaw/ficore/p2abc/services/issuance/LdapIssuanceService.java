@@ -78,7 +78,7 @@ public class LdapIssuanceService {
 	private Logger logger;
 
 	static {
-		ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret".toCharArray(), false);
+		ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret", false);
 		IssuanceConfigurationData cfgData = new IssuanceConfigurationData(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp, "(cn=_UID_)");
 		ServicesConfiguration.setIssuanceConfiguration(cfgData);
 	}
