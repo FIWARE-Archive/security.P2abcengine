@@ -5,11 +5,15 @@ import java.net.URI;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class GenericIssuerCredentialStorage implements CredentialStorage {
 	
 	private URIBytesStorage storage;
-	
-	public GenericIssuerCredentialStorage(URIBytesStorage storage) {
+
+	@Inject
+	public GenericIssuerCredentialStorage(@Named("issuerSecretKeyStorage") URIBytesStorage storage) {
 		this.storage = storage;
 	}
 	

@@ -5,11 +5,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class GenericSecretStorage implements SecretStorage {
 	
 private URIBytesStorage storage;
 	
-	public GenericSecretStorage(URIBytesStorage storage) {
+    @Inject
+	public GenericSecretStorage(@Named("secretStorage") URIBytesStorage storage) {
 		this.storage = storage;
 	}
 	
