@@ -162,7 +162,7 @@ public class LdapIssuanceService {
 	/**
 	 * Store QueryRule.
 	 * 
-	 * This function is protected by the magic cookie.
+	 * This method is protected by the magic cookie.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid UID of the credSpec
@@ -196,7 +196,7 @@ public class LdapIssuanceService {
 	/**
 	 * Retrieve a QueryRule.
 	 * 
-	 * This function is protected by the magic cookie.
+	 * This method is protected by the magic cookie.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid
@@ -232,7 +232,7 @@ public class LdapIssuanceService {
 	/**
 	 * Store IssuancePolicy.
 	 * 
-	 * This function is protected by the magic cookie.
+	 * This method is protected by the magic cookie.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid UID of the credSpec
@@ -266,7 +266,7 @@ public class LdapIssuanceService {
 	/**
 	 * Retrieve an IssuancePolicy
 	 * 
-	 * This function is protected by the magic cookie.
+	 * This method is protected by the magic cookie.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid
@@ -301,7 +301,7 @@ public class LdapIssuanceService {
 
 
 	/**
-	 * This function can be used to test the authentication.
+	 * This method can be used to test the authentication.
 	 * It returns a response with status code OK if the authentication
 	 * was successful, otherwise it returns a response with status code FORBIDDEN.
 	 * 
@@ -323,15 +323,15 @@ public class LdapIssuanceService {
 	}
 
 	/**
-	 * This function can be used to obtain the AttributeInfoCollection
+	 * This method can be used to obtain the AttributeInfoCollection
 	 * that may later be converted into a CredentialSpecification. 
-	 * This function contacts the identity source to obtain the necessary
+	 * This method contacts the identity source to obtain the necessary
 	 * attributes for <em>name</em>. <em>name</em> refers to a <em>kind</em> of credential
 	 * a user can get issued. For example <em>name</em> may refer to an objectClass
 	 * in LDAP. However, the exact behaviour of <em>name</em> depends on the configuration
 	 * of this service. 
 	 * 
-	 * This function is protected by the magic cookie.
+	 * This method is protected by the magic cookie.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param name name (see description of this method above)
@@ -353,10 +353,10 @@ public class LdapIssuanceService {
 
 	/**
 	 * Generates (or creates) the corresponding CredentialSpecification
-	 * for a given AttributeInfoCollection. This function assumes that the
+	 * for a given AttributeInfoCollection. This method assumes that the
 	 * given AttributeInfoCollection is sane. 
 	 * 
-	 * This function is protected by the magic cookie.
+	 * This method is protected by the magic cookie.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param attrInfoColl the AttributeInfoCollection
@@ -405,6 +405,16 @@ public class LdapIssuanceService {
 		}
 	}
 	
+	/**
+	 * Store a CredentialSpecification at the issuer.
+	 * 
+	 * This method is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid UID of the CredentialSpecification
+	 * @param credSpec the CredentialSpecification to store
+	 * @return Response
+	 */
 	@PUT()
 	@Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
 	@Consumes({ MediaType.APPLICATION_XML })
@@ -443,6 +453,15 @@ public class LdapIssuanceService {
 		}
 	}
 
+	/**
+	 * Retreive a CredentialSpecification from the issuer.
+	 * 
+	 * This method is protected by the magic cookie.
+	 * 
+	 * @param magicCookie the magic cookie
+	 * @param credentialSpecificationUid UID of the CredentialSpecification to retreive
+	 * @return Response (CredentialSpecification)
+	 */
 	@GET()
 	@Path("/getCredentialSpecification/{magicCookie}/{credentialSpecificationUid}")
 	public Response getCredentialSpecification(
@@ -464,7 +483,7 @@ public class LdapIssuanceService {
 			CredentialSpecification credSpec = instance.keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
 
 			if(credSpec == null) {
-				return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+				return logger.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCredSpec).build());
 			}
 			else
 				return logger.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
@@ -492,41 +511,57 @@ public class LdapIssuanceService {
 	 * 
 	 * This method will overwrite any existing system parameters.
 	 * 
+	 * Protected by magic cookie
+	 * 
+	 * @param magicCookie
 	 * @param securityLevel
 	 * @param cryptoMechanism
 	 * @return
 	 * @throws Exception
 	 */
 	@POST()
-	@Path("/setupSystemParameters/")
+	@Path("/setupSystemParameters/{magicCookie}")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-	@Produces(MediaType.TEXT_XML)
-	public JAXBElement<SystemParameters> setupSystemParameters(
+	public Response setupSystemParameters(
+			@PathParam("magicCookie") String magicCookie,
 			@QueryParam("securityLevel") int securityLevel,
 			@QueryParam("cryptoMechanism") URI cryptoMechanism)
 					throws Exception {
-
-		logger.info("IssuanceService - setupSystemParameters "
-				+ securityLevel + ", " + cryptoMechanism);
-
-		CryptoEngine cryptoEngine = this.parseCryptoMechanism(cryptoMechanism);
-
-		this.initializeHelper(cryptoEngine);
-
-		IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
-
-		int idemixKeylength = this.parseIdemixSecurityLevel(securityLevel);
-
-		int uproveKeylength = this.parseUProveSecurityLevel(securityLevel);
-
-		SystemParameters systemParameters = issuanceHelper
-				.createNewSystemParametersWithIdemixSpecificKeylength(
-						idemixKeylength, uproveKeylength);
-
-		SystemParameters serializeSp = SystemParametersUtil
-				.serialize(systemParameters);
-
-		return this.of.createSystemParameters(serializeSp);
+		
+		logger.entry();
+		
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+		
+		try {
+			logger.info("IssuanceService - setupSystemParameters "
+					+ securityLevel + ", " + cryptoMechanism);
+	
+			CryptoEngine cryptoEngine = this.parseCryptoMechanism(cryptoMechanism);
+	
+			this.initializeHelper(cryptoEngine);
+	
+			IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
+	
+			int idemixKeylength = this.parseIdemixSecurityLevel(securityLevel);
+	
+			int uproveKeylength = this.parseUProveSecurityLevel(securityLevel);
+	
+			SystemParameters systemParameters = issuanceHelper
+					.createNewSystemParametersWithIdemixSpecificKeylength(
+							idemixKeylength, uproveKeylength);
+	
+			SystemParameters serializeSp = SystemParametersUtil
+					.serialize(systemParameters);
+			
+			return logger.exit(
+					Response.ok(this.of.createSystemParameters(serializeSp), 
+							MediaType.APPLICATION_XML).build());
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(Response.serverError().build());
+		}
 	}
 
 	private int parseIdemixSecurityLevel(int securityLevel) {
@@ -573,6 +608,8 @@ public class LdapIssuanceService {
      * Currently, the only supported hash algorithm is SHA-256 with identifier
      * urn:abc4trust:1.0:hashalgorithm:sha-256.
      * 
+     * Protected by magic cookie.
+     * 
      * @return
      * @throws Exception
      */
@@ -580,60 +617,68 @@ public class LdapIssuanceService {
      * curl --header "Content-Type:application/xml" -X POST -d @credSpecAndSysParams.xml http://localhost:9500/abce-services/issuer/setupIssuerParameters/?cryptoEngine=IDEMIX\&issuerParametersUid=urn%3A%2F%2Ftest%2Ffoobar\&hash=urn:abc4trust:1.0:hashalgorithm:sha-256
      */
     @POST()
-    @Path("/setupIssuerParameters/")
+    @Path("/setupIssuerParameters/{magicCookie}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<IssuerParameters> setupIssuerParameters(
+    public Response setupIssuerParameters(
+    		@PathParam("magicCookie") String magicCookie,
             IssuerParametersInput issuerParametersInput)
                     throws Exception {
+    	
+    	logger.entry();
+		
+		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
-        logger.info("IssuanceService - setupIssuerParameters ");
-
-        CryptoEngine cryptoEngine = this
-                .parseCryptoMechanism(issuerParametersInput.getAlgorithmID());
-
-        this.initializeHelper(cryptoEngine);
-
-        this.validateInput(issuerParametersInput);
-        URI hashAlgorithm = issuerParametersInput.getHashAlgorithm();
-
-        String systemAndIssuerParamsPrefix = "";
-
-        IssuanceHelper instance = IssuanceHelper.getInstance();
-
-        KeyManager keyManager = instance.keyManager;
-        SystemParameters systemParameters = keyManager.getSystemParameters();
-
-        URI credentialSpecUid = issuerParametersInput.getCredentialSpecUID();
-        CredentialSpecification credspec = keyManager
-                .getCredentialSpecification(credentialSpecUid);
-
-        if (credspec == null) {
-            throw logger.throwing(new IllegalStateException(
-                    "Could not find credential specification \""
-                            + credentialSpecUid + "\""));
-        }
-
-        URI issuerParametersUid = issuerParametersInput.getParametersUID();
-        URI hash = hashAlgorithm;
-        URI revocationParametersUid = issuerParametersInput
-                .getRevocationParametersUID();
-        List<FriendlyDescription> friendlyDescriptions = issuerParametersInput
-                .getFriendlyIssuerDescription();
-        System.out.println("FriendlyIssuerDescription: "
-                + friendlyDescriptions.size());
-        IssuerParameters issuerParameters = instance.setupIssuerParameters(
-                cryptoEngine, credspec, systemParameters,
-                issuerParametersUid, hash, revocationParametersUid,
-                systemAndIssuerParamsPrefix, friendlyDescriptions);
-
-        logger.info("IssuanceService - issuerParameters generated");
-
-        SystemParameters serializeSp = SystemParametersUtil
-                .serialize(systemParameters);
-
-        issuerParameters.setSystemParameters(serializeSp);
-        return this.of.createIssuerParameters(issuerParameters);
+		try {
+	        CryptoEngine cryptoEngine = this
+	                .parseCryptoMechanism(issuerParametersInput.getAlgorithmID());
+	
+	        this.initializeHelper(cryptoEngine);
+	
+	        this.validateInput(issuerParametersInput);
+	        URI hashAlgorithm = issuerParametersInput.getHashAlgorithm();
+	
+	        String systemAndIssuerParamsPrefix = "";
+	
+	        IssuanceHelper instance = IssuanceHelper.getInstance();
+	
+	        KeyManager keyManager = instance.keyManager;
+	        SystemParameters systemParameters = keyManager.getSystemParameters();
+	
+	        URI credentialSpecUid = issuerParametersInput.getCredentialSpecUID();
+	        CredentialSpecification credspec = keyManager
+	                .getCredentialSpecification(credentialSpecUid);
+	
+	        if (credspec == null) {
+	            return logger.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCredSpec).build());
+	        }
+	
+	        URI issuerParametersUid = issuerParametersInput.getParametersUID();
+	        URI hash = hashAlgorithm;
+	        URI revocationParametersUid = issuerParametersInput
+	                .getRevocationParametersUID();
+	        List<FriendlyDescription> friendlyDescriptions = issuerParametersInput
+	                .getFriendlyIssuerDescription();
+	        System.out.println("FriendlyIssuerDescription: "
+	                + friendlyDescriptions.size());
+	        IssuerParameters issuerParameters = instance.setupIssuerParameters(
+	                cryptoEngine, credspec, systemParameters,
+	                issuerParametersUid, hash, revocationParametersUid,
+	                systemAndIssuerParamsPrefix, friendlyDescriptions);
+	
+	        logger.info("IssuanceService - issuerParameters generated");
+	
+	        SystemParameters serializeSp = SystemParametersUtil
+	                .serialize(systemParameters);
+	
+	        issuerParameters.setSystemParameters(serializeSp);
+	        return logger.exit(Response.ok(this.of.createIssuerParameters(issuerParameters), 
+	        		MediaType.APPLICATION_XML).build());
+		}
+		catch(Exception e) {
+			logger.catching(e);
+			return logger.exit(Response.serverError().build());
+		}
     }
 
     private void validateInput(IssuerParametersInput issuerParametersTemplate) {
@@ -696,41 +741,52 @@ public class LdapIssuanceService {
      * uid of the stored issuance log entry that contains an issuance token
      * together with the attribute values provided by the issuer to keep track
      * of the issued credentials.
+     * 
+     * Protected by magic cookie.
      */
     @POST()
-    @Path("/initIssuanceProtocol/")
+    @Path("/initIssuanceProtocol/{magicCookie}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<IssuanceMessageAndBoolean> initIssuanceProtocol(
+    public Response initIssuanceProtocol(
+    		@PathParam("magicCookie") String magicCookie,
             IssuancePolicyAndAttributes issuancePolicyAndAttributes)
                     throws Exception {
 
-        logger.info("IssuanceService - initIssuanceProtocol ");
+        logger.entry();
+        
+        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+			return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
-        IssuancePolicy ip = issuancePolicyAndAttributes.getIssuancePolicy();
-        List<Attribute> attributes = issuancePolicyAndAttributes.getAttribute();
-
-        URI issuerParametersUid = ip.getCredentialTemplate()
-                .getIssuerParametersUID();
-
-        CryptoEngine cryptoEngine = this.getCryptoEngine(issuerParametersUid);
-
-        this.initializeHelper(cryptoEngine);
-
-        this.initIssuanceProtocolValidateInput(issuancePolicyAndAttributes);
-
-        IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
-
-        /*this.loadCredentialSpecifications();
-
-        this.loadIssuerParameters();*/ //commented out by munt. Apparentely these just load
-        //credSpecs from a preconfigured location on the file system. Our cred specs should already
-        //be in the storage used by the keyManager.
-
-        IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper.initIssuanceProtocol(ip, attributes);
-
-        return this.of
-                .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean);
+        try {
+	        IssuancePolicy ip = issuancePolicyAndAttributes.getIssuancePolicy();
+	        List<Attribute> attributes = issuancePolicyAndAttributes.getAttribute();
+	
+	        URI issuerParametersUid = ip.getCredentialTemplate()
+	                .getIssuerParametersUID();
+	
+	        CryptoEngine cryptoEngine = this.getCryptoEngine(issuerParametersUid);
+	
+	        this.initializeHelper(cryptoEngine);
+	
+	        this.initIssuanceProtocolValidateInput(issuancePolicyAndAttributes);
+	
+	        IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
+	
+	        /*this.loadCredentialSpecifications();
+	
+	        this.loadIssuerParameters();*/ //commented out by munt. Apparentely these just load
+	        //credSpecs from a preconfigured location on the file system. Our cred specs should already
+	        //be in the storage used by the keyManager.
+	
+	        IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper.initIssuanceProtocol(ip, attributes);
+	
+	        return logger.exit(Response.ok(this.of
+	                .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean), MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+        	logger.catching(e);
+        	return logger.exit(Response.serverError().build());
+        }
 
     }
 
@@ -775,37 +831,45 @@ public class LdapIssuanceService {
     @POST()
     @Path("/issuanceProtocolStep")
     @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<IssuanceMessageAndBoolean> issuanceProtocolStep(
+    public Response issuanceProtocolStep(
             final IssuanceMessage issuanceMessage) {
+    	
+    	logger.entry();
 
         logger.info("IssuanceService - step - context : "
                 + issuanceMessage.getContext());
-
-        CryptoEngine engine = this.getCryptoEngine(issuanceMessage);
-
-        this.initializeHelper(engine);
-
-        IssuanceMessageAndBoolean response;
+        
         try {
-            response = IssuanceHelper.getInstance().issueStep(engine, issuanceMessage);
-        } catch (Exception e) {
-            logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user...");
-            e.printStackTrace();
-            throw new IllegalStateException("Failed to proces IssuanceMessage from user");
+	        CryptoEngine engine = this.getCryptoEngine(issuanceMessage);
+	
+	        this.initializeHelper(engine);
+	
+	        IssuanceMessageAndBoolean response;
+	        try {
+	            response = IssuanceHelper.getInstance().issueStep(engine, issuanceMessage);
+	        } catch (Exception e) {
+	            logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user...");
+	            e.printStackTrace();
+	            throw new IllegalStateException("Failed to proces IssuanceMessage from user");
+	        }
+	
+	        IssuanceMessage issuanceMessageFromResponce = response
+	                .getIssuanceMessage();
+	        if (response.isLastMessage()) {
+	            logger.info(" - last message for context : "
+	                    + issuanceMessageFromResponce.getContext());
+	        } else {
+	            logger.info(" - more steps context : "
+	                    + issuanceMessageFromResponce.getContext());
+	        }
+	
+	        return logger.exit(Response.ok(this.of.createIssuanceMessageAndBoolean(response),
+	        		MediaType.APPLICATION_XML).build());
         }
-
-        IssuanceMessage issuanceMessageFromResponce = response
-                .getIssuanceMessage();
-        if (response.isLastMessage()) {
-            logger.info(" - last message for context : "
-                    + issuanceMessageFromResponce.getContext());
-        } else {
-            logger.info(" - more steps context : "
-                    + issuanceMessageFromResponce.getContext());
+        catch(Exception e) {
+        	logger.catching(e);
+        	return logger.exit(Response.serverError().build());
         }
-
-        return this.of.createIssuanceMessageAndBoolean(response);
     }
 
     private CryptoEngine getCryptoEngine(final IssuanceMessage issuanceMessage) {
