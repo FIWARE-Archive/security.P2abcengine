@@ -4,10 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
-import eu.abc4trust.keyManager.KeyStorage;
-import eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer;
-import eu.abc4trust.abce.internal.user.credentialManager.SecretStorage;
-
 import ch.zhaw.ficore.p2abc.storage.*;
 import ch.zhaw.ficore.p2abc.services.*;
 import ch.zhaw.ficore.p2abc.services.issuance.*;
@@ -44,7 +40,8 @@ public class SqliteStorageModule extends AbstractModule {
 			this.bind(URIBytesStorage.class)
 				.annotatedWith(Names.named("keyStorage"))
 				.toInstance(new SqliteURIBytesStorage(file, name + "_" + "keyStorage"));
-			this.bind(KeyStorage.class).to(GenericKeyStorage.class).in(Singleton.class);
+			this.bind(eu.abc4trust.keyManager.KeyStorage.class).
+			    to(GenericKeyStorage.class).in(Singleton.class);
 			
 			this.bind(URIBytesStorage.class)
 				.annotatedWith(Names.named("issuancePolicyStorage"))
@@ -63,12 +60,20 @@ public class SqliteStorageModule extends AbstractModule {
 			this.bind(URIBytesStorage.class)
                 .annotatedWith(Names.named("logStorageIssuer"))
                 .toInstance(new SqliteURIBytesStorage(file, name + "_" + "logStorageIssuer"));
-			this.bind(TokenStorageIssuer.class).to(GenericTokenStorageIssuer.class).in(Singleton.class);
+			this.bind(eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer.class)
+			    .to(GenericTokenStorageIssuer.class).in(Singleton.class);
 			
 			this.bind(URIBytesStorage.class)
 			    .annotatedWith(Names.named("secretStorage"))
 			    .toInstance(new SqliteURIBytesStorage(file, name + "_" + "secretStorage"));
-			this.bind(SecretStorage.class).to(GenericSecretStorage.class).in(Singleton.class);
+			this.bind(eu.abc4trust.abce.internal.user.credentialManager.SecretStorage.class)
+			    .to(GenericSecretStorage.class).in(Singleton.class);
+			
+			this.bind(URIBytesStorage.class)
+			    .annotatedWith(Names.named("issuerSecretKeyStorage"))
+			    .toInstance(new SqliteURIBytesStorage(file, name + "_" + "issuerSecretKeyStorage"));
+			this.bind(eu.abc4trust.abce.internal.issuer.credentialManager.CredentialStorage.class)
+			    .to(GenericIssuerCredentialStorage.class).in(Singleton.class);
 			
 		}
 		catch(Exception e) {
