@@ -41,29 +41,29 @@ public class TestSqliteURIBytesStorage {
   }
 
   @Test(expected=UnsafeTableNameException.class)
-  public void testInvalidTableName() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+  public void testInvalidTableName() throws Exception {
     String tableName = "users; DROP TABLE customers";
     SqliteURIBytesStorage invalidStorage = new SqliteURIBytesStorage("hi", tableName);
     invalidStorage.get(myUri);
   }
   
   @Test
-  public void testEmptyKeyOnEmptyStorage() throws SQLException, URISyntaxException {
+  public void testEmptyKeyOnEmptyStorage() throws Exception {
     assertFalse(storage.containsKey(new URI("")));
   }
   
   @Test
-  public void testUrnKeyOnEmptyStorage() throws SQLException, URISyntaxException {
+  public void testUrnKeyOnEmptyStorage() throws Exception {
     assertFalse(storage.containsKey(new URI("urn:abc4trust:1.0:encoding:integer:signed")));
   }
   
   @Test
-  public void testHttpKeyOnEmptyStorage() throws SQLException, URISyntaxException {
+  public void testHttpKeyOnEmptyStorage() throws Exception {
     assertFalse(storage.containsKey(myUri));
   }
   
   @Test
-  public void testContainsSimpleKey() throws SQLException, URISyntaxException {
+  public void testContainsSimpleKey() throws Exception {
     byte[] stored = new byte[] { 0x01 };
     
     storage.putNew(myUri, stored);
@@ -71,7 +71,7 @@ public class TestSqliteURIBytesStorage {
   }
   
   @Test
-  public void testSimpleKeyValue() throws SQLException, URISyntaxException {
+  public void testSimpleKeyValue() throws Exception {
     byte[] stored = new byte[] { 0x01 };
     
     storage.putNew(myUri, stored);
@@ -82,13 +82,13 @@ public class TestSqliteURIBytesStorage {
   }
   
   @Test
-  public void testSomeNonexistentKey() throws SQLException, URISyntaxException {
+  public void testSomeNonexistentKey() throws Exception {
     storage.putNew(myUri, new byte[] { 0x01 });
     assertFalse(storage.containsKey(new URI("http://www.apple.com")));
   }
   
   @Test
-  public void testStringStorage() throws SQLException, URISyntaxException {
+  public void testStringStorage() throws Exception {
     String testString = "Hello, world";
     
     storage.put(myUri, testString.getBytes());
