@@ -10,7 +10,7 @@ import javax.naming.directory.InitialDirContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 
 /**
  * Contains an DirContext (LDAPConnection)

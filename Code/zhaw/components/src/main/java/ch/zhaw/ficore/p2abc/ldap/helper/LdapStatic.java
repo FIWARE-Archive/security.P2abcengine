@@ -2,7 +2,7 @@ package ch.zhaw.ficore.p2abc.ldap.helper;
 
 import javax.naming.NamingException;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 
 /**
  * Provides some of the helper functions as

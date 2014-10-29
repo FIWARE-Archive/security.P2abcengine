@@ -6,7 +6,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 
-import ch.zhaw.ficore.p2abc.helper.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapAttributes;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapException;
