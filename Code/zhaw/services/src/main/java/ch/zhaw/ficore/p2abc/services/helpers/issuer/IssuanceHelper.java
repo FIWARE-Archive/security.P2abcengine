@@ -434,10 +434,11 @@ public class IssuanceHelper extends AbstractHelper {
                     throws Exception {
 
         AbceConfigurationImpl configuration = this.setupConfiguration(
-                cryptoEngine, uproveUtils, cryptoEngine);
+                cryptoEngine, uproveUtils, cryptoEngine); 
 
         Module newModule = ProductionModuleFactory
-                .newModule(configuration, cryptoEngine);
+                .newModule(cryptoEngine); //ignore configuration. This causes ProductionModuleFactory
+                                          //to use a DefaultAbceConfiguration. --munt
         Module combinedModule = Modules.override(newModule).with(modules);
         Injector injector = Guice.createInjector(combinedModule);
 
@@ -586,10 +587,14 @@ public class IssuanceHelper extends AbstractHelper {
     private AbceConfigurationImpl setupConfiguration(CryptoEngine cryptoEngine,
             UProveUtils uproveUtils, CryptoEngine specificCryptoEngine)
                     throws Exception {
-        AbceConfigurationImpl configuration = this
+        
+        new Throwable().printStackTrace();
+        
+        AbceConfigurationImpl configuration = new AbceConfigurationImpl();
+        configuration.setPrng(new java.security.SecureRandom());/*this
                 .setupStorageFilesForConfiguration(IssuanceHelper.getFileStoragePrefix(
                         this.fileStoragePrefix, specificCryptoEngine),
-                        cryptoEngine);
+                        cryptoEngine);*/ //--munt
         configuration.setUProvePathToExe(new UProveUtils().getPathToUProveExe()
                 .getAbsolutePath());
         configuration.setUProvePortNumber(uproveUtils.getIssuerServicePort());
