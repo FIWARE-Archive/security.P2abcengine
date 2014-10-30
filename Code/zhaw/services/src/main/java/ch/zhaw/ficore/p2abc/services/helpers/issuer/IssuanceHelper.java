@@ -65,7 +65,7 @@ import eu.abc4trust.guice.configuration.AbceConfigurationImpl;
 import eu.abc4trust.guice.configuration.StorageFiles;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
-import eu.abc4trust.ri.servicehelper.AbstractHelper;
+//import eu.abc4trust.ri.servicehelper.AbstractHelper;
 //import eu.abc4trust.ri.servicehelper.FileSystem;
 import eu.abc4trust.ri.servicehelper.SystemParametersHelper;
 import eu.abc4trust.xml.Attribute;
@@ -83,6 +83,7 @@ import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.util.XmlUtils;
 
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
+import ch.zhaw.ficore.p2abc.services.AbstractHelper; //replaces the eu.abc4trust AbstractHelper (copy)
 
 @SuppressWarnings("deprecation")
 public class IssuanceHelper extends AbstractHelper {
