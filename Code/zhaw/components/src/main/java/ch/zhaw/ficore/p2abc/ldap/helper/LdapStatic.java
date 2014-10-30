@@ -11,7 +11,7 @@ import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
  *
  */
 public class LdapStatic {
-	private static ConnectionParameters config;
+	//private static ConnectionParameters config;
 	private static LdapConnection con;
 	
 	/**
@@ -21,7 +21,7 @@ public class LdapStatic {
 	 * @throws NamingException
 	 */
 	public static void init(ConnectionParameters config) throws NamingException {
-		LdapStatic.config = config;
+		//LdapStatic.config = config;
 		LdapStatic.con = new LdapConnection(config);
 	}
 	
