@@ -31,7 +31,6 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -90,6 +89,9 @@ import eu.abc4trust.xml.util.XmlUtils;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.SecretWrapper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @Path("/user")
 public class UserService {
 
@@ -97,9 +99,9 @@ public class UserService {
 
     private final ObjectFactory of = new ObjectFactory();
 
-    private final Logger log = Logger.getLogger(UserService.class.getName());
+    private Logger log = LogManager.getLogger(UserService.class);
 
-    private final String fileStoragePrefix = "";
+    private final String fileStoragePrefix = "user_storage/";
 
     /**
      * This method, on input a presentation policy p, decides whether the

@@ -12,7 +12,7 @@ curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc
 # Store credential specification at user.
 # This method is not specified in H2.2.
 echo "Store credential specification at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/credSpec.xml 'http://localhost:9200/user/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtUserResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/credSpec.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtUserResponce.xml
 cat ./out/storeCredentialSpecificationAtUserResponce.xml
 
 # Store credential specification at verifier.
@@ -25,7 +25,7 @@ cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 # Store System parameters at User.
 # This method is not specified in H2.2.
 echo "Store System parameters at User"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:9200/user/storeSystemParameters/' > ./out/storeSystemParametersResponceAtUser.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/storeSystemParameters/' > ./out/storeSystemParametersResponceAtUser.xml
 
 # Store System parameters at verifier.
 # This method is not specified in H2.2.
@@ -40,7 +40,7 @@ curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml '
 # Store Issuer Parameters at user.
 # This method is not specified in H2.2.
 echo "Store Issuer Parameters at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:9200/user/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix' > ./out/storeIssuerParametersAtUser.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix' > ./out/storeIssuerParametersAtUser.xml
 
 # Store Issuer Parameters at verifier.
 # This method is not specified in H2.2.
@@ -50,7 +50,7 @@ curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'ht
 # Create smartcard at user.
 # This method is not specified in H2.2.
 echo "Create smartcard at user"
-curl -X POST --header 'Content-Type: text/xml' 'http://localhost:9200/user/createSmartcard/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix'
+curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/user/createSmartcard/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix'
 
 # Init issuance protocol (first step for the issuer).
 #echo "Init issuance protocol"
@@ -60,11 +60,11 @@ echo 'IssuanceRequest (by the user)'
 curl -X POST --header 'Content-Type: application/xml' -d @issuanceRequest.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/issuanceRequest' > ./out/issuanceMessageAndBoolean.xml
 
 # Extract issuance message.
-curl -X POST --header 'Content-Type: text/xml' -d @./out/issuanceMessageAndBoolean.xml 'http://localhost:9200/user/extractIssuanceMessage/' > ./out/firstIssuanceMessage.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/issuanceMessageAndBoolean.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/extractIssuanceMessage/' > ./out/firstIssuanceMessage.xml
 
 # First issuance protocol step (first step for the user).
 echo "First issuance protocol step for the user"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/firstIssuanceMessage.xml 'http://localhost:9200/user/issuanceProtocolStep/' > ./out/issuanceReturn.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/firstIssuanceMessage.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/issuanceProtocolStep/' > ./out/issuanceReturn.xml
 
 # Setup uiIssuanceReturn.xml.
 UiContext=`cat ./out/issuanceReturn.xml | sed 's/^.*<uiContext>//' | sed 's/<\/uiContext>.*//'`
@@ -73,18 +73,18 @@ cat ./uiIssuanceReturn.xml | sed "s#REPLACE-THIS-CONTEXT#${UiContext}#" > ./out/
 
 # First issuance protocol step - UI (first step for the user).
 echo "Second issuance protocol step (first step for the user)"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/uiIssuanceReturn.xml 'http://localhost:9200/user/issuanceProtocolStepUi/' > ./out/secondIssuanceMessage.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/uiIssuanceReturn.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/issuanceProtocolStepUi/' > ./out/secondIssuanceMessage.xml
 
 # Second issuance protocol step (second step for the issuer).
 echo "Second issuance protocol step (second step for the issuer)"
 curl -X POST --header 'Content-Type: text/xml' -d @./out/secondIssuanceMessage.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/issuanceProtocolStep/' > ./out/thirdIssuanceMessageAndBoolean.xml
 
 # Extract issuance message.
-curl -X POST --header 'Content-Type: text/xml' -d @./out/thirdIssuanceMessageAndBoolean.xml 'http://localhost:9200/user/extractIssuanceMessage/' > ./out/thirdIssuanceMessage.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/thirdIssuanceMessageAndBoolean.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/extractIssuanceMessage/' > ./out/thirdIssuanceMessage.xml
 
 # Third issuance protocol step (second step for the user).
 echo "Third issuance protocol step (second step for the user)"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/thirdIssuanceMessage.xml 'http://localhost:9200/user/issuanceProtocolStep/' > ./out/fourthIssuanceMessageAndBoolean.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/thirdIssuanceMessage.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/issuanceProtocolStep/' > ./out/fourthIssuanceMessageAndBoolean.xml
 
 # Create presentation policy alternatives.
 # This method is not specified in H2.2.
@@ -94,7 +94,7 @@ curl -X GET --header 'Content-Type: text/xml' -d @./presentationPolicyAlternativ
 # Create presentation UI return.
 # This method is not specified in H2.2.
 echo "Create presentation UI return"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/presentationPolicyAlternatives.xml 'http://localhost:9200/user/createPresentationToken/' > ./out/presentationReturn.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/presentationPolicyAlternatives.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/createPresentationToken/' > ./out/presentationReturn.xml
 
 # Setup uiPresentationReturn.xml.
 UiContext=`cat ./out/presentationReturn.xml | sed 's/^.*<uiContext>//' | sed 's/<\/uiContext>.*//'`
@@ -104,7 +104,7 @@ cat ./uiPresentationReturn.xml | sed "s#REPLACE-THIS-CONTEXT#${UiContext}#" > ./
 # Create presentation token.
 # This method is not specified in H2.2.
 echo "Create presentation token"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/uiPresentationReturn.xml 'http://localhost:9200/user/createPresentationTokenUi/' > ./out/presentationToken.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/uiPresentationReturn.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/createPresentationTokenUi/' > ./out/presentationToken.xml
 
 # Setup presentationPolicyAlternativesAndPresentationToken.xml.
 presentationPolicy=`cat ./out/presentationPolicyAlternatives.xml | sed 's/^.*<PresentationPolicyAlternatives xmlns="http:\/\/abc4trust.eu\/wp2\/abcschemav1.0" Version="1.0">//' | sed 's/<\/PresentationPolicyAlternatives>.*//'`
