@@ -196,7 +196,7 @@ public class ServicesConfiguration {
     public static synchronized void loadFrom(File ps) {
         logger.entry();
 
-        logger.info("Saving services configuration from " + ps);
+        logger.info("Loading services configuration from " + ps);
 
         try {
             JAXBContext jc = JAXBContext.newInstance(ServicesConfiguration.class);
