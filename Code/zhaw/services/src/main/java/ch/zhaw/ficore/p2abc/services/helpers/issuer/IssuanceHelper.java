@@ -26,8 +26,6 @@ package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,10 +38,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 
-import org.xml.sax.SAXException;
+import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -81,8 +77,6 @@ import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.SecretKey;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.util.XmlUtils;
-
-import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 
 @SuppressWarnings("deprecation")
 public class IssuanceHelper extends AbstractHelper {
@@ -670,7 +664,7 @@ public class IssuanceHelper extends AbstractHelper {
 
         if(! this.fileStoragePrefix.equals(this.systemAndIssuerParamsPrefix)) {
             // store in resource folder (for easier export to other ABCEs)
-            String systemParametersResource_resourcePrefix = this.systemAndIssuerParamsPrefix + SYSTEM_PARAMS_NAME_BRIDGED;
+            //String systemParametersResource_resourcePrefix = this.systemAndIssuerParamsPrefix + SYSTEM_PARAMS_NAME_BRIDGED;
             //FileSystem.storeObjectInFile(this.generatedSystemParameters,
             //        systemParametersResource_resourcePrefix);
         }
@@ -691,10 +685,10 @@ public class IssuanceHelper extends AbstractHelper {
 
     private void storeSystemParametersAsXML(String filePrefix,
             SystemParameters systemParameters, String name) throws Exception {
-        SystemParameters serializedSystemParameters = SystemParametersUtil
-                .serialize(systemParameters);
-        JAXBElement<SystemParameters> asXml = this.of
-                .createSystemParameters(serializedSystemParameters);
+        //SystemParameters serializedSystemParameters = SystemParametersUtil
+        //        .serialize(systemParameters);
+        //JAXBElement<SystemParameters> asXml = this.of
+        //        .createSystemParameters(serializedSystemParameters);
         //FileSystem.storeObjectAsXMLInFile(asXml, filePrefix, name);
     }
 
@@ -817,10 +811,10 @@ public class IssuanceHelper extends AbstractHelper {
         String issuer_params_filename = this.getIssuerParamsFilename(
                 issuerParamsUid, urnScheme);
 
-        String credSpec_filename = this.getCredSpecFilename(
+        /*String credSpec_filename = this.getCredSpecFilename(
                 credSpec
                 .getSpecificationUID());
-
+*/
         IssuanceHelper.log.info(" - save in file - spec : "
                 + credSpec.getSpecificationUID() + " - key : "
                 + issuerParamsUid + " - filename : " + issuer_params_filename);
@@ -874,7 +868,7 @@ public class IssuanceHelper extends AbstractHelper {
         return issuer_params_filename;
     }
 
-    private String getCredSpecFilename(URI uid) {
+    /*private String getCredSpecFilename(URI uid) {
         String filename = "cred_spec_";
         filename += uid.toASCIIString().replaceAll(":", "_");
         filename = filename.replaceAll(":", "_")
@@ -882,7 +876,7 @@ public class IssuanceHelper extends AbstractHelper {
 
         return filename;
     }
-
+*/
     private void checkIfCredSpecIsInKeystoreAddIfAbsent(KeyManager keyManager,
             CredentialSpecification credSpec) throws KeyManagerException {
         CredentialSpecification credSpecInKeystore =
@@ -1010,9 +1004,9 @@ public class IssuanceHelper extends AbstractHelper {
         IssuanceHelper.log.info("initSpecAndPolicyFromResouces : " + sap.specResource
                 + " : "
                 + sap.policyResource);
-        InputStream is;
+/*        InputStream is;
         CredentialSpecification credSpec = this.initCredentialSpecificationFromResources(sap);
-
+*/
         throw new RuntimeException("ERROR: Would use FileSystem. "); //TODO: Remove this/Replace this someday -- munt
         /*
         is = FileSystem.getInputStream(sap.policyResource);
@@ -1038,21 +1032,20 @@ public class IssuanceHelper extends AbstractHelper {
         return sap;*/ //commented out by munt
     }
 
-    private CredentialSpecification initCredentialSpecificationFromResources(
+/*    private CredentialSpecification initCredentialSpecificationFromResources(
             SpecAndPolicy sap) throws IOException, JAXBException,
             UnsupportedEncodingException, SAXException {
     	
     	throw new RuntimeException("ERROR: Would use FileSystem. "); //TODO: Remove this/Replace this someday -- munt
-    	/*
         InputStream is = FileSystem.getInputStream(sap.specResource);
         if (is == null) {
             throw new IllegalStateException("Illegal resource name for CredSpec : " + sap.specResource);
         }
         CredentialSpecification credSpec =
                 (CredentialSpecification) XmlUtils.getObjectFromXML(is, true);
-        return credSpec;*/ //commented out by munt
+        return credSpec; //commented out by munt
     }
-
+*/
     /**
      * Process next step of issuance on IssuanceMessager
      * 
@@ -1359,8 +1352,8 @@ public class IssuanceHelper extends AbstractHelper {
             List<Attribute> issuerAtts, Map<String, Object> attributeValueMap) {
 
         CredentialSpecification credSpec = specAndPolicy.getCredentialSpecification();
-        IssuancePolicy ip = specAndPolicy.getIssuancePolicy();
-
+/*        IssuancePolicy ip = specAndPolicy.getIssuancePolicy();
+*/
         // TODO - to make proper check - also check 'unknown' from IssuancePolicy
         // eg findUnknownAttributtes(ip);
         // and check that all attribues in credspecs are matched..

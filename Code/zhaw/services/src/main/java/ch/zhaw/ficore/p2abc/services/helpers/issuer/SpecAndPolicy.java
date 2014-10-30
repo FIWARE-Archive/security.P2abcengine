@@ -155,7 +155,11 @@ public class SpecAndPolicy {
   
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         ObjectInputStream i = new ObjectInputStream(in);
-        return (T) i.readObject();
+
+        @SuppressWarnings("unchecked")
+        T readObject = (T) i.readObject();
+        
+        return readObject;
     }
     
     public IssuancePolicy cloneIssuancePolicy() throws Exception {

@@ -1,7 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance.xml;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="issuance-request")
