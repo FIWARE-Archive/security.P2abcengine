@@ -90,6 +90,15 @@ public class ServicesConfiguration {
     public static synchronized void setMagicCookie(String magicCookie) {
         ServicesConfiguration.magicCookie = magicCookie;
     }
+    
+    /**
+     * Returns the magic cookie.
+     * 
+     * @return magic cookie
+     */
+    public static synchronized String getMagicCookie() {
+        return magicCookie;
+    }
 
     /** Private do-nothing constructor to prevent construction of instances. */
     private ServicesConfiguration () {

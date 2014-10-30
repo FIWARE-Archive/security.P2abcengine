@@ -3,9 +3,6 @@
 #urn%3Aabc4trust%3Acredspec%3Aldap%3AabcPerson
 #http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix
 
-rm ./out/*.xml
-rm ./out/*.xml~
-
 #Stop script if an error occurs.
 set -e
 # Setup System Parameters.
@@ -15,13 +12,13 @@ curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc
 # Store credential specification at user.
 # This method is not specified in H2.2.
 echo "Store credential specification at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credSpec.xml 'http://localhost:9200/user/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtUserResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/credSpec.xml 'http://localhost:9200/user/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtUserResponce.xml
 cat ./out/storeCredentialSpecificationAtUserResponce.xml
 
 # Store credential specification at verifier.
 # This method is not specified in H2.2.
 echo "Store credential specification at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./credSpec.xml 'http://localhost:9300/verification/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/credSpec.xml 'http://localhost:9300/verification/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
 cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 
 
@@ -56,8 +53,11 @@ echo "Create smartcard at user"
 curl -X POST --header 'Content-Type: text/xml' 'http://localhost:9200/user/createSmartcard/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix'
 
 # Init issuance protocol (first step for the issuer).
-echo "Init issuance protocol"
-curl -X POST --header 'Content-Type: text/xml' -d @./outIssuanceRequest.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/initIssuanceProtocol/*magic*' > ./out/issuanceMessageAndBoolean.xml
+#echo "Init issuance protocol"
+#curl -X POST --header 'Content-Type: text/xml' -d @./outIssuanceRequest.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/initIssuanceProtocol/*magic*' > ./out/issuanceMessageAndBoolean.xml
+
+echo 'IssuanceRequest (by the user)'
+curl -X POST --header 'Content-Type: application/xml' -d @issuanceRequest.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/issuanceRequest' > ./out/issuanceMessageAndBoolean.xml
 
 # Extract issuance message.
 curl -X POST --header 'Content-Type: text/xml' -d @./out/issuanceMessageAndBoolean.xml 'http://localhost:9200/user/extractIssuanceMessage/' > ./out/firstIssuanceMessage.xml

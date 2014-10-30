@@ -114,6 +114,7 @@ public class LdapIssuanceService {
 		return Response.ok().build();
 	}
 	
+	
 	@POST()
 	@Path("/issuanceRequest/")
 	@Consumes({MediaType.APPLICATION_XML})
@@ -142,7 +143,9 @@ public class LdapIssuanceService {
 			ipa.getAttribute().addAll(attrValProvider.getAttributes(qr.queryString,
 					authProvider.getUserID(), credSpec));
 			
-			return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
+			return initIssuanceProtocol(ServicesConfiguration.getMagicCookie(), ipa);
+			
+			//return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
 		}
 		catch(Exception e) {
 			logger.catching(e);
