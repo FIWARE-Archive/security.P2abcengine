@@ -70,8 +70,8 @@ public class LdapIssuanceService {
 
 	private static final String errMagicCookie = "Magic-Cookie is not correct!";
 	private static final String errNoCredSpec = "CredentialSpecification is missing!";
-	//private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
-	//private static final String errNoQueryRule = "QueryRule is missing!";
+	private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
+	private static final String errNoQueryRule = "QueryRule is missing!";
 	
 	private ObjectFactory of = new ObjectFactory(); 
 
@@ -115,6 +115,21 @@ public class LdapIssuanceService {
 	}
 	
 	
+	/**
+	 * This method is called by a user to initiate an issuance protocol. 
+	 * The user must provide an issuance request containing his authentication information
+	 * and the uid of the corresponding credential specification. The issuer will then try to authenticate
+	 * the user by using an authentication source (e.g. LDAP) and fetch the attributes required by 
+	 * the credential specification from an attribute source (e.g. LDAP) and initiates the round based
+	 * issuance protocol. 
+	 * 
+	 * If authentication of the user fails this method will return the status code FORBIDDEN.
+	 * If the issuer is missing the credential specification, the issuance policy or the query rule this
+	 * method will return status code NOT_FOUND. 
+	 * 
+	 * @param request a valid IssuanceRequset
+	 * @return Response (IssuanceMessageAndBoolean)
+	 */
 	@POST()
 	@Path("/issuanceRequest/")
 	@Consumes({MediaType.APPLICATION_XML})
@@ -137,6 +152,13 @@ public class LdapIssuanceService {
 			QueryRule qr = instance.issuanceStorage.getQueryRule(
 					new URI(request.credentialSpecificationUid));
 			
+			if(credSpec == null)
+			    return Response.status(Response.Status.NOT_FOUND).entity(errNoCredSpec).build();
+			if(ip == null)
+			    return Response.status(Response.Status.NOT_FOUND).entity(errNoIssuancePolicy).build();
+			if(qr == null)
+			    return Response.status(Response.Status.NOT_FOUND).entity(errNoQueryRule).build();
+			
 			IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
 			
 			ipa.setIssuancePolicy(ip);
@@ -157,6 +179,8 @@ public class LdapIssuanceService {
 	 * Store QueryRule.
 	 * 
 	 * This method is protected by the magic cookie.
+	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid UID of the credSpec
@@ -191,6 +215,10 @@ public class LdapIssuanceService {
 	 * Retrieve a QueryRule.
 	 * 
 	 * This method is protected by the magic cookie.
+	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
+	 * This method will return status code NOT_FOUND if no query rule with the given
+	 * uid is found. 
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid
@@ -228,6 +256,8 @@ public class LdapIssuanceService {
 	 * 
 	 * This method is protected by the magic cookie.
 	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
+	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid UID of the credSpec
 	 * @return Response
@@ -261,6 +291,10 @@ public class LdapIssuanceService {
 	 * Retrieve an IssuancePolicy
 	 * 
 	 * This method is protected by the magic cookie.
+	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
+	 * This method will return status code NOT_FOUND if no issuance policy with the given
+	 * uid is found. 
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid
@@ -299,6 +333,8 @@ public class LdapIssuanceService {
 	 * It returns a response with status code OK if the authentication
 	 * was successful, otherwise it returns a response with status code FORBIDDEN.
 	 * 
+	 * This method will return status code FORBIDDEN if authentication failed. 
+	 * 
 	 * @param authReq an AuthenticationRequest
 	 * @return response
 	 */
@@ -327,6 +363,8 @@ public class LdapIssuanceService {
 	 * 
 	 * This method is protected by the magic cookie.
 	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
+	 * 
 	 * @param magicCookie the magic cookie
 	 * @param name name (see description of this method above)
 	 * @return an AttributeInfoCollection as application/xml.
@@ -351,6 +389,8 @@ public class LdapIssuanceService {
 	 * given AttributeInfoCollection is sane. 
 	 * 
 	 * This method is protected by the magic cookie.
+	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param attrInfoColl the AttributeInfoCollection
@@ -404,6 +444,8 @@ public class LdapIssuanceService {
 	 * 
 	 * This method is protected by the magic cookie.
 	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
+	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid UID of the CredentialSpecification
 	 * @param credSpec the CredentialSpecification to store
@@ -450,6 +492,10 @@ public class LdapIssuanceService {
 	 * Retreive a CredentialSpecification from the issuer.
 	 * 
 	 * This method is protected by the magic cookie.
+	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
+	 * This method will return status code NOT_FOUND if no credential specification with the
+	 * given uid is found. 
 	 * 
 	 * @param magicCookie the magic cookie
 	 * @param credentialSpecificationUid UID of the CredentialSpecification to retreive
@@ -505,6 +551,8 @@ public class LdapIssuanceService {
 	 * This method will overwrite any existing system parameters.
 	 * 
 	 * Protected by magic cookie
+	 * 
+	 * This method will return status code FORBIDDEN if the magic cookie is not correct.
 	 * 
 	 * @param magicCookie
 	 * @param securityLevel
@@ -602,6 +650,8 @@ public class LdapIssuanceService {
      * urn:abc4trust:1.0:hashalgorithm:sha-256.
      * 
      * Protected by magic cookie.
+     * 
+     * This method will return status code FORBIDDEN if the magic cookie is not correct.
      * 
      * @return
      * @throws Exception
@@ -736,6 +786,8 @@ public class LdapIssuanceService {
      * of the issued credentials.
      * 
      * Protected by magic cookie.
+     * 
+     * This method will return status code FORBIDDEN if the magic cookie is not correct.
      */
     @POST()
     @Path("/initIssuanceProtocol/{magicCookie}")
