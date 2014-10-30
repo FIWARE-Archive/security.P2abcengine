@@ -99,9 +99,16 @@ public class UserService {
 
     private final ObjectFactory of = new ObjectFactory();
 
-    private Logger log = LogManager.getLogger(UserService.class);
+    private Logger log = LogManager.getLogger(UserService.class.getName());
 
     private final String fileStoragePrefix = "user_storage/";
+    
+    @GET()
+    @Path("/status/{statusId}")
+    public Response status(@PathParam("statusId") String statusId) {
+        this.log.info("- status -");
+        return Response.ok("OKIDOKI: " + statusId).build();
+    }
 
     /**
      * This method, on input a presentation policy p, decides whether the
