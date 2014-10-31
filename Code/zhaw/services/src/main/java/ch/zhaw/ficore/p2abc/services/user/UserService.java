@@ -563,7 +563,7 @@ public class UserService {
             createABCEBoolean.setValue(r);
 
             if (r) {
-                this.initializeHelper();
+                instance.loadSystemParameters();
             }
 
             return this.of.createABCEBoolean(createABCEBoolean);
@@ -647,7 +647,7 @@ public class UserService {
 
         try {
             // Disable non-device-bound secrets.
-            PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = false;
+            PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = false; 
 
             if (UserHelper.isInit()) {
                 this.log.info("UserHelper is initialized");
@@ -659,7 +659,7 @@ public class UserService {
                 UserHelper.initInstanceForService(CRYPTO_ENGINE,
                         this.fileStoragePrefix,
                         StorageModuleFactory.getModulesForServiceConfiguration(
-                                ServiceType.ISSUANCE));
+                                ServiceType.USER));
 
                 this.log.info("UserHelper is initialized");
             }
