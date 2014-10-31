@@ -106,10 +106,9 @@ public class UserService {
     private final String fileStoragePrefix = "user_storage/";
     
     @GET()
-    @Path("/status/{statusId}")
-    public Response status(@PathParam("statusId") String statusId) {
-        this.log.info("- status -");
-        return Response.ok("OKIDOKI: " + statusId).build();
+    @Path("/status/")
+    public Response status(String statusId) {
+        return Response.ok().build();
     }
 
     /**
@@ -344,7 +343,7 @@ public class UserService {
      * presentation process, but also offering improved privacy as the
      * Revocation Authority is no longer “pinged” at the moment of presentation.
      * 
-     */
+     
     @POST()
     @Path("/updateNonRevocationEvidence/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -362,7 +361,7 @@ public class UserService {
             throw new WebApplicationException(ex,
                     Response.Status.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/ //commented out by munt: Revocation and Inspection is disabled for now due to possible issues. 
 
     /**
      * This method returns an array of all unique credential identifiers (UIDs)
@@ -428,6 +427,7 @@ public class UserService {
         }
     }
 
+    /*
     @POST()
     @Path("/createSmartcard/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -473,7 +473,7 @@ public class UserService {
             throw new WebApplicationException(ex,
                     Response.Status.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/ //commented out by munt: We use SecretBasedSmartcards. 
 
 
     /**
@@ -610,6 +610,7 @@ public class UserService {
 
     }
 
+    /*
     @PUT()
     @Path("/storeRevocationAuthorityParameters/{revocationAuthorityParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -639,7 +640,7 @@ public class UserService {
             throw new WebApplicationException(ex,
                     Response.Status.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/ //commented out by munt: Revocation and Inspection is disabled for now due to possible issues. 
 
 
     private void initializeHelper() {
