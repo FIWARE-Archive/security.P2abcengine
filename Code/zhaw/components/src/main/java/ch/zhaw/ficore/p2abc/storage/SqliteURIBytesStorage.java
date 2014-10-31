@@ -121,6 +121,35 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 		logger.exit();
 	}
 
+	@Override
+	public void finalize() {
+	    logger.entry();
+	    
+        closePreparedStatement(keysAsStringsStatement);
+        closePreparedStatement(getStatement);
+        closePreparedStatement(deleteStatement);
+        closePreparedStatement(putNewStatement);
+        closePreparedStatement(putStatement);
+        closePreparedStatement(containsKeyStatement);
+
+        logger.exit();
+	}
+
+    private void closePreparedStatement(PreparedStatement statement) {
+        logger.entry();
+
+        if (statement != null) {
+	        try {
+                statement.close();
+            } catch (SQLException e) {
+                logger.warn("Exception in finalizer");
+                logger.catching(e);
+            }            
+        }
+
+        logger.exit();
+    }
+    
 	/** Checks if a table name is safe to use in a SQL CREATE TABLE statement.
 	 * 
 	 * This function applies a rather drastic whitelist of characters that
