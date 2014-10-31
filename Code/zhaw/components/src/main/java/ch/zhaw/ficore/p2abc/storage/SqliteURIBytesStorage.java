@@ -24,12 +24,11 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 /**
- * Implements the URIBytesStorage interface. This class
- * uses a sqlite database.
+ * Implements the URIBytesStorage interface with a SQLite database.
  * 
  * This class will only create one connection for the same
  * filePath to prevent concurrency issues. This is due to SQLite
- * writing to files which means SQLite relies on filesystem locks and the like.
+ * writing to files which means SQLite relies on file-system locks and the like.
  * SQLite has some known issues under certain circumstances with concurrent 
  * modifications: http://www.sqlite.org/howtocorrupt.html.
  * All methods synchronize through the connection object.
@@ -40,7 +39,6 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	private Connection con;
 	private String table;
 	
-	private Logger logger;
     private PreparedStatement keysAsStringsStatement;
     private PreparedStatement getStatement;
     private PreparedStatement deleteStatement;
@@ -48,17 +46,25 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     private PreparedStatement putNewStatement;
     private PreparedStatement containsKeyStatement;
 
-	private static Map<String, Connection> connections = new HashMap<String, Connection>();
+    private Logger logger;
+
+    private ConnectionCache connections;
+    private String filePath;
 
 	/**
-	 * Constructor. This will open and create the database as well as the tables
-	 * if neccessary. 
+	 * Constructor.
+	 * 
+	 * This will open and create the database as well as the tables
+	 * if necessary. 
 	 * 
 	 * @param filePath Path to the database file
 	 * @param table Name of the table to use
-	 * @throws UnsafeTableNameException 
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
+	 * 
+	 * @throws UnsafeTableNameException if the table name is deemed unsafe to
+	 *     use in a <code>CREATE TABLE</code> statement 
+	 * @throws SQLException if a SQL error occurs, such as database error,
+	 *     file-based errors, and so on
+	 * @throws ClassNotFoundException when the SQLite JDBC driver can't be found
 	 */
 	@Inject
 	public SqliteURIBytesStorage(@Named("sqliteDBPath") String filePath, @Named("sqliteTblName") String table) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
@@ -68,6 +74,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 
 	/**
 	 * Performs the "connection sharing" logic. 
+	 * 
 	 * @throws ClassNotFoundException 
 	 * @throws SQLException 
 	 * @throws DataFormatException 
@@ -75,21 +82,19 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	 */
 	private synchronized void init(String filePath, String table) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
 		logger.entry();
+		connections = ConnectionCache.instance();
 		Class.forName("org.sqlite.JDBC");
 
-		String key = filePath;
+        checkIfSafeTableName(table);
 
-		if(connections.containsKey(key))
-			con = connections.get(key);
-		else {
-			con = DriverManager.getConnection("jdbc:sqlite:" + filePath);
-			connections.put(key, con);
-		}
+        this.table = table;
+        this.filePath = filePath;
+        
+        con = connections.get(filePath);
 
 		synchronized(con) {
 			Statement stmt = null;
 			try {
-				checkIfSafeTableName(table);
 				stmt = con.createStatement();
 				String sql = "CREATE TABLE IF NOT EXISTS " + table +
 						"(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
@@ -109,10 +114,6 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 				logger.catching(e);
 				throw logger.throwing(e);
 			}
-			catch (UnsafeTableNameException e) {
-				logger.catching(e);
-				throw logger.throwing(e);	      
-			}
 			finally {
 				if(stmt != null)
 					stmt.close();
@@ -121,8 +122,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 		logger.exit();
 	}
 
-	@Override
-	public void finalize() {
+	/** Closes this MYSQLite database.
+	 * 
+	 * This method performs any actions that need to be done in order to 
+	 * release this object.
+	 */
+	public void close() {
 	    logger.entry();
 	    
         closePreparedStatement(keysAsStringsStatement);
@@ -132,6 +137,13 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         closePreparedStatement(putStatement);
         closePreparedStatement(containsKeyStatement);
 
+        // Do this only after closing the statements.
+        try {
+            connections.release(filePath);
+        } catch (SQLException e) {
+            logger.catching(e);
+        }
+        
         logger.exit();
 	}
 
@@ -142,7 +154,6 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	        try {
                 statement.close();
             } catch (SQLException e) {
-                logger.warn("Exception in finalizer");
                 logger.catching(e);
             }            
         }
@@ -217,8 +228,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
-				if(keysAsStringsStatement != null) keysAsStringsStatement.close();
-				if(rst != null) rst.close();
+				if(rst != null)
+				    rst.close();
 			}
 		}
 	}
@@ -236,7 +247,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 			    if (getStatement == null)
 			        getStatement = con.prepareStatement("SELECT value FROM " + table + " WHERE hash = ?");
 			    
-				String hash = DigestUtils.sha1Hex(key);
+				String hash = hashKey(key);
 				getStatement.setString(1, hash);
 				rst = getStatement.executeQuery();
 				while(rst.next()) {
@@ -253,8 +264,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
-				if(getStatement != null) getStatement.close();
-				if(rst != null) rst.close();
+				if(rst != null)
+				    rst.close();
 			}
 		}
 	}
@@ -273,23 +284,11 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         formatter.format("%1$08x", offset);
         
         int limit = Math.min(bytes.length, offset + 16);
-        for (int i = offset; i < limit; i++)
+        for (int i = offset; i < limit; i++) {
             formatter.format(" %1$02x", bytes[i]);
-        
-        for (int i = limit; i < offset + 16; i++)
-            formatter.format("  ");
-
-        formatter.format("  ");
-
-        for (int i = offset; i < limit; i++)
-            formatter.format("%1$c", makeAscii(bytes[i]));
-
+        }
         logger.trace(sb.toString());
         formatter.close();
-    }
-    
-    private static char makeAscii(byte b) {
-        return (b >= ' ' && b <= '~') ? (char) b : '.';
     }
     
     /**
@@ -301,7 +300,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 			try {
 			    if (deleteStatement == null)
 			        deleteStatement = con.prepareStatement("DELETE FROM " + table + " WHERE hash = ?");
-				String hash = DigestUtils.sha1Hex(key);
+				String hash = hashKey(key);
 				deleteStatement.setString(1, hash);
 				deleteStatement.executeUpdate();
 			}
@@ -317,7 +316,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	 * Put (and possibly replace) an entry to the storage
 	 */
 	public void put(String key, byte[] bytes) throws SQLException {
-		logger.entry();
+		logger.entry(key, bytes);
+		
 		synchronized(con) {
 			if(putNew(key, bytes)) { //putNew returns true if it added something
 				logger.exit();
@@ -331,7 +331,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 			        putStatement = con.prepareStatement("UPDATE " + table + " SET uri = ?, value = ? WHERE " +
 			                " hash = ?");
 
-				String hash = DigestUtils.sha1Hex(key);
+				String hash = hashKey(key);
 
 				putStatement.setString(3, hash);
 				putStatement.setString(1, key);
@@ -343,9 +343,6 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 				logger.catching(e);
 				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
-			finally {
-				if(putStatement != null) putStatement.close();
-			}
 		}
 		logger.exit();
 	}
@@ -354,7 +351,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	 * Add an entry to the storage if and only if it did not exist yet
 	 */
 	public synchronized boolean putNew(String key, byte[] bytes) throws SQLException {
-		logger.entry();
+		logger.entry(key, bytes);
+		
 		synchronized(con) {
 			if(containsKey(key))
 				return logger.exit(false);
@@ -364,7 +362,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 			        putNewStatement = con.prepareStatement("INSERT INTO " + table + "(hash, uri, value) " +
 			                "VALUES(?, ?, ?)");
 
-				String hash = DigestUtils.sha1Hex(key);
+				String hash = hashKey(key);
 
 				putNewStatement.setString(1, hash);
 				putNewStatement.setString(2, key);
@@ -376,9 +374,6 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 			catch(Exception e) {
 				logger.catching(e);
 				throw logger.throwing(new RuntimeException("Storage failure!"));
-			}
-			finally {
-				if(putNewStatement != null) putNewStatement.close();
 			}
 		}
 	}
@@ -393,23 +388,32 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 			try {
 				containsKeyStatement = con.prepareStatement("SELECT EXISTS(SELECT 1 FROM " + table + " WHERE " +
 						" hash = ? LIMIT 1)");
-				String hash = DigestUtils.sha1Hex(key);
+				String hash = hashKey(key);
 				containsKeyStatement.setString(1, hash);
 				rst = containsKeyStatement.executeQuery();
 
 				if(!rst.next())
 					return logger.exit(false);
 
-				return logger.exit(rst.getInt(1) == 1);
+				int result = rst.getInt(1);
+
+				if(result == 1)
+					return logger.exit(true);
+				else
+					return logger.exit(false);
 			}
 			catch(Exception e) {
 				logger.catching(e);
 				throw logger.throwing(new RuntimeException("Storage failure!"));
 			}
 			finally {
-				if(containsKeyStatement != null) containsKeyStatement.close();
-				if(rst != null) rst.close();
+				if(rst != null)
+				    rst.close();
 			}
 		}
 	}
+
+    private static String hashKey(String key) {
+        return DigestUtils.sha1Hex(key);
+    }
 }
