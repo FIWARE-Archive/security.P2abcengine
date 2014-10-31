@@ -1,6 +1,5 @@
 package ch.zhaw.ficore.p2abc.storage;
 
-import java.net.URI;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -10,8 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
@@ -183,7 +184,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	 * Get an entry from the storage
 	 */
 	public byte[] get(String key) throws SQLException {
-		logger.entry();
+		logger.entry(key);
+		
 		synchronized(con) {
 			PreparedStatement pStmt = null;
 			ResultSet rst = null;
@@ -194,7 +196,11 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 				pStmt.setString(1, hash);
 				rst = pStmt.executeQuery();
 				while(rst.next()) {
-					return logger.exit(rst.getBytes(1));
+				    byte[] ret = rst.getBytes(1);
+				    if (logger.isTraceEnabled()) {
+				        hexdump(logger, ret);
+				    }
+					return logger.exit(ret);
 				}
 				return logger.exit(null);
 			}
@@ -209,7 +215,28 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 		}
 	}
 
-	/**
+    private static void hexdump(Logger logger, byte[] bytes) {
+        logger.trace("Dumping byte array of size " + bytes.length);
+        logger.trace(" Offset   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f");
+        for (int offset = 0; offset < bytes.length; offset += 16) {
+            dumpLine(logger, bytes, offset);
+        }
+    }
+
+    private static void dumpLine(Logger logger, byte[] bytes, int offset) {
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.ROOT);
+        formatter.format("%1$08x", offset);
+        
+        int limit = Math.min(bytes.length, offset + 16);
+        for (int i = offset; i < limit; i++) {
+            formatter.format(" %1$02x", bytes[i]);
+        }
+        logger.trace(sb.toString());
+        formatter.close();
+    }
+    
+    /**
 	 * Delete an entry from the storage
 	 */
 	public void delete(String key) throws SQLException {
