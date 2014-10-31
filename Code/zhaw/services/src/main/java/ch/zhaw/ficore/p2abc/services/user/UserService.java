@@ -107,7 +107,7 @@ public class UserService {
     
     @GET()
     @Path("/status/")
-    public Response status(String statusId) {
+    public Response status() {
         return Response.ok().build();
     }
 
