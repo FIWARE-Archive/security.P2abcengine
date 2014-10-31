@@ -25,7 +25,9 @@
 package ch.zhaw.ficore.p2abc.services.helpers.user;
 
 import java.net.URISyntaxException;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -51,7 +53,7 @@ import eu.abc4trust.xml.SystemParameters;
 
 public class UserHelper extends AbstractHelper {
 
-    private static final Logger logger = Logger.getLogger(UserHelper.class
+    private static final Logger logger = LogManager.getLogger(UserHelper.class
             .toString());
 
     public static boolean WIPE_STOARAGE_FILES = false;
@@ -59,7 +61,7 @@ public class UserHelper extends AbstractHelper {
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
     
-    public KeyManager keyManager;
+    //public KeyManager keyManager;
 
     // orig
     public static synchronized UserHelper initInstance(CryptoEngine cryptoEngine,
@@ -123,11 +125,15 @@ public class UserHelper extends AbstractHelper {
 
         initialializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
-        instance.checkIfSystemParametersAreLoaded();
+        
 
         System.out.println("UserHelper.initInstance : DONE");
 
         return instance;
+    }
+    
+    public static synchronized void loadSystemParameters() {
+        instance.checkIfSystemParametersAreLoaded();
     }
 
     private static void initialializeInstanceField(CryptoEngine cryptoEngine,
@@ -182,8 +188,7 @@ public class UserHelper extends AbstractHelper {
 
     private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
             Module... modules) throws URISyntaxException {
-        System.out
-        .println("UserHelper : : create instance " + cryptoEngine + " : " + fileStoragePrefix);
+        logger.info("UserHelper : : create instance " + cryptoEngine + " : " + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
         try {
             UProveUtils uproveUtils = new UProveUtils();
@@ -216,6 +221,7 @@ public class UserHelper extends AbstractHelper {
 
             //
         } catch (Exception e) {
+            logger.catching(e);
             System.err.println("Init Failed");
             e.printStackTrace();
             throw new IllegalStateException("Could not setup user !", e);

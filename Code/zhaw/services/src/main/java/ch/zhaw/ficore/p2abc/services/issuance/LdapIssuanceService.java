@@ -710,6 +710,10 @@ public class LdapIssuanceService {
 	                systemAndIssuerParamsPrefix, friendlyDescriptions);
 	
 	        logger.info("IssuanceService - issuerParameters generated");
+	        
+	        List<Object> objs = systemParameters.getAny();
+	        for(Object obj : objs)
+	            System.out.println(obj + "-" + obj.getClass());
 	
 	        SystemParameters serializeSp = SystemParametersUtil
 	                .serialize(systemParameters);

@@ -12,13 +12,13 @@ curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc
 # Store credential specification at user.
 # This method is not specified in H2.2.
 echo "Store credential specification at user"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/credSpec.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtUserResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./gen/credSpec.xml 'http://localhost:8888/zhaw-p2abc-webservices/user/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtUserResponce.xml
 cat ./out/storeCredentialSpecificationAtUserResponce.xml
 
 # Store credential specification at verifier.
 # This method is not specified in H2.2.
 echo "Store credential specification at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/credSpec.xml 'http://localhost:9300/verification/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./gen/credSpec.xml 'http://localhost:9300/verification/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
 cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 
 

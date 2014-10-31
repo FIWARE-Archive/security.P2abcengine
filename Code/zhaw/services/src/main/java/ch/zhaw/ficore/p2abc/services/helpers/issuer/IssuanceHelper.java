@@ -35,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -84,7 +86,7 @@ import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 @SuppressWarnings("deprecation")
 public class IssuanceHelper extends AbstractHelper {
 
-    static Logger log = Logger.getLogger(IssuanceHelper.class.getName());
+    static Logger log = LogManager.getLogger();
 
     private static IssuanceHelper instance;
     
@@ -629,10 +631,10 @@ public class IssuanceHelper extends AbstractHelper {
         String systemParametersResource;
         if(this.systemParametersResource!=null) {
             systemParametersResource = this.systemParametersResource;
-            log.warning("### - sys param - has been set!!! " + systemParametersResource);
+            log.warn("### - sys param - has been set!!! " + systemParametersResource);
         } else {
             systemParametersResource = this.fileStoragePrefix + SYSTEM_PARAMS_NAME_BRIDGED;
-            log.warning("### - fallback to default SystemParam resource name : " + systemParametersResource);
+            log.warn("### - fallback to default SystemParam resource name : " + systemParametersResource);
         }
         this.generatedSystemParameters = SystemParametersHelper
                 .checkAndLoadSystemParametersIfAbsent(keyManager,
