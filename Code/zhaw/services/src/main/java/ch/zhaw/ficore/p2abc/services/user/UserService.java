@@ -88,6 +88,8 @@ import eu.abc4trust.xml.util.XmlUtils;
 
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.SecretWrapper;
+import ch.zhaw.ficore.p2abc.services.ServiceType;
+import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -655,7 +657,9 @@ public class UserService {
 
 
                 UserHelper.initInstanceForService(CRYPTO_ENGINE,
-                        this.fileStoragePrefix);
+                        this.fileStoragePrefix,
+                        StorageModuleFactory.getModulesForServiceConfiguration(
+                                ServiceType.ISSUANCE));
 
                 this.log.info("UserHelper is initialized");
             }
