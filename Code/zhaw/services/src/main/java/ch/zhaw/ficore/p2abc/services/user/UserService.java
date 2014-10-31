@@ -646,8 +646,8 @@ public class UserService {
         this.log.info("UserService loading...");
 
         try {
-            // Disable non-device-bound secrets.
-            PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = false; 
+         
+            PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = true; 
 
             if (UserHelper.isInit()) {
                 this.log.info("UserHelper is initialized");
