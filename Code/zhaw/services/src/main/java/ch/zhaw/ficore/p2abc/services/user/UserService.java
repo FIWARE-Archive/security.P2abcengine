@@ -646,9 +646,8 @@ public class UserService {
         this.log.info("UserService loading...");
 
         try {
-            // Disable^W enable non-device-bound secrets.
-            PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = false; //set to true by munt. 
-                                                                              //might have something to do with SmartCards
+            // Disable non-device-bound secrets.
+            PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = false; 
 
             if (UserHelper.isInit()) {
                 this.log.info("UserHelper is initialized");
