@@ -284,11 +284,23 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         formatter.format("%1$08x", offset);
         
         int limit = Math.min(bytes.length, offset + 16);
-        for (int i = offset; i < limit; i++) {
+        for (int i = offset; i < limit; i++)
             formatter.format(" %1$02x", bytes[i]);
-        }
+        
+        for (int i = limit; i < offset + 16; i++)
+            formatter.format("  ");
+
+        formatter.format("  ");
+
+        for (int i = offset; i < limit; i++)
+            formatter.format("%1$c", makeAscii(bytes[i]));
+
         logger.trace(sb.toString());
         formatter.close();
+    }
+    
+    private static char makeAscii(byte b) {
+        return (b >= ' ' && b <= '~') ? (char) b : '.';
     }
     
     /**
@@ -395,12 +407,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 				if(!rst.next())
 					return logger.exit(false);
 
-				int result = rst.getInt(1);
-
-				if(result == 1)
-					return logger.exit(true);
-				else
-					return logger.exit(false);
+				return logger.exit(rst.getInt(1) == 1);
 			}
 			catch(Exception e) {
 				logger.catching(e);
