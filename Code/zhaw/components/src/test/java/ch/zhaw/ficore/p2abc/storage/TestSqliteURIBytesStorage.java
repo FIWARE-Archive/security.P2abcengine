@@ -49,6 +49,12 @@ public class TestSqliteURIBytesStorage {
     }
     
     @Test
+    public void testPutNew() throws Exception {
+        assertTrue(storage.putNew("foobar", "barfoo".getBytes()));
+        assertFalse(storage.putNew("foobar", "barfoo".getBytes()));
+    }
+    
+    @Test
     public void testURIString() throws Exception {
         storage.put("http://zhaw.ch/foo bar", new byte[]{1,2,3});
         storage.put("http://zhaw.ch/foo%20bar", new byte[]{5,4,3});
