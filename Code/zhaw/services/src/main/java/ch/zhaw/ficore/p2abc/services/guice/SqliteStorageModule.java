@@ -82,6 +82,15 @@ public class SqliteStorageModule extends AbstractModule {
 			this.bind(eu.abc4trust.abce.internal.issuer.credentialManager.CredentialStorage.class)
 			    .to(GenericIssuerCredentialStorage.class).in(Singleton.class);
 			
+			this.bind(URIBytesStorage.class)
+			    .annotatedWith(Names.named("credentialStorage"))
+			    .toInstance(new SqliteURIBytesStorage(file, name + "_" + "credentialStorage"));
+			this.bind(URIBytesStorage.class)
+			    .annotatedWith(Names.named("pseudonymStorage"))
+			    .toInstance(new SqliteURIBytesStorage(file, name + "_" + "pseudonymStorage"));
+			this.bind(eu.abc4trust.abce.internal.user.credentialManager.CredentialStorage.class)
+			    .to(GenericUserCredentialStorage.class).in(Singleton.class);
+			
 		}
 		catch(Exception e) {
 			//TODO: What to do when config fails?? -- munt

@@ -28,7 +28,7 @@ public class GenericKeyStorage implements KeyStorage {
 	
 	public void addValue(URI uri, byte[] key) throws IOException {
 		try {
-			storage.putNew(uri, key);
+			storage.put(uri, key);
 		}
 		catch(Exception e) {
 			throw new IOException(e);
