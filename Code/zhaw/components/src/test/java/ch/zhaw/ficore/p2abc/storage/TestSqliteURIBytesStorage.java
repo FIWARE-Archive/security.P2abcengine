@@ -49,6 +49,67 @@ public class TestSqliteURIBytesStorage {
     }
     
     @Test
+    public void testLargeBlob() throws Exception {
+        byte[] data = new byte[1024*1024*16]; //==16MB
+        for(int i= 0; i < data.length; i++)
+            data[i] = (byte)(i % 256);
+        storage.put("blob", data);
+        byte[] ret = storage.get("blob");
+        assertTrue(Arrays.equals(ret,data));
+    }
+    
+    @Test
+    public void testMultipleConnections() throws Exception {
+        /**
+         * Some testing with multiple connections to the same database
+         * with multiple threads involved. 
+         */
+        
+        SqliteURIBytesStorage storage2 = new SqliteURIBytesStorage(storageFile.getPath(), table);
+        storage.put("zhaw.ch", "winterthur".getBytes());
+        assertTrue(Arrays.equals(storage2.get("zhaw.ch"), "winterthur".getBytes()));
+        for(int i = 0; i < 10; i++) {
+            for(int j = 0; j < 10; j++) {
+                Thread thrd1 = new Thread() {
+                    public void run() {
+                        try {
+                            SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+                            myStorage.put("zhaw.ch", "123".getBytes());
+                            myStorage.close();
+                        }
+                        catch(Exception e) {
+                            
+                        }
+                    }
+                };
+                final int v = j;
+                Thread thrd2 = new Thread() {
+                    public void run() {
+                        try {
+                            SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+                            myStorage.put("zhaw.ch/"+v, "234".getBytes());
+                            myStorage.close();
+                        }
+                        catch(Exception e) {
+                            
+                        }
+                    }
+                };
+                thrd1.start();
+                thrd2.start();
+                thrd1.join();
+                thrd2.join();
+            }
+            for(int j = 0; j < 10; j++)
+                assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
+            assertTrue(Arrays.equals(storage.get("zhaw.ch"), "123".getBytes()));
+        }
+        storage2.close();
+        for(int j = 0; j < 10; j++)
+            assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
+    }
+    
+    @Test
     public void testPutNew() throws Exception {
         assertTrue(storage.putNew("foobar", "barfoo".getBytes()));
         assertFalse(storage.putNew("foobar", "barfoo".getBytes()));
