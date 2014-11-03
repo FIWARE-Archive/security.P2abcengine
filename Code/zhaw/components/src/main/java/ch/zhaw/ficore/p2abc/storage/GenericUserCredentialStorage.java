@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class GenericUserCredentialStorage {
+public class GenericUserCredentialStorage implements CredentialStorage {
     
     private URIBytesStorage credentialStorage;
     private URIBytesStorage pseudonymStorage;
