@@ -103,7 +103,7 @@ public class UserService {
 
     private Logger log = LogManager.getLogger(UserService.class.getName());
 
-    private final String fileStoragePrefix = "user_storage/";
+    private final String fileStoragePrefix = ""; //no prefix -- munt
     
     @GET()
     @Path("/status/")
@@ -208,22 +208,7 @@ public class UserService {
 
         UserHelper instance = UserHelper.getInstance();
 
-        try {
-            URI uid = URI
-                    .create("http://ticketcompany/MyFavoriteSoccerTeam/issuance:idemix");
-            IssuerParameters ip = instance.keyManager.getIssuerParameters(uid);
-            String s = XmlUtils.toXml(this.of.createIssuerParameters(ip));
-            System.out.println(s);
-        } catch (KeyManagerException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        } catch (JAXBException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        } catch (SAXException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        }
+        
 
         try {
             PresentationToken presentationToken = instance.getEngine()

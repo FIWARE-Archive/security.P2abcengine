@@ -193,15 +193,15 @@ public class UserHelper extends AbstractHelper {
         try {
             UProveUtils uproveUtils = new UProveUtils();
 
-            AbceConfigurationImpl configuration = this
+            /*AbceConfigurationImpl configuration = this
                     .setupStorageFilesForConfiguration(fileStoragePrefix,
                             cryptoEngine, WIPE_STOARAGE_FILES);
             configuration.setUProvePathToExe(new UProveUtils().getPathToUProveExe().getAbsolutePath());
             configuration.setUProvePortNumber(uproveUtils.getUserServicePort());
             configuration.setUProveNumberOfCredentialsToGenerate(UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE);
-            configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT);
+            configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT); */ //I hate files and uprove -- munt
 
-            Module m = ProductionModuleFactory.newModule(configuration, cryptoEngine);
+            Module m = ProductionModuleFactory.newModule(cryptoEngine); //use default configuration --munt
             Module combinedModule = Modules.override(m).with(modules);
             Injector injector = Guice.createInjector(combinedModule);
 
@@ -216,7 +216,7 @@ public class UserHelper extends AbstractHelper {
 
 
             if((cryptoEngine == CryptoEngine.UPROVE) || (cryptoEngine == CryptoEngine.BRIDGED)) {
-                this.uproveBindingManager = injector.getInstance(UProveBindingManager.class);
+                throw new RuntimeException("We only support Idemix. Sorry :("); //like I said: I hate uprove --munt
             }
 
             //

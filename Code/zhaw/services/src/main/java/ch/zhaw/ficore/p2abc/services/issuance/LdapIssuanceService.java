@@ -79,13 +79,6 @@ public class LdapIssuanceService {
 
 	private Logger logger;
 
-	static {
-		ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret", false);
-		IssuanceConfiguration cfgData = new IssuanceConfiguration(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp, "(cn=_UID_)");
-		ServicesConfiguration.setIssuanceConfiguration(cfgData);
-	}
-
-
 	public LdapIssuanceService() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
 		logger = LogManager.getLogger();
 	}
@@ -94,7 +87,7 @@ public class LdapIssuanceService {
 	@Path("/status")
 	@Produces({MediaType.TEXT_PLAIN})
 	public Response issuerStatus() {
-		try {
+		/*try {
 			JAXBContext jc = JAXBContext.newInstance( new Class[] { QueryRule.class,
 					AuthenticationRequest.class, IssuanceRequest.class, AttributeInfoCollection.class,
 					LanguageValuePair.class, AttributeInformation.class, AuthInfoSimple.class
@@ -107,11 +100,30 @@ public class LdapIssuanceService {
 					return new StreamResult(file);
 				}
 			});
+			
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		return Response.ok().build();
+	}
+	
+	@GET()
+	@Path("/writeConfig/{magicCookie}")
+	public Response writeConfig(@PathParam("magicCookie") String magicCookie) {
+	    logger.entry();
+	    
+	    if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+	        return logger.exit(Response.status(Response.Status.FORBIDDEN).build());
+	    
+	    try {
+	        ServicesConfiguration.saveTo();
+	        return logger.exit(Response.ok().build());
+	    }
+	    catch(Exception e) {
+	        logger.catching(e);
+	        return logger.exit(Response.serverError().build());
+	    }
 	}
 	
 	

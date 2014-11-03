@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration.IdentitySource;
+
 
 /** Holds the configuration for all the services.
  * 
@@ -56,6 +58,25 @@ public class ServicesConfiguration {
     private static Logger logger = LogManager.getLogger();
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
+    
+    private final static String defaultConfigPath = "/tmp/servicesConfiguration.xml";
+    private static String configPath;
+    
+    static {
+        if(System.getProperty("configPath") == null) 
+            configPath = defaultConfigPath;
+        else
+            configPath = System.getProperty("configPath");
+        
+        /* We set a default configuration here */
+        ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret", false);
+        IssuanceConfiguration cfgData = new IssuanceConfiguration(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp, "(cn=_UID_)");
+        ServicesConfiguration.setIssuanceConfiguration(cfgData);
+        
+        /* and replace it with the configuration loaded from a file */
+        File f = new File(configPath);
+        ServicesConfiguration.loadFrom(f);
+    }
     
     /** Magic Cookie.
      * 
@@ -175,6 +196,24 @@ public class ServicesConfiguration {
         logger.exit();
     }
     
+    public static synchronized void saveTo(File f) {
+        try {
+            PrintStream ps = new PrintStream(f);
+            saveTo(ps);
+            ps.close();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            logger.warn("Error while  trying to save configuration!");
+        }
+        logger.exit();
+    }
+    
+    public static synchronized void saveTo() {
+        File f = new File(configPath);
+        saveTo(f);
+    }
+    
     public static synchronized void saveTo(PrintStream ps) {
         logger.entry();
 
@@ -213,9 +252,8 @@ public class ServicesConfiguration {
         
         logger.exit();
     }
-
-    private boolean isPlausible() {
-        // TODO Auto-generated method stub
+    
+    public boolean isPlausible() {
         return true;
     }
 }
