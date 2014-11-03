@@ -63,6 +63,19 @@ public abstract class URIBytesStorage {
 	    return uris;
 	}
 	
+	/**
+	 * Return a list of all values (byte[]).
+	 * 
+	 */
+	public List<byte[]> values() throws Exception {
+	    List<String> keys = keysAsStrings();
+	    List<byte[]> values = new ArrayList<byte[]>();
+	    for(String key : keys) {
+	        values.add(get(key));
+	    }
+	    return values;
+	}
+	
 	public abstract List<String> keysAsStrings() throws Exception;
 	
 	/**
