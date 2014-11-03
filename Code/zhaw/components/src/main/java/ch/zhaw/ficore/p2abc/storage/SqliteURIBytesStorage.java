@@ -127,15 +127,17 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	 * This method performs any actions that need to be done in order to 
 	 * release this object.
 	 */
-	public void close() {
+	public synchronized void close() {
 	    logger.entry();
 	    
-        closePreparedStatement(keysAsStringsStatement);
-        closePreparedStatement(getStatement);
-        closePreparedStatement(deleteStatement);
-        closePreparedStatement(putNewStatement);
-        closePreparedStatement(putStatement);
-        closePreparedStatement(containsKeyStatement);
+	    if(connections.isLastOf(filePath)) {
+            closePreparedStatement(keysAsStringsStatement);
+            closePreparedStatement(getStatement);
+            closePreparedStatement(deleteStatement);
+            closePreparedStatement(putNewStatement);
+            closePreparedStatement(putStatement);
+            closePreparedStatement(containsKeyStatement);
+	    }
 
         // Do this only after closing the statements.
         try {

@@ -55,7 +55,7 @@ public class ConnectionCache {
         return ConnectionCache.instance;
     }
 
-    public Connection get(String filePath) throws SQLException {
+    public synchronized Connection get(String filePath) throws SQLException {
         logger.entry(filePath);
         
         CountedConnection con = connections.get(filePath);
@@ -69,8 +69,19 @@ public class ConnectionCache {
         
         return logger.exit(con.getConnection());
     }
+    
+    public synchronized boolean isLastOf(String filePath) {
+        logger.entry();
+        
+        CountedConnection con = connections.get(filePath);
+        if(con != null) {
+           return logger.exit(con.getCount() == 1);
+        }
+        
+        return logger.exit(false);
+    }
 
-    public void release(String filePath) throws SQLException {
+    public synchronized void release(String filePath) throws SQLException {
         logger.entry(filePath);
         
         CountedConnection con = connections.get(filePath);
