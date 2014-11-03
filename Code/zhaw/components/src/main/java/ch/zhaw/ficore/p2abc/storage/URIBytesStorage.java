@@ -58,7 +58,17 @@ public abstract class URIBytesStorage {
 	public List<URI> keys() throws Exception {
 	    List<URI> uris = new ArrayList<URI>();
 	    for(String key : keysAsStrings()) {
-	        uris.add(new URI(key));
+	        try {
+	            uris.add(new URI(key));
+	        }
+	        catch(Exception e) {
+	            /* key wasn't an URI. Since this storage is also capable of
+	             * using raw Strings as key (due to compatibility with the rest of the engine)
+	             * it can happen that something isn't a correct URI.
+	             * In such a case we just don't list it here. Storages using raw strings
+	             * must use keysAsStrings(). -- munt
+	             */
+	        }
 	    }
 	    return uris;
 	}

@@ -49,6 +49,20 @@ public class TestSqliteURIBytesStorage {
     }
     
     @Test
+    public void testURIString() throws Exception {
+        storage.put("http://zhaw.ch/foo bar", new byte[]{1,2,3});
+        storage.put("http://zhaw.ch/foo%20bar", new byte[]{5,4,3});
+        byte[] ret = storage.get(new URI("http://zhaw.ch/foo%20bar"));
+        assertTrue(Arrays.equals(ret, new byte[]{5,4,3}));
+        ret = storage.get("http://zhaw.ch/foo bar");
+        assertTrue(Arrays.equals(ret, new byte[]{1,2,3}));
+        List<URI> uris = storage.keys();
+        assertTrue(uris.size() == 1);
+        List<String> keys = storage.keysAsStrings();
+        assertTrue(keys.size() == 2);
+    }
+    
+    @Test
     public void testValuesAndKeys() throws Exception {
         storage.put(new URI("urn:foobar"), new byte[]{1,9,9});
         storage.put(new URI("urn:barfoo"), new byte[]{0,0,0});
