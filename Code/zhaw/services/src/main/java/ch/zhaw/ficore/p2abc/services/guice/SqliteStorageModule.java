@@ -45,6 +45,15 @@ public class SqliteStorageModule extends AbstractModule {
 		}
 		
 		try {
+		    /**
+		     * REM: Some tables are only required by one party (and not by both)
+		     * which means that unused tables will be created. This, of course, isn't an issue
+		     * (it will just create for example user_keyStorage which will always be empty).
+		     * Once more is known about storage and testing has been done we might do some switch
+		     * cases here for service type to not create empty tables but again, this is not high priority
+		     * yet because empty tables don't hurt anybody. -- munt
+		     */
+		    
 			this.bind(URIBytesStorage.class)
 				.annotatedWith(Names.named("keyStorage"))
 				.toInstance(new SqliteURIBytesStorage(file, name + "_" + "keyStorage"));
