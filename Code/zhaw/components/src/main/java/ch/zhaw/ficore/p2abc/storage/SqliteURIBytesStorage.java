@@ -130,14 +130,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 	public synchronized void close() {
 	    logger.entry();
 	    
-	    if(connections.isLastOf(filePath)) {
-            closePreparedStatement(keysAsStringsStatement);
-            closePreparedStatement(getStatement);
-            closePreparedStatement(deleteStatement);
-            closePreparedStatement(putNewStatement);
-            closePreparedStatement(putStatement);
-            closePreparedStatement(containsKeyStatement);
-	    }
+        closePreparedStatement(keysAsStringsStatement);
+        closePreparedStatement(getStatement);
+        closePreparedStatement(deleteStatement);
+        closePreparedStatement(putNewStatement);
+        closePreparedStatement(putStatement);
+        closePreparedStatement(containsKeyStatement);
 
         // Do this only after closing the statements.
         try {
