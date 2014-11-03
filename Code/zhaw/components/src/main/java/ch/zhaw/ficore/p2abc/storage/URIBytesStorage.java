@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  * Interface for storage with a KeyValue-Structure
- * where the Key is an URI and Value is byte[].
+ * where the Key is an URI (or a String) and Value is byte[].
  * 
  * @author mroman
  */
@@ -51,7 +51,8 @@ public abstract class URIBytesStorage {
 	public abstract byte[] get(String key) throws Exception;
 	
 	/**
-	 * Return a list of all keys (URIs).
+	 * Return a list of all keys (URIs). Please use keysAsStrings if you
+	 * plan on using raw strings as keys. 
 	 * 
 	 * @return List of URIs.
 	 */
