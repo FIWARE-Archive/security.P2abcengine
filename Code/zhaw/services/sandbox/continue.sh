@@ -18,7 +18,7 @@ cat ./out/storeCredentialSpecificationAtUserResponce.xml
 # Store credential specification at verifier.
 # This method is not specified in H2.2.
 echo "Store credential specification at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./gen/credSpec.xml 'http://localhost:9300/verification/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./gen/credSpec.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeCredentialSpecification/urn%3Aabc4trust%3Acredspec%3Aldap%3Aperson' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
 cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 
 
@@ -30,7 +30,7 @@ curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'h
 # Store System parameters at verifier.
 # This method is not specified in H2.2.
 echo "Store System parameters at Verifier"
-curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:9300/verification/storeSystemParameters/' > ./out/storeSystemParametersResponceAtVerifier.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeSystemParameters/' > ./out/storeSystemParametersResponceAtVerifier.xml
 
 # Setup issuer parameters.
 echo "Setup issuer parameters"
@@ -45,7 +45,7 @@ curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'ht
 # Store Issuer Parameters at verifier.
 # This method is not specified in H2.2.
 echo "Store Issuer Parameters at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:9300/verification/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix' > ./out/storeIssuerParametersAtVerifier.xml
+curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix' > ./out/storeIssuerParametersAtVerifier.xml
 
 # Create smartcard at user.
 # This method is not specified in H2.2.
@@ -89,7 +89,7 @@ curl -X POST --header 'Content-Type: text/xml' -d @./out/thirdIssuanceMessage.xm
 # Create presentation policy alternatives.
 # This method is not specified in H2.2.
 echo "Create presentation policy alternatives"
-curl -X GET --header 'Content-Type: text/xml' -d @./presentationPolicyAlternatives.xml 'http://localhost:9300/verification/createPresentationPolicy/' > ./out/presentationPolicyAlternatives.xml
+curl -X GET --header 'Content-Type: text/xml' -d @./presentationPolicyAlternatives.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/createPresentationPolicy/' > ./out/presentationPolicyAlternatives.xml
 
 # Create presentation UI return.
 # This method is not specified in H2.2.
@@ -123,6 +123,6 @@ echo '</PresentationPolicyAlternativesAndPresentationToken>' >> ./out/presentati
 # Verify presentation token against presentation policy.
 echo "Verify presentation token against presentation policy"
 # This method is not specified in H2.2.
-curl -X POST --header 'Content-Type: text/xml' -d @./out/presentationPolicyAlternativesAndPresentationToken.xml 'http://localhost:9300/verification/verifyTokenAgainstPolicy/' > ./out/presentationTokenDescription.xml
+curl -X POST --header 'Content-Type: text/xml' -d @./out/presentationPolicyAlternativesAndPresentationToken.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/verifyTokenAgainstPolicy/' > ./out/presentationTokenDescription.xml
 
 
