@@ -55,7 +55,7 @@ import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
-import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
+//import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
@@ -68,6 +68,7 @@ import eu.abc4trust.xml.RevocationAuthorityParameters;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.util.XmlUtils;
 
+import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 
 @Path("/verification")
 public class VerificationService {
@@ -83,17 +84,19 @@ public class VerificationService {
         if (VerificationHelper.isInit()) {
             System.out.println(" - Helper already init'ed");
         } else {
-            String fileStoragePrefix = Constants.VERIFIER_STORAGE_FOLDER + "/";
+            String fileStoragePrefix = "verifier_storage/";
             if(System.getProperty("PathToUProveExe", null) == null) {
                 String uprovePath = "./../uprove/UProveWSDLService/ABC4Trust-UProve/bin/Release";
                 System.setProperty("PathToUProveExe", uprovePath);
             }
 
-            String[] credSpecResources = this.getFilesFromDir(Constants.CREDENTIAL_SPECIFICATION_FOLDER,"credentialSpecification");
-            String[] revAuthResourceList = this.getFilesFromDir(Constants.REVOCATION_STORAGE_FOLDER, "revocation_authority");
-            String[] inspectorResourceList = this.getFilesFromDir(Constants.INSPECTOR_STORAGE_FOLDER, "inspector");
+            //munt: commented out the this.getFilesFromDir calls and replaced them
+            //with an empty string array
+            String[] credSpecResources = new String[]{}; //this.getFilesFromDir(Constants.CREDENTIAL_SPECIFICATION_FOLDER,"credentialSpecification");
+            String[] revAuthResourceList = new String[]{}; //this.getFilesFromDir(Constants.REVOCATION_STORAGE_FOLDER, "revocation_authority");
+            String[] inspectorResourceList = new String[]{}; //this.getFilesFromDir(Constants.INSPECTOR_STORAGE_FOLDER, "inspector");
 
-            String[] issuerParamsResourceList = this.getFilesFromDir(Constants.ISSUER_RESOURCES_FOLDER, "issuer_params");
+            String[] issuerParamsResourceList = new String[]{}; //this.getFilesFromDir(Constants.ISSUER_RESOURCES_FOLDER, "issuer_params");
 
 
             VerificationHelper.initInstance(CryptoEngine.BRIDGED,
