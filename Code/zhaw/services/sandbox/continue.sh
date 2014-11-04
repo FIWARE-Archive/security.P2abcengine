@@ -49,8 +49,8 @@ curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'ht
 
 # Create smartcard at user.
 # This method is not specified in H2.2.
-echo "Create smartcard at user"
-curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/user/createSmartcard/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix'
+#echo "Create smartcard at user"
+#curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/user/createSmartcard/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix'
 
 # Init issuance protocol (first step for the issuer).
 #echo "Init issuance protocol"
