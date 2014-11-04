@@ -1,0 +1,9 @@
+<issuance-request>
+	<auth-request>
+		<auth-info-simple>
+			<username>munt</username>
+			<password>test</password>
+		</auth-info-simple>
+	</auth-request>
+	<credential-specification-uid>urn:abc4trust:credspec:ldap:person</credential-specification-uid>
+</issuance-request>

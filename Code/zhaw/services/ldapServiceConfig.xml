@@ -1,7 +1,0 @@
-<ldap-service-config>
-	<port>10389</port>
-	<host>localhost</host>
-	<name>dc=example, dc=com</name>
-	<auth-id>uid=admin, ou=system</auth-id>
-	<auth-pw>secret</auth-pw>
-</ldap-service-config>
