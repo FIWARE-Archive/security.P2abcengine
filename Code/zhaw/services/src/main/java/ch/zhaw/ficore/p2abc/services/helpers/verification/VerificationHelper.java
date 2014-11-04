@@ -242,13 +242,13 @@ public class VerificationHelper extends AbstractHelper {
         try {
             UProveUtils uproveUtils = new UProveUtils();
 
-            AbceConfigurationImpl configuration = this.setupStorageFilesForConfiguration(fileStoragePrefix, cryptoEngine);
+            /*AbceConfigurationImpl configuration = this.setupStorageFilesForConfiguration(fileStoragePrefix, cryptoEngine);
             configuration.setUProvePathToExe(new UProveUtils().getPathToUProveExe().getAbsolutePath());
             configuration.setUProvePortNumber(uproveUtils.getVerifierServicePort());
             configuration.setUProveNumberOfCredentialsToGenerate(-1);
-            configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT);
+            configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT);*/ //commented out by munt: I hate files and uprove
 
-            Module newModule = ProductionModuleFactory.newModule(configuration,
+            Module newModule = ProductionModuleFactory.newModule(
                     cryptoEngine);
             Module combinedModule = Modules.override(newModule).with(modules);
             Injector injector = Guice.createInjector(combinedModule);

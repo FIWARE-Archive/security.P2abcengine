@@ -69,6 +69,8 @@ import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.util.XmlUtils;
 
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
+import ch.zhaw.ficore.p2abc.services.ServiceType;
+import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,7 +106,8 @@ public class VerificationService {
             VerificationHelper.initInstance(CryptoEngine.BRIDGED,
                     issuerParamsResourceList, credSpecResources,
                     inspectorResourceList, revAuthResourceList,
-                    fileStoragePrefix, new Module[0]);
+                    fileStoragePrefix, StorageModuleFactory.getModulesForServiceConfiguration(
+                            ServiceType.VERIFICATION));
         }
     }
 
