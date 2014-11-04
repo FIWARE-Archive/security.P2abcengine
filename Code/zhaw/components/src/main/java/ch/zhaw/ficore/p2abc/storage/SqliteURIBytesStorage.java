@@ -83,20 +83,20 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @throws UnsafeTableNameException 
      */
     private synchronized void init(String filePath, String tableName) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
-        logger.entry();
+        logger.entry(filePath, tableName);
 
         checkIfSafeTableName(tableName);
-
-        PoolProperties p = new PoolProperties();
-        p.setUrl("jdbc:sqlite:" + filePath);
-        p.setDriverClassName("org.sqlite.JDBC");
-        DataSource datasource = new org.apache.tomcat.jdbc.pool.DataSource(p);
 
         this.tableName = tableName;
 
         Statement stmt = null;
 
         try {
+            PoolProperties p = new PoolProperties();
+            p.setUrl("jdbc:sqlite:" + filePath);
+            p.setDriverClassName("org.sqlite.JDBC");
+            DataSource datasource = new org.apache.tomcat.jdbc.pool.DataSource(p);
+
             databaseConnection = datasource.getConnection();
             synchronized(databaseConnection) {
                 stmt = databaseConnection.createStatement();
