@@ -28,7 +28,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -70,11 +70,13 @@ import eu.abc4trust.xml.util.XmlUtils;
 
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @Path("/verification")
 public class VerificationService {
 
-    private final Logger log = Logger.getLogger(VerificationService.class
-            .getName());
+    private final Logger log = LogManager.getLogger();
 
     ObjectFactory of = new ObjectFactory();
 
