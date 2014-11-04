@@ -34,6 +34,7 @@ import com.google.inject.name.Named;
  * @author mroman
  */
 public class SqliteURIBytesStorage extends URIBytesStorage {
+    private static final int DUMP_LIMIT = 1024;
     private Connection databaseConnection;
     private String tableName;
 
@@ -82,7 +83,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @throws SQLException 
      * @throws UnsafeTableNameException 
      */
-    private synchronized void init(String filePath, String tableName) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+    private void init(String filePath, String tableName) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
         logger.entry(filePath, tableName);
 
         checkIfSafeTableName(tableName);
@@ -95,9 +96,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             PoolProperties p = new PoolProperties();
             p.setUrl("jdbc:sqlite:" + filePath);
             p.setDriverClassName("org.sqlite.JDBC");
-            DataSource datasource = new org.apache.tomcat.jdbc.pool.DataSource(p);
+            DataSource datasource = new DataSource(p);
+
+            assert datasource != null;
 
             databaseConnection = datasource.getConnection();
+
             synchronized(databaseConnection) {
                 stmt = databaseConnection.createStatement();
                 String sql = "CREATE TABLE IF NOT EXISTS " + tableName +
@@ -269,9 +273,11 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     }
 
     private static void hexdump(Logger logger, byte[] bytes) {
-        logger.trace("Dumping byte array of size " + bytes.length);
-        logger.trace(" Offset   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f");
-        for (int offset = 0; offset < bytes.length; offset += 16) {
+        logger.trace("Dumping byte array of size " + bytes.length + " (max. " + DUMP_LIMIT + " bytes)");
+        logger.trace(" Offset   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f   0123456789abcdef");
+        
+        int limit = Math.min(bytes.length,  DUMP_LIMIT);
+        for (int offset = 0; offset < limit; offset += 16) {
             dumpLine(logger, bytes, offset);
         }
     }
@@ -280,13 +286,25 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.ROOT);
         formatter.format("%1$08x", offset);
-
+        
         int limit = Math.min(bytes.length, offset + 16);
-        for (int i = offset; i < limit; i++) {
+        for (int i = offset; i < limit; i++)
             formatter.format(" %1$02x", bytes[i]);
-        }
+        
+        for (int i = limit; i < offset + 16; i++)
+            formatter.format("   ");
+
+        formatter.format("  ");
+
+        for (int i = offset; i < limit; i++)
+            formatter.format("%1$c", makeAscii(bytes[i]));
+
         logger.trace(sb.toString());
         formatter.close();
+    }
+    
+    private static char makeAscii(byte b) {
+        return (b >= ' ' && b <= '~') ? (char) b : '.';
     }
 
     /**
@@ -348,7 +366,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     /**
      * Add an entry to the storage if and only if it did not exist yet
      */
-    public synchronized boolean putNew(String key, byte[] bytes) throws SQLException {
+    public boolean putNew(String key, byte[] bytes) throws SQLException {
         logger.entry(key, bytes);
 
         synchronized(databaseConnection) {
