@@ -2,10 +2,15 @@
 
 rm idemix*
 
+echo "Starting apacheds default"
+sudo /etc/init.d/apacheds-2.0.0-M17-default start
+
+echo "Building components"
 cd ../components
 mvn clean install
 cd ../services
 
+echo "Building Services"
 mvn clean
 mvn -P ldap-ui-service install
 ~/web/web1/bin/shutdown.sh

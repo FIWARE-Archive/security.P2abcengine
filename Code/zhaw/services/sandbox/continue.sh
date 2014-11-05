@@ -6,8 +6,8 @@
 #Stop script if an error occurs.
 set -e
 # Setup System Parameters.
-echo "Setup System Parameters"
-curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupSystemParameters/*magic*/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix' > ./out/systemparameters.xml
+#echo "Setup System Parameters"
+#curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupSystemParameters/*magic*/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix' > ./out/systemparameters.xml
 
 # Store credential specification at user.
 # This method is not specified in H2.2.
@@ -33,8 +33,8 @@ echo "Store System parameters at Verifier"
 curl -X POST --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeSystemParameters/*magic*' > ./out/storeSystemParametersResponceAtVerifier.xml
 
 # Setup issuer parameters.
-echo "Setup issuer parameters"
-curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupIssuerParameters/*magic*' > ./out/issuerParameters.xml
+#echo "Setup issuer parameters"
+#curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/ldap-issuance-service/setupIssuerParameters/*magic*' > ./out/issuerParameters.xml
 
 
 # Store Issuer Parameters at user.
