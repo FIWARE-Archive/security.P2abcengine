@@ -91,60 +91,7 @@ public class IssuanceHelper extends AbstractHelper {
     private static IssuanceHelper instance;
     
     public IssuanceStorage issuanceStorage;
-
-    /**
-     * @param fileStoragePrefix this prefix will be prepended on storage files needed by the
-     *        IssuerAbcEnginge
-     * @param specAndPolicyList list of CredentialSpecifications + IssuancePolices
-     * @return
-     * @throws URISyntaxException
-     */
-    @Deprecated
-    public static synchronized IssuanceHelper initInstance(CryptoEngine cryptoEngine,
-            String systemAndIssuerParamsPrefix, String fileStoragePrefix,
-            ArrayList<SpecAndPolicy> specAndPolicyList) throws URISyntaxException {
-        if (instance != null) {
-            throw new IllegalStateException("initInstance can only be called once!");
-        }
-        log.info("IssuanceHelper.initInstance(ArrayList)");
-
-        instance =
-                new IssuanceHelper(cryptoEngine, null, systemAndIssuerParamsPrefix, fileStoragePrefix, new String[0],
-                        specAndPolicyList);
-
-        return instance;
-    }
-
-    /**
-     * @param fileStoragePrefix
-     *            this prefix will be prepended on storage files needed by the
-     *            IssuerAbcEnginge
-     * @param specAndPolicyList
-     *            list of CredentialSpecifications + IssuancePolices
-     * @param createNewSystemParametersIfNoneExists
-     * @return
-     * @throws URISyntaxException
-     */
-    public static synchronized IssuanceHelper initInstance(
-            CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix,
-            String fileStoragePrefix, SpecAndPolicy... specAndPolicyList)
-                    throws URISyntaxException {
-        if (instance != null) {
-            throw new IllegalStateException("initInstance can only be called once!");
-        }
-        log.info("IssuanceHelper.initInstance(Array)");
-
-        ArrayList<SpecAndPolicy> list = new ArrayList<SpecAndPolicy>();
-        for (SpecAndPolicy sap : specAndPolicyList) {
-            list.add(sap);
-        }
-        instance = new IssuanceHelper(cryptoEngine, null,
-                systemAndIssuerParamsPrefix, fileStoragePrefix, new String[0],
-                list);
-
-        return instance;
-    }
-
+   
     public static synchronized IssuanceHelper initInstanceForService(
             CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix,
             String fileStoragePrefix, Module... modules) throws Exception {
@@ -198,57 +145,7 @@ public class IssuanceHelper extends AbstractHelper {
         this.random = configuration.getPrng(); // new SecureRandom(); // new Random(1985);
     }
 
-    //    @Deprecated
-    //    /**
-    //     * @param fileStoragePrefix this prefix will be prepended on storage files needed by the
-    //     *        IssuerAbcEnginge
-    //     * @param specAndPolicyList list of CredentialSpecifications + IssuancePolices
-    //     * @return
-    //     * @throws URISyntaxException
-    //     */
-    //    public static synchronized IssuanceHelper initInstance(
-    //            ProductionModule.CryptoEngine cryptoEngine,
-    //            String systemAndIssuerParamsPrefix, String fileStoragePrefix,
-    //            SpecAndPolicy... specAndPolicyList) throws URISyntaxException {
-    //        if (instance != null) {
-    //            throw new IllegalStateException("initInstance can only be called once!");
-    //        }
-    //        log.info("IssuanceHelper.initInstance(Array)");
-    //
-    //        ArrayList<SpecAndPolicy> list = new ArrayList<SpecAndPolicy>();
-    //        for (SpecAndPolicy sap : specAndPolicyList) {
-    //            list.add(sap);
-    //        }
-    //
-    //        instance = new IssuanceHelper(
-    //                oldCryptoEngineToNewCryptoEngine(cryptoEngine),
-    //                systemAndIssuerParamsPrefix, fileStoragePrefix, new String[0],
-    //                list);
-    //
-    //        return instance;
-    //    }
-    //
-    //    @Deprecated
-    //    public static synchronized IssuanceHelper initInstance(
-    //            ProductionModule.CryptoEngine cryptoEngine,
-    //            String systemAndIssuerParamsPrefix, String fileStoragePrefix,
-    //            SpecAndPolicy[] specAndPolicyList,
-    //            String[] revocationAuthorityParametersResourcesList)
-    //                    throws URISyntaxException {
-    //        return initInstance(oldCryptoEngineToNewCryptoEngine(cryptoEngine),
-    //                systemAndIssuerParamsPrefix, fileStoragePrefix,
-    //                specAndPolicyList, revocationAuthorityParametersResourcesList);
-    //    }
-    public static synchronized IssuanceHelper initInstanceBridged(int idemixKeyLength, int uproveKeyLength, int numberOfUProverCredentials, String systemAndIssuerParamsPrefix, String fileStoragePrefix,
-            SpecAndPolicy[] specAndPolicyList,
-            String[] revocationAuthorityParametersResourcesList)
-                    throws URISyntaxException {
-        IDEMIX_KEY_LENGTH = idemixKeyLength;
-        UPROVE_KEY_LENGTH = uproveKeyLength;
-        UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE = numberOfUProverCredentials;
 
-        return initInstance(CryptoEngine.BRIDGED, systemAndIssuerParamsPrefix, fileStoragePrefix, specAndPolicyList, revocationAuthorityParametersResourcesList);
-    }
 
     public static synchronized IssuanceHelper initInstance(CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix, String fileStoragePrefix,
             SpecAndPolicy[] specAndPolicyList,
