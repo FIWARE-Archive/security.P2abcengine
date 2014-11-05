@@ -61,62 +61,7 @@ public class UserHelper extends AbstractHelper {
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
     
-    //public KeyManager keyManager;
-
-    // orig
-    public static synchronized UserHelper initInstance(CryptoEngine cryptoEngine,
-            /* String systemParamsResource, */String[] issuerParamsResourceList, String fileStoragePrefix,
-            String[] credSpecResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine, issuerParamsResourceList, fileStoragePrefix, credSpecResourceList, new String[0], new String[0]);
-    }
-
-    // with inspector
-    public static synchronized UserHelper initInstance(CryptoEngine cryptoEngine,
-            /* String systemParamsResource, */String[] issuerParamsResourceList, String fileStoragePrefix,
-            String[] credSpecResourceList, String[] inspectorPublicKeyResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine, issuerParamsResourceList, fileStoragePrefix, credSpecResourceList, inspectorPublicKeyResourceList, new String[0]);
-    }
-
-    // with inspector and revocation
-    public static synchronized UserHelper initInstance(CryptoEngine cryptoEngine,
-            /* String systemParamsResource, */String[] issuerParamsResourceList, String fileStoragePrefix,
-            String[] credSpecResourceList, String[] inspectorPublicKeyResourceList, String[] revocationAuthorityParametersResourceList) throws URISyntaxException {
-
-        initialializeInstanceField(cryptoEngine, fileStoragePrefix);
-
-        // instance.setSystemParams(systemParamsResource);
-        instance.addCredentialSpecifications(credSpecResourceList);
-        instance.addIssuerParameters(issuerParamsResourceList);
-        if((issuerParamsResourceList==null)||(issuerParamsResourceList.length==0)) {
-
-            try {
-                String systemParametersResource = fileStoragePrefix
-                        + SYSTEM_PARAMS_NAME_BRIDGED;
-                @SuppressWarnings("unused")
-                SystemParameters systemParameters = SystemParametersHelper
-                .checkAndLoadSystemParametersIfAbsent(
-                        instance.keyManager, systemParametersResource);
-                // SystemParameters systemParameters = (SystemParameters)
-                // XmlUtils.getObjectFromXML(UserHelper.class.getResourceAsStream("/eu/abc4trust/systemparameters/bridged-systemParameters.xml"),
-                // true);
-                // instance.keyManager.storeSystemParameters(systemParameters);
-
-                UProveSystemParameters uproveSystemParameters = new UProveSystemParameters(systemParameters);
-                UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE = uproveSystemParameters.getNumberOfTokens();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                logger.info(ex.getMessage());
-            }
-        }
-
-        instance.checkIfSystemParametersAreLoaded();
-        instance.addInspectorPublicKeys(inspectorPublicKeyResourceList);
-        instance.addRevocationAuthorities(instance.keyManager, revocationAuthorityParametersResourceList);
-
-        System.out.println("UserHelper.initInstance : DONE");
-
-        return instance;
-    }
+    
 
     public static synchronized UserHelper initInstanceForService(
             CryptoEngine cryptoEngine, String fileStoragePrefix,
@@ -152,7 +97,6 @@ public class UserHelper extends AbstractHelper {
     }
 
     public static synchronized UserHelper getInstance() {
-        // System.out.println("UserHelper.getInstance : " + instance);
         if (instance == null) {
             System.out.println("initInstance not called before using UserHelper!");
             throw new IllegalStateException("initInstance not called before using UserHelper!");
@@ -160,48 +104,18 @@ public class UserHelper extends AbstractHelper {
         return instance;
     }
 
-    public static synchronized void resetInstance() {
-        System.err.println("WARNING UserHelper.resetInstance : " + instance);
-        if((instance!=null) && (instance.uproveBindingManager != null) ) {
-            System.err.println("WARNING UserHelper.resetInstance : Stop UPROVE UserEngine");
-            try {
-                // try to stop uprove engine/service if running...
-                //                @SuppressWarnings("unused")
-                //                int exitCode = instance.uproveBindingManager.stop();
-                //              System.out.println("exitCode : " + exitCode);
-                //              Thread.sleep(2000);
-            } catch(Exception ignore) {
-                System.err.println("Failed to stop UProve service : " + ignore);
-            }
-        }
-        instance = null;
-    }
 
     private UserAbcEngine engine;
     public AbcSmartcardManager smartcardManager;
     public CardStorage cardStorage;
     public CredentialManager credentialManager;
 
-    // needed for 'reset'
-    private UProveBindingManager uproveBindingManager = null;
-
-
     private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
             Module... modules) throws URISyntaxException {
         logger.info("UserHelper : : create instance " + cryptoEngine + " : " + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
         try {
-            UProveUtils uproveUtils = new UProveUtils();
-
-            /*AbceConfigurationImpl configuration = this
-                    .setupStorageFilesForConfiguration(fileStoragePrefix,
-                            cryptoEngine, WIPE_STOARAGE_FILES);
-            configuration.setUProvePathToExe(new UProveUtils().getPathToUProveExe().getAbsolutePath());
-            configuration.setUProvePortNumber(uproveUtils.getUserServicePort());
-            configuration.setUProveNumberOfCredentialsToGenerate(UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE);
-            configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT); */ //I hate files and uprove -- munt
-
-            Module m = ProductionModuleFactory.newModule(cryptoEngine); //use default configuration --munt
+            Module m = ProductionModuleFactory.newModule(cryptoEngine); 
             Module combinedModule = Modules.override(m).with(modules);
             Injector injector = Guice.createInjector(combinedModule);
 
@@ -216,10 +130,9 @@ public class UserHelper extends AbstractHelper {
 
 
             if((cryptoEngine == CryptoEngine.UPROVE) || (cryptoEngine == CryptoEngine.BRIDGED)) {
-                throw new RuntimeException("We only support Idemix. Sorry :("); //like I said: I hate uprove --munt
+                throw new RuntimeException("We only support Idemix. Sorry :("); 
             }
 
-            //
         } catch (Exception e) {
             logger.catching(e);
             System.err.println("Init Failed");
