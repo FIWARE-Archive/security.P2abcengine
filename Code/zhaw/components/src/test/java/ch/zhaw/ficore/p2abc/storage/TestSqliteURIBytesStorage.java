@@ -78,6 +78,7 @@ public class TestSqliteURIBytesStorage {
         for(int i = 0; i < MAX_I; i++) {
             for(int j = 0; j < MAX_J; j++) {
                 Thread thrd1 = new Thread() {
+                    @Override
                     public void run() {
                         SqliteURIBytesStorage myStorage;
                         try {
@@ -93,6 +94,7 @@ public class TestSqliteURIBytesStorage {
                 };
                 final int v = j;
                 Thread thrd2 = new Thread() {
+                    @Override
                     public void run() {
                         try {
                             SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
