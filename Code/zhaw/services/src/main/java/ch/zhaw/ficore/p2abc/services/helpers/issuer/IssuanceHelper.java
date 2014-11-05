@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.security.SecureRandom;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -138,11 +139,11 @@ public class IssuanceHelper extends AbstractHelper {
                 + SYSTEM_PARAMS_NAME_BRIDGED;
 
         UProveUtils uproveUtils = new UProveUtils();
-        AbceConfigurationImpl configuration = this.setupSingleEngineForService(
+        this.setupSingleEngineForService(
                 cryptoEngine, uproveUtils,
                 revocationAuthorityParametersResourcesList, modules);
 
-        this.random = configuration.getPrng(); // new SecureRandom(); // new Random(1985);
+        this.random = new SecureRandom();
     }
 
 
@@ -283,18 +284,15 @@ public class IssuanceHelper extends AbstractHelper {
         }
     }
 
-    private AbceConfigurationImpl setupSingleEngineForService(
+    private void setupSingleEngineForService(
             CryptoEngine cryptoEngine, UProveUtils uproveUtils,
             String[] revocationAuthorityParametersResourcesList,
             Module... modules)
                     throws Exception {
 
-        AbceConfigurationImpl configuration = this.setupConfiguration(
-                cryptoEngine, uproveUtils, cryptoEngine); 
 
         Module newModule = ProductionModuleFactory
-                .newModule(cryptoEngine); //ignore configuration. This causes ProductionModuleFactory
-                                          //to use a DefaultAbceConfiguration. --munt
+                .newModule(cryptoEngine); 
         Module combinedModule = Modules.override(newModule).with(modules);
         Injector injector = Guice.createInjector(combinedModule);
 
@@ -324,8 +322,6 @@ public class IssuanceHelper extends AbstractHelper {
                 .getInstance(TokenStorageIssuer.class));
         this.addRevocationAuthorities(this.keyManager,
                 revocationAuthorityParametersResourcesList);
-
-        return configuration;
     }
 
     private AbceConfigurationImpl setupSingleEngine(CryptoEngine cryptoEngine,
