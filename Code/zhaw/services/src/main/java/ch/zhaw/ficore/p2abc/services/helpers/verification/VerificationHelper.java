@@ -80,66 +80,9 @@ public class VerificationHelper extends AbstractHelper {
 
     private static VerificationHelper instance;
 
-    
-    public static synchronized VerificationHelper initInstance(CryptoEngine cryptoEngine,
-            /*String systemParamsResource, */String[] issuerParamsResourceList,
-            String[] credSpecResourceList, String fileStoragePrefix,
-            String... presentationPolicyResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine, issuerParamsResourceList,
-                credSpecResourceList, fileStoragePrefix, new Module[0],
-                presentationPolicyResourceList);
-    }
-
     public static synchronized VerificationHelper initInstance(
             CryptoEngine cryptoEngine,
-            /* String systemParamsResource, */String[] issuerParamsResourceList,
-            String[] credSpecResourceList, String fileStoragePrefix,
-            Module[] modules,
-            String... presentationPolicyResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine, issuerParamsResourceList,
-                credSpecResourceList, new String[0], fileStoragePrefix,
-                modules, presentationPolicyResourceList);
-    }
-   
-
-    public static synchronized VerificationHelper initInstance(CryptoEngine cryptoEngine,
-            /*String systemParamsResource, */String[] issuerParamsResourceList,
-            String[] credSpecResourceList, String[] inspectorPublicKeyResourceList, String fileStoragePrefix,
-            String... presentationPolicyResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine, issuerParamsResourceList,
-                credSpecResourceList, inspectorPublicKeyResourceList,
-                fileStoragePrefix, new Module[0],
-                presentationPolicyResourceList);
-    }
-
-    public static synchronized VerificationHelper initInstance(
-            CryptoEngine cryptoEngine,
-            /* String systemParamsResource, */String[] issuerParamsResourceList,
-            String[] credSpecResourceList,
-            String[] inspectorPublicKeyResourceList, String fileStoragePrefix,
-            Module[] modules,
-            String... presentationPolicyResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine, issuerParamsResourceList,
-                credSpecResourceList, inspectorPublicKeyResourceList,
-                new String[0], fileStoragePrefix, modules,
-                presentationPolicyResourceList);
-    }
-
-   
-
-    public static synchronized VerificationHelper initInstance(CryptoEngine cryptoEngine,
-            /*String systemParamsResource, */String[] issuerParamsResourceList,
-            String[] credSpecResourceList, String[] inspectorPublicKeyResourceList, String[] revocationAuthorityParametersResourceList, String fileStoragePrefix,
-            String... presentationPolicyResourceList) throws URISyntaxException {
-        return initInstance(cryptoEngine,
-                issuerParamsResourceList,
-                credSpecResourceList, inspectorPublicKeyResourceList, revocationAuthorityParametersResourceList, fileStoragePrefix,
-                new Module[0], presentationPolicyResourceList);
-    }
-
-    public static synchronized VerificationHelper initInstance(
-            CryptoEngine cryptoEngine,
-            /* String systemParamsResource, */String[] issuerParamsResourceList,
+            String[] issuerParamsResourceList,
             String[] credSpecResourceList,
             String[] inspectorPublicKeyResourceList,
             String[] revocationAuthorityParametersResourceList,
