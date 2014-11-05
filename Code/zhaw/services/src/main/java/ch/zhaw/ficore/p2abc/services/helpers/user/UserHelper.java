@@ -56,8 +56,6 @@ public class UserHelper extends AbstractHelper {
     private static final Logger logger = LogManager.getLogger(UserHelper.class
             .toString());
 
-    public static boolean WIPE_STOARAGE_FILES = false;
-
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
     
@@ -68,7 +66,7 @@ public class UserHelper extends AbstractHelper {
             Module... modules)
                     throws URISyntaxException {
 
-        initialializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
+        initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
         
 
@@ -81,7 +79,7 @@ public class UserHelper extends AbstractHelper {
         instance.checkIfSystemParametersAreLoaded();
     }
 
-    private static void initialializeInstanceField(CryptoEngine cryptoEngine,
+    private static void initializeInstanceField(CryptoEngine cryptoEngine,
             String fileStoragePrefix, Module... modules)
                     throws URISyntaxException {
         if (instance != null) {
