@@ -96,19 +96,11 @@ public class VerificationService {
                 System.setProperty("PathToUProveExe", uprovePath);
             }
 
-            //munt: commented out the this.getFilesFromDir calls and replaced them
-            //with an empty string array
-            String[] credSpecResources = new String[]{}; //this.getFilesFromDir(Constants.CREDENTIAL_SPECIFICATION_FOLDER,"credentialSpecification");
-            String[] revAuthResourceList = new String[]{}; //this.getFilesFromDir(Constants.REVOCATION_STORAGE_FOLDER, "revocation_authority");
-            String[] inspectorResourceList = new String[]{}; //this.getFilesFromDir(Constants.INSPECTOR_STORAGE_FOLDER, "inspector");
-
-            String[] issuerParamsResourceList = new String[]{}; //this.getFilesFromDir(Constants.ISSUER_RESOURCES_FOLDER, "issuer_params");
+           
 
 
-            VerificationHelper.initInstance(CryptoEngine.BRIDGED,
-                    issuerParamsResourceList, credSpecResources,
-                    inspectorResourceList, revAuthResourceList,
-                    fileStoragePrefix, StorageModuleFactory.getModulesForServiceConfiguration(
+            VerificationHelper.initInstance(CryptoEngine.IDEMIX,
+                    StorageModuleFactory.getModulesForServiceConfiguration(
                             ServiceType.VERIFICATION));
         }
     }

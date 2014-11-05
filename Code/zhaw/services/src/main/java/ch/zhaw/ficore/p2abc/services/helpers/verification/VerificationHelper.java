@@ -82,29 +82,15 @@ public class VerificationHelper extends AbstractHelper {
 
     public static synchronized VerificationHelper initInstance(
             CryptoEngine cryptoEngine,
-            String[] issuerParamsResourceList,
-            String[] credSpecResourceList,
-            String[] inspectorPublicKeyResourceList,
-            String[] revocationAuthorityParametersResourceList,
-            String fileStoragePrefix,
             Module[] modules,
             String... presentationPolicyResourceList) throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException("initInstance can only be called once!");
         }
         System.out.println("VerificationHelper.initInstance ([])");
-        instance = new VerificationHelper(cryptoEngine, fileStoragePrefix,
+        instance = new VerificationHelper(cryptoEngine,
                 modules);
-        //
-        //instance.setSystemParams(systemParamsResource);
-        instance.addCredentialSpecifications(credSpecResourceList);
-        instance.addIssuerParameters(issuerParamsResourceList);
-        instance.checkIfSystemParametersAreLoaded();
-        instance.addInspectorPublicKeys(inspectorPublicKeyResourceList);
-        //
-        instance.addPresentationPolicy(presentationPolicyResourceList);
-        //
-        instance.addRevocationAuthorities(instance.keyManager, revocationAuthorityParametersResourceList);
+
 
         System.out.println("VerificationHelper.initInstance : DONE");
 
@@ -117,25 +103,6 @@ public class VerificationHelper extends AbstractHelper {
      */
     public static synchronized boolean isInit() {
         return instance != null;
-    }
-
-    /**
-     * Only used in test - can reset static instance
-     */
-    public static synchronized void resetInstance() {
-        System.err.println("WARNING VerificationHelper.resetInstance : " + instance);
-        if((instance!=null) && (instance.uproveBindingManager != null) ) {
-            System.err.println("WARNING VerificationHelper.resetInstance - Stop UProve Servicd");
-            try {
-                // try to stop uprove engine/service if running...
-                //                @SuppressWarnings("unused")
-                //                int exitCode = instance.uproveBindingManager.stop();
-            } catch(Exception ignore) {
-                System.err.println("Failed to stop UProve service : " + ignore);
-            }
-        }
-
-        instance = null;
     }
 
     /**
@@ -155,8 +122,7 @@ public class VerificationHelper extends AbstractHelper {
     private TokenStorage tokenStorage;
 
 
-    // needed for 'reset'
-    private UProveBindingManager uproveBindingManager = null;
+
 
     /**
      * holds map resources by filename (without path) and the bytes of resource
@@ -176,20 +142,11 @@ public class VerificationHelper extends AbstractHelper {
      * @param fileStoragePrefix
      * @throws URISyntaxException
      */
-    private VerificationHelper(CryptoEngine cryptoEngine,
-            String fileStoragePrefix, Module... modules)
+    private VerificationHelper(CryptoEngine cryptoEngine, Module... modules)
                     throws URISyntaxException {
-        System.out.println("VerificationHelper : create instance " + cryptoEngine + " : "
-                + fileStoragePrefix);
+        System.out.println("VerificationHelper : create instance " + cryptoEngine);
         this.cryptoEngine = cryptoEngine;
         try {
-            UProveUtils uproveUtils = new UProveUtils();
-
-            /*AbceConfigurationImpl configuration = this.setupStorageFilesForConfiguration(fileStoragePrefix, cryptoEngine);
-            configuration.setUProvePathToExe(new UProveUtils().getPathToUProveExe().getAbsolutePath());
-            configuration.setUProvePortNumber(uproveUtils.getVerifierServicePort());
-            configuration.setUProveNumberOfCredentialsToGenerate(-1);
-            configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT);*/ //commented out by munt: I hate files and uprove
 
             Module newModule = ProductionModuleFactory.newModule(
                     cryptoEngine);
@@ -206,7 +163,7 @@ public class VerificationHelper extends AbstractHelper {
             this.tokenStorage = injector.getInstance(TokenStorage.class);
 
             if((cryptoEngine == CryptoEngine.UPROVE) || (cryptoEngine == CryptoEngine.BRIDGED)) {
-                this.uproveBindingManager = injector.getInstance(UProveBindingManager.class);
+               throw new RuntimeException("We only support Idemix. Sorry :(");
             }
 
         } catch (Exception e) {
@@ -216,21 +173,6 @@ public class VerificationHelper extends AbstractHelper {
         }
     }
 
-
-    /**
-     * Adds extra policy resorces to VerificationHelper
-     * 
-     * @param presentationPolicyResourceList
-     */
-    public void addPresentationPolicy(String[] presentationPolicyResourceList) {
-        System.out.println("VerificationHelper addPresentationPolicy from resoucres : "
-                + presentationPolicyResourceList);
-        ArrayList<String> list = new ArrayList<String>();
-        for (String r : presentationPolicyResourceList) {
-            list.add(r);
-        }
-        this.addPresentationPolicy(list);
-    }
 
     /**
      * Adds extra policy resorces to VerificationHelper
@@ -255,46 +197,7 @@ public class VerificationHelper extends AbstractHelper {
         return modifiedPresentationPolicy;
     }
 
-    /**
-     * Adds extra policy resorces to VerificationHelper
-     * 
-     * @param presentationPolicyResourceList
-     */
-    public void addPresentationPolicy(ArrayList<String> presentationPolicyResourceList) {
-        System.out.println("VerificationHelper addPresentationPolicy from resoucres : "
-                + presentationPolicyResourceList);
-        String current = null;
-        try {
-
-            for (String resource : presentationPolicyResourceList) {
-                current = resource;
-                int ix = resource.lastIndexOf("/");
-                String key = resource;
-                if (ix != -1) {
-                    key = resource.substring(ix + 1);
-                }
-                System.out.println(" - add policy : " + key + " - resource : " + resource);
-
-                byte[] b = new byte[1];
-                InputStream is = FileSystem.getInputStream(resource);
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                while (is.read(b) != -1) {
-                    os.write(b);
-                }
-                byte[] policyBytes = os.toByteArray();
-                @SuppressWarnings("unused")
-                PresentationPolicyAlternatives presentationPolicy =
-                (PresentationPolicyAlternatives) XmlUtils.getObjectFromXML(new ByteArrayInputStream(
-                        policyBytes), false);
-                // ok...
-                this.policyResouceMap.put(key, policyBytes);
-            }
-        } catch (Exception e) {
-            System.err.println("Init Failed - policy : " + current);
-            e.printStackTrace();
-            throw new IllegalStateException("Init Failed - policy ! : " + current, e);
-        }
-    }
+   
 
     /**
      * @param policyName name of policy resource (without path)
@@ -482,6 +385,9 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      */
     private PresentationToken getPatchedPresetationToken(String orig) throws Exception {
+        /**
+         * FIXME: What the hell is this doing and what the hell is it doing it for? -- munt
+         */
         String patched =
                 orig.replace("ConstantValue xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\"",
                         "ConstantValue");
@@ -494,23 +400,7 @@ public class VerificationHelper extends AbstractHelper {
 
     }
 
-    /**
-     * @param policyName name of policy resource (without path)
-     * @param applicationData if present - will be inserted on all presentation policies - must match
-     *        application data supplied when creating Policy
-     * @param presentationTokenXml as String
-     * @return
-     * @throws Exception
-     */
-    public boolean verifyToken_String(String policyName, byte[] nonce, String applicationData,
-            String presentationTokenXml) throws Exception {
-        System.out.println("VerificationHelper - verify token String: " + policyName
-                + " - applicationData : " + applicationData + " - token : " + presentationTokenXml);
-
-        PresentationPolicyAlternatives pp =
-                this.createPresentationPolicy(policyName, nonce, applicationData, null);
-        return this.verifyToken(pp, this.getPatchedPresetationToken(presentationTokenXml));
-    }
+   
 
     /**
      * @param policyName name of policy resource (without path)
@@ -557,20 +447,7 @@ public class VerificationHelper extends AbstractHelper {
         return revInfoUIDs;
     }
 
-    /**
-     * @param ppXml PresentationPolicyAlternatives as String
-     * @param presentationTokenXml as String
-     * @return
-     * @throws Exception
-     */
-    public boolean verifyToken_String(String ppaXml, String presentationTokenXml) throws Exception {
-
-        PresentationPolicyAlternatives ppa =
-                (PresentationPolicyAlternatives) XmlUtils.getObjectFromXML(
-                        new ByteArrayInputStream(ppaXml.getBytes()), true);
-
-        return this.verifyToken(ppa, this.getPatchedPresetationToken(presentationTokenXml));
-    }
+   
 
     /**
      * @param ppa PresentationPolicyAlternatives
@@ -603,23 +480,6 @@ public class VerificationHelper extends AbstractHelper {
     }
 
 
-    public void registerSmartcardScopeExclusivePseudonym(BigInteger pse) throws IOException {
-        String primaryKey = DatatypeConverter.printBase64Binary(pse.toByteArray());
-        this.registerSmartcardScopeExclusivePseudonym(primaryKey);
-    }
-    public void registerSmartcardScopeExclusivePseudonym(byte[] pseValueAsBytes) throws IOException {
-        String primaryKey = DatatypeConverter.printBase64Binary(pseValueAsBytes);
-        this.registerSmartcardScopeExclusivePseudonym(primaryKey);
-    }
-    public void registerSmartcardScopeExclusivePseudonym(String b64Encoded_pseudonymValue) throws IOException {
-        String primaryKey = b64Encoded_pseudonymValue;
-
-        if(! this.tokenStorage.checkForPseudonym(primaryKey)) {
-            System.out.println("registerSmartcardScopeExclusivePseudonym - register new pseudonym  - PseudonymPrimaryKey : " + primaryKey);
-            this.tokenStorage.addPseudonymPrimaryKey(primaryKey);
-        } else {
-            System.out.println("registerSmartcardScopeExclusivePseudonym - already registered");
-        }
-    }
+    
 
 }
