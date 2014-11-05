@@ -109,12 +109,7 @@ public class IssuanceHelper extends AbstractHelper {
         return instance;
     }
 
-    public static synchronized StorageFiles verifyFiles(
-            boolean wipe_existing_storage, String fileStoragePrefix,
-            CryptoEngine cryptoEngine) throws Exception {
-        String v = getFileStoragePrefix(fileStoragePrefix, cryptoEngine);
-        return AbstractHelper.verifyFiles(wipe_existing_storage, v);
-    }
+    
 
     /**
      * Private constructor
@@ -145,50 +140,6 @@ public class IssuanceHelper extends AbstractHelper {
 
         this.random = new SecureRandom();
     }
-
-
-    public static synchronized IssuanceHelper initInstanceWithExitingSystemPareters(CryptoEngine cryptoEngine, String systemParametersResource, String[] foreignCredSpecResourceList, String[] foreignIssuerParamResourceList, String systemAndIssuerParamsPrefix, String fileStoragePrefix,
-            SpecAndPolicy[] specAndPolicyList,
-            String[] revocationAuthorityParametersResourcesList)
-                    throws URISyntaxException {
-
-
-        if (instance != null) {
-            throw new IllegalStateException("initInstance can only be called once!");
-        }
-        log.info("IssuanceHelper.initInstance(Array)");
-
-        ArrayList<SpecAndPolicy> list = new ArrayList<SpecAndPolicy>();
-        for (SpecAndPolicy sap : specAndPolicyList) {
-            list.add(sap);
-        }
-
-        instance =
-                new IssuanceHelper(cryptoEngine, systemParametersResource,
-                        systemAndIssuerParamsPrefix, fileStoragePrefix,
-                        revocationAuthorityParametersResourcesList, list);
-
-        if(cryptoEngine == CryptoEngine.BRIDGED) {
-            instance.keyManager = instance.idemixKeyManager;
-            instance.addCredentialSpecifications(foreignCredSpecResourceList);
-            instance.addIssuerParameters(foreignIssuerParamResourceList);
-            instance.keyManager = instance.uproveKeyManager;
-            instance.addCredentialSpecifications(foreignCredSpecResourceList);
-            instance.addIssuerParameters(foreignIssuerParamResourceList);
-        } else if(cryptoEngine == CryptoEngine.IDEMIX) {
-            instance.keyManager = instance.idemixKeyManager;
-            instance.addCredentialSpecifications(foreignCredSpecResourceList);
-            instance.addIssuerParameters(foreignIssuerParamResourceList);
-        } else if(cryptoEngine == CryptoEngine.UPROVE) {
-            instance.keyManager = instance.uproveKeyManager;
-            instance.addCredentialSpecifications(foreignCredSpecResourceList);
-            instance.addIssuerParameters(foreignIssuerParamResourceList);
-        } else {
-            instance.addIssuerParameters(foreignIssuerParamResourceList);
-        }
-        return instance;
-    }
-
 
 
     /**
@@ -232,57 +183,6 @@ public class IssuanceHelper extends AbstractHelper {
 
     private CredentialManager credentialManager;
 
-    /**
-     * Private constructor
-     * 
-     * @param fileStoragePrefix
-     *            this prefix will be prepended on storage files needed by the
-     *            IssuerAbcEnginge
-     * @param specAndPolicyList
-     *            list of CredentialSpecifications + IssuancePolices
-     * @param createNewSystemParametersIfNoneExists
-     * @throws URISyntaxException
-     */
-    private IssuanceHelper(CryptoEngine cryptoEngine, String systemParametersResource, String systemAndIssuerParamsPrefix,
-            String fileStoragePrefix,
-            String[] revocationAuthorityParametersResourcesList,
-            ArrayList<SpecAndPolicy> specAndPolicyList)
-                    throws URISyntaxException {
-        IssuanceHelper.log.info("IssuanceHelper : create instance " + cryptoEngine
-                + " : "
-                + fileStoragePrefix + " : " + specAndPolicyList);
-
-        this.cryptoEngine = cryptoEngine;
-        this.systemAndIssuerParamsPrefix = systemAndIssuerParamsPrefix;
-        this.fileStoragePrefix = fileStoragePrefix;
-        if(systemParametersResource==null) {
-            this.systemParametersResource = this.fileStoragePrefix + SYSTEM_PARAMS_NAME_BRIDGED;
-        } else {
-            this.systemParametersResource = systemParametersResource;
-        }
-        try {
-            UProveUtils uproveUtils = new UProveUtils();
-
-            switch (cryptoEngine) {
-            case BRIDGED: throw new RuntimeException("We only support Idemix. Sorry :(");
-
-            default:
-                AbceConfigurationImpl configuration = this.setupSingleEngine(
-                        cryptoEngine,
-                        revocationAuthorityParametersResourcesList,
-                        specAndPolicyList, uproveUtils);
-
-                this.random = configuration.getPrng(); // new SecureRandom(); // new Random(1985);
-                break;
-            }
-
-
-        } catch (Exception e) {
-            System.err.println("Init Failed");
-            e.printStackTrace();
-            throw new IllegalStateException("Could not setup issuer !", e);
-        }
-    }
 
     private void setupSingleEngineForService(
             CryptoEngine cryptoEngine, UProveUtils uproveUtils,
@@ -324,66 +224,6 @@ public class IssuanceHelper extends AbstractHelper {
                 revocationAuthorityParametersResourcesList);
     }
 
-    private AbceConfigurationImpl setupSingleEngine(CryptoEngine cryptoEngine,
-            String[] revocationAuthorityParametersResourcesList,
-            ArrayList<SpecAndPolicy> specAndPolicyList,
-            UProveUtils uproveUtils)
-                    throws Exception {
-        AbceConfigurationImpl configuration = this.setupConfiguration(
-                cryptoEngine, uproveUtils,
-                cryptoEngine);
-
-
-        Injector injector = Guice.createInjector(ProductionModuleFactory.newModule(configuration, cryptoEngine));
-        IssuerAbcEngine eng = injector.getInstance(IssuerAbcEngine.class);
-        this.singleEngine = new SynchronizedIssuerAbcEngineImpl(eng);
-        if(cryptoEngine==CryptoEngine.UPROVE) {
-            throw new RuntimeException("We only support Idemix. Sorry :(");
-        }
-
-        this.keyManager = injector.getInstance(KeyManager.class);
-        IssuerAbcEngine engine = this.singleEngine;
-
-        this.credentialManager = injector
-                .getInstance(CredentialManager.class);
-
-        this.initSystemAndIssuerParams(this.keyManager,
-                revocationAuthorityParametersResourcesList,
-                specAndPolicyList,
-                cryptoEngine, injector, engine, this.credentialManager);
-
-        return configuration;
-    }
-
-
-    private void setupIdemixEngine(CryptoEngine cryptoEngine,
-            String[] revocationAuthorityParametersResourcesList,
-            ArrayList<SpecAndPolicy> specAndPolicyList,
-            UProveUtils uproveUtils)
-                    throws Exception {
-        CryptoEngine specificCryptoEngine = CryptoEngine.IDEMIX;
-        AbceConfigurationImpl configuration = this.setupConfiguration(
-                cryptoEngine, uproveUtils,
-                specificCryptoEngine);
-
-        //
-        Injector injector = Guice
-                .createInjector(ProductionModuleFactory.newModule(
-                        configuration, specificCryptoEngine));
-        IssuerAbcEngine engine = injector
-                .getInstance(IssuerAbcEngine.class);
-        this.idemixEngine = new SynchronizedIssuerAbcEngineImpl(engine);
-
-        this.credentialManager = injector
-                .getInstance(CredentialManager.class);
-
-        this.idemixKeyManager = injector.getInstance(KeyManager.class);
-        engine = this.idemixEngine;
-        this.initSystemAndIssuerParams(this.idemixKeyManager,
-                revocationAuthorityParametersResourcesList, specAndPolicyList,
-                specificCryptoEngine, injector, engine, this.credentialManager);
-    }
-
     private void initSystemAndIssuerParams(KeyManager keyManager,
             String[] revocationAuthorityParametersResourcesList,
             ArrayList<SpecAndPolicy> specAndPolicyList,
@@ -399,44 +239,6 @@ public class IssuanceHelper extends AbstractHelper {
                 .getInstance(TokenStorageIssuer.class));
         this.addRevocationAuthorities(keyManager,
                 revocationAuthorityParametersResourcesList);
-    }
-
-
-    private AbceConfigurationImpl setupConfiguration(CryptoEngine cryptoEngine,
-            UProveUtils uproveUtils, CryptoEngine specificCryptoEngine)
-                    throws Exception {
-        
-        new Throwable().printStackTrace();
-        
-        AbceConfigurationImpl configuration = new AbceConfigurationImpl();
-        configuration.setPrng(new java.security.SecureRandom());/*this
-                .setupStorageFilesForConfiguration(IssuanceHelper.getFileStoragePrefix(
-                        this.fileStoragePrefix, specificCryptoEngine),
-                        cryptoEngine);*/ //--munt
-        configuration.setUProvePathToExe(new UProveUtils().getPathToUProveExe()
-                .getAbsolutePath());
-        configuration.setUProvePortNumber(uproveUtils.getIssuerServicePort());
-        configuration
-        .setUProveNumberOfCredentialsToGenerate(UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE);
-        configuration.setUProveRetryTimeout(UPROVE_SERVICE_TIMEOUT);
-        return configuration;
-    }
-
-    public static String getFileStoragePrefix(String filePrefix,
-            CryptoEngine cryptoEngine) {
-        if((filePrefix!=null) && (filePrefix.length()>0)) {
-            if(filePrefix.endsWith("_")) {
-                return filePrefix + ("" +cryptoEngine).toLowerCase() + "_";
-            } else {
-                if(filePrefix.endsWith("/") || filePrefix.endsWith("\\")) {
-                    // this is a folder...
-                    return filePrefix + ("" +cryptoEngine).toLowerCase() + "_";
-                } else {
-                    return filePrefix + ("_" +cryptoEngine).toLowerCase() + "_";
-                }
-            }
-        }
-        return ("" +cryptoEngine).toLowerCase();
     }
 
     private SystemParameters generatedSystemParameters = null;
