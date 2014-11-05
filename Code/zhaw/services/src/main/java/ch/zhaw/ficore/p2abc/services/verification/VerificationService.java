@@ -71,6 +71,7 @@ import eu.abc4trust.xml.util.XmlUtils;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,6 +80,7 @@ import org.apache.logging.log4j.Logger;
 public class VerificationService {
 
     private final Logger log = LogManager.getLogger();
+    private final static String errMagicCookie = "Magic cookie is not correct!";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -113,62 +115,73 @@ public class VerificationService {
 
     @Path("/verifyTokenAgainstPolicy")
     @POST()
-    @Produces({MediaType.TEXT_XML})
-    public JAXBElement<PresentationTokenDescription> verifyTokenAgainstPolicy(JAXBElement<PresentationPolicyAlternativesAndPresentationToken> ppaAndpt, @QueryParam("store") String storeString) throws TokenVerificationException, CryptoEngineException{
-        boolean store = false;
-        if ((storeString != null) && storeString.toUpperCase().equals("TRUE")) {
-            store = true;
-        }
-        VerificationHelper verficationHelper = VerificationHelper.getInstance();
-        URI uid = URI
-                .create("http://mroman.ch/RoomReservation/issuance:idemix");
+    public Response verifyTokenAgainstPolicy(JAXBElement<PresentationPolicyAlternativesAndPresentationToken> ppaAndpt, @QueryParam("store") String storeString) throws TokenVerificationException, CryptoEngineException{
+        log.entry();
+        
         try {
-            IssuerParameters ip = verficationHelper.keyManager
-                    .getIssuerParameters(uid);
-            String s = XmlUtils.toXml(this.of.createIssuerParameters(ip));
-            System.out.println(s);
-        } catch (KeyManagerException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        } catch (JAXBException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        } catch (SAXException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
+        
+            boolean store = false;
+            if ((storeString != null) && storeString.toUpperCase().equals("TRUE")) {
+                store = true;
+            }
+            VerificationHelper verficationHelper = VerificationHelper.getInstance();
+            
+            PresentationPolicyAlternativesAndPresentationToken value = ppaAndpt.getValue();
+            PresentationPolicyAlternatives presentationPolicyAlternatives = value.getPresentationPolicyAlternatives();
+            PresentationToken presentationToken = value.getPresentationToken();
+            PresentationTokenDescription ptd = verficationHelper.engine.verifyTokenAgainstPolicy(presentationPolicyAlternatives, presentationToken, store);
+            return log.exit(Response.ok(of.createPresentationTokenDescription(ptd),
+                    MediaType.APPLICATION_XML).build());
         }
-        PresentationPolicyAlternativesAndPresentationToken value = ppaAndpt.getValue();
-        PresentationPolicyAlternatives presentationPolicyAlternatives = value.getPresentationPolicyAlternatives();
-        PresentationToken presentationToken = value.getPresentationToken();
-        PresentationTokenDescription ptd = verficationHelper.engine.verifyTokenAgainstPolicy(presentationPolicyAlternatives, presentationToken, store);
-        return this.of.createPresentationTokenDescription(ptd);
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
+        }
     }
 
     @Path("/getToken")
     @GET()
-    @Produces({MediaType.TEXT_XML})
-    public JAXBElement<PresentationToken> getToken(@QueryParam("tokenUID") URI tokenUid){
+    public Response getToken(@QueryParam("tokenUID") URI tokenUid){
+        log.entry();
+        
+        try {
         VerificationHelper verificationHelper = VerificationHelper.getInstance();
         PresentationToken pt = verificationHelper.engine.getToken(tokenUid);
-        return this.of.createPresentationToken(pt);
+        return log.exit(Response.ok(of.createPresentationToken(pt),
+                MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
+        }
     }
 
     @Path("/deleteToken")
     @POST()
-    @Produces({MediaType.TEXT_XML})
-    public JAXBElement<Boolean> deleteToken(@QueryParam("tokenUID") URI tokenUid){
-        boolean result = VerificationHelper.getInstance().engine.deleteToken(tokenUid);
-        JAXBElement<Boolean> jaxResult = new JAXBElement<Boolean>(new QName("deleteToken"), Boolean.TYPE, result);
-        return jaxResult;
+    public Response deleteToken(@QueryParam("tokenUID") URI tokenUid){
+        log.entry();
+        
+        try {
+            boolean result = VerificationHelper.getInstance().engine.deleteToken(tokenUid);
+            JAXBElement<Boolean> jaxResult = new JAXBElement<Boolean>(new QName("deleteToken"), Boolean.TYPE, result);
+            return log.exit(Response.ok(jaxResult, MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
+        }
     }
 
     @POST()
-    @Path("/storeSystemParameters/")
+    @Path("/storeSystemParameters/{magicCookie}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeSystemParameters(
+    public Response storeSystemParameters(@PathParam("magicCookie") String magicCookie,
             SystemParameters systemParameters) {
-        this.log.info("VerificationService - storeSystemParameters ");
+        
+        log.entry();
+        
+        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return log.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
         try {
             VerificationHelper verificationHelper = VerificationHelper
@@ -180,21 +193,27 @@ public class VerificationService {
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
     }
 
     @PUT()
-    @Path("/storeIssuerParameters/{issuerParametersUid}")
+    @Path("/storeIssuerParameters/{magicCookie}/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeIssuerParameters(
+    public Response storeIssuerParameters(
+            @PathParam("magicCookie") String magicCookie, 
             @PathParam("issuerParametersUid") URI issuerParametersUid,
             IssuerParameters issuerParameters) {
-        this.log.info("VerificationService - storeIssuerParameters ");
+        
+        log.entry();
+        
+        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return log.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
         this.log.info("VerificationService - storeIssuerParameters - issuerParametersUid: "
                 + issuerParametersUid
@@ -211,40 +230,28 @@ public class VerificationService {
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
 
-            try {
-                IssuerParameters ip = keyManager
-                        .getIssuerParameters(issuerParametersUid);
-                String s = XmlUtils.toXml(this.of.createIssuerParameters(ip));
-                System.out.println(s);
-            } catch (KeyManagerException ex) {
-                // TODO Auto-generated catch block
-                ex.printStackTrace();
-            } catch (JAXBException ex) {
-                // TODO Auto-generated catch block
-                ex.printStackTrace();
-            } catch (SAXException ex) {
-                // TODO Auto-generated catch block
-                ex.printStackTrace();
-            }
+            
 
             this.log.info("VerificationService - storeIssuerParameters - done ");
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
-
     }
 
     @GET()
     @Path("/createPresentationPolicy")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     @Produces(MediaType.TEXT_XML)
-    public JAXBElement<PresentationPolicyAlternatives> createPresentationPolicy(
+    public Response createPresentationPolicy(
             @PathParam("applicationData") String applicationData,
             PresentationPolicyAlternatives presentationPolicy) {
-        this.log.info("VerificationService - createPresentationPolicy ");
+        
+        log.entry();
 
         try {
             VerificationHelper verificationHelper = VerificationHelper
@@ -257,22 +264,27 @@ public class VerificationService {
                             applicationData, revocationInformationUids);
             this.log.info("VerificationService - createPresentationPolicy - done ");
 
-            return this.of
-                    .createPresentationPolicyAlternatives(modifiedPresentationPolicyAlternatives);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of
+                    .createPresentationPolicyAlternatives(modifiedPresentationPolicyAlternatives),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
     }
 
     @PUT()
-    @Path("/storeCredentialSpecification/{credentialSpecifationUid}")
+    @Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeCredentialSpecification(
+    public Response storeCredentialSpecification(
+            @PathParam("magicCookie") String magicCookie, 
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
-        this.log.info("VerificationService - storeCredentialSpecification ");
+        log.entry();
+        
+        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return log.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
 
         try {
             VerificationHelper verificationHelper = VerificationHelper
@@ -286,88 +298,13 @@ public class VerificationService {
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
-    }
-
-    @PUT()
-    @Path("/storeRevocationAuthorityParameters/{revocationAuthorityParametersUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeRevocationAuthorityParameters(
-            @PathParam("revocationAuthorityParametersUid") URI revocationAuthorityParametersUid,
-            RevocationAuthorityParameters revocationAuthorityParameters) {
-        this.log.info("VerificationService - storeRevocationAuthorityParameters: \""
-                + revocationAuthorityParameters + "\"");
-
-        try {
-            VerificationHelper verificationHelper = VerificationHelper
-                    .getInstance();
-
-            KeyManager keyManager = verificationHelper.keyManager;
-
-            boolean r = keyManager.storeRevocationAuthorityParameters(
-                    revocationAuthorityParametersUid,
-                    revocationAuthorityParameters);
-
-            verificationHelper
-            .registerRevocationPublicKeyForIdemix(revocationAuthorityParameters);
-
-            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r);
-
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private String[] getFilesFromDir(String folderName, final String filter){
-        String[] resourceList;
-        URL url = AbstractHelper.class.getResource(folderName);
-        File folder = null;
-        if(url != null) {
-            folder = new File(url.getFile());
-        }else{
-            folder = new File(folderName);
-        }
-
-        File[] fileList = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File arg0, String arg1) {
-                if (arg1.indexOf(filter) != -1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-        if(fileList == null){
-            System.out.println("Folder "+folderName+" does not exist! \n Trying to continue without these resources");
-            return new String[0];
-        }
-
-
-        resourceList = new String[fileList.length];
-        for(int i=0; i<fileList.length; i++) {
-            resourceList[i] = fileList[i].getAbsolutePath();
-        }
-        return resourceList;
-    }
-
-    private boolean checkIfFileExists(String fileName){
-        URL url = AbstractHelper.class.getResource(fileName);
-        File f = null;
-        if(url != null){
-            f = new File(url.getFile());
-        }else{
-            f = new File(fileName);
-        }
-        return f.exists();
     }
 
 }

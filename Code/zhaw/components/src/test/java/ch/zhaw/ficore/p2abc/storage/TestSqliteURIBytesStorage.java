@@ -8,9 +8,10 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -33,15 +34,15 @@ public class TestSqliteURIBytesStorage {
     private static File storageFile;
     private static URI myUri;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         storageFile = File.createTempFile("test", "sql", new File("."));
         storage = new SqliteURIBytesStorage(storageFile.getPath(), table);
         myUri = new URI("http://www.zhaw.ch");
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         storage.close();
         storageFile.delete();
     }
@@ -73,6 +74,7 @@ public class TestSqliteURIBytesStorage {
         SqliteURIBytesStorage storage2 = new SqliteURIBytesStorage(storageFile.getPath(), table);
         storage.put("zhaw.ch", "winterthur".getBytes());
         assertTrue(Arrays.equals(storage2.get("zhaw.ch"), "winterthur".getBytes()));
+        List<Thread> threads = new ArrayList<Thread>();
         for(int i = 0; i < MAX_I; i++) {
             for(int j = 0; j < MAX_J; j++) {
                 Thread thrd1 = new Thread() {
@@ -107,12 +109,13 @@ public class TestSqliteURIBytesStorage {
                 };
                 thrd1.start();
                 thrd2.start();
-                thrd1.join();
-                thrd2.join();
+                threads.add(thrd1);
+                threads.add(thrd2);
             }
-            for(int j = 0; j < MAX_J; j++)
-                assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
             assertTrue(Arrays.equals(storage.get("zhaw.ch"), "123".getBytes()));
+        }
+        for(Thread thrd : threads) {
+            thrd.join();
         }
         storage2.close();
         for(int j = 0; j < MAX_J; j++)
