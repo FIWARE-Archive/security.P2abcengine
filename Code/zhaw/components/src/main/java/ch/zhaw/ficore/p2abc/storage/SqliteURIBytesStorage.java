@@ -94,8 +94,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 
         try {
             PoolProperties p = new PoolProperties();
-            p.setUrl("jdbc:sqlite:" + filePath);
-            p.setDriverClassName("org.sqlite.JDBC");
+            p.setUrl("jdbc:zsqlite:" + filePath);
+            p.setDriverClassName("ch.zhaw.ficore.p2abc.storage.SqliteJDBC");
             DataSource datasource = new DataSource(p);
 
             assert datasource != null;
