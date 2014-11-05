@@ -128,7 +128,7 @@ public class TestSqliteURIBytesStorage {
         assertFalse(storage.putNew("foobar", "barfoo".getBytes()));
     }
     
-    @Ignore
+    @Test
     public void testURIString() throws Exception {
         storage.put("http://zhaw.ch/foo bar", new byte[]{1,2,3});
         storage.put("http://zhaw.ch/foo%20bar", new byte[]{5,4,3});
@@ -142,7 +142,7 @@ public class TestSqliteURIBytesStorage {
         assertTrue(keys.size() == 2);
     }
     
-    @Ignore
+    @Test
     public void testValuesAndKeys() throws Exception {
         storage.put(new URI("urn:foobar"), new byte[]{1,9,9});
         storage.put(new URI("urn:barfoo"), new byte[]{0,0,0});
