@@ -146,16 +146,6 @@ public class IssuanceHelper extends AbstractHelper {
     }
 
 
-
-    public static synchronized IssuanceHelper initInstance(CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix, String fileStoragePrefix,
-            SpecAndPolicy[] specAndPolicyList,
-            String[] revocationAuthorityParametersResourcesList)
-                    throws URISyntaxException {
-        // wit null's its still top level issuer...
-        return initInstanceWithExitingSystemPareters(cryptoEngine, null, new String[0], new String[0], systemAndIssuerParamsPrefix, fileStoragePrefix,
-                specAndPolicyList,
-                revocationAuthorityParametersResourcesList);
-    }
     public static synchronized IssuanceHelper initInstanceWithExitingSystemPareters(CryptoEngine cryptoEngine, String systemParametersResource, String[] foreignCredSpecResourceList, String[] foreignIssuerParamResourceList, String systemAndIssuerParamsPrefix, String fileStoragePrefix,
             SpecAndPolicy[] specAndPolicyList,
             String[] revocationAuthorityParametersResourcesList)
@@ -207,22 +197,6 @@ public class IssuanceHelper extends AbstractHelper {
         return instance != null;
     }
 
-    /**
-     * Only used in test - can reset static instance
-     */
-    public static synchronized void resetInstance() {
-        System.err.println("WARNING IssuanceHelper.resetInstance : " + instance);
-        if((instance!=null) && (instance.uproveBindingManager != null) ) {
-            try {
-                // try to stop uprove engine/service if running...
-                //                instance.uproveBindingManager.stop();
-            } catch(Exception ignore) {
-                System.err.println("Failed to stop UProve service : " + ignore);
-            }
-
-        }
-        instance = null;
-    }
 
     /**
      * @return initialized instance of IssuanceHelper
@@ -240,8 +214,6 @@ public class IssuanceHelper extends AbstractHelper {
     private IssuerAbcEngine uproveEngine = null;
     private IssuerAbcEngine idemixEngine = null;
 
-    // needed for 'reset'
-    private UProveBindingManager uproveBindingManager = null;
 
     private final Map<String, SpecAndPolicy> specAndPolicyMap = new HashMap<String, SpecAndPolicy>();
 
@@ -291,22 +263,7 @@ public class IssuanceHelper extends AbstractHelper {
             UProveUtils uproveUtils = new UProveUtils();
 
             switch (cryptoEngine) {
-            case BRIDGED: {
-                this.setupIdemixEngine(cryptoEngine,
-                        revocationAuthorityParametersResourcesList,
-                        specAndPolicyList, uproveUtils);
-            }
-            {
-                AbceConfigurationImpl configuration = this
-                        .setupUProveEngine(cryptoEngine,
-                                revocationAuthorityParametersResourcesList,
-                                specAndPolicyList, uproveUtils);
-
-                this.random = configuration.getPrng(); // new
-                // SecureRandom(); //
-                // new Random(1985);
-            }
-            break;
+            case BRIDGED: throw new RuntimeException("We only support Idemix. Sorry :(");
 
             default:
                 AbceConfigurationImpl configuration = this.setupSingleEngine(
@@ -346,8 +303,7 @@ public class IssuanceHelper extends AbstractHelper {
         this.singleEngine = new SynchronizedIssuerAbcEngineImpl(engine);
 
         if (cryptoEngine == CryptoEngine.UPROVE) {
-            this.uproveBindingManager = injector
-                    .getInstance(UProveBindingManager.class);
+            throw new RuntimeException("We only support Idemix. Sorry :(");
         }
 
         this.keyManager = injector.getInstance(KeyManager.class);
@@ -386,7 +342,7 @@ public class IssuanceHelper extends AbstractHelper {
         IssuerAbcEngine eng = injector.getInstance(IssuerAbcEngine.class);
         this.singleEngine = new SynchronizedIssuerAbcEngineImpl(eng);
         if(cryptoEngine==CryptoEngine.UPROVE) {
-            this.uproveBindingManager = injector.getInstance(UProveBindingManager.class);
+            throw new RuntimeException("We only support Idemix. Sorry :(");
         }
 
         this.keyManager = injector.getInstance(KeyManager.class);
@@ -430,39 +386,6 @@ public class IssuanceHelper extends AbstractHelper {
         this.initSystemAndIssuerParams(this.idemixKeyManager,
                 revocationAuthorityParametersResourcesList, specAndPolicyList,
                 specificCryptoEngine, injector, engine, this.credentialManager);
-    }
-
-    private AbceConfigurationImpl setupUProveEngine(CryptoEngine cryptoEngine,
-            String[] revocationAuthorityParametersResourcesList,
-            ArrayList<SpecAndPolicy> specAndPolicyList, UProveUtils uproveUtils)
-                    throws Exception {
-        CryptoEngine specificCryptoEngine = CryptoEngine.UPROVE;
-        AbceConfigurationImpl configuration = this
-                .setupConfiguration(cryptoEngine,
-                        uproveUtils,
-                        specificCryptoEngine);
-
-
-        Injector injector = Guice
-                .createInjector(ProductionModuleFactory.newModule(
-                        configuration, specificCryptoEngine));
-        IssuerAbcEngine engine = injector
-                .getInstance(IssuerAbcEngine.class);
-        this.uproveEngine = new SynchronizedIssuerAbcEngineImpl(
-                engine);
-
-        this.uproveBindingManager = injector
-                .getInstance(UProveBindingManager.class);
-
-        this.credentialManager = injector
-                .getInstance(CredentialManager.class);
-
-        this.uproveKeyManager = injector.getInstance(KeyManager.class);
-        engine = this.uproveEngine;
-        this.initSystemAndIssuerParams(this.uproveKeyManager,
-                revocationAuthorityParametersResourcesList, specAndPolicyList,
-                specificCryptoEngine, injector, engine, this.credentialManager);
-        return configuration;
     }
 
     private void initSystemAndIssuerParams(KeyManager keyManager,
