@@ -101,7 +101,7 @@ public class UserService {
 
     private final ObjectFactory of = new ObjectFactory();
 
-    private Logger log = LogManager.getLogger(UserService.class.getName());
+    private Logger log = LogManager.getLogger();
 
     private final String fileStoragePrefix = ""; //no prefix -- munt
     
@@ -123,11 +123,10 @@ public class UserService {
     @POST()
     @Path("/canBeSatisfied/")
     @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> canBeSatisfied(
+    public Response canBeSatisfied(
             PresentationPolicyAlternatives p) {
-        this.log.info("UserService - canBeSatisfied ");
-
+        log.entry();
+        
         this.initializeHelper();
 
         UserHelper instance = UserHelper.getInstance();
@@ -136,10 +135,11 @@ public class UserService {
             boolean b = instance.getEngine().canBeSatisfied(p);
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(b);
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(this.of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        } catch (Exception ex) {
+            log.catching(ex);
+            return log.exit(Response.serverError().build());
         }
     }
 
@@ -170,10 +170,9 @@ public class UserService {
     @POST()
     @Path("/createPresentationToken/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<UiPresentationArguments> createPresentationToken(
+    public Response createPresentationToken(
             PresentationPolicyAlternatives p) {
-        this.log.info("UserService - createPresentationToken ");
+        log.entry();
 
         this.initializeHelper();
 
@@ -182,16 +181,11 @@ public class UserService {
         DummyForNewABCEInterfaces d = null;
         try {
             UiPresentationArguments uiPresentationArguments = instance.getEngine().createPresentationToken(p, d);
-            return ObjectFactoryReturnTypes.wrap(uiPresentationArguments);
-        } catch (CannotSatisfyPolicyException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (KeyManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(ObjectFactoryReturnTypes.wrap(uiPresentationArguments),
+                    MediaType.APPLICATION_XML).build());
+        } catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
 
     }
@@ -199,10 +193,10 @@ public class UserService {
     @POST()
     @Path("/createPresentationTokenUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<PresentationToken> createPresentationToken(
+    public Response createPresentationToken(
             UiPresentationReturn upr) {
-        this.log.info("UserService - createPresentationTokenUi ");
+        
+        log.entry();
 
         this.initializeHelper();
 
@@ -213,13 +207,12 @@ public class UserService {
         try {
             PresentationToken presentationToken = instance.getEngine()
                     .createPresentationToken(upr);
-            return this.of.createPresentationToken(presentationToken);
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (CryptoEngineException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createPresentationToken(presentationToken),
+                    MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
     }
 
@@ -263,10 +256,10 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStep/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<IssuanceReturn> issuanceProtocolStep(
+    public Response issuanceProtocolStep(
             JAXBElement<IssuanceMessage> jm) {
-        this.log.info("UserService - issuanceProtocolStep - IssuanceMessage");
+        
+        log.entry();
 
         this.initializeHelper();
 
@@ -278,32 +271,22 @@ public class UserService {
         try {
             IssuanceReturn issuanceReturn = instance.getEngine()
                     .issuanceProtocolStep(m, d);
-            return ObjectFactoryReturnTypes.wrap(issuanceReturn);
-        } catch (CannotSatisfyPolicyException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (CryptoEngineException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (KeyManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(ObjectFactoryReturnTypes.wrap(issuanceReturn),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
-
     }
 
     @POST()
     @Path("/issuanceProtocolStepUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<IssuanceMessage> issuanceProtocolStep(
+    public Response issuanceProtocolStep(
             UiIssuanceReturn uir) {
 
-        this.log.info("UserService - issuanceProtocolStep - UiIssuanceReturn");
-        ;
+        log.entry();
 
         this.initializeHelper();
 
@@ -312,41 +295,14 @@ public class UserService {
         try {
             IssuanceMessage issuanceMessage = instance.getEngine()
                     .issuanceProtocolStep(uir);
-            return new ObjectFactory().createIssuanceMessage(issuanceMessage);
-        } catch (CryptoEngineException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(new ObjectFactory().createIssuanceMessage(issuanceMessage),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
     }
-
-
-    /**
-     * This method updates the non-revocation evidence associated to all
-     * credentials in the credential store. Calling this method at regular time
-     * intervals reduces the likelihood of having to update non-revocation
-     * evidence at the time of presentation, thereby not only speeding up the
-     * presentation process, but also offering improved privacy as the
-     * Revocation Authority is no longer “pinged” at the moment of presentation.
-     * 
-     
-    @POST()
-    @Path("/updateNonRevocationEvidence/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public void updateNonRevocationEvidence() {
-        this.log.info("UserService - updateNonRevocationEvidence ");
-
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        try {
-            instance.credentialManager.updateNonRevocationEvidence();
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }*/ //commented out by munt: Revocation and Inspection is disabled for now due to possible issues. 
 
     /**
      * This method returns an array of all unique credential identifiers (UIDs)
@@ -357,9 +313,8 @@ public class UserService {
     @GET()
     @Path("/listCredentials/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<URISet> listCredentials() {
-        this.log.info("UserService - listCredentials ");
+    public Response listCredentials() {
+        log.entry();
 
         this.initializeHelper();
 
@@ -371,12 +326,13 @@ public class UserService {
 
             URISet uriList = this.of.createURISet();
             uriList.getURI().addAll(credentialUids);
-            return this.of.createURISet(uriList);
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createURISet(uriList),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
-
     }
 
     /**
@@ -391,10 +347,9 @@ public class UserService {
     @GET()
     @Path("/getCredentialDescription/{credentialUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<CredentialDescription> getCredentialDescription(
+    public Response getCredentialDescription(
             @PathParam("credentialUid") URI credUid) {
-        this.log.info("UserService - getCredentialDescription ");
+        log.entry();
 
         this.initializeHelper();
 
@@ -404,61 +359,14 @@ public class UserService {
             CredentialDescription credDesc = instance.credentialManager
                     .getCredentialDescription(credUid);
 
-            return this.of.createCredentialDescription(credDesc);
+            return log.exit(Response.ok(of.createCredentialDescription(credDesc),
+                    MediaType.APPLICATION_XML).build());
 
         } catch (CredentialManagerException ex) {
             throw new WebApplicationException(ex,
                     Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
-    /*
-    @POST()
-    @Path("/createSmartcard/{issuerParametersUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public void createSmartcard(
-            @PathParam("issuerParametersUid") URI issuerParametersUid) {
-        this.log.info("UserService - getCredentialDescription ");
-
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        try {
-            Parser xmlSerializer = Parser.getInstance();
-            Random random = new SecureRandom();
-
-            KeyManager keyManager = instance.keyManager;
-            SystemParameters systemParameters = keyManager
-                    .getSystemParameters();
-
-            Element gpAsElement = (Element) systemParameters.getAny().get(1);
-
-            GroupParameters gp = (GroupParameters) xmlSerializer
-                    .parse(gpAsElement);
-
-            systemParameters.getAny().add(1, gp);
-
-            SecretWrapper secretWrapper = new SecretWrapper(
-                    CryptoEngine.IDEMIX, random, systemParameters);
-            IssuerParameters issuerParameters = keyManager
-                    .getIssuerParameters(issuerParametersUid);
-            secretWrapper.addIssuerParameters(issuerParameters);
-            BasicSmartcard softwareSmartcard = secretWrapper
-                    .getSoftwareSmartcard();
-
-            instance.cardStorage.addSmartcard(softwareSmartcard, 1234);
-
-            File file = new File(this.fileStoragePrefix + File.separatorChar
-                    + "smartcard");
-            SmartcardInitializeTool.storeObjectInFile(softwareSmartcard, file);
-
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }*/ //commented out by munt: We use SecretBasedSmartcards. 
 
 
     /**
@@ -472,10 +380,9 @@ public class UserService {
     @DELETE()
     @Path("/deleteCredential/{credentialUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> deleteCredential(
+    public Response deleteCredential(
             @PathParam("credentialUid") URI credentialUid) {
-        this.log.info("UserService - deleteCredential \"" + credentialUid + "\"");
+        log.entry();
 
         this.initializeHelper();
 
@@ -488,22 +395,22 @@ public class UserService {
                     .createABCEBoolean();
             createABCEBoolean.setValue(r);
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
-
     }
 
     @PUT()
     @Path("/storeCredentialSpecification/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeCredentialSpecification(
+    public Response storeCredentialSpecification(
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
-        this.log.info("UserService - storeCredentialSpecification ");
+        log.entry();
 
         try {
             this.initializeHelper();
@@ -519,20 +426,21 @@ public class UserService {
                     .createABCEBoolean();
             createABCEBoolean.setValue(r);
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
     }
 
     @POST()
     @Path("/storeSystemParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeSystemParameters(
+    public Response storeSystemParameters(
             SystemParameters systemParameters) {
-        this.log.info("UserService - storeSystemParameters ");
+        log.entry();
 
         try {
             this.initializeHelper();
@@ -551,21 +459,23 @@ public class UserService {
                 instance.loadSystemParameters();
             }
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
+        } 
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
         }
     }
 
     @PUT()
     @Path("/storeIssuerParameters/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeIssuerParameters(
+    public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
             IssuerParameters issuerParameters) {
-        this.log.info("UserService - storeIssuerParameters ");
+        
+        log.entry();
 
         this.log.info("UserService - storeIssuerParameters - issuerParametersUid: "
                 + issuerParametersUid
@@ -587,45 +497,14 @@ public class UserService {
 
             this.log.info("UserService - storeIssuerParameters - done ");
 
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
         }
-
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
+        }
     }
-
-    /*
-    @PUT()
-    @Path("/storeRevocationAuthorityParameters/{revocationAuthorityParametersUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<ABCEBoolean> storeRevocationAuthorityParameters(
-            @PathParam("revocationAuthorityParametersUid") URI revocationAuthorityParametersUid,
-            RevocationAuthorityParameters revocationAuthorityParameters) {
-        this.log.info("UserService - storeRevocationAuthorityParameters: \""
-                + revocationAuthorityParameters + "\"");
-
-        try {
-            this.initializeHelper();
-
-            UserHelper instance = UserHelper.getInstance();
-            
-            KeyManager keyManager = instance.keyManager;
-
-            boolean r = keyManager.storeRevocationAuthorityParameters(
-                    revocationAuthorityParametersUid,
-                    revocationAuthorityParameters);
-
-            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r);
-
-            return this.of.createABCEBoolean(createABCEBoolean);
-        } catch (Exception ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }*/ //commented out by munt: Revocation and Inspection is disabled for now due to possible issues. 
 
 
     private void initializeHelper() {
@@ -660,27 +539,30 @@ public class UserService {
             ex.printStackTrace();
         }
         UserHelper instance = UserHelper.getInstance();
-        //URI uid = URI
-        //       .create("http://ticketcompany/MyFavoriteSoccerTeam/issuance:idemix");
-        //new UserDebugger(instance).validate(uid);
     }
 
     @POST()
     @Path("/extractIssuanceMessage/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
-    public JAXBElement<IssuanceMessage> extractIssuanceMessage(
+    public Response extractIssuanceMessage(
             IssuanceMessageAndBoolean issuanceMessageAndBoolean)
-                    throws JAXBException, SAXException, ParserConfigurationException,
-                    IOException {
-        IssuanceMessage issuanceMessage = issuanceMessageAndBoolean
-                .getIssuanceMessage();
-
-        ObjectFactory of = new ObjectFactory();
-
-        // String issuanceMessageAsXML = XmlUtils.toNormalizedXML(of
-        // .createIssuanceMessage(issuanceMessage));
-        return of.createIssuanceMessage(issuanceMessage);
+                    {
+        log.entry();
+        
+        try {
+        
+            IssuanceMessage issuanceMessage = issuanceMessageAndBoolean
+                    .getIssuanceMessage();
+    
+            ObjectFactory of = new ObjectFactory();
+    
+            return log.exit(Response.ok(of.createIssuanceMessage(issuanceMessage),
+                    MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.serverError().build());
+        }
     }
 
 

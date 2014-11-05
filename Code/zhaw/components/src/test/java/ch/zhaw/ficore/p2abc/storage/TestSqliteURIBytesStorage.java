@@ -5,13 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Tests basic functions of SQLite URI storage.
@@ -23,11 +24,15 @@ import org.junit.Test;
  * @version 1.0
  */
 public class TestSqliteURIBytesStorage {
+    private static final int MAX_I = 10;
+
+    private static final int MAX_J = 10;
+
     private static final String table = "TestTable";
 
-    private SqliteURIBytesStorage storage;
-    private File storageFile;
-    private URI myUri;
+    private static SqliteURIBytesStorage storage;
+    private static File storageFile;
+    private static URI myUri;
 
     @Before
     public void setUp() throws Exception {
@@ -38,6 +43,7 @@ public class TestSqliteURIBytesStorage {
 
     @After
     public void tearDown() throws Exception {
+        storage.close();
         storageFile.delete();
     }
 
@@ -68,44 +74,51 @@ public class TestSqliteURIBytesStorage {
         SqliteURIBytesStorage storage2 = new SqliteURIBytesStorage(storageFile.getPath(), table);
         storage.put("zhaw.ch", "winterthur".getBytes());
         assertTrue(Arrays.equals(storage2.get("zhaw.ch"), "winterthur".getBytes()));
-        for(int i = 0; i < 10; i++) {
-            for(int j = 0; j < 10; j++) {
+        List<Thread> threads = new ArrayList<Thread>();
+        for(int i = 0; i < MAX_I; i++) {
+            for(int j = 0; j < MAX_J; j++) {
                 Thread thrd1 = new Thread() {
+                    @Override
                     public void run() {
+                        SqliteURIBytesStorage myStorage;
                         try {
-                            SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+                            myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
                             myStorage.put("zhaw.ch", "123".getBytes());
                             myStorage.close();
-                        }
-                        catch(Exception e) {
-                            
+                        } catch (ClassNotFoundException | SQLException
+                                | UnsafeTableNameException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
                         }
                     }
                 };
                 final int v = j;
                 Thread thrd2 = new Thread() {
+                    @Override
                     public void run() {
                         try {
                             SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
                             myStorage.put("zhaw.ch/"+v, "234".getBytes());
                             myStorage.close();
-                        }
-                        catch(Exception e) {
-                            
+                        } catch (ClassNotFoundException | SQLException
+                                | UnsafeTableNameException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
                         }
                     }
                 };
                 thrd1.start();
                 thrd2.start();
-                thrd1.join();
-                thrd2.join();
+                threads.add(thrd1);
+                threads.add(thrd2);
             }
-            for(int j = 0; j < 10; j++)
-                assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
             assertTrue(Arrays.equals(storage.get("zhaw.ch"), "123".getBytes()));
         }
+        for(Thread thrd : threads) {
+            thrd.join();
+        }
         storage2.close();
-        for(int j = 0; j < 10; j++)
+        for(int j = 0; j < MAX_J; j++)
             assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
     }
     
