@@ -90,6 +90,7 @@ import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.SecretWrapper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,7 +109,8 @@ public class UserService {
     @GET()
     @Path("/status/")
     public Response status() {
-        return Response.ok().build();
+        return ExceptionDumper.dumpException(new RuntimeException("hi"), log);
+        //return Response.ok().build();
     }
 
     /**
@@ -139,7 +141,7 @@ public class UserService {
                     MediaType.APPLICATION_XML).build());
         } catch (Exception ex) {
             log.catching(ex);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(ex, log));
         }
     }
 
