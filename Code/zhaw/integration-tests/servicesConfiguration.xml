@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration magic-cookie="*magic*">
+    <issuance-configuration>
+        <attribute-source>FAKE</attribute-source>
+        <attribute-connection>
+            <server-name>localhost</server-name>
+            <server-port>10389</server-port>
+            <authentication-method>simple</authentication-method>
+            <user>uid=admin, ou=system</user>
+            <password>secret</password>
+            <use-tls>false</use-tls>
+        </attribute-connection>
+        <identity-source>FAKE</identity-source>
+        <identity-connection>
+            <server-name>localhost</server-name>
+            <server-port>10389</server-port>
+            <authentication-method>simple</authentication-method>
+            <user>uid=admin, ou=system</user>
+            <password>secret</password>
+            <use-tls>false</use-tls>
+        </identity-connection>
+        <bind-query>(cn=_UID_)</bind-query>
+    </issuance-configuration>
+    <sqlite-storage-configuration>
+        <db-file-path>/tmp/p2abc.db</db-file-path>
+    </sqlite-storage-configuration>
+</configuration>

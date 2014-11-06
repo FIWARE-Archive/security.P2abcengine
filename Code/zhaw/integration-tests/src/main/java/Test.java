@@ -21,12 +21,32 @@ public class Test {
         testUserStatus();
         testIssuanceStatus();
         testVerificationStatus();
-        testAttributeInfoCollection();
+        
+        /* Ok, if we are here all services are at least running */
+        
+        /* Get an attributeInfoCollection and convert it to a credentialSpecification */
+        String attributeInfoCollection = testAttributeInfoCollection();
+        String credSpec = testGenCredSpec(attributeInfoCollection);
 
         System.out.println("I'm done!");
     }
     
-    public static void testAttributeInfoCollection() {
+    public static String testGenCredSpec(String attributeInfoCollection) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "genCredSpec/" + magic + "/");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, attributeInfoCollection);
+        
+        assertTrue(response.getStatus() == 200);
+        
+        return response.getEntity(String.class);
+    }
+    
+    public static String testAttributeInfoCollection() {
         Client client = Client.create();
 
         WebResource webResource = client
@@ -35,6 +55,8 @@ public class Test {
         ClientResponse response = webResource.get(ClientResponse.class);
 
         assertTrue(response.getStatus() == 200);
+        
+        return response.getEntity(String.class);
     }
 
     public static void testUserStatus() {
