@@ -9,17 +9,32 @@ public class Test {
     private static String userServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/user/";
     private static String verificationServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/verification/";
     private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
+    
+    private static String magic = "*magic*";
 
     public static void main(String[] args) {
         System.out.println("hi there");
 
-
-
+        /* Test if all three services are running by calling /status/
+         * on each service and expecting a 200 response.
+         */
         testUserStatus();
         testIssuanceStatus();
         testVerificationStatus();
+        testAttributeInfoCollection();
 
         System.out.println("I'm done!");
+    }
+    
+    public static void testAttributeInfoCollection() {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "attributeInfoCollection/" + magic + "/test");
+
+        ClientResponse response = webResource.get(ClientResponse.class);
+
+        assertTrue(response.getStatus() == 200);
     }
 
     public static void testUserStatus() {

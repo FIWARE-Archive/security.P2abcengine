@@ -375,14 +375,19 @@ public class LdapIssuanceService {
 	@Path("/attributeInfoCollection/{magicCookie}/{name}")
 	public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
 			@PathParam("name") String name) {
-		
-		IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-		AttributeInfoProvider attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
-		
-		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
-
-		return Response.ok(attribInfoProvider.getAttributes(name), MediaType.APPLICATION_XML).build();
+		try {
+    		IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
+    		AttributeInfoProvider attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
+    		
+    		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+    			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+    
+    		return Response.ok(attribInfoProvider.getAttributes(name), MediaType.APPLICATION_XML).build();
+		}
+		catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
 	}
 
 	/**
@@ -405,9 +410,16 @@ public class LdapIssuanceService {
 		if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
 			return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
 
+		try {
+		
 		return Response.ok(of.createCredentialSpecification(new CredentialSpecGenerator().
 				generateCredentialSpecification(attrInfoCol)),
 				MediaType.APPLICATION_XML).build();
+		}
+		catch(Exception e) {
+		    logger.catching(e);
+		    return logger.exit(ExceptionDumper.dumpException(e, logger));
+		}
 	}
 	
 

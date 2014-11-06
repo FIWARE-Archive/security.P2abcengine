@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,8 +53,9 @@ public class ServicesConfiguration {
     private UserConfiguration userConfiguration;
 
     /** Storage configuration. */
-    @XmlElement(name="storage-configuration")
-    // TODO: make more generic -- munt
+    @XmlElements({
+        @XmlElement(type=SqliteStorageConfiguration.class, name="sqlite-storage-configuration")
+    })
     private StorageConfiguration storageConfiguration;
 
     private static Logger logger = LogManager.getLogger();
@@ -123,7 +125,7 @@ public class ServicesConfiguration {
     }
 
     /** Private do-nothing constructor to prevent construction of instances. */
-    private ServicesConfiguration () {
+    public ServicesConfiguration () {
         storageConfiguration = new SqliteStorageConfiguration();
     }
 
