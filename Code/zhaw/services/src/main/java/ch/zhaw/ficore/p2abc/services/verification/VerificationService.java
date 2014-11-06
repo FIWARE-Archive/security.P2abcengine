@@ -22,10 +22,7 @@
 
 package ch.zhaw.ficore.p2abc.services.verification;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 //import java.util.logging.Logger;
@@ -38,23 +35,23 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
-import org.xml.sax.SAXException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.google.inject.Module;
-
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
+import ch.zhaw.ficore.p2abc.services.ServiceType;
+import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
-import eu.abc4trust.keyManager.KeyManagerException;
-import eu.abc4trust.ri.servicehelper.AbstractHelper;
 //import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
@@ -64,18 +61,7 @@ import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationPolicyAlternativesAndPresentationToken;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.PresentationTokenDescription;
-import eu.abc4trust.xml.RevocationAuthorityParameters;
 import eu.abc4trust.xml.SystemParameters;
-import eu.abc4trust.xml.util.XmlUtils;
-
-import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
-import ch.zhaw.ficore.p2abc.services.ServiceType;
-import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
-import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Path("/verification")
 public class VerificationService {

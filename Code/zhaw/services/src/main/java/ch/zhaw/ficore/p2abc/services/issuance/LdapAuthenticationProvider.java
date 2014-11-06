@@ -1,5 +1,9 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchResult;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,9 +12,6 @@ import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
-
-import javax.naming.*;
-import javax.naming.directory.*;
 
 
 

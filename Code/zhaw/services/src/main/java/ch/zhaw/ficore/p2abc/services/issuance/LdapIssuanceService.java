@@ -1,7 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
@@ -18,29 +16,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
-import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration.IdentitySource;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.LanguageValuePair;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;

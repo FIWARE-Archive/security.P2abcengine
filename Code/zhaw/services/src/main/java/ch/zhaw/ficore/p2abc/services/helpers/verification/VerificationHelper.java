@@ -23,20 +23,14 @@
 package ch.zhaw.ficore.p2abc.services.helpers.verification;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBElement;
 
 import com.google.inject.Guice;
@@ -47,16 +41,12 @@ import com.google.inject.util.Modules;
 import eu.abc4trust.abce.external.verifier.SynchronizedVerifierAbcEngineImpl;
 import eu.abc4trust.abce.external.verifier.VerifierAbcEngine;
 import eu.abc4trust.abce.internal.verifier.tokenManager.TokenStorage;
-import eu.abc4trust.cryptoEngine.uprove.util.UProveBindingManager;
-import eu.abc4trust.cryptoEngine.uprove.util.UProveUtils;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
-import eu.abc4trust.guice.configuration.AbceConfigurationImpl;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
-import eu.abc4trust.ri.servicehelper.FileSystem;
 import eu.abc4trust.xml.ApplicationData;
 import eu.abc4trust.xml.CredentialInPolicy;
 import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives;

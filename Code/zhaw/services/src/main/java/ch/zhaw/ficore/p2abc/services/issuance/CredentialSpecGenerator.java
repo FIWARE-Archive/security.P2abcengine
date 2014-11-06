@@ -1,15 +1,16 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.issuance.xml.*;
+import java.net.URI;
+import java.util.List;
 
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.LanguageValuePair;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.ObjectFactory;
-
-import java.net.URI;
-import java.util.*;
 
 /**
  * Class providing functionality to generate a
