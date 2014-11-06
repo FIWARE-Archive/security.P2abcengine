@@ -105,6 +105,12 @@ public class VerificationService {
                             ServiceType.VERIFICATION));
         }
     }
+    
+    @GET()
+    @Path("/status/")
+    public Response status() {
+        return Response.ok().build();
+    }
 
     @Path("/verifyTokenAgainstPolicy")
     @POST()

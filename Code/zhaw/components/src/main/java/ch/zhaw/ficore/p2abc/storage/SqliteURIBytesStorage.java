@@ -361,25 +361,14 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * Put (and possibly replace) an entry to the storage
      */
     
-    private static boolean inUse = false;
-    private static Connection lastConnection = null;
     
     public void put(String key, byte[] bytes) throws SQLException {
         logger.entry(key, bytes);
 
         synchronized(getLock(this)) {
-            if(inUse) {
-                throw new RuntimeException("FATAL! THIS SHOULD NEVER HAPPEN! " + (databaseConnection == lastConnection) + ";" + databaseConnection +"," + lastConnection);
-            }
-            else {
-                inUse = true;
-                lastConnection = databaseConnection;
-            }
             
             if(putNew(key, bytes)) { //putNew returns true if it added something
                 logger.exit();
-                inUse = false;
-                lastConnection = null;
                 return;
             }
 
@@ -400,12 +389,8 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             }
             catch(Exception e) {
                 logger.catching(e);
-                inUse = false;
-                lastConnection = null;
                 throw logger.throwing(new RuntimeException("Storage failure!"));
             }
-            inUse = false;
-            lastConnection = null;
         }
         logger.exit();
     }
