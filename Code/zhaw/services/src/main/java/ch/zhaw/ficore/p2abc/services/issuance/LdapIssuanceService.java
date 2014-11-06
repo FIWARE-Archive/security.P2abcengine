@@ -33,6 +33,7 @@ import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration.IdentitySource;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
@@ -60,7 +61,7 @@ import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.SystemParameters;
 //from Code/core-abce/abce-services (COPY)
 
-@Path("/ldap-issuance-service")
+@Path("/issuance")
 public class LdapIssuanceService {
 	@Context
 	ServletContext context;
@@ -122,7 +123,7 @@ public class LdapIssuanceService {
 	    }
 	    catch(Exception e) {
 	        logger.catching(e);
-	        return logger.exit(Response.serverError().build());
+	        return logger.exit(ExceptionDumper.dumpException(e, logger));
 	    }
 	}
 	
@@ -219,7 +220,7 @@ public class LdapIssuanceService {
 		}
 		catch(Exception e) {
 			logger.catching(e);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(e, logger));
 		}
 	}
 
@@ -259,7 +260,7 @@ public class LdapIssuanceService {
 		}
 		catch(Exception e) {
 			logger.catching(e);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(e, logger));
 		}
 	}
 	
@@ -295,7 +296,7 @@ public class LdapIssuanceService {
 		}
 		catch(Exception e) {
 			logger.catching(e);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(e, logger));
 		}
 	}
 
@@ -335,7 +336,7 @@ public class LdapIssuanceService {
 		}
 		catch(Exception e) {
 			logger.catching(e);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(e, logger));
 		}
 	}
 
@@ -496,7 +497,7 @@ public class LdapIssuanceService {
 					Response.ok(of.createABCEBoolean(createABCEBoolean), MediaType.APPLICATION_XML).build());
 		} catch (Exception ex) {
 			logger.catching(ex);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(ex, logger));
 		}
 	}
 
@@ -541,7 +542,7 @@ public class LdapIssuanceService {
 		} 
 		catch(Exception ex) {
 			logger.catching(ex);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(ex, logger));
 		}
 	}
 
@@ -613,7 +614,7 @@ public class LdapIssuanceService {
 		}
 		catch(Exception e) {
 			logger.catching(e);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(e, logger));
 		}
 	}
 
@@ -736,7 +737,7 @@ public class LdapIssuanceService {
 		}
 		catch(Exception e) {
 			logger.catching(e);
-			return logger.exit(Response.serverError().build());
+			return logger.exit(ExceptionDumper.dumpException(e, logger));
 		}
     }
 
@@ -846,7 +847,7 @@ public class LdapIssuanceService {
         }
         catch(Exception e) {
         	logger.catching(e);
-        	return logger.exit(Response.serverError().build());
+        	return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
 
     }
@@ -929,7 +930,7 @@ public class LdapIssuanceService {
         }
         catch(Exception e) {
         	logger.catching(e);
-        	return logger.exit(Response.serverError().build());
+        	return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 

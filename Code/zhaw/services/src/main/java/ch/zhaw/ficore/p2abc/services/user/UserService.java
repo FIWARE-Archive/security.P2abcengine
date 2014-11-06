@@ -109,8 +109,7 @@ public class UserService {
     @GET()
     @Path("/status/")
     public Response status() {
-        return ExceptionDumper.dumpException(new RuntimeException("hi"), log);
-        //return Response.ok().build();
+        return Response.ok().build();
     }
 
     /**
@@ -187,7 +186,7 @@ public class UserService {
                     MediaType.APPLICATION_XML).build());
         } catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
 
     }
@@ -214,7 +213,7 @@ public class UserService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -278,7 +277,7 @@ public class UserService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -302,7 +301,7 @@ public class UserService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -333,7 +332,7 @@ public class UserService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -402,7 +401,7 @@ public class UserService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -433,7 +432,7 @@ public class UserService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -466,7 +465,7 @@ public class UserService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -504,7 +503,7 @@ public class UserService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -563,7 +562,7 @@ public class UserService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
