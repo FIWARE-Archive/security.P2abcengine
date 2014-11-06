@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.configuration;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -90,7 +91,7 @@ public class ServicesConfiguration {
      * transmitting the magic cookie. 
      */
     @XmlAttribute(name="magic-cookie")
-    public static String magicCookie = "*magic*";
+    private static String magicCookie = "*magic*";
 
     /**
      * Verifies the correctness of the magic cookie (i.e. if it matches
@@ -198,7 +199,7 @@ public class ServicesConfiguration {
     
     public static synchronized void saveTo(File f) {
         try {
-            PrintStream ps = new PrintStream(f);
+            PrintStream ps = new PrintStream(f, "UTF-8");
             saveTo(ps);
             ps.close();
         }
