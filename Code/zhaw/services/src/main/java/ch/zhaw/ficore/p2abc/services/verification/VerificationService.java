@@ -44,6 +44,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
@@ -113,7 +114,7 @@ public class VerificationService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -130,7 +131,7 @@ public class VerificationService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -146,7 +147,7 @@ public class VerificationService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -176,7 +177,7 @@ public class VerificationService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -217,7 +218,7 @@ public class VerificationService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -248,7 +249,7 @@ public class VerificationService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
@@ -281,7 +282,7 @@ public class VerificationService {
         } 
         catch(Exception e) {
             log.catching(e);
-            return log.exit(Response.serverError().build());
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
