@@ -24,12 +24,8 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -39,20 +35,18 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.ibm.zurich.idmx.utils.GroupParameters;
-import com.ibm.zurich.idmx.utils.Parser;
-
+import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
+import ch.zhaw.ficore.p2abc.services.ServiceType;
+import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 //import eu.abc4trust.abce.utils.SecretWrapper;
@@ -66,11 +60,6 @@ import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
-import eu.abc4trust.ri.servicehelper.AbstractHelper;
-//import eu.abc4trust.ri.servicehelper.user.UserHelper;
-//import eu.abc4trust.services.helpers.UserDebugger;
-import eu.abc4trust.smartcard.BasicSmartcard;
-import eu.abc4trust.smartcard.SmartcardInitializeTool;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialDescription;
@@ -81,19 +70,10 @@ import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
-import eu.abc4trust.xml.RevocationAuthorityParameters;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.URISet;
-import eu.abc4trust.xml.util.XmlUtils;
-
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.user.SecretWrapper;
-import ch.zhaw.ficore.p2abc.services.ServiceType;
-import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
-import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import eu.abc4trust.ri.servicehelper.user.UserHelper;
+//import eu.abc4trust.services.helpers.UserDebugger;
 
 @Path("/user")
 public class UserService {

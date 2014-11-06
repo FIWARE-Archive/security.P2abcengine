@@ -38,18 +38,12 @@ import eu.abc4trust.abce.external.user.SynchronizedUserAbcEngineImpl;
 import eu.abc4trust.abce.external.user.UserAbcEngine;
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManager;
 import eu.abc4trust.cryptoEngine.uprove.user.ReloadTokensCommunicationStrategy;
-import eu.abc4trust.cryptoEngine.uprove.util.UProveBindingManager;
-import eu.abc4trust.cryptoEngine.uprove.util.UProveSystemParameters;
-import eu.abc4trust.cryptoEngine.uprove.util.UProveUtils;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
-import eu.abc4trust.guice.configuration.AbceConfigurationImpl;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
-import eu.abc4trust.ri.servicehelper.SystemParametersHelper;
 import eu.abc4trust.smartcard.CardStorage;
 import eu.abc4trust.smartcardManager.AbcSmartcardManager;
-import eu.abc4trust.xml.SystemParameters;
 
 public class UserHelper extends AbstractHelper {
 

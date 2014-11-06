@@ -1,8 +1,9 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
+import java.net.URI;
+
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import eu.abc4trust.xml.IssuancePolicy;
-import java.net.URI;
 
 public interface IssuanceStorage {
 	

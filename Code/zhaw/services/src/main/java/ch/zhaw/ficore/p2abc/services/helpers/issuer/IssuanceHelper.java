@@ -24,23 +24,18 @@
 
 package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.security.SecureRandom;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.xml.bind.DatatypeConverter;
 
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 
@@ -54,14 +49,11 @@ import eu.abc4trust.abce.external.issuer.SynchronizedIssuerAbcEngineImpl;
 import eu.abc4trust.abce.internal.issuer.credentialManager.CredentialManager;
 import eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer;
 import eu.abc4trust.cryptoEngine.idemix.user.IdemixCryptoEngineUserImpl;
-import eu.abc4trust.cryptoEngine.uprove.util.UProveBindingManager;
 import eu.abc4trust.cryptoEngine.uprove.util.UProveUtils;
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModule;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
-import eu.abc4trust.guice.configuration.AbceConfigurationImpl;
-import eu.abc4trust.guice.configuration.StorageFiles;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
@@ -79,10 +71,6 @@ import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.SecretKey;
 import eu.abc4trust.xml.SystemParameters;
-import eu.abc4trust.xml.util.XmlUtils;
-
-
-import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 
 @SuppressWarnings("deprecation")
 public class IssuanceHelper extends AbstractHelper {

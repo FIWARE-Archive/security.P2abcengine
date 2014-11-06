@@ -1,16 +1,17 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
-import eu.abc4trust.xml.IssuancePolicy;
-import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
-
-import java.net.URI;
 import java.io.IOException;
+import java.net.URI;
+
+import org.apache.commons.lang.SerializationUtils;
+
+import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import org.apache.commons.lang.SerializationUtils;
+import eu.abc4trust.xml.IssuancePolicy;
 
 public class GenericIssuanceStorage implements IssuanceStorage {
 	

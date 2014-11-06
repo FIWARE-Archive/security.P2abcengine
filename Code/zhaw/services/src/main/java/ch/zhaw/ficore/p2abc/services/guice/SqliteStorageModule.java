@@ -5,10 +5,10 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.issuance.GenericIssuanceStorage;
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericIssuerCredentialStorage;
-import ch.zhaw.ficore.p2abc.storage.GenericUserCredentialStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericSecretStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericTokenStorageIssuer;
+import ch.zhaw.ficore.p2abc.storage.GenericUserCredentialStorage;
 import ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
