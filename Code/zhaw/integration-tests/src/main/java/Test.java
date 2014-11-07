@@ -11,7 +11,7 @@ public class Test {
     private static String verificationServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/verification/";
     private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
     private static String credSpecName = "test";
-    private static String credSpecURI = "urn%3Aprivacy%3Afiware%3Atest";
+    private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
     
     private static String magic = "*magic*";
@@ -84,6 +84,9 @@ public class Test {
         /* Store SystemParameters at User and Verifier */
         testStoreSysParamsAtUser(systemParameters);
         testStoreSysParamsAtVerifier(systemParameters);
+        
+        /* Setup IssuerParameters */
+        String issuerParameters = testSetupIssuerParametersIssuer(readTextFile("issuerParametersInput.xml"));
 
         System.out.println("I'm done!");
     }
@@ -105,6 +108,20 @@ public class Test {
         }
     }
     
+    public static String testSetupIssuerParametersIssuer(String input) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "setupIssuerParameters/" + magic);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, input);
+        assertOk(response);
+        
+        return response.getEntity(String.class);
+    }
+    
     public static void testStoreSysParamsAtUser(String sp) {
         Client client = Client.create();
 
@@ -114,7 +131,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, sp);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static void testStoreSysParamsAtVerifier(String sp) {
@@ -126,7 +143,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, sp);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static void testStoreCredSpecAtUser(String credSpec) {
@@ -138,7 +155,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, credSpec);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static void testStoreCredSpecAtVerifier(String credSpec) {
@@ -150,7 +167,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, credSpec);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static String testSetupSystemParametersIssuer() {
@@ -164,7 +181,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .post(ClientResponse.class);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -177,7 +194,7 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -191,7 +208,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, ip);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static String testGetQueryRuleFromIssuer() {
@@ -202,7 +219,7 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -216,7 +233,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, queryRule);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static String testGetCredSpecFromIssuer() {
@@ -227,7 +244,7 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -241,7 +258,7 @@ public class Test {
         
         ClientResponse response = webResource.type("application/xml")
                         .put(ClientResponse.class, credSpec);
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static String testAuthentication(String authRequest) {
@@ -253,7 +270,7 @@ public class Test {
         ClientResponse response = webResource.type("application/xml")
                 .post(ClientResponse.class, authRequest);
 
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -268,7 +285,7 @@ public class Test {
         ClientResponse response = webResource.type("application/xml")
                         .post(ClientResponse.class, attributeInfoCollection);
         
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -281,7 +298,7 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
         
         return response.getEntity(String.class);
     }
@@ -294,7 +311,7 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200);
+        assertOk(response);
     }
     
     public static void testIssuanceStatus() {
@@ -305,7 +322,7 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200);       
+        assertOk(response);       
     }
     
     public static void testVerificationStatus() {
@@ -316,7 +333,16 @@ public class Test {
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
-        assertTrue(response.getStatus() == 200); 
+        assertOk(response); 
+    }
+    
+    public static void assertOk(ClientResponse response) {
+        if(response.getStatus() != 200) {
+            System.out.println("-- NOT OK --");
+            System.out.println(response.getStatus());
+            System.out.println(response.getEntity(String.class));
+        }
+        assertTrue(response.getStatus() == 200);
     }
     
 }
