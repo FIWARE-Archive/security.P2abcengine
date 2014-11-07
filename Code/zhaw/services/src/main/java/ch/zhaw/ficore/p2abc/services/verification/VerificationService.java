@@ -228,10 +228,9 @@ public class VerificationService {
         }
     }
 
-    @GET()
+    @POST()
     @Path("/createPresentationPolicy")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces(MediaType.TEXT_XML)
     public Response createPresentationPolicy(
             @PathParam("applicationData") String applicationData,
             PresentationPolicyAlternatives presentationPolicy) {

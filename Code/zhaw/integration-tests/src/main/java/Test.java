@@ -111,7 +111,6 @@ public class Test {
         
         String uiIssuanceReturn = readTextFile("uiIssuanceReturn.xml");
         uiIssuanceReturn = replaceContextString(uiIssuanceReturn, contextString);
-        System.out.println(uiIssuanceReturn);
         
         String secondIssuanceMessage = testIssuanceStepUserUi1(uiIssuanceReturn);
         
@@ -121,6 +120,32 @@ public class Test {
         
         String fourthIssuanceMessageAndBoolean = testIssuanceStepUser2(thirdIssuanceMessage);
 
+        /* Verification stuff */
+        String presentationPolicyAlternatives = testCreatePresentationPolicy(
+                readTextFile("presentationPolicyAlternatives.xml"));
+        
+        String presentationReturn = testCreatePresentationToken(presentationPolicyAlternatives);
+        contextString = getContextString(presentationReturn);
+        System.out.println(contextString);
+        
+        String uiPresentationReturn = readTextFile("uiPresentationReturn.xml");
+        uiPresentationReturn = replaceContextString(uiPresentationReturn, contextString);
+
+        String presentationToken = testCreatePresentationTokenUi(uiPresentationReturn);
+        
+        String rPresentationToken = presentationToken.replaceAll("<\\?xml(.*)\\?>", "");
+        String rPresentationPolicyAlternatives = presentationPolicyAlternatives.replaceAll("<\\?xml(.*)\\?>", "");
+        String ppapt = "";
+        ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+        ppapt += "<PresentationPolicyAlternativesAndPresentationToken xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\" Version=\"1.0\">";
+        ppapt += rPresentationPolicyAlternatives;
+        ppapt += rPresentationToken;
+        ppapt += "</PresentationPolicyAlternativesAndPresentationToken>";
+        
+        
+        
+        String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
+        System.out.println(presentationTokenDescription);
     }
     
     public static String readTextFile(String path) {
@@ -149,6 +174,58 @@ public class Test {
     
     public static String replaceContextString(String input, String contextString) {
         return input.replaceAll("REPLACE-THIS-CONTEXT", contextString);
+    }
+    
+    public static String testVerifyTokenAgainstPolicy(String ppapt) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "verifyTokenAgainstPolicy");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, ppapt);
+        assertOk(response);
+        return response.getEntity(String.class);
+    }
+    
+    public static String testCreatePresentationTokenUi(String pr) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "createPresentationTokenUi");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, pr);
+        assertOk(response);
+        return response.getEntity(String.class);
+    }
+    
+    public static String testCreatePresentationToken(String ppa) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "createPresentationToken");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, ppa);
+        assertOk(response);
+        return response.getEntity(String.class);
+    }
+    
+    public static String testCreatePresentationPolicy(String ppa) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "createPresentationPolicy");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, ppa);
+        assertOk(response);
+        return response.getEntity(String.class);
     }
     
     public static String testIssuanceStepUser2(String im) {
