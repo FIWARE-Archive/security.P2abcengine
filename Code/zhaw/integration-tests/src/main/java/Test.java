@@ -10,6 +10,8 @@ public class Test {
     private static String userServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/user/";
     private static String verificationServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/verification/";
     private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
+    private static String credSpecName = "test";
+    private static String credSpecURI = "urn%3Aprivacy%3Afiware%3Atest";
     
     private static String magic = "*magic*";
 
@@ -46,7 +48,9 @@ public class Test {
         String credSpec = testGenCredSpec(attributeInfoCollection);
         
         /* Store credentialSpecification at issuer*/
-        //testStoreCredSpecAtIssuer(credSpec);
+        testStoreCredSpecAtIssuer(credSpec);
+        /* Get credentialSpecification at issuer */
+        testGetCredSpecFromIssuer();
 
         System.out.println("I'm done!");
     }
@@ -66,6 +70,31 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static String testGetCredSpecFromIssuer() {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "getCredentialSpecification/" + magic + "/" + credSpecURI);
+
+        ClientResponse response = webResource.get(ClientResponse.class);
+
+        assertTrue(response.getStatus() == 200);
+        
+        return response.getEntity(String.class);
+    }
+    
+    public static void testStoreCredSpecAtIssuer(String credSpec) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "storeCredentialSpecification/" + magic + "/" + credSpecURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, credSpec);
+        assertTrue(response.getStatus() == 200);
     }
     
     public static String testAuthentication(String authRequest) {
@@ -101,7 +130,7 @@ public class Test {
         Client client = Client.create();
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "attributeInfoCollection/" + magic + "/test");
+                .resource(issuanceServiceURL + "attributeInfoCollection/" + magic + "/" + credSpecName);
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
