@@ -1,0 +1,9 @@
+<issuance-request>
+	<auth-request>
+		<auth-info-simple>
+			<username>CaroleKing</username>
+			<password>Jazzman</password>
+		</auth-info-simple>
+	</auth-request>
+	<credential-specification-uid>urn:fiware:privacy:test</credential-specification-uid>
+</issuance-request>

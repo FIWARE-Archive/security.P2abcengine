@@ -91,6 +91,13 @@ public class Test {
         /* Store IssuerParameters at User and Verifier */
         testStoreIssParamsAtUser(issuerParameters);
         testStoreIssParamsAtVerifier(issuerParameters);
+        
+        /*
+         * Ok, phase two of setup is done (which means setup is done).
+         * Now the actual issuance protocol can take place. 
+         */
+        
+        String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("issuanceRequest.xml"));
 
         System.out.println("I'm done!");
     }
@@ -110,6 +117,19 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static String testIssuanceRequest(String ir) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "issuanceRequest");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, ir);
+        assertOk(response);
+        return response.getEntity(String.class);
     }
     
     public static void testStoreIssParamsAtUser(String p) {
