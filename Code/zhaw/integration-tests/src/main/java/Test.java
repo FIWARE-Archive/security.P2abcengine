@@ -27,6 +27,14 @@ public class Test {
      *    attribute source (because we check against hardcoded values used in the Fake*Providers.
      *    (Please don't change the values in Fake*Providers without reflecting the changes here
      *    and vice versa)). 
+     *    
+     * Notes:
+     * This integration test tests the whole flow from setup to generation of CredentialSpecification
+     * to IssuanceRequest to Verification. However, this test does not check any intermediate results
+     * (other than ensuring that the webservices responded with the correct status code) because this test assumes
+     * that if the final Verification process succeeds, the test was successful. In other words: This test will
+     * obtain a Credential from the Issuance service and verifies the obtained Credential against a
+     * PresentationPolicy at the Verification service. 
      */
     public static void main(String[] args) {
         System.out.println("hi there");
@@ -47,10 +55,13 @@ public class Test {
         String attributeInfoCollection = testAttributeInfoCollection();
         String credSpec = testGenCredSpec(attributeInfoCollection);
         
-        /* Store credentialSpecification at issuer*/
+        /* Store/Get credentialSpecification at issuer*/
         testStoreCredSpecAtIssuer(credSpec);
-        /* Get credentialSpecification at issuer */
         testGetCredSpecFromIssuer();
+        
+        /* Store/Get queryRule at issuer */
+        testStoreQueryRuleAtIssuer(readTextFile("queryRule.xml"));
+        testGetQueryRuleFromIssuer();
 
         System.out.println("I'm done!");
     }
@@ -70,6 +81,31 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static String testGetQueryRuleFromIssuer() {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "getQueryRule/" + magic + "/" + credSpecURI);
+
+        ClientResponse response = webResource.get(ClientResponse.class);
+
+        assertTrue(response.getStatus() == 200);
+        
+        return response.getEntity(String.class);
+    }
+    
+    public static void testStoreQueryRuleAtIssuer(String queryRule) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "storeQueryRule/" + magic + "/" + credSpecURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, queryRule);
+        assertTrue(response.getStatus() == 200);
     }
     
     public static String testGetCredSpecFromIssuer() {
