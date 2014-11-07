@@ -47,7 +47,9 @@ public class Test {
         testIssuanceStatus();
         testVerificationStatus();
         
-        /* Ok, if we are here all services are at least running */
+        /* 
+         * Ok, if we are here all services are at least running 
+         */
         
         /* Test authentication */
         testAuthentication(readTextFile("simpleAuth.xml"));
@@ -67,6 +69,17 @@ public class Test {
         /* Store/Get IssuancePolicy at issuer */
         testStoreIssuancePolicyAtIssuer(readTextFile("issuancePolicy.xml"));
         testGetIssuancePolicyFromIssuer();
+        
+        /*
+         * Ok, if we are here the first phase of setup is done. 
+         */
+        
+        /* Generate the SystemParameters */
+        String systemParameters = testSetupSystemParametersIssuer();
+        
+        /* Store CredentialSpecification at User and Verifier */
+        testStoreCredSpecAtUser(credSpec);
+        testStoreCredSpecAtVerifier(credSpec);
 
         System.out.println("I'm done!");
     }
@@ -86,6 +99,46 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static void testStoreCredSpecAtUser(String credSpec) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "storeCredentialSpecification/" + credSpecURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, credSpec);
+        assertTrue(response.getStatus() == 200);
+    }
+    
+    public static void testStoreCredSpecAtVerifier(String credSpec) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "storeCredentialSpecification/" + magic + "/" + credSpecURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, credSpec);
+        assertTrue(response.getStatus() == 200);
+    }
+    
+    public static String testSetupSystemParametersIssuer() {
+        String uri = "setupSystemParameters/" + magic + "/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix";
+        
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + uri);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class);
+        assertTrue(response.getStatus() == 200);
+        
+        return response.getEntity(String.class);
     }
     
     public static String testGetIssuancePolicyFromIssuer() {
