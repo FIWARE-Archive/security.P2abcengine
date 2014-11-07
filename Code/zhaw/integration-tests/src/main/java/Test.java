@@ -116,8 +116,10 @@ public class Test {
         String secondIssuanceMessage = testIssuanceStepUserUi1(uiIssuanceReturn);
         
         
-        String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer2(secondIssuanceMessage);
+        String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer1(secondIssuanceMessage);
         String thirdIssuanceMessage = testExtractIssuanceMessage(thirdIssuanceMessageAndBoolean);
+        
+        String fourthIssuanceMessageAndBoolean = testIssuanceStepUser2(thirdIssuanceMessage);
 
     }
     
@@ -149,7 +151,20 @@ public class Test {
         return input.replaceAll("REPLACE-THIS-CONTEXT", contextString);
     }
     
-    public static String testIssuanceStepIssuer2(String im) {
+    public static String testIssuanceStepUser2(String im) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "issuanceProtocolStep");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, im);
+        assertOk(response);
+        return response.getEntity(String.class);
+    }
+    
+    public static String testIssuanceStepIssuer1(String im) {
         Client client = Client.create();
 
         WebResource webResource = client
