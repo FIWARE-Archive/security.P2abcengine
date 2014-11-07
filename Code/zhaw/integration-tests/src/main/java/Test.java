@@ -87,6 +87,10 @@ public class Test {
         
         /* Setup IssuerParameters */
         String issuerParameters = testSetupIssuerParametersIssuer(readTextFile("issuerParametersInput.xml"));
+        
+        /* Store IssuerParameters at User and Verifier */
+        testStoreIssParamsAtUser(issuerParameters);
+        testStoreIssParamsAtVerifier(issuerParameters);
 
         System.out.println("I'm done!");
     }
@@ -106,6 +110,30 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static void testStoreIssParamsAtUser(String p) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "storeIssuerParameters/" + issuanceURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, p);
+        assertOk(response);
+    }
+    
+    public static void testStoreIssParamsAtVerifier(String p) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "storeIssuerParameters/" + magic +"/" + issuanceURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, p);
+        assertOk(response);
     }
     
     public static String testSetupIssuerParametersIssuer(String input) {
