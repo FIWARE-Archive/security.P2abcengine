@@ -80,6 +80,10 @@ public class Test {
         /* Store CredentialSpecification at User and Verifier */
         testStoreCredSpecAtUser(credSpec);
         testStoreCredSpecAtVerifier(credSpec);
+        
+        /* Store SystemParameters at User and Verifier */
+        testStoreSysParamsAtUser(systemParameters);
+        testStoreSysParamsAtVerifier(systemParameters);
 
         System.out.println("I'm done!");
     }
@@ -99,6 +103,30 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static void testStoreSysParamsAtUser(String sp) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "storeSystemParameters");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, sp);
+        assertTrue(response.getStatus() == 200);
+    }
+    
+    public static void testStoreSysParamsAtVerifier(String sp) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "storeSystemParameters/" + magic);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, sp);
+        assertTrue(response.getStatus() == 200);
     }
     
     public static void testStoreCredSpecAtUser(String credSpec) {
