@@ -12,6 +12,7 @@ public class Test {
     private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Aprivacy%3Afiware%3Atest";
+    private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
     
     private static String magic = "*magic*";
 
@@ -62,6 +63,10 @@ public class Test {
         /* Store/Get queryRule at issuer */
         testStoreQueryRuleAtIssuer(readTextFile("queryRule.xml"));
         testGetQueryRuleFromIssuer();
+        
+        /* Store/Get IssuancePolicy at issuer */
+        testStoreIssuancePolicyAtIssuer(readTextFile("issuancePolicy.xml"));
+        testGetIssuancePolicyFromIssuer();
 
         System.out.println("I'm done!");
     }
@@ -81,6 +86,31 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static String testGetIssuancePolicyFromIssuer() {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "getIssuancePolicy/" + magic + "/" + credSpecURI);
+
+        ClientResponse response = webResource.get(ClientResponse.class);
+
+        assertTrue(response.getStatus() == 200);
+        
+        return response.getEntity(String.class);
+    }
+    
+    public static void testStoreIssuancePolicyAtIssuer(String ip) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "storeIssuancePolicy/" + magic + "/" + credSpecURI);
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, ip);
+        assertTrue(response.getStatus() == 200);
     }
     
     public static String testGetQueryRuleFromIssuer() {

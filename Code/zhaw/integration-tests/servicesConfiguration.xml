@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<configuration magic-cookie="*magic*">
+<configuration magic-cookie="*magic*" uri-base="urn:fiware:privacy">
     <issuance-configuration>
         <attribute-source>FAKE</attribute-source>
         <attribute-connection>
