@@ -40,6 +40,7 @@ import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration.IdentitySource;
 @XmlRootElement(name="configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServicesConfiguration {
+
     /** Configuration data for issuance service. */
     @XmlElement(name="issuance-configuration")
     private IssuanceConfiguration issuanceConfiguration;
@@ -94,6 +95,13 @@ public class ServicesConfiguration {
      */
     @XmlAttribute(name="magic-cookie")
     private static String magicCookie = "*magic*";
+    
+    /** URI base
+     * The URI base is used as a prefix to URIs for example in the generation
+     * of CredentialSpecifications.
+     */
+    @XmlAttribute(name="uri-base")
+    private static String uriBase = "urn:fiware:privacy:";
 
     /**
      * Verifies the correctness of the magic cookie (i.e. if it matches
@@ -122,6 +130,13 @@ public class ServicesConfiguration {
      */
     public static synchronized String getMagicCookie() {
         return magicCookie;
+    }
+    
+    /**
+     * Returns the URI base
+     */
+    public static synchronized String getURIBase() {
+        return uriBase;
     }
 
     /** Private do-nothing constructor to prevent construction of instances. */

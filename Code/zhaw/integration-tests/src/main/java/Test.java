@@ -13,6 +13,19 @@ public class Test {
     
     private static String magic = "*magic*";
 
+    /**
+     * Performs the whole more or less adopted from the ancient tutorial.
+     * 
+     * Please don't change the order of the calls as it is relevant!
+     * To run this test you have to:
+     *  - have the services running (on tomcat)
+     *  - have write access to the location where the STORAGE resides
+     *  - the STORAGE must be EMPTIED/CLEARED before running this.
+     *  - the configuration needs to be set-up to use FAKE identity and FAKE
+     *    attribute source (because we check against hardcoded values used in the Fake*Providers.
+     *    (Please don't change the values in Fake*Providers without reflecting the changes here
+     *    and vice versa)). 
+     */
     public static void main(String[] args) {
         System.out.println("hi there");
 
@@ -31,6 +44,9 @@ public class Test {
         /* Get an attributeInfoCollection and convert it to a credentialSpecification */
         String attributeInfoCollection = testAttributeInfoCollection();
         String credSpec = testGenCredSpec(attributeInfoCollection);
+        
+        /* Store credentialSpecification at issuer*/
+        //testStoreCredSpecAtIssuer(credSpec);
 
         System.out.println("I'm done!");
     }

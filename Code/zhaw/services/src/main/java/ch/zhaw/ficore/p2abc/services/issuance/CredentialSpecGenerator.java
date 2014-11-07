@@ -6,6 +6,8 @@ import java.util.List;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.LanguageValuePair;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
@@ -33,7 +35,7 @@ public class CredentialSpecGenerator {
 		ObjectFactory of = new ObjectFactory();
 		try {
 			CredentialSpecification credSpec = of.createCredentialSpecification();
-			credSpec.setSpecificationUID(new URI("urn:abc4trust:credspec:ldap:" + attrInfoCol.name));
+			credSpec.setSpecificationUID(new URI(ServicesConfiguration.getURIBase() + attrInfoCol.name));
 
 			credSpec.setVersion("1.0");
 			credSpec.setKeyBinding(true);

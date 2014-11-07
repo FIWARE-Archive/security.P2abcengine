@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapSearch;
 import eu.abc4trust.xml.AttributeDescription;
@@ -62,7 +63,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
 				attrib.setAttributeDescription(attrDesc);
 				attrib.setAttributeValue(value);
-				attrib.setAttributeUID(new URI("urn:abc4trust:attributeuid:ldap:" + attrDesc.getType().toString()));
+				attrib.setAttributeUID(new URI(ServicesConfiguration.getURIBase() + "ldap:" + attrDesc.getType().toString()));
 				attributes.add(attrib);
 			}
 			return attributes;
