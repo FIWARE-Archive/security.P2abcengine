@@ -8,12 +8,12 @@ import org.apache.logging.log4j.Logger;
 public class ExceptionDumper {
     
     private static String exceptionAsString(Throwable t) {
-        String estring = "";
-        estring += "[" + t.getClass().getName() + "]";
+        StringBuffer estring = new StringBuffer();
+        estring.append("[").append(t.getClass().getName()).append("]");
         String msg = t.getMessage();
         if(msg == null)
             msg = "n/a";
-        estring += "(" + msg + ")";
+        estring.append("(").append(msg).append(")");
         StackTraceElement[] trace = t.getStackTrace();
         for(StackTraceElement ste : trace) {
             String meth = ste.getMethodName();
@@ -23,11 +23,11 @@ public class ExceptionDumper {
             if(file == null)
                 file = "n/a";
             int lno = ste.getLineNumber();
-            estring += (meth+":"+file+":"+lno+";");
+            estring.append(meth).append(":").append(file).append(":").append(lno).append(";");
         }
         if(t.getCause() != null)
-            estring += exceptionAsString(t.getCause());
-        return estring;
+            estring.append(exceptionAsString(t.getCause()));
+        return estring.toString();
     }
     
     public static Response dumpException(Throwable t, Logger l) {
