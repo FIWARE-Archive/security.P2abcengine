@@ -104,12 +104,21 @@ public class Test {
         /* Extract issuance message */
         String firstIssuanceMessage = testExtractIssuanceMessage(issuanceMessageAndBoolean);
         
-        /* Issuance step to get issuanceReturn */
+        /* Issuance steps in the protocol */
         String issuanceReturn = testIssuanceStepUser1(firstIssuanceMessage);
         String contextString = getContextString(issuanceReturn);
         System.out.println(contextString);
+        
+        String uiIssuanceReturn = readTextFile("uiIssuanceReturn.xml");
+        uiIssuanceReturn = replaceContextString(uiIssuanceReturn, contextString);
+        System.out.println(uiIssuanceReturn);
+        
+        String secondIssuanceMessage = testIssuanceStepUserUi1(uiIssuanceReturn);
+        
+        
+        String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer2(secondIssuanceMessage);
+        String thirdIssuanceMessage = testExtractIssuanceMessage(thirdIssuanceMessageAndBoolean);
 
-        System.out.println("I'm done!");
     }
     
     public static String readTextFile(String path) {
@@ -134,6 +143,36 @@ public class Test {
         Matcher m = pattern.matcher(input);
         m.find();
         return m.group(1);
+    }
+    
+    public static String replaceContextString(String input, String contextString) {
+        return input.replaceAll("REPLACE-THIS-CONTEXT", contextString);
+    }
+    
+    public static String testIssuanceStepIssuer2(String im) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(issuanceServiceURL + "issuanceProtocolStep");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, im);
+        assertOk(response);
+        return response.getEntity(String.class);
+    }
+    
+    public static String testIssuanceStepUserUi1(String uir) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "issuanceProtocolStepUi");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, uir);
+        assertOk(response);
+        return response.getEntity(String.class);
     }
     
     public static String testIssuanceStepUser1(String im) {
