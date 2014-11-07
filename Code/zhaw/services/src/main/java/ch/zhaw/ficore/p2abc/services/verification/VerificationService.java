@@ -157,7 +157,7 @@ public class VerificationService {
         }
     }
 
-    @POST()
+    @PUT()
     @Path("/storeSystemParameters/{magicCookie}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeSystemParameters(@PathParam("magicCookie") String magicCookie,

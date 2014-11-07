@@ -416,7 +416,7 @@ public class UserService {
         }
     }
 
-    @POST()
+    @PUT()
     @Path("/storeSystemParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeSystemParameters(
