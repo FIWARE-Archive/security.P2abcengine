@@ -44,6 +44,8 @@ public abstract class AttributeValueProvider {
         switch(configuration.getAttributeSource()) {
         case LDAP:
             return new LdapAttributeValueProvider(configuration);
+        case FAKE:
+            return new FakeAttributeValueProvider(configuration);
         default:
             return null;
         }

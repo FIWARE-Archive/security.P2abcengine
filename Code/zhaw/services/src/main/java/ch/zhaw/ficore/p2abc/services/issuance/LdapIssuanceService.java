@@ -173,7 +173,7 @@ public class LdapIssuanceService {
         }
         catch(Exception e) {
             logger.catching(e);
-            return null;
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
