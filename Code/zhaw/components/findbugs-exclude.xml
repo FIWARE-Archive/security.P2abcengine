@@ -1,0 +1,18 @@
+<FindBugsFilter>
+  <Match>
+    <!--  Non-constant string passed to execute, but that non-constant
+          string has been carefully checked (by whitelisting table
+          names). -->
+    <Class name="ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage" />
+    <Method name="init" />
+    <Bug code="SQL" />
+  </Match>
+  <Match>
+    <!--  Prepared statement made from non-constant string, but the
+          non-constant component of that string has been carefully
+          checked (by whitelisting table names). -->
+    <Class name="ch.zhaw.ficore.p2abc.storage.SqliteURIBytesStorage" />
+    <Method name="put" />
+    <Bug code="SQL" />
+  </Match>
+</FindBugsFilter>

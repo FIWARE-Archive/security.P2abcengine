@@ -2,7 +2,6 @@ package ch.zhaw.ficore.p2abc.configuration;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
