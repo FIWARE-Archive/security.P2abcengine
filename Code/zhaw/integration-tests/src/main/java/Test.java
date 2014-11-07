@@ -1,6 +1,8 @@
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import java.io.*;
@@ -98,6 +100,14 @@ public class Test {
          */
         
         String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("issuanceRequest.xml"));
+        
+        /* Extract issuance message */
+        String firstIssuanceMessage = testExtractIssuanceMessage(issuanceMessageAndBoolean);
+        
+        /* Issuance step to get issuanceReturn */
+        String issuanceReturn = testIssuanceStepUser1(firstIssuanceMessage);
+        String contextString = getContextString(issuanceReturn);
+        System.out.println(contextString);
 
         System.out.println("I'm done!");
     }
@@ -117,6 +127,39 @@ public class Test {
         catch(Exception e) {
             throw new RuntimeException("readTextFile("+path+") failed!");
         }
+    }
+    
+    public static String getContextString(String input) {
+        Pattern pattern = Pattern.compile("<uiContext>(.*)</uiContext>");
+        Matcher m = pattern.matcher(input);
+        m.find();
+        return m.group(1);
+    }
+    
+    public static String testIssuanceStepUser1(String im) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "issuanceProtocolStep");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, im);
+        assertOk(response);
+        return response.getEntity(String.class);
+    }
+    
+    public static String testExtractIssuanceMessage(String imab) {
+        Client client = Client.create();
+
+        WebResource webResource = client
+                .resource(userServiceURL + "extractIssuanceMessage");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, imab);
+        assertOk(response);
+        return response.getEntity(String.class);
     }
     
     public static String testIssuanceRequest(String ir) {
