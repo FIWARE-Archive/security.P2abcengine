@@ -232,24 +232,6 @@ public class UserService {
     public Response presentationArguments(JAXBElement<UiPresentationArguments> args_) {
         UiPresentationArguments args = args_.getValue();
         UiCommonArguments cargs = args.data;
-        String s = "";
-        for(TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-            for(TokenCandidate tc : tcpp.tokenCandidates) {
-                PresentationTokenDescription ptd = tc.tokenDescription;
-                s += "TokenCandidate: " + ptd.getTokenUID().toString() + "\n";
-                for(CredentialInUi c : tc.credentials) {
-                    s += " Credential: " + c.uri + "\n";
-                    s += " Specification: " + c.desc.getCredentialSpecificationUID().toString() + "\n";
-                }
-                s += " Revealing: " + "\n";
-                List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
-                for(RevealedAttributeValue reveal : reveals) {
-                    for(FriendlyDescription desc : reveal.descriptions) {
-                        s += "  Attribute: " + desc.getValue() + "\n";
-                    }
-                }
-            }
-        }
         
         Div mainDiv = new Div();
         
