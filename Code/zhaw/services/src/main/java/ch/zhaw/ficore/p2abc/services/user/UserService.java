@@ -70,12 +70,17 @@ import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
+import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.URISet;
 import eu.abc4trust.returnTypes.UiIssuanceArguments;
+import eu.abc4trust.returnTypes.ui.UiCommonArguments;
+import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ui.TokenCandidate;
+import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
+import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.xml.PresentationTokenDescription;
 //import eu.abc4trust.ri.servicehelper.user.UserHelper;
 //import eu.abc4trust.services.helpers.UserDebugger;
@@ -211,9 +216,40 @@ public class UserService {
         PresentationTokenDescription ptd = null;
         for(TokenCandidate tc : args.tokenCandidates) {
             ptd = tc.tokenDescription;
-            s += ptd.getTokenUID().toString() + "\n";
+            s += "TokenCandidate: " + ptd.getTokenUID().toString() + "\n";
+            for(CredentialInUi c : tc.credentials) {
+                s += " Credential: " + c.uri + "\n";
+                s += "  Specification: " + c.desc.getCredentialSpecificationUID().toString() + "\n";
+            }
         }
         return Response.ok(s+"...").build();
+    }
+    
+    @POST
+    @Path("/presentationArguments/")
+    @Consumes ({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    public Response presentationArguments(JAXBElement<UiPresentationArguments> args_) {
+        UiPresentationArguments args = args_.getValue();
+        UiCommonArguments cargs = args.data;
+        String s = "";
+        for(TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
+            for(TokenCandidate tc : tcpp.tokenCandidates) {
+                PresentationTokenDescription ptd = tc.tokenDescription;
+                s += "TokenCandidate: " + ptd.getTokenUID().toString() + "\n";
+                for(CredentialInUi c : tc.credentials) {
+                    s += " Credential: " + c.uri + "\n";
+                    s += " Specification: " + c.desc.getCredentialSpecificationUID().toString() + "\n";
+                }
+                s += " Revealing: " + "\n";
+                List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
+                for(RevealedAttributeValue reveal : reveals) {
+                    for(FriendlyDescription desc : reveal.descriptions) {
+                        s += "  Attribute: " + desc.getValue() + "\n";
+                    }
+                }
+            }
+        }
+        return Response.ok(s).build();
     }
 
     /**
