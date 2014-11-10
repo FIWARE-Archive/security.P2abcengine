@@ -82,6 +82,7 @@ import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.xml.PresentationTokenDescription;
+import com.hp.gagawa.java.elements.*;
 //import eu.abc4trust.ri.servicehelper.user.UserHelper;
 //import eu.abc4trust.services.helpers.UserDebugger;
 
@@ -249,7 +250,61 @@ public class UserService {
                 }
             }
         }
-        return Response.ok(s).build();
+        
+        Div mainDiv = new Div();
+        
+        for(TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
+            for(TokenCandidate tc : tcpp.tokenCandidates) {
+                Div div = new Div();
+                div.setCSSClass("tokenCandidate");
+                
+                div.appendChild(new H2().appendChild(new Text("Candidate")));
+                
+                Table tbl = new Table();
+                Tr row = null;
+                Td td = null;
+                
+                for(CredentialInUi c : tc.credentials) {
+                    row = new Tr();
+                    td = new Td();
+                    td.appendChild(new Text("Credential"));
+                    row.appendChild(td); 
+                    td = new Td();
+                    td.appendChild(new Text(c.uri.toString()));
+                    row.appendChild(td);       
+                    tbl.appendChild(row);
+                    
+                    row = new Tr();
+                    td = new Td();
+                    td.appendChild(new Text("Specification"));
+                    row.appendChild(td); 
+                    td = new Td();
+                    td.appendChild(new Text(c.desc.getCredentialSpecificationUID().toString()));
+                    row.appendChild(td);       
+                    tbl.appendChild(row);
+                }
+                
+                div.appendChild(tbl);
+                
+                P p = new P().appendChild(new B().appendChild(new Text("Revealed attributes")));
+                div.appendChild(p);
+                
+                Ul ul = new Ul();
+                
+                List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
+                for(RevealedAttributeValue reveal : reveals) {
+                    for(FriendlyDescription desc : reveal.descriptions) {
+                        ul.appendChild(new Li().appendChild(new Text(desc.getValue())));
+                    }
+                }
+
+                div.appendChild(ul);
+                
+                mainDiv.appendChild(div);
+            }
+        }
+        
+        return Response.ok(mainDiv.write()).build();
     }
 
     /**
