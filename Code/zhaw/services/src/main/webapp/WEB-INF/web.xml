@@ -3,7 +3,7 @@
      see implementation details http://jersey.java.net/nonav/documentation/latest/jax-rs.html#d4e194 -->
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <servlet>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
@@ -12,7 +12,17 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+    <resource-ref>
+      <description>
+        This resource points to the concrete URIBytesStorage that should be
+        used by the service.  These URIBytesStorage-s contain secret keys
+        and other infrequently-updated items needed by the service.  
+      </description>
+    <res-ref-name>jdbc/URIBytesStorage</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
 </web-app>
