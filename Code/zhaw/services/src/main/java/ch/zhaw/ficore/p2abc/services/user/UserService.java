@@ -253,6 +253,8 @@ public class UserService {
         
         Div mainDiv = new Div();
         
+        int tId = 0;
+        
         for(TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
             for(TokenCandidate tc : tcpp.tokenCandidates) {
                 Div div = new Div();
@@ -263,6 +265,8 @@ public class UserService {
                 Table tbl = new Table();
                 Tr row = null;
                 Td td = null;
+                
+                div.appendChild(tbl);
                 
                 for(CredentialInUi c : tc.credentials) {
                     row = new Tr();
@@ -282,9 +286,21 @@ public class UserService {
                     td.appendChild(new Text(c.desc.getCredentialSpecificationUID().toString()));
                     row.appendChild(td);       
                     tbl.appendChild(row);
+                    
+                    div.appendChild(new Input().setType("hidden")
+                            .setName("policyId")
+                            .setValue(Integer.toString(tcpp.policyId)));
+                    div.appendChild(new Input().setType("hidden")
+                            .setName("candidateId")
+                            .setValue(Integer.toString(tc.candidateId)));                 
+                    
+                    div.appendChild(new Input()
+                        .setType("submit")
+                        .setValue("Use this candidate #" + (tId+1)));
+                    tId++;
                 }
                 
-                div.appendChild(tbl);
+                
                 
                 P p = new P().appendChild(new B().appendChild(new Text("Revealed attributes")));
                 div.appendChild(p);
