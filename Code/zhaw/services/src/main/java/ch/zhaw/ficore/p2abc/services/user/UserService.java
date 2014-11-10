@@ -72,6 +72,11 @@ import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.URISet;
+import eu.abc4trust.returnTypes.UiIssuanceArguments;
+import eu.abc4trust.returnTypes.IssuanceReturn;
+import eu.abc4trust.returnTypes.ui.TokenCandidate;
+import eu.abc4trust.returnTypes.ui.CredentialInUi;
+import eu.abc4trust.xml.PresentationTokenDescription;
 //import eu.abc4trust.ri.servicehelper.user.UserHelper;
 //import eu.abc4trust.services.helpers.UserDebugger;
 
@@ -195,6 +200,20 @@ public class UserService {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
+    }
+    
+    @POST()
+    @Path("/issuanceArguments/")
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) {
+        UiIssuanceArguments args = args_.getValue().uia;
+        String s = "";
+        PresentationTokenDescription ptd = null;
+        for(TokenCandidate tc : args.tokenCandidates) {
+            ptd = tc.tokenDescription;
+            s += ptd.getTokenUID().toString() + "\n";
+        }
+        return Response.ok(s+"...").build();
     }
 
     /**
