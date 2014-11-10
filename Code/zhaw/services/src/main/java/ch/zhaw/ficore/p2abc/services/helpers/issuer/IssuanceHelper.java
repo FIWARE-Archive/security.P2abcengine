@@ -154,7 +154,7 @@ public class IssuanceHelper extends AbstractHelper {
     private IssuerAbcEngine uproveEngine = null;
     private IssuerAbcEngine idemixEngine = null;
 
-
+    @SuppressWarnings("unused")
     private final Map<String, SpecAndPolicy> specAndPolicyMap = new HashMap<String, SpecAndPolicy>();
 
     private Random random;
@@ -165,8 +165,10 @@ public class IssuanceHelper extends AbstractHelper {
     private KeyManager uproveKeyManager;
     private KeyManager idemixKeyManager;
 
+    @SuppressWarnings("unused")
     private final String systemAndIssuerParamsPrefix;
     private final String fileStoragePrefix;
+    @SuppressWarnings("unused")
     private final String systemParametersResource;
 
     private CredentialManager credentialManager;
@@ -267,11 +269,13 @@ public class IssuanceHelper extends AbstractHelper {
                 + " - with version number : " + issuerParameters.getVersion());
 
         keyManager.storeIssuerParameters(issuerParamsUid, issuerParameters);
+        // TODO urnScheme is unused. Also, shouldn't it be urnSchema?
         boolean urnScheme = "urn".equals(issuerParamsUid.getScheme());
       
 
 
         if (credentialManager != null) {
+            // TODO this is unused. What are you doing with this?
             SecretKey issuerPrivateKeyForIssuerParameters =
                     credentialManager.getIssuerSecretKey(issuerParamsUid);
 
@@ -450,6 +454,7 @@ public class IssuanceHelper extends AbstractHelper {
     }
 
 
+    // TODO: This method is unused.
     private void populateIssuerAttributes(SpecAndPolicy specAndPolicy,
             List<Attribute> issuerAtts, Map<String, Object> attributeValueMap) {
 

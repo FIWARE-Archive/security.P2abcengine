@@ -40,7 +40,6 @@ import com.google.inject.util.Modules;
 
 import eu.abc4trust.abce.external.verifier.SynchronizedVerifierAbcEngineImpl;
 import eu.abc4trust.abce.external.verifier.VerifierAbcEngine;
-import eu.abc4trust.abce.internal.verifier.tokenManager.TokenStorage;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
@@ -109,7 +108,8 @@ public class VerificationHelper extends AbstractHelper {
     public VerifierAbcEngine engine;
     // public KeyManager verifierKeyManager;
     private Random random;
-    private TokenStorage tokenStorage;
+    // TODO; Check if this is needed
+    //private TokenStorage tokenStorage;
 
 
 
@@ -150,7 +150,7 @@ public class VerificationHelper extends AbstractHelper {
 
             this.random = injector.getInstance(Random.class);
 
-            this.tokenStorage = injector.getInstance(TokenStorage.class);
+            //this.tokenStorage = injector.getInstance(TokenStorage.class);
 
             if((cryptoEngine == CryptoEngine.UPROVE) || (cryptoEngine == CryptoEngine.BRIDGED)) {
                throw new RuntimeException("We only support Idemix. Sorry :(");

@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
 
-import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import eu.abc4trust.xml.AttributeDescription;
