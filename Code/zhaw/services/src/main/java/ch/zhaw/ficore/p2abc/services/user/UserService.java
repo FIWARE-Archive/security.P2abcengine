@@ -233,7 +233,15 @@ public class UserService {
         UiPresentationArguments args = args_.getValue();
         UiCommonArguments cargs = args.data;
         
+        Html html = new Html();
+        Head head = new Head();
+        head.appendChild(new Title().appendChild(new Text("Candidate Selection")));
+        
+        html.appendChild(head);
+        
         Div mainDiv = new Div();
+        
+        html.appendChild(new Body().appendChild(mainDiv));
         
         int tId = 0;
         
@@ -251,6 +259,8 @@ public class UserService {
                 div.appendChild(tbl);
                 
                 for(CredentialInUi c : tc.credentials) {
+                    Form f = new Form("post");
+                    
                     row = new Tr();
                     td = new Td();
                     td.appendChild(new Text("Credential"));
@@ -269,16 +279,16 @@ public class UserService {
                     row.appendChild(td);       
                     tbl.appendChild(row);
                     
-                    div.appendChild(new Input().setType("hidden")
+                    f.appendChild(new Input().setType("hidden")
                             .setName("policyId")
                             .setValue(Integer.toString(tcpp.policyId)));
-                    div.appendChild(new Input().setType("hidden")
+                    f.appendChild(new Input().setType("hidden")
                             .setName("candidateId")
                             .setValue(Integer.toString(tc.candidateId)));                 
                     
-                    div.appendChild(new Input()
+                    f.appendChild(new Input()
                         .setType("submit")
-                        .setValue("Use this candidate #" + (tId+1)));
+                        .setValue("Use candidate #" + (tId+1)));
                     tId++;
                 }
                 
@@ -302,7 +312,7 @@ public class UserService {
             }
         }
         
-        return Response.ok(mainDiv.write()).build();
+        return Response.ok(html.write()).build();
     }
 
     /**
