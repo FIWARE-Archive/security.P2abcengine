@@ -1,1 +1,8 @@
 *~
+Code/zhaw/components/target/*
+Code/zhaw/services/target/*
+Code/zhaw/components/test*sql
+Code/zhaw/integration-tests/target/*
+Code/zhaw/services/sandbox/out/*
+Code/zhaw/components/*.class
+Code/zhaw/services/sandbox/gen/*
