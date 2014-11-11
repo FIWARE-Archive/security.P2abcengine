@@ -27,7 +27,6 @@ package ch.zhaw.ficore.p2abc.services.user;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -39,17 +38,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
-//import eu.abc4trust.abce.utils.SecretWrapper;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.CannotSatisfyPolicyException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
@@ -84,8 +80,6 @@ import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.xml.PresentationTokenDescription;
 import com.hp.gagawa.java.elements.*;
 import org.apache.commons.lang.SerializationUtils;
-//import eu.abc4trust.ri.servicehelper.user.UserHelper;
-//import eu.abc4trust.services.helpers.UserDebugger;
 
 @Path("/user")
 public class UserService {
