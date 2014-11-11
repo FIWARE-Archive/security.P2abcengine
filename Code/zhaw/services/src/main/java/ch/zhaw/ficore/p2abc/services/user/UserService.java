@@ -124,8 +124,6 @@ public class UserService {
     private static final CryptoEngine CRYPTO_ENGINE = CryptoEngine.IDEMIX; //use idemix always -- munt
 
     private final ObjectFactory of = new ObjectFactory();
-    private final ObjectFactoryReturnTypes rof = new ObjectFactoryReturnTypes();
-
     private Logger log = LogManager.getLogger();
 
     private final String fileStoragePrefix = ""; //no prefix -- munt
@@ -329,11 +327,12 @@ public class UserService {
             if(r.getStatus() != 200)
                 throw new RuntimeException("Internal step failed!");
             
+            @SuppressWarnings("unchecked")
             IssuanceReturn issuanceReturn = ((JAXBElement<IssuanceReturn>)r.getEntity()).getValue();
             
             putIssuerURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
             
-            return issuanceArguments(rof.wrap(issuanceReturn));
+            return issuanceArguments(ObjectFactoryReturnTypes.wrap(issuanceReturn));
         }
         catch(Exception e) {
             log.catching(e);
@@ -341,6 +340,7 @@ public class UserService {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @POST
     @Path("/obtainCredential3")
     public Response obtainCredential3(
@@ -382,6 +382,7 @@ public class UserService {
 
     }
     
+    @SuppressWarnings("rawtypes")
     public static String toXML(Class clazz, Object obj) throws JAXBException {
         JAXBContext context = JAXBContext
                 .newInstance(clazz);
@@ -392,10 +393,12 @@ public class UserService {
         return w.toString();
     }
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {
         return JAXB.unmarshal(new StringReader(xml), clazz);
     }
     
+    @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, String xml, Class clazz) throws ClientHandlerException, UniformInterfaceException, JAXBException {
         Client client = new Client();
         
