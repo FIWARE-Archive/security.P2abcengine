@@ -226,6 +226,32 @@ public class UserService {
         return Response.ok(s+"...").build();
     }
     
+    @GET
+    @Path("/obtainCredential/")
+    public Response obtainCredential() {
+        Html html = new Html();
+        Head head = new Head().appendChild(new Title().appendChild(new Text("Obtain Credential")));
+        html.appendChild(head);
+        Div mainDiv = new Div();
+        html.appendChild(new Body().appendChild(mainDiv));
+        mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
+        Form f = new Form("post");
+        f.appendChild(new Label().appendChild(new Text("Username:")));
+        f.appendChild(new Input().setType("text"));
+        f.appendChild(new Br());
+        f.appendChild(new Label().appendChild(new Text("Password:")));
+        f.appendChild(new Input().setType("password"));
+        f.appendChild(new Br());
+        f.appendChild(new Label().appendChild(new Text("Issuer:")));
+        f.appendChild(new Input().setType("text"));
+        f.appendChild(new Br());
+        f.appendChild(new Label().appendChild(new Text("Credential specification:")));
+        f.appendChild(new Input().setType("text"));
+        f.appendChild(new Br());
+        mainDiv.appendChild(f);
+        return Response.ok(html.write()).build();
+    }
+    
     @POST
     @Path("/presentationArguments/")
     @Consumes ({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
