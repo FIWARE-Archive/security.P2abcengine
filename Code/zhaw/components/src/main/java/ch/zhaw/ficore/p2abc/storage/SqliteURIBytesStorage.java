@@ -14,11 +14,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -37,17 +40,10 @@ import com.google.inject.name.Named;
  */
 public class SqliteURIBytesStorage extends URIBytesStorage {
     private static final int DUMP_LIMIT = 1024;
-    private Connection databaseConnection;
+    private DataSource dataSource;
     private String tableName;
-    private String filePath;
+    private String dbName;
 
-    private PreparedStatement keysAsStringsStatement;
-    private PreparedStatement getStatement;
-    private PreparedStatement deleteStatement;
-    private PreparedStatement putStatement;
-    private PreparedStatement putNewStatement;
-    private PreparedStatement containsKeyStatement;
-    
     private static Map<String,Object> locks = new HashMap<String,Object>();
 
     private Logger logger;
@@ -58,7 +54,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * This will open and create the database as well as the tables
      * if necessary. 
      * 
-     * @param filePath Path to the database file
+     * @param dbName JNDI name of the database
      * @param table Name of the table to use
      * 
      * @throws UnsafeTableNameException if the table name is deemed unsafe to
@@ -68,17 +64,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @throws ClassNotFoundException when the SQLite JDBC driver can't be found
      */
     @Inject
-    public SqliteURIBytesStorage(@Named("sqliteDBPath") String filePath, @Named("sqliteTblName") String table) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+    public SqliteURIBytesStorage(@Named("sqliteDBPath") String dbName, @Named("sqliteTblName") String table)
+            throws ClassNotFoundException, SQLException,
+                UnsafeTableNameException, NamingException {
         logger = LogManager.getLogger();
 
-        keysAsStringsStatement = null;
-        getStatement = null;
-        deleteStatement = null;
-        putStatement = null;
-        putNewStatement = null;
-        containsKeyStatement = null;
-
-        init(filePath, table);
+        init(dbName, table);
     }
 
     /**
@@ -88,25 +79,26 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @throws SQLException 
      * @throws UnsafeTableNameException 
      */
-    private void init(String filePath, String tableName) throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+    private void init(String filePath, String tableName)
+            throws ClassNotFoundException, SQLException,
+                UnsafeTableNameException, NamingException {
         logger.entry(filePath, tableName);
 
         checkIfSafeTableName(tableName);
 
         this.tableName = tableName;
-        this.filePath = filePath;
+        this.dbName = filePath;
 
         Statement stmt = null;
 
         try {
-            PoolProperties p = new PoolProperties();
-            p.setUrl("jdbc:zsqlite:" + filePath);
-            p.setDriverClassName("ch.zhaw.ficore.p2abc.storage.SqliteJDBC");
-            DataSource datasource = new DataSource(p);
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+            dataSource = (DataSource) envCtx.lookup("jdbc/" + dbName);
 
-            assert datasource != null;
+            assert dataSource != null;
 
-            databaseConnection = datasource.getConnection();
+            Connection databaseConnection = dataSource.getConnection();
 
             synchronized(getLock(this)) {
                 stmt = databaseConnection.createStatement();
@@ -122,6 +114,10 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             logger.catching(e);
             throw logger.throwing(e);
         }
+        catch(NamingException e) {
+            logger.catching(e);
+            throw logger.throwing(e);
+        }
         finally {
             if(stmt != null)
                 stmt.close();
@@ -129,7 +125,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 
         logger.exit();
     }
-    
+
     /**
      * Returns a lock based on the filePath of the SqliteURIBytesStorage
      * through which it will synchronize access to databases. 
@@ -143,53 +139,14 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             locks.put(filePath, new Object());
         return locks.get(filePath);
     }
-    
+
     /**
      * Return the file path of the underlying database.
      * 
      * @return path to database file
      */
     public String getFilePath() {
-        return filePath;
-    }
-
-    /** Closes this MYSQLite database.
-     * 
-     * This method performs any actions that need to be done in order to 
-     * release this object.
-     */
-    public synchronized void close() {
-        logger.entry();
-
-        closePreparedStatement(keysAsStringsStatement);
-        closePreparedStatement(getStatement);
-        closePreparedStatement(deleteStatement);
-        closePreparedStatement(putNewStatement);
-        closePreparedStatement(putStatement);
-        closePreparedStatement(containsKeyStatement);
-
-        // Do this only after closing the statements.
-        try {
-            databaseConnection.close();
-        } catch (SQLException e) {
-            logger.catching(e);
-        }
-
-        logger.exit();
-    }
-
-    private void closePreparedStatement(PreparedStatement statement) {
-        logger.entry();
-
-        if (statement != null) {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                logger.catching(e);
-            }            
-        }
-
-        logger.exit();
+        return dbName;
     }
 
     /** Checks if a table name is safe to use in a SQL CREATE TABLE statement.
@@ -233,13 +190,17 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      */
     public List<String> keysAsStrings() throws SQLException {
         logger.entry();
+
         synchronized(getLock(this)) {
             ResultSet rst = null;
             List<String> uris = new ArrayList<String>();
-
+            Connection databaseConnection = null;
+            PreparedStatement keysAsStringsStatement = null;
+            
             try {
-                if (keysAsStringsStatement == null)
-                    keysAsStringsStatement = databaseConnection.prepareStatement("SELECT uri FROM " + tableName);
+                databaseConnection = dataSource.getConnection();
+
+                keysAsStringsStatement = databaseConnection.prepareStatement("SELECT uri FROM " + tableName);
 
                 rst = keysAsStringsStatement.executeQuery();
                 while(rst.next()) {
@@ -247,20 +208,25 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
                         uris.add(rst.getString(1));
                     }
                     catch(Exception e) {
-                        e.printStackTrace();
-                        //We can't do much here. This means that somebody managed to store
-                        //an invalid URI in the storage. 
+                        //We can't do much here. This means that somebody
+                        // managed to store an invalid URI in the storage.
+                        // We do *not* break off the loop here, since we'll
+                        // try to get more URIs out.
+                        logger.catching(e);
                     }
                 }
                 return logger.exit(uris);
-            }
-            catch(Exception e) {
+            } catch (SQLException e) {
                 logger.catching(e);
                 throw logger.throwing(new RuntimeException("Storage failure!"));
             }
             finally {
                 if(rst != null)
                     rst.close();
+                if (keysAsStringsStatement!= null)
+                    keysAsStringsStatement.close();
+                if (databaseConnection != null)
+                    databaseConnection.close();
             }
         }
     }
@@ -273,10 +239,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 
         synchronized(getLock(this)) {
             ResultSet rst = null;
+            PreparedStatement getStatement = null;
+            Connection databaseConnection = null;
 
             try {
-                if (getStatement == null)
-                    getStatement = databaseConnection.prepareStatement("SELECT value FROM " + tableName + " WHERE hash = ?");
+                databaseConnection = dataSource.getConnection();
+                getStatement = databaseConnection.prepareStatement("SELECT value FROM " + tableName + " WHERE hash = ?");
 
                 String hash = hashKey(key);
                 getStatement.setString(1, hash);
@@ -295,8 +263,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
                 throw logger.throwing(new RuntimeException("Storage failure!"));
             }
             finally {
-                if(rst != null)
+                if (rst != null)
                     rst.close();
+                if (getStatement != null)
+                    getStatement.close();
+                if (databaseConnection != null)
+                    databaseConnection.close();
             }
         }
     }
@@ -304,7 +276,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     private static void hexdump(Logger logger, byte[] bytes) {
         logger.trace("Dumping byte array of size " + bytes.length + " (max. " + DUMP_LIMIT + " bytes)");
         logger.trace(" Offset   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f   0123456789abcdef");
-        
+
         int limit = Math.min(bytes.length,  DUMP_LIMIT);
         for (int offset = 0; offset < limit; offset += 16) {
             dumpLine(logger, bytes, offset);
@@ -315,11 +287,11 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.ROOT);
         formatter.format("%1$08x", offset);
-        
+
         int limit = Math.min(bytes.length, offset + 16);
         for (int i = offset; i < limit; i++)
             formatter.format(" %1$02x", bytes[i]);
-        
+
         for (int i = limit; i < offset + 16; i++)
             formatter.format("   ");
 
@@ -331,7 +303,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         logger.trace(sb.toString());
         formatter.close();
     }
-    
+
     private static char makeAscii(byte b) {
         return (b >= ' ' && b <= '~') ? (char) b : '.';
     }
@@ -342,9 +314,11 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     public void delete(String key) throws SQLException {
         logger.entry();
         synchronized(getLock(this)) {
+            Connection databaseConnection = null;
+            PreparedStatement deleteStatement = null;
             try {
-                if (deleteStatement == null)
-                    deleteStatement = databaseConnection.prepareStatement("DELETE FROM " + tableName + " WHERE hash = ?");
+                databaseConnection = dataSource.getConnection();
+                deleteStatement = databaseConnection.prepareStatement("DELETE FROM " + tableName + " WHERE hash = ?");
                 String hash = hashKey(key);
                 deleteStatement.setString(1, hash);
                 deleteStatement.executeUpdate();
@@ -353,6 +327,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
                 logger.catching(e);
                 throw logger.throwing(new RuntimeException("Storage failure!"));
             }
+            finally {
+                if (deleteStatement != null)
+                    deleteStatement.close();
+                if (databaseConnection != null)
+                    databaseConnection.close();
+            }
         }
         logger.exit();
     }
@@ -360,13 +340,13 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     /**
      * Put (and possibly replace) an entry to the storage
      */
-    
-    
+
+
     public void put(String key, byte[] bytes) throws SQLException {
         logger.entry(key, bytes);
 
         synchronized(getLock(this)) {
-            
+
             if(putNew(key, bytes)) { //putNew returns true if it added something
                 logger.exit();
                 return;
@@ -374,9 +354,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
 
             //Entry exists, so we need to do an UPDATE instead of an INSERT
 
+            Connection databaseConnection = null;
+            PreparedStatement putStatement = null;
+
             try {
-                if (putStatement == null)
-                    putStatement = databaseConnection.prepareStatement("UPDATE " + tableName + " SET uri = ?, value = ? WHERE " +
+                databaseConnection = dataSource.getConnection();
+                putStatement = databaseConnection.prepareStatement("UPDATE " + tableName + " SET uri = ?, value = ? WHERE " +
                             " hash = ?");
 
                 String hash = hashKey(key);
@@ -390,6 +373,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             catch(Exception e) {
                 logger.catching(e);
                 throw logger.throwing(new RuntimeException("Storage failure!"));
+            }
+            finally {
+                if (putStatement != null)
+                    putStatement.close();
+                if (databaseConnection != null)
+                    databaseConnection.close();
             }
         }
         logger.exit();
@@ -405,9 +394,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             if(containsKey(key))
                 return logger.exit(false);
 
+            Connection databaseConnection = null;
+            PreparedStatement putNewStatement = null;
+
             try {
-                if (putNewStatement == null)
-                    putNewStatement = databaseConnection.prepareStatement("INSERT INTO " + tableName + "(hash, uri, value) " +
+                databaseConnection = dataSource.getConnection();
+                putNewStatement = databaseConnection.prepareStatement("INSERT INTO " + tableName + "(hash, uri, value) " +
                             "VALUES(?, ?, ?)");
 
                 String hash = hashKey(key);
@@ -419,9 +411,15 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
                 putNewStatement.executeUpdate();
                 return logger.exit(true);
             }
-            catch(Exception e) {
+            catch(SQLException e) {
                 logger.catching(e);
-                throw logger.throwing(new RuntimeException("Storage failure!"));
+                throw logger.throwing(new RuntimeException("Storage failure: " + e.getMessage()));
+            }
+            finally {
+                if (putNewStatement != null)
+                    putNewStatement.close();
+                if (databaseConnection != null)
+                    databaseConnection.close();
             }
         }
     }
@@ -432,8 +430,12 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     public boolean containsKey(String key) throws SQLException {
         logger.entry();
         synchronized(getLock(this)) {
+            Connection databaseConnection = null;
+            PreparedStatement containsKeyStatement = null;
             ResultSet rst = null;
+
             try {
+                databaseConnection = dataSource.getConnection();
                 containsKeyStatement = databaseConnection.prepareStatement("SELECT EXISTS(SELECT 1 FROM " + tableName + " WHERE " +
                         " hash = ? LIMIT 1)");
                 String hash = hashKey(key);
@@ -450,13 +452,17 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
                 else
                     return logger.exit(false);
             }
-            catch(Exception e) {
+            catch(SQLException e) {
                 logger.catching(e);
-                throw logger.throwing(new RuntimeException("Storage failure!"));
+                throw logger.throwing(new RuntimeException("Storage failure: " + e.getMessage()));
             }
             finally {
                 if(rst != null)
                     rst.close();
+                if (containsKeyStatement != null)
+                    containsKeyStatement.close();
+                if (databaseConnection != null)
+                    databaseConnection.close();
             }
         }
     }

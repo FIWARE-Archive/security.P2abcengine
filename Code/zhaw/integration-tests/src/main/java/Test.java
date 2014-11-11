@@ -118,6 +118,7 @@ public class Test {
         String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer1(secondIssuanceMessage);
         String thirdIssuanceMessage = testExtractIssuanceMessage(thirdIssuanceMessageAndBoolean);
         
+        @SuppressWarnings("unused")
         String fourthIssuanceMessageAndBoolean = testIssuanceStepUser2(thirdIssuanceMessage);
 
         /* Verification stuff */

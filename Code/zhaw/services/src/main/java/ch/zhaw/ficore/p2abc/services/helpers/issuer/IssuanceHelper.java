@@ -142,7 +142,6 @@ public class IssuanceHelper extends AbstractHelper {
     private IssuerAbcEngine uproveEngine = null;
     private IssuerAbcEngine idemixEngine = null;
 
-
     private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
     private KeyManager uproveKeyManager;
     private KeyManager idemixKeyManager;
@@ -246,6 +245,7 @@ public class IssuanceHelper extends AbstractHelper {
                 + " - with version number : " + issuerParameters.getVersion());
 
         keyManager.storeIssuerParameters(issuerParamsUid, issuerParameters);
+
         IssuanceHelper.log.info(" - created issuerParameters with UID : "
                 + issuerParameters.getParametersUID());
 
@@ -382,9 +382,6 @@ public class IssuanceHelper extends AbstractHelper {
         } else {
             IssuanceHelper.log.info(" - continue steps");
         }
-
-        // String xml = XmlUtils.toXml(of.createIssuanceMessage(response.im), false);
-        // this.log.info("IssuanceService - step - return  XML : " + xml);
 
         return response;
     }
