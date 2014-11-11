@@ -19,6 +19,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
+import javax.naming.NamingException;
+
 public class SqliteStorageModule extends AbstractModule {
 
     private SqliteStorageConfiguration configuration;
@@ -104,7 +106,7 @@ public class SqliteStorageModule extends AbstractModule {
             this.bind(eu.abc4trust.abce.internal.user.credentialManager.CredentialStorage.class)
             .to(GenericUserCredentialStorage.class).in(Singleton.class);
         } catch (ClassNotFoundException | SQLException
-                | UnsafeTableNameException e) {
+                | UnsafeTableNameException | NamingException e) {
             //TODO: What to do when config fails?? -- munt
             // -- Log the error and continue; we'll fail harder soon enough -- Stephan
             e.printStackTrace();
