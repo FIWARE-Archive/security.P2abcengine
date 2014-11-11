@@ -27,6 +27,7 @@ package ch.zhaw.ficore.p2abc.services.user;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -38,12 +39,37 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
+
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
+
+import com.hp.gagawa.java.elements.B;
+import com.hp.gagawa.java.elements.Body;
+import com.hp.gagawa.java.elements.Div;
+import com.hp.gagawa.java.elements.Form;
+import com.hp.gagawa.java.elements.H1;
+import com.hp.gagawa.java.elements.H2;
+import com.hp.gagawa.java.elements.Head;
+import com.hp.gagawa.java.elements.Html;
+import com.hp.gagawa.java.elements.Input;
+import com.hp.gagawa.java.elements.Label;
+import com.hp.gagawa.java.elements.Li;
+import com.hp.gagawa.java.elements.Option;
+import com.hp.gagawa.java.elements.P;
+import com.hp.gagawa.java.elements.Select;
+import com.hp.gagawa.java.elements.Table;
+import com.hp.gagawa.java.elements.Td;
+import com.hp.gagawa.java.elements.Text;
+import com.hp.gagawa.java.elements.Title;
+import com.hp.gagawa.java.elements.Tr;
+import com.hp.gagawa.java.elements.Ul;
+
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
@@ -53,33 +79,29 @@ import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
+import eu.abc4trust.returnTypes.UiIssuanceArguments;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
+import eu.abc4trust.returnTypes.ui.CredentialInUi;
+import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
+import eu.abc4trust.returnTypes.ui.TokenCandidate;
+import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
+import eu.abc4trust.returnTypes.ui.UiCommonArguments;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
 import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
-import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.PresentationTokenDescription;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.URISet;
-import eu.abc4trust.returnTypes.UiIssuanceArguments;
-import eu.abc4trust.returnTypes.ui.UiCommonArguments;
-import eu.abc4trust.returnTypes.UiPresentationArguments;
-import eu.abc4trust.returnTypes.IssuanceReturn;
-import eu.abc4trust.returnTypes.ui.TokenCandidate;
-import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
-import eu.abc4trust.returnTypes.ui.CredentialInUi;
-import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
-import eu.abc4trust.xml.PresentationTokenDescription;
-import com.hp.gagawa.java.elements.*;
-import org.apache.commons.lang.SerializationUtils;
 
 @Path("/user")
 public class UserService {
@@ -266,7 +288,7 @@ public class UserService {
             UserHelper instance = UserHelper.getInstance();
             
             for(URI uri : instance.keyStorage.listUris()) {
-                java.lang.Object obj = (java.lang.Object)SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
+                Object obj = SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
                 if(obj instanceof CredentialSpecification) {
                     sel.appendChild(new Option().appendChild(new Text(uri.toString())));
                 }
