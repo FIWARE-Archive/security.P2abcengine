@@ -41,6 +41,7 @@ import eu.abc4trust.cryptoEngine.uprove.user.ReloadTokensCommunicationStrategy;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
 import eu.abc4trust.smartcard.CardStorage;
 import eu.abc4trust.smartcardManager.AbcSmartcardManager;
@@ -52,6 +53,7 @@ public class UserHelper extends AbstractHelper {
 
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
+    public KeyStorage keyStorage; 
     
     
 
@@ -112,6 +114,7 @@ public class UserHelper extends AbstractHelper {
             Injector injector = Guice.createInjector(combinedModule);
 
             this.keyManager = injector.getInstance(KeyManager.class);
+            this.keyStorage = injector.getInstance(KeyStorage.class);
             this.credentialManager = injector.getInstance(CredentialManager.class);
             this.smartcardManager = injector.getInstance(AbcSmartcardManager.class);
             this.cardStorage = injector.getInstance(CardStorage.class);

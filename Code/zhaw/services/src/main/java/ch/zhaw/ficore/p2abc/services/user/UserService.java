@@ -83,6 +83,7 @@ import eu.abc4trust.returnTypes.ui.CredentialInUi;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.xml.PresentationTokenDescription;
 import com.hp.gagawa.java.elements.*;
+import org.apache.commons.lang.SerializationUtils;
 //import eu.abc4trust.ri.servicehelper.user.UserHelper;
 //import eu.abc4trust.services.helpers.UserDebugger;
 
@@ -229,27 +230,60 @@ public class UserService {
     @GET
     @Path("/obtainCredential/")
     public Response obtainCredential() {
-        Html html = new Html();
-        Head head = new Head().appendChild(new Title().appendChild(new Text("Obtain Credential")));
-        html.appendChild(head);
-        Div mainDiv = new Div();
-        html.appendChild(new Body().appendChild(mainDiv));
-        mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
-        Form f = new Form("post");
-        f.appendChild(new Label().appendChild(new Text("Username:")));
-        f.appendChild(new Input().setType("text"));
-        f.appendChild(new Br());
-        f.appendChild(new Label().appendChild(new Text("Password:")));
-        f.appendChild(new Input().setType("password"));
-        f.appendChild(new Br());
-        f.appendChild(new Label().appendChild(new Text("Issuer:")));
-        f.appendChild(new Input().setType("text"));
-        f.appendChild(new Br());
-        f.appendChild(new Label().appendChild(new Text("Credential specification:")));
-        f.appendChild(new Input().setType("text"));
-        f.appendChild(new Br());
-        mainDiv.appendChild(f);
-        return Response.ok(html.write()).build();
+        try {
+            Html html = new Html();
+            Head head = new Head().appendChild(new Title().appendChild(new Text("Obtain Credential")));
+            html.appendChild(head);
+            Div mainDiv = new Div();
+            html.appendChild(new Body().appendChild(mainDiv));
+            mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
+            Form f = new Form("post");
+            
+            Table tbl = new Table();
+            Tr row = null;
+            Td td = null;
+            f.appendChild(tbl);
+            
+            row = new Tr();
+            row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Username:"))));
+            row.appendChild(new Td().appendChild(new Input().setType("text")));
+            tbl.appendChild(row);
+            
+            row = new Tr();
+            row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Password:"))));
+            row.appendChild(new Td().appendChild(new Input().setType("password")));
+            tbl.appendChild(row);
+            
+            row = new Tr();
+            row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Issuer:"))));
+            row.appendChild(new Td().appendChild(new Input().setType("text")));
+            tbl.appendChild(row);
+            
+            row = new Tr();
+            row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Credential specification:"))));
+            Select sel = new Select();
+            row.appendChild(new Td().appendChild(sel));
+            tbl.appendChild(row);
+            
+            
+            mainDiv.appendChild(f);
+            
+            this.initializeHelper();
+            UserHelper instance = UserHelper.getInstance();
+            
+            for(URI uri : instance.keyStorage.listUris()) {
+                java.lang.Object obj = (java.lang.Object)SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
+                if(obj instanceof CredentialSpecification) {
+                    sel.appendChild(new Option().appendChild(new Text(uri.toString())));
+                }
+            }
+            
+            return Response.ok(html.write()).build();
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
     }
     
     @POST
