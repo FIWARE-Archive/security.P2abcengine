@@ -109,11 +109,6 @@ public class VerificationHelper extends AbstractHelper {
     public VerifierAbcEngine engine;
     // public KeyManager verifierKeyManager;
     private Random random;
-    private TokenStorage tokenStorage;
-
-
-
-
     /**
      * holds map resources by filename (without path) and the bytes of resource
      */
@@ -150,7 +145,7 @@ public class VerificationHelper extends AbstractHelper {
 
             this.random = injector.getInstance(Random.class);
 
-            this.tokenStorage = injector.getInstance(TokenStorage.class);
+            injector.getInstance(TokenStorage.class);
 
             if((cryptoEngine == CryptoEngine.UPROVE) || (cryptoEngine == CryptoEngine.BRIDGED)) {
                throw new RuntimeException("We only support Idemix. Sorry :(");

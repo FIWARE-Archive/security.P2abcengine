@@ -28,11 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,10 +53,8 @@ import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
-//import eu.abc4trust.ri.servicehelper.FileSystem;
 import eu.abc4trust.ri.servicehelper.SystemParametersHelper;
 import eu.abc4trust.xml.Attribute;
-import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceLogEntry;
@@ -68,8 +62,6 @@ import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
 import eu.abc4trust.xml.IssuancePolicy;
 import eu.abc4trust.xml.IssuerParameters;
-import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.SecretKey;
 import eu.abc4trust.xml.SystemParameters;
 
 @SuppressWarnings("deprecation")
@@ -116,17 +108,13 @@ public class IssuanceHelper extends AbstractHelper {
         .info("IssuanceHelper : create instance for issuer service "
                 + cryptoEngine + " : " + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
-        this.systemAndIssuerParamsPrefix = systemAndIssuerParamsPrefix;
         this.fileStoragePrefix = fileStoragePrefix;
-        this.systemParametersResource = this.fileStoragePrefix
-                + SYSTEM_PARAMS_NAME_BRIDGED;
-
         UProveUtils uproveUtils = new UProveUtils();
         this.setupSingleEngineForService(
                 cryptoEngine, uproveUtils,
                 revocationAuthorityParametersResourcesList, modules);
 
-        this.random = new SecureRandom();
+        new SecureRandom();
     }
 
 
@@ -155,20 +143,11 @@ public class IssuanceHelper extends AbstractHelper {
     private IssuerAbcEngine idemixEngine = null;
 
 
-    private final Map<String, SpecAndPolicy> specAndPolicyMap = new HashMap<String, SpecAndPolicy>();
-
-    private Random random;
-
-    private final ObjectFactory of = new ObjectFactory();
-
     private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
     private KeyManager uproveKeyManager;
     private KeyManager idemixKeyManager;
 
-    private final String systemAndIssuerParamsPrefix;
     private final String fileStoragePrefix;
-    private final String systemParametersResource;
-
     private CredentialManager credentialManager;
 
 
@@ -267,17 +246,6 @@ public class IssuanceHelper extends AbstractHelper {
                 + " - with version number : " + issuerParameters.getVersion());
 
         keyManager.storeIssuerParameters(issuerParamsUid, issuerParameters);
-        boolean urnScheme = "urn".equals(issuerParamsUid.getScheme());
-      
-
-
-        if (credentialManager != null) {
-            SecretKey issuerPrivateKeyForIssuerParameters =
-                    credentialManager.getIssuerSecretKey(issuerParamsUid);
-
-          
-        }
-
         IssuanceHelper.log.info(" - created issuerParameters with UID : "
                 + issuerParameters.getParametersUID());
 
@@ -449,58 +417,6 @@ public class IssuanceHelper extends AbstractHelper {
         return response;
     }
 
-
-    private void populateIssuerAttributes(SpecAndPolicy specAndPolicy,
-            List<Attribute> issuerAtts, Map<String, Object> attributeValueMap) {
-
-        CredentialSpecification credSpec = specAndPolicy.getCredentialSpecification();
-
-        // TODO - to make proper check - also check 'unknown' from IssuancePolicy
-        // eg findUnknownAttributtes(ip);
-        // and check that all attribues in credspecs are matched..
-        if (credSpec.getAttributeDescriptions().getAttributeDescription().size() < attributeValueMap
-                .size()) {
-            throw new IllegalStateException("Wrong number of attributes ? - in credspec : "
-                    + credSpec.getAttributeDescriptions().getAttributeDescription().size() + " - in map "
-                    + attributeValueMap.size());
-        }
-
-
-        Map<String, AttributeDescription> adMap = new HashMap<String, AttributeDescription>();
-        for (AttributeDescription ad : credSpec.getAttributeDescriptions().getAttributeDescription()) {
-            adMap.put(ad.getType().toString(), ad);
-        }
-
-        Set<String> definedAttributes = attributeValueMap.keySet();
-        for (String key : definedAttributes) {
-            AttributeDescription ad = adMap.get(key);
-            if (ad == null) {
-                throw new IllegalStateException("No Attribute in Credspec with type : " + key);
-            }
-
-            Object value = attributeValueMap.get(key);
-
-            Attribute attribute = this.of.createAttribute();
-            // TODO : Howto create vaules ??
-            attribute.setAttributeUID(URI.create("" + this.random.nextLong()));
-
-            Object xmlValue = new AttributeValueConverter().convertValue(ad
-                    .getDataType().toString(), value);
-  
-            attribute.setAttributeValue(xmlValue);
-            attribute.setAttributeDescription(this.of.createAttributeDescription());
-            attribute.getAttributeDescription().setDataType(URI.create(ad.getDataType().toString()));
-            attribute.getAttributeDescription().setEncoding(URI.create(ad.getEncoding().toString()));
-            attribute.getAttributeDescription().setType(URI.create(ad.getType().toString()));
-
-            // TODO:SETTING Friendly's should be handled inside User Engine!!!
-            attribute.getAttributeDescription().getFriendlyAttributeName()
-            .addAll(ad.getFriendlyAttributeName());
-
-            //
-            issuerAtts.add(attribute);
-        }
-    }
 
     public IssuanceMessageAndBoolean initIssuanceProtocol(
             IssuancePolicy issuancePolicy, List<Attribute> attributes)

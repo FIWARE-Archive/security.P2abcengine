@@ -25,7 +25,6 @@ package ch.zhaw.ficore.p2abc.services.verification;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-//import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,7 +32,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -52,7 +50,6 @@ import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
-//import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
@@ -62,6 +59,8 @@ import eu.abc4trust.xml.PresentationPolicyAlternativesAndPresentationToken;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.PresentationTokenDescription;
 import eu.abc4trust.xml.SystemParameters;
+//import java.util.logging.Logger;
+//import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
 
 @Path("/verification")
 public class VerificationService {
@@ -77,7 +76,6 @@ public class VerificationService {
         if (VerificationHelper.isInit()) {
             System.out.println(" - Helper already init'ed");
         } else {
-            String fileStoragePrefix = "verifier_storage/";
             if(System.getProperty("PathToUProveExe", null) == null) {
                 String uprovePath = "./../uprove/UProveWSDLService/ABC4Trust-UProve/bin/Release";
                 System.setProperty("PathToUProveExe", uprovePath);

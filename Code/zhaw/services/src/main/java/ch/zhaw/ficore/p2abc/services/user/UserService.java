@@ -87,7 +87,6 @@ import eu.abc4trust.returnTypes.ui.CredentialInUi;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.returnTypes.ui.TokenCandidate;
 import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
-import eu.abc4trust.returnTypes.ui.UiCommonArguments;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialDescription;
@@ -257,7 +256,6 @@ public class UserService {
             
             Table tbl = new Table();
             Tr row = null;
-            Td td = null;
             f.appendChild(tbl);
             
             row = new Tr();
@@ -307,8 +305,6 @@ public class UserService {
     @Consumes ({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
     public Response presentationArguments(JAXBElement<UiPresentationArguments> args_) {
         UiPresentationArguments args = args_.getValue();
-        UiCommonArguments cargs = args.data;
-        
         Html html = new Html();
         Head head = new Head();
         head.appendChild(new Title().appendChild(new Text("Candidate Selection")));
@@ -631,7 +627,7 @@ public class UserService {
             createABCEBoolean.setValue(r);
 
             if (r) {
-                instance.loadSystemParameters();
+                UserHelper.loadSystemParameters();
             }
 
             return log.exit(Response.ok(of.createABCEBoolean(createABCEBoolean),
@@ -713,7 +709,6 @@ public class UserService {
             System.out.println("Create UserHelper FAILED " + ex);
             ex.printStackTrace();
         }
-        UserHelper instance = UserHelper.getInstance();
     }
 
     @POST()
