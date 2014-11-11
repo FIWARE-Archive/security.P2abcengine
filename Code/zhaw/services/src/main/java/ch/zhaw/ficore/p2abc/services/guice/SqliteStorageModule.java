@@ -110,6 +110,7 @@ public class SqliteStorageModule extends AbstractModule {
             //- What to do when config fails?? -- munt
             // -- Log the error and continue; we'll fail harder soon enough -- Stephan
             e.printStackTrace();
+			throw new RuntimeException(e);
         }
     }
 }
