@@ -372,9 +372,8 @@ public class UserService {
             r = issuanceProtocolStep(of.createIssuanceMessage(thirdIssuanceMessage));
             if(r.getStatus() != 200)
                 throw new RuntimeException("Internal step failed!");
-            IssuanceMessageAndBoolean fourthIssuanceMessageAndBoolean = ((JAXBElement<IssuanceMessageAndBoolean>)r.getEntity()).getValue();
             
-            return Response.ok("okidokeli").build();
+            return Response.ok("Credential obtained!").build();
         }
         catch(Exception e) {
             log.catching(e);
