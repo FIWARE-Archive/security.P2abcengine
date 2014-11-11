@@ -1,21 +1,20 @@
 package ch.zhaw.ficore.p2abc.storage;
 
-import eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.net.URI;
+import java.util.List;
+
+import javax.xml.bind.DatatypeConverter;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
+import eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer;
 import eu.abc4trust.xml.IssuanceToken;
 import eu.abc4trust.xml.PseudonymInToken;
-import javax.xml.bind.DatatypeConverter;
-import java.util.List;
 
 public class GenericTokenStorageIssuer implements TokenStorageIssuer {
     private URIBytesStorage tokensStorageIssuer;

@@ -6,14 +6,19 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.apache.logging.log4j.LogManager;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sqlite.SQLiteDataSource;
 
 /** Tests basic functions of SQLite URI storage.
  * 
@@ -31,19 +36,41 @@ public class TestSqliteURIBytesStorage {
     private static final String table = "TestTable";
 
     private static SqliteURIBytesStorage storage;
+    private static String dbName = "URIBytesStorage";
     private static File storageFile;
     private static URI myUri;
 
-    @Before
-    public void setUp() throws Exception {
-        storageFile = File.createTempFile("test", "sql", new File("."));
-        storage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        // rcarver - setup the jndi context and the datasource
+        storageFile = new File(dbName);
         myUri = new URI("http://www.zhaw.ch");
+
+        try {
+            // Create initial context
+            System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+                "org.apache.naming.java.javaURLContextFactory");
+            System.setProperty(Context.URL_PKG_PREFIXES, 
+                "org.apache.naming");            
+            InitialContext ic = new InitialContext();
+
+            ic.createSubcontext("java:");
+            ic.createSubcontext("java:/comp");
+            ic.createSubcontext("java:/comp/env");
+            ic.createSubcontext("java:/comp/env/jdbc");
+           
+            SQLiteDataSource ds = new SQLiteDataSource();
+            ds.setUrl("jdbc:sqlite:" + storageFile.getPath());
+            ic.bind("java:/comp/env/jdbc/" + dbName, ds);
+        } catch (NamingException ex) {
+            LogManager.getLogger().catching(ex);
+        }
+        
+        storage = new SqliteURIBytesStorage(dbName, table);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        storage.close();
+    @AfterClass
+    public static void tearDownClass() {
         storageFile.delete();
     }
 
@@ -62,6 +89,7 @@ public class TestSqliteURIBytesStorage {
         storage.put("blob", data);
         byte[] ret = storage.get("blob");
         assertTrue(Arrays.equals(ret,data));
+        storage.delete("blob");
     }
     
     @Test
@@ -84,9 +112,8 @@ public class TestSqliteURIBytesStorage {
                         try {
                             myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
                             myStorage.put("zhaw.ch", "123".getBytes());
-                            myStorage.close();
                         } catch (ClassNotFoundException | SQLException
-                                | UnsafeTableNameException e) {
+                                | UnsafeTableNameException | NamingException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
@@ -99,9 +126,8 @@ public class TestSqliteURIBytesStorage {
                         try {
                             SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
                             myStorage.put("zhaw.ch/"+v, "234".getBytes());
-                            myStorage.close();
                         } catch (ClassNotFoundException | SQLException
-                                | UnsafeTableNameException e) {
+                                | UnsafeTableNameException | NamingException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
@@ -117,21 +143,33 @@ public class TestSqliteURIBytesStorage {
         for(Thread thrd : threads) {
             thrd.join();
         }
-        storage2.close();
         for(int j = 0; j < MAX_J; j++)
             assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
+        
+        storage.delete("zhaw.ch");
+        for(int j = 0; j < MAX_J; j++)
+            storage.delete("zhaw.ch/" + j);
+
     }
     
     @Test
     public void testPutNew() throws Exception {
         assertTrue(storage.putNew("foobar", "barfoo".getBytes()));
         assertFalse(storage.putNew("foobar", "barfoo".getBytes()));
+        storage.delete("foobar");
     }
     
     @Test
     public void testURIString() throws Exception {
-        storage.put("http://zhaw.ch/foo bar", new byte[]{1,2,3});
-        storage.put("http://zhaw.ch/foo%20bar", new byte[]{5,4,3});
+        String uri1 = "http://zhaw.ch/foo bar";
+        String uri2 = "http://zhaw.ch/foo%20bar";
+        
+        storage.delete(uri1);
+        storage.delete(uri2);
+        
+        storage.put(uri1, new byte[]{1,2,3});
+        storage.put(uri2, new byte[]{5,4,3});
+        
         byte[] ret = storage.get(new URI("http://zhaw.ch/foo%20bar"));
         assertTrue(Arrays.equals(ret, new byte[]{5,4,3}));
         ret = storage.get("http://zhaw.ch/foo bar");
@@ -140,27 +178,41 @@ public class TestSqliteURIBytesStorage {
         assertTrue(uris.size() == 1);
         List<String> keys = storage.keysAsStrings();
         assertTrue(keys.size() == 2);
+ 
+        storage.delete(uri1);
+        storage.delete(uri2);
     }
     
     @Test
     public void testValuesAndKeys() throws Exception {
-        storage.put(new URI("urn:foobar"), new byte[]{1,9,9});
-        storage.put(new URI("urn:barfoo"), new byte[]{0,0,0});
+        String urn1 = "urn:foobar";
+        String urn2 = "urn:barfoo";
+        URI uri1 = new URI(urn1);
+        URI uri2 = new URI(urn2);
+
+        storage.delete(uri1);
+        storage.delete(uri2);
+        
+        storage.put(uri1, new byte[]{1,9,9});
+        storage.put(uri2, new byte[]{0,0,0});
         
         List<URI> keys = storage.keys();
         assertTrue(keys.size() == 2);
         
-        assertTrue(keys.contains(new URI("urn:foobar")));
-        assertTrue(keys.contains(new URI("urn:barfoo")));
+        assertTrue(keys.contains(uri1));
+        assertTrue(keys.contains(uri2));
         
-        assertTrue(Arrays.equals(new byte[]{1,9,9}, storage.get(new URI("urn:foobar"))));
-        assertTrue(Arrays.equals(new byte[]{0,0,0}, storage.get(new URI("urn:barfoo"))));
+        assertTrue(Arrays.equals(new byte[]{1,9,9}, storage.get(uri1)));
+        assertTrue(Arrays.equals(new byte[]{0,0,0}, storage.get(uri2)));
         
         List<byte[]> values = storage.values();
         assertTrue(values.size() == 2);
         
         assertTrue(Arrays.equals(new byte[]{1,9,9}, values.get(0)));
         assertTrue(Arrays.equals(new byte[]{0,0,0}, values.get(1)));
+
+        storage.delete(uri1);
+        storage.delete(uri2);
     }
 
     @Test
@@ -184,6 +236,7 @@ public class TestSqliteURIBytesStorage {
 
         storage.putNew(myUri, stored);
         assertTrue(storage.containsKey(myUri));
+        storage.delete(myUri);
     }
 
     @Test
@@ -195,12 +248,15 @@ public class TestSqliteURIBytesStorage {
         assertTrue(value != null);
         assertTrue(value.length == stored.length);
         assertTrue(Arrays.equals(value, stored));
+
+        storage.delete(myUri);
     }
 
     @Test
     public void testSomeNonexistentKey() throws Exception {
         storage.putNew(myUri, new byte[] { 0x01 });
         assertFalse(storage.containsKey(new URI("http://www.apple.com")));
+        storage.delete(myUri);
     }
 
     @Test
@@ -212,5 +268,7 @@ public class TestSqliteURIBytesStorage {
 
         assertTrue(retrievedString != null);
         assertTrue(retrievedString.equals(testString));
+
+        storage.delete(myUri);
     }
 }
