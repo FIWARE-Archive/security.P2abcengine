@@ -24,12 +24,16 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -38,7 +42,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,6 +55,9 @@ import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 
 import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
@@ -55,6 +65,7 @@ import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.H2;
+import com.hp.gagawa.java.elements.H3;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
@@ -69,6 +80,11 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
 
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
@@ -84,6 +100,7 @@ import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
+import eu.abc4trust.returnTypes.ui.PseudonymListCandidate;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.returnTypes.ui.TokenCandidate;
 import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
@@ -98,7 +115,6 @@ import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
-import eu.abc4trust.xml.PresentationTokenDescription;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.URISet;
 
@@ -108,10 +124,21 @@ public class UserService {
     private static final CryptoEngine CRYPTO_ENGINE = CryptoEngine.IDEMIX; //use idemix always -- munt
 
     private final ObjectFactory of = new ObjectFactory();
+    private final ObjectFactoryReturnTypes rof = new ObjectFactoryReturnTypes();
 
     private Logger log = LogManager.getLogger();
 
     private final String fileStoragePrefix = ""; //no prefix -- munt
+    
+    private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
+    
+    public static synchronized String getIssuerURL(String uiContext) {
+        return uiContextToIssuerURL.get(uiContext);
+    }
+    
+    public static synchronized void putIssuerURL(String uiContext, String issuerURL) {
+        uiContextToIssuerURL.put(uiContext, issuerURL);
+    }
     
     @GET()
     @Path("/status/")
@@ -229,17 +256,160 @@ public class UserService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
     public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) {
         UiIssuanceArguments args = args_.getValue().uia;
-        String s = "";
-        PresentationTokenDescription ptd = null;
-        for(TokenCandidate tc : args.tokenCandidates) {
-            ptd = tc.tokenDescription;
-            s += "TokenCandidate: " + ptd.getTokenUID().toString() + "\n";
-            for(CredentialInUi c : tc.credentials) {
-                s += " Credential: " + c.uri + "\n";
-                s += "  Specification: " + c.desc.getCredentialSpecificationUID().toString() + "\n";
-            }
+        if(args.tokenCandidates.size() == 1 && args.tokenCandidates.get(0).credentials.size() == 0) {
+            Html html = new Html();
+            Head head = new Head().appendChild(new Title().appendChild(new Text("Identity Selection")));
+            html.appendChild(head);
+            Div mainDiv = new Div();
+            html.appendChild(new Body().appendChild(mainDiv));
+            mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
+            Div div = new Div();
+            div.appendChild(new P().appendChild(new Text("The issuer isn't asking you to reveal anything.")));
+            Form f = new Form("./obtainCredential3");
+            f.setMethod("post");
+            f.appendChild(new Input().setType("hidden")
+                    .setName("uic")
+                    .setValue(args.uiContext.toString()));
+            f.appendChild(new Input().setType("hidden")
+                    .setName("policyId") //chosenPolicy
+                    .setValue(Integer.toString(0)));
+            f.appendChild(new Input().setType("hidden")
+                    .setName("candidateId") //chosenPresentationToken or chosenIssuanceToken (weird stuff)
+                    .setValue(Integer.toString(0))); 
+            f.appendChild(new Input().setType("hidden")
+                    .setName("pseudonymId") //chosenPseudonymList
+                    .setValue(Integer.toString(0))); 
+            f.appendChild(new Input().setType("submit").setValue("Continue"));
+            div.appendChild(f);
+            
+            mainDiv.appendChild(div);
+            return Response.ok(html.write()).build();
         }
-        return Response.ok(s+"...").build();
+        else {
+            Html html = new Html();
+            Head head = new Head().appendChild(new Title().appendChild(new Text("Identity Selection")));
+            html.appendChild(head);
+            Div mainDiv = new Div();
+            html.appendChild(new Body().appendChild(mainDiv));
+            mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
+            Div div = getDivForTokenCandidates(args.tokenCandidates, 0, args.uiContext.toString());
+            mainDiv.appendChild(div);
+            return Response.ok(html.write()).build();
+        }
+    }
+    
+    @POST
+    @Path("/obtainCredential2")
+    public Response obtainCredential2(
+            @FormParam("un") String username,
+            @FormParam("pw") String password,
+            @FormParam("is") String issuerUrl,
+            @FormParam("cs") String credSpecUid) {
+        try {
+            /* Make an IssuanceRequest */
+            IssuanceRequest ir = new IssuanceRequest();
+            
+            AuthInfoSimple authSimple = new AuthInfoSimple();
+            authSimple.password = password;
+            authSimple.username = username;
+            
+            ir.credentialSpecificationUid = credSpecUid;
+            ir.authRequest = new AuthenticationRequest(authSimple);
+            
+            log.warn("issuerUrl: " + issuerUrl);
+            
+            IssuanceMessageAndBoolean issuanceMessageAndBoolean = (IssuanceMessageAndBoolean) postRequest(
+                    issuerUrl + "/issuanceRequest", 
+                    toXML(IssuanceRequest.class, ir), 
+                    IssuanceMessageAndBoolean.class);
+            
+            IssuanceMessage firstIssuanceMessage = issuanceMessageAndBoolean.getIssuanceMessage();
+            
+            Response r = issuanceProtocolStep(of.createIssuanceMessage(firstIssuanceMessage));
+            if(r.getStatus() != 200)
+                throw new RuntimeException("Internal step failed!");
+            
+            IssuanceReturn issuanceReturn = ((JAXBElement<IssuanceReturn>)r.getEntity()).getValue();
+            
+            putIssuerURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
+            
+            return issuanceArguments(rof.wrap(issuanceReturn));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST
+    @Path("/obtainCredential3")
+    public Response obtainCredential3(
+            @FormParam("policyId") String policyId,
+            @FormParam("candidateId") String candidateId,
+            @FormParam("pseudonymId") String pseudonymId,
+            @FormParam("uic") String uiContext
+            ) {
+        try {
+            UiIssuanceReturn uir = new UiIssuanceReturn();
+            uir.uiContext = new URI(uiContext);
+            uir.chosenIssuanceToken = Integer.parseInt(candidateId);
+            uir.chosenPseudonymList = Integer.parseInt(pseudonymId);
+            
+            String issuerUrl = getIssuerURL(uiContext);
+            
+            Response r = issuanceProtocolStep(uir);
+            if(r.getStatus() != 200)
+                throw new RuntimeException("Internal step failed!");
+            
+            IssuanceMessage secondIssuanceMessage = ((JAXBElement<IssuanceMessage>)r.getEntity()).getValue();
+            log.warn(toXML(IssuanceMessage.class, of.createIssuanceMessage(secondIssuanceMessage)));
+            IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) postRequest(
+                    issuerUrl + "/issuanceProtocolStep", 
+                    toXML(IssuanceMessage.class, of.createIssuanceMessage(secondIssuanceMessage)), 
+                    IssuanceMessageAndBoolean.class);
+            IssuanceMessage thirdIssuanceMessage = thirdIssuanceMessageAndBoolean.getIssuanceMessage();
+            
+            r = issuanceProtocolStep(of.createIssuanceMessage(thirdIssuanceMessage));
+            if(r.getStatus() != 200)
+                throw new RuntimeException("Internal step failed!");
+            IssuanceMessageAndBoolean fourthIssuanceMessageAndBoolean = ((JAXBElement<IssuanceMessageAndBoolean>)r.getEntity()).getValue();
+            
+            return Response.ok("okidokeli").build();
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+
+    }
+    
+    public static String toXML(Class clazz, Object obj) throws JAXBException {
+        JAXBContext context = JAXBContext
+                .newInstance(clazz);
+        javax.xml.bind.Marshaller m = context.createMarshaller();
+        m.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+        StringWriter w = new StringWriter();
+        m.marshal(obj, w);
+        return w.toString();
+    }
+    
+    public static Object fromXML(Class clazz, String xml) throws JAXBException {
+        return JAXB.unmarshal(new StringReader(xml), clazz);
+    }
+    
+    public static Object postRequest(String url, String xml, Class clazz) throws ClientHandlerException, UniformInterfaceException, JAXBException {
+        Client client = new Client();
+        
+        WebResource webResource = client
+                .resource(url);
+        
+        ClientResponse response = webResource.type("application/xml")
+                .post(ClientResponse.class, xml);
+        
+        if(response.getStatus() != 200)
+            throw new RuntimeException("postRequest failed for: " + url +" got " + response.getStatus());
+        
+        return fromXML(clazz, response.getEntity(String.class));
     }
     
     @GET
@@ -252,7 +422,8 @@ public class UserService {
             Div mainDiv = new Div();
             html.appendChild(new Body().appendChild(mainDiv));
             mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
-            Form f = new Form("post");
+            Form f = new Form("./obtainCredential2");
+            f.setMethod("post");
             
             Table tbl = new Table();
             Tr row = null;
@@ -260,25 +431,26 @@ public class UserService {
             
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Username:"))));
-            row.appendChild(new Td().appendChild(new Input().setType("text")));
+            row.appendChild(new Td().appendChild(new Input().setType("text").setName("un")));
             tbl.appendChild(row);
             
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Password:"))));
-            row.appendChild(new Td().appendChild(new Input().setType("password")));
+            row.appendChild(new Td().appendChild(new Input().setType("password").setName("pw")));
             tbl.appendChild(row);
             
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Issuer:"))));
-            row.appendChild(new Td().appendChild(new Input().setType("text")));
+            row.appendChild(new Td().appendChild(new Input().setType("text").setName("is")));
             tbl.appendChild(row);
             
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Credential specification:"))));
-            Select sel = new Select();
+            Select sel = new Select().setName("cs");
             row.appendChild(new Td().appendChild(sel));
             tbl.appendChild(row);
             
+            f.appendChild(new Input().setType("submit").setValue("Obtain"));
             
             mainDiv.appendChild(f);
             
@@ -315,76 +487,92 @@ public class UserService {
         
         html.appendChild(new Body().appendChild(mainDiv));
         
-        int tId = 0;
-        
         for(TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-            for(TokenCandidate tc : tcpp.tokenCandidates) {
-                Div div = new Div();
-                div.setCSSClass("tokenCandidate");
-                
-                div.appendChild(new H2().appendChild(new Text("Candidate")));
-                
-                Table tbl = new Table();
-                Tr row = null;
-                Td td = null;
-                
-                div.appendChild(tbl);
-                
-                for(CredentialInUi c : tc.credentials) {
-                    Form f = new Form("post");
-                    
-                    row = new Tr();
-                    td = new Td();
-                    td.appendChild(new Text("Credential"));
-                    row.appendChild(td); 
-                    td = new Td();
-                    td.appendChild(new Text(c.uri.toString()));
-                    row.appendChild(td);       
-                    tbl.appendChild(row);
-                    
-                    row = new Tr();
-                    td = new Td();
-                    td.appendChild(new Text("Specification"));
-                    row.appendChild(td); 
-                    td = new Td();
-                    td.appendChild(new Text(c.desc.getCredentialSpecificationUID().toString()));
-                    row.appendChild(td);       
-                    tbl.appendChild(row);
-                    
-                    f.appendChild(new Input().setType("hidden")
-                            .setName("policyId")
-                            .setValue(Integer.toString(tcpp.policyId)));
-                    f.appendChild(new Input().setType("hidden")
-                            .setName("candidateId")
-                            .setValue(Integer.toString(tc.candidateId)));                 
-                    
-                    f.appendChild(new Input()
-                        .setType("submit")
-                        .setValue("Use candidate #" + (tId+1)));
-                    tId++;
-                }
-                
-                
-                
-                P p = new P().appendChild(new B().appendChild(new Text("Revealed attributes")));
-                div.appendChild(p);
-                
-                Ul ul = new Ul();
-                
-                List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
-                for(RevealedAttributeValue reveal : reveals) {
-                    for(FriendlyDescription desc : reveal.descriptions) {
-                        ul.appendChild(new Li().appendChild(new Text(desc.getValue())));
-                    }
-                }
-
-                div.appendChild(ul);
-                
-                mainDiv.appendChild(div);
-            }
+            
+            Div div = getDivForTokenCandidates(tcpp.tokenCandidates, tcpp.policyId, args.uiContext.toString());
+            
+            mainDiv.appendChild(div);
         }
         
         return Response.ok(html.write()).build();
+    }
+
+    public static Div getDivForTokenCandidates(List<TokenCandidate> tcs, int policyId, String uiContext) {
+        Div enclosing = new Div();
+        enclosing.appendChild(new P().appendChild(new Text(Integer.toString(tcs.size()))));
+        for(TokenCandidate tc : tcs) {
+            Div div = new Div();
+            div.setCSSClass("tokenCandidate");
+            div.appendChild(new H2().appendChild(new Text("Candidate")));
+            enclosing.appendChild(div);
+            
+            Table tbl = new Table();
+            Tr row = null;
+            Td td = null;
+            
+            div.appendChild(new H3().appendChild(new Text("Credentials " + tc.credentials.size())));
+            div.appendChild(tbl);
+            
+            for(CredentialInUi c : tc.credentials) {
+                Form f = new Form("post");
+                
+                row = new Tr();
+                td = new Td();
+                td.appendChild(new Text("Credential"));
+                row.appendChild(td); 
+                td = new Td();
+                td.appendChild(new Text(c.uri.toString()));
+                row.appendChild(td);       
+                tbl.appendChild(row);
+                
+                row = new Tr();
+                td = new Td();
+                td.appendChild(new Text("Specification"));
+                row.appendChild(td); 
+                td = new Td();
+                td.appendChild(new Text(c.desc.getCredentialSpecificationUID().toString()));
+                row.appendChild(td);       
+                tbl.appendChild(row);
+                
+                f.appendChild(new Input().setType("hidden")
+                        .setName("uic")
+                        .setValue(uiContext));
+                f.appendChild(new Input().setType("hidden")
+                        .setName("policyId") //chosenPolicy
+                        .setValue(Integer.toString(policyId)));
+                f.appendChild(new Input().setType("hidden")
+                        .setName("candidateId") //chosenPresentationToken or chosenIssuanceToken (weird stuff)
+                        .setValue(Integer.toString(tc.candidateId))); 
+                
+                Select sel = new Select();
+                sel.setName("pseudonymId");
+                for(PseudonymListCandidate pc : tc.pseudonymCandidates) {
+                    sel.appendChild(new Option().appendChild(new Text(Integer.toString(pc.candidateId)))); //chosenPseudonymList
+                    //TODO: What the hell is this pseudonym thing?
+                }
+                f.appendChild(sel);
+                
+                f.appendChild(new Input()
+                    .setType("submit")
+                    .setValue("Continue using this candidate."));
+            }
+        }
+        P p = new P().appendChild(new B().appendChild(new Text("Revealed attributes")));
+        enclosing.appendChild(p);
+        
+        Ul ul = new Ul();
+        
+        for(TokenCandidate tc : tcs) {
+            List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
+            for(RevealedAttributeValue reveal : reveals) {
+                for(FriendlyDescription desc : reveal.descriptions) {
+                    ul.appendChild(new Li().appendChild(new Text(desc.getValue())));
+                }
+            }
+        }
+
+        enclosing.appendChild(ul);
+        return enclosing;
     }
 
     /**
