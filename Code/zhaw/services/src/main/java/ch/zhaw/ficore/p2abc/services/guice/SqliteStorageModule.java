@@ -35,7 +35,7 @@ public class SqliteStorageModule extends AbstractModule {
     protected void configure() {
 
         String name = "unknown";
-        String dbName = "p2abc";
+        String dbName = "URIBytesStorage";
 
         switch(type) {
         case ISSUANCE:
