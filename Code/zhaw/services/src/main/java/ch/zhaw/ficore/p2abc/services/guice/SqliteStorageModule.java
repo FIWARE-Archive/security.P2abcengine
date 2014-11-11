@@ -35,7 +35,7 @@ public class SqliteStorageModule extends AbstractModule {
     protected void configure() {
 
         String name = "unknown";
-        String file = configuration.getDatabaseFilePath();
+        String dbName = "p2abc";
 
         switch(type) {
         case ISSUANCE:
@@ -61,56 +61,55 @@ public class SqliteStorageModule extends AbstractModule {
         try {
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("keyStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "keyStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "keyStorage"));
             this.bind(eu.abc4trust.keyManager.KeyStorage.class).
             to(GenericKeyStorage.class).in(Singleton.class);
 
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("issuancePolicyStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "issuancePolicyStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "issuancePolicyStorage"));
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("queryRuleStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "queryRuleStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "queryRuleStorage"));
             this.bind(IssuanceStorage.class).to(GenericIssuanceStorage.class).in(Singleton.class);
 
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("tokensStorageIssuer"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "tokensStorageIssuer"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "tokensStorageIssuer"));
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("pseudonymsStorageIssuer"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "pseudonymsStorageIssuer"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "pseudonymsStorageIssuer"));
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("logStorageIssuer"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "logStorageIssuer"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "logStorageIssuer"));
             this.bind(eu.abc4trust.abce.internal.issuer.tokenManagerIssuer.TokenStorageIssuer.class)
             .to(GenericTokenStorageIssuer.class).in(Singleton.class);
 
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("secretStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "secretStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "secretStorage"));
             this.bind(eu.abc4trust.abce.internal.user.credentialManager.SecretStorage.class)
             .to(GenericSecretStorage.class).in(Singleton.class);
 
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("issuerSecretKeyStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "issuerSecretKeyStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "issuerSecretKeyStorage"));
             this.bind(eu.abc4trust.abce.internal.issuer.credentialManager.CredentialStorage.class)
             .to(GenericIssuerCredentialStorage.class).in(Singleton.class);
 
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("credentialStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "credentialStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "credentialStorage"));
             this.bind(URIBytesStorage.class)
             .annotatedWith(Names.named("pseudonymStorage"))
-            .toInstance(new SqliteURIBytesStorage(file, name + "_" + "pseudonymStorage"));
+            .toInstance(new SqliteURIBytesStorage(dbName, name + "_" + "pseudonymStorage"));
             this.bind(eu.abc4trust.abce.internal.user.credentialManager.CredentialStorage.class)
             .to(GenericUserCredentialStorage.class).in(Singleton.class);
         } catch (ClassNotFoundException | SQLException
                 | UnsafeTableNameException | NamingException e) {
-            //TODO: What to do when config fails?? -- munt
+            //- What to do when config fails?? -- munt
             // -- Log the error and continue; we'll fail harder soon enough -- Stephan
             e.printStackTrace();
-            System.exit(-1);
         }
     }
 }
