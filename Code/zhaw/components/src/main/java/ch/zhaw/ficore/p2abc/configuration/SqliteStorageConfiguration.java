@@ -12,14 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="sqlite-storage-configuration")
 public class SqliteStorageConfiguration extends StorageConfiguration {
-    @XmlElement(name="db-file-path")
-    private String dbFilePath;
-
+    
     public SqliteStorageConfiguration() {
-        dbFilePath = "/tmp" + File.separator + "p2abc.db";
     }
 
-    public String getDatabaseFilePath() {
-        return dbFilePath;
-    }
 }
