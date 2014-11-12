@@ -1,8 +1,10 @@
 package ch.zhaw.ficore.p2abc.storage;
 
+import java.io.File;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,7 +36,7 @@ import com.google.inject.name.Named;
  * writing to files which means SQLite relies on file-system locks and the like.
  * SQLite has some known issues under certain circumstances with concurrent 
  * modifications: http://www.sqlite.org/howtocorrupt.html.
- * All methods synchronize through the connection object.
+ * All methods synchronize through a lock object which is bound to the DBName.
  * 
  * @author mroman
  */
@@ -45,6 +47,13 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     private String dbName;
 
     private static Map<String,Object> locks = new HashMap<String,Object>();
+    
+    /*
+     * If usePool is set to false rather than using ConnectionPooling and DataSource
+     * configured in Context.xml this class wil use temporary files to store the data.
+     */
+    private static boolean usePool = false;
+    private static Map<String, File> tempFiles = new HashMap<String, File>();
 
     private Logger logger;
 
@@ -72,6 +81,30 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         init(dbName, table);
     }
 
+
+    private Connection getConnection() {
+        try {
+            if(usePool) {
+                return dataSource.getConnection();
+            }
+            else {
+                synchronized(tempFiles) {
+                    if(tempFiles.get(dbName) == null) {
+                        tempFiles.put(dbName,File.createTempFile("storage", "tmp"));
+                    }
+                    String tempFilePath = tempFiles.get(dbName).getAbsolutePath();
+                    Class.forName("org.sqlite.JDBC");
+                    logger.info("Temp file is: " + tempFilePath);
+                    return DriverManager.getConnection("jdbc:sqlite:" + tempFilePath);  
+                }
+            }
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            throw logger.throwing(new RuntimeException(e));
+        }
+    }
+
     /**
      * Performs the "connection sharing" logic. 
      * 
@@ -79,28 +112,32 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @throws SQLException 
      * @throws UnsafeTableNameException 
      */
-    private void init(String filePath, String tableName)
+    private void init(String dbName, String tableName)
             throws ClassNotFoundException, SQLException,
                 UnsafeTableNameException, NamingException {
-        logger.entry(filePath, tableName);
+        logger.entry(dbName, tableName);
 
         checkIfSafeTableName(tableName);
 
         this.tableName = tableName;
-        this.dbName = filePath;
+        this.dbName = dbName;
 
         Statement stmt = null;
 
         try {
-            Context initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:/comp/env");
-            dataSource = (DataSource) envCtx.lookup("jdbc/" + dbName);
+			Connection databaseConnection = null;
+			
+			synchronized(getLock(this)) {
 
-            assert dataSource != null;
-
-            Connection databaseConnection = dataSource.getConnection();
-
-            synchronized(getLock(this)) {
+    			if(usePool) {
+                    Context initCtx = new InitialContext();
+                    Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+                    dataSource = (DataSource) envCtx.lookup("jdbc/" + dbName);
+    
+                    assert dataSource != null;
+                }
+    			
+                databaseConnection = getConnection();
                 stmt = databaseConnection.createStatement();
                 String sql = "CREATE TABLE IF NOT EXISTS " + tableName +
                         "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
@@ -134,10 +171,10 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @return an Object (usable for locking)
      */
     private static synchronized Object getLock(SqliteURIBytesStorage storage) {
-        String filePath = storage.getFilePath();
-        if(locks.get(filePath) == null)
-            locks.put(filePath, new Object());
-        return locks.get(filePath);
+        String key = storage.getDBName();
+        if(locks.get(key) == null)
+            locks.put(key, new Object());
+        return locks.get(key);
     }
 
     /**
@@ -145,7 +182,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * 
      * @return path to database file
      */
-    public String getFilePath() {
+    public String getDBName() {
         return dbName;
     }
 
@@ -198,13 +235,14 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             PreparedStatement keysAsStringsStatement = null;
             
             try {
-                databaseConnection = dataSource.getConnection();
+                databaseConnection = getConnection();
 
                 keysAsStringsStatement = databaseConnection.prepareStatement("SELECT uri FROM " + tableName);
 
                 rst = keysAsStringsStatement.executeQuery();
                 while(rst.next()) {
                     try {
+                        logger.info(" KEY:=" + rst.getString(1));
                         uris.add(rst.getString(1));
                     }
                     catch(Exception e) {
@@ -243,7 +281,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             Connection databaseConnection = null;
 
             try {
-                databaseConnection = dataSource.getConnection();
+                databaseConnection = getConnection();
                 getStatement = databaseConnection.prepareStatement("SELECT value FROM " + tableName + " WHERE hash = ?");
 
                 String hash = hashKey(key);
@@ -317,7 +355,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             Connection databaseConnection = null;
             PreparedStatement deleteStatement = null;
             try {
-                databaseConnection = dataSource.getConnection();
+                databaseConnection = getConnection();
                 deleteStatement = databaseConnection.prepareStatement("DELETE FROM " + tableName + " WHERE hash = ?");
                 String hash = hashKey(key);
                 deleteStatement.setString(1, hash);
@@ -358,7 +396,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             PreparedStatement putStatement = null;
 
             try {
-                databaseConnection = dataSource.getConnection();
+                databaseConnection = getConnection();
                 putStatement = databaseConnection.prepareStatement("UPDATE " + tableName + " SET uri = ?, value = ? WHERE " +
                             " hash = ?");
 
@@ -398,7 +436,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             PreparedStatement putNewStatement = null;
 
             try {
-                databaseConnection = dataSource.getConnection();
+                databaseConnection = getConnection();
                 putNewStatement = databaseConnection.prepareStatement("INSERT INTO " + tableName + "(hash, uri, value) " +
                             "VALUES(?, ?, ?)");
 
@@ -435,7 +473,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
             ResultSet rst = null;
 
             try {
-                databaseConnection = dataSource.getConnection();
+                databaseConnection = getConnection();
                 containsKeyStatement = databaseConnection.prepareStatement("SELECT EXISTS(SELECT 1 FROM " + tableName + " WHERE " +
                         " hash = ? LIMIT 1)");
                 String hash = hashKey(key);

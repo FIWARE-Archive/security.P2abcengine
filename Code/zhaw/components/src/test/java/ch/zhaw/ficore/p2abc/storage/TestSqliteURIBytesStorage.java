@@ -99,7 +99,7 @@ public class TestSqliteURIBytesStorage {
          * with multiple threads involved. 
          */
         
-        SqliteURIBytesStorage storage2 = new SqliteURIBytesStorage(storageFile.getPath(), table);
+        SqliteURIBytesStorage storage2 = new SqliteURIBytesStorage(dbName, table);
         storage.put("zhaw.ch", "winterthur".getBytes());
         assertTrue(Arrays.equals(storage2.get("zhaw.ch"), "winterthur".getBytes()));
         List<Thread> threads = new ArrayList<Thread>();
@@ -110,7 +110,7 @@ public class TestSqliteURIBytesStorage {
                     public void run() {
                         SqliteURIBytesStorage myStorage;
                         try {
-                            myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+                            myStorage = new SqliteURIBytesStorage(dbName, table);
                             myStorage.put("zhaw.ch", "123".getBytes());
                         } catch (ClassNotFoundException | SQLException
                                 | UnsafeTableNameException | NamingException e) {
@@ -124,7 +124,7 @@ public class TestSqliteURIBytesStorage {
                     @Override
                     public void run() {
                         try {
-                            SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(storageFile.getPath(), table);
+                            SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(dbName, table);
                             myStorage.put("zhaw.ch/"+v, "234".getBytes());
                         } catch (ClassNotFoundException | SQLException
                                 | UnsafeTableNameException | NamingException e) {
