@@ -59,10 +59,12 @@ public class TestSqliteURIBytesStorage {
             ic.createSubcontext("java:/comp");
             ic.createSubcontext("java:/comp/env");
             ic.createSubcontext("java:/comp/env/jdbc");
+            ic.createSubcontext("java:/comp/env/cfg");
            
             SQLiteDataSource ds = new SQLiteDataSource();
             ds.setUrl("jdbc:sqlite:" + storageFile.getPath());
             ic.bind("java:/comp/env/jdbc/" + dbName, ds);
+            ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
         } catch (NamingException ex) {
             LogManager.getLogger().catching(ex);
         }
