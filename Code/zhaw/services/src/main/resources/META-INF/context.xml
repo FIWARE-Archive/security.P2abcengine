@@ -2,10 +2,8 @@
 <Context>
   <Resource
     name="jdbc/URIBytesStorage"
-    auth="Container"
     type="javax.sql.DataSource"
     driverClassName="ch.zhaw.ficore.p2abc.storage.SqliteJDBC"
-    url="jdbc:zsqlite:path"
-    maxActive="8"
-    maxIdle="4"/>
+    factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+    url="jdbc:zsqlite:path"/>
 </Context>

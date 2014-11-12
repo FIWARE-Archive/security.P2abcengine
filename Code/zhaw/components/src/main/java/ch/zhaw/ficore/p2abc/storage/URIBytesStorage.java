@@ -111,4 +111,11 @@ public abstract class URIBytesStorage {
 	}
 	
 	public abstract void delete(String key) throws Exception;
+	
+	/**
+	 * Deletes all entries in the storage.
+	 *
+	 * @throws Exception
+	 */
+	public abstract void deleteAll() throws Exception;
 }

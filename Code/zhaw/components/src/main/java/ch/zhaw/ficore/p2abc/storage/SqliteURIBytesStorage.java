@@ -508,4 +508,29 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
     private static String hashKey(String key) {
         return DigestUtils.sha1Hex(key);
     }
+
+
+    public void deleteAll() throws SQLException {
+        logger.entry();
+        
+        Connection databaseConnection = null;
+        PreparedStatement deleteAllStatement = null;
+
+        try {
+            databaseConnection = getConnection();
+            deleteAllStatement = databaseConnection.prepareStatement("DELETE FROM " + tableName);
+            deleteAllStatement.execute();
+        }
+        catch(SQLException e) {
+            logger.catching(e);
+            throw logger.throwing(new RuntimeException("Storage failure: " + e.getMessage()));
+        }
+        finally {
+            if (deleteAllStatement != null)
+                deleteAllStatement.close();
+            if (databaseConnection != null)
+                databaseConnection.close();
+        }
+        logger.exit();
+    }
 }

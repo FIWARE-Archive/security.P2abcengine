@@ -16,6 +16,7 @@ import javax.naming.NamingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
@@ -74,6 +75,11 @@ public class TestSqliteURIBytesStorage {
         storageFile.delete();
     }
 
+    @Before
+    public void setUp() throws SQLException {
+        storage.deleteAll();
+    }
+    
     @Test(expected=UnsafeTableNameException.class)
     public void testInvalidTableName() throws Exception {
         String tableName = "users; DROP TABLE customers";
@@ -89,7 +95,6 @@ public class TestSqliteURIBytesStorage {
         storage.put("blob", data);
         byte[] ret = storage.get("blob");
         assertTrue(Arrays.equals(ret,data));
-        storage.delete("blob");
     }
     
     @Test
@@ -145,18 +150,12 @@ public class TestSqliteURIBytesStorage {
         }
         for(int j = 0; j < MAX_J; j++)
             assertTrue(Arrays.equals(storage.get("zhaw.ch/"+j), "234".getBytes()));
-        
-        storage.delete("zhaw.ch");
-        for(int j = 0; j < MAX_J; j++)
-            storage.delete("zhaw.ch/" + j);
-
     }
     
     @Test
     public void testPutNew() throws Exception {
         assertTrue(storage.putNew("foobar", "barfoo".getBytes()));
         assertFalse(storage.putNew("foobar", "barfoo".getBytes()));
-        storage.delete("foobar");
     }
     
     @Test
@@ -178,9 +177,6 @@ public class TestSqliteURIBytesStorage {
         assertTrue(uris.size() == 1);
         List<String> keys = storage.keysAsStrings();
         assertTrue(keys.size() == 2);
- 
-        storage.delete(uri1);
-        storage.delete(uri2);
     }
     
     @Test
@@ -189,9 +185,6 @@ public class TestSqliteURIBytesStorage {
         String urn2 = "urn:barfoo";
         URI uri1 = new URI(urn1);
         URI uri2 = new URI(urn2);
-
-        storage.delete(uri1);
-        storage.delete(uri2);
         
         storage.put(uri1, new byte[]{1,9,9});
         storage.put(uri2, new byte[]{0,0,0});
@@ -210,9 +203,6 @@ public class TestSqliteURIBytesStorage {
         
         assertTrue(Arrays.equals(new byte[]{1,9,9}, values.get(0)));
         assertTrue(Arrays.equals(new byte[]{0,0,0}, values.get(1)));
-
-        storage.delete(uri1);
-        storage.delete(uri2);
     }
 
     @Test
@@ -236,7 +226,6 @@ public class TestSqliteURIBytesStorage {
 
         storage.putNew(myUri, stored);
         assertTrue(storage.containsKey(myUri));
-        storage.delete(myUri);
     }
 
     @Test
@@ -248,15 +237,12 @@ public class TestSqliteURIBytesStorage {
         assertTrue(value != null);
         assertTrue(value.length == stored.length);
         assertTrue(Arrays.equals(value, stored));
-
-        storage.delete(myUri);
     }
 
     @Test
     public void testSomeNonexistentKey() throws Exception {
         storage.putNew(myUri, new byte[] { 0x01 });
         assertFalse(storage.containsKey(new URI("http://www.apple.com")));
-        storage.delete(myUri);
     }
 
     @Test
@@ -268,7 +254,5 @@ public class TestSqliteURIBytesStorage {
 
         assertTrue(retrievedString != null);
         assertTrue(retrievedString.equals(testString));
-
-        storage.delete(myUri);
     }
 }
