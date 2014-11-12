@@ -4,6 +4,6 @@
     name="jdbc/URIBytesStorage"
     type="javax.sql.DataSource"
     driverClassName="ch.zhaw.ficore.p2abc.storage.SqliteJDBC"
-    factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+    factory="org.apache.commons.dbcp.BasicDataSourceFactory"
     url="jdbc:zsqlite:path"/>
 </Context>
