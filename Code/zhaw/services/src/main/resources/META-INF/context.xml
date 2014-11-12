@@ -3,7 +3,8 @@
   <Resource
     name="jdbc/URIBytesStorage"
     type="javax.sql.DataSource"
-    driverClassName="ch.zhaw.ficore.p2abc.storage.SqliteJDBC"
-    factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-    url="jdbc:zsqlite:path"/>
+    scope="Unshareable"
+    driverClassName="org.sqlite.JDBC"
+    factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+    url="jdbc:sqlite:/tmp/blabla.db"/>
 </Context>
