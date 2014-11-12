@@ -23,11 +23,9 @@ import javax.naming.NamingException;
 
 public class SqliteStorageModule extends AbstractModule {
 
-    private SqliteStorageConfiguration configuration;
     private ServiceType type;
 
     public SqliteStorageModule(SqliteStorageConfiguration configuration, ServiceType type) {
-        this.configuration = configuration;
         this.type = type;
     }
 

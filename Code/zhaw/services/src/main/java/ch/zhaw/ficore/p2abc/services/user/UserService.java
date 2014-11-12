@@ -24,8 +24,6 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -42,10 +40,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
@@ -60,18 +55,14 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 
-import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H1;
-import com.hp.gagawa.java.elements.H2;
-import com.hp.gagawa.java.elements.H3;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
-import com.hp.gagawa.java.elements.Li;
 import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Select;
@@ -80,12 +71,6 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
-import com.hp.gagawa.java.elements.Ul;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
 
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
@@ -100,16 +85,11 @@ import eu.abc4trust.returnTypes.UiIssuanceArguments;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
-import eu.abc4trust.returnTypes.ui.CredentialInUi;
-import eu.abc4trust.returnTypes.ui.PseudonymListCandidate;
-import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
-import eu.abc4trust.returnTypes.ui.TokenCandidate;
 import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
-import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
 import eu.abc4trust.xml.IssuerParameters;
