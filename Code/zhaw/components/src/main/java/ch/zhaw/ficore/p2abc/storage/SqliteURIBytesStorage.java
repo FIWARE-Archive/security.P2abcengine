@@ -52,7 +52,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * If usePool is set to false rather than using ConnectionPooling and DataSource
      * configured in Context.xml this class wil use temporary files to store the data.
      */
-    private static boolean usePool = false;
+    private static boolean usePool = true;
     private static Map<String, File> tempFiles = new HashMap<String, File>();
 
     private Logger logger;
