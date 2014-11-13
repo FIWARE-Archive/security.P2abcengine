@@ -3,9 +3,6 @@ package ch.zhaw.ficore.p2abc.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
-import ch.zhaw.ficore.p2abc.configuration.SqliteStorageConfiguration;
-import ch.zhaw.ficore.p2abc.configuration.StorageConfiguration;
 import ch.zhaw.ficore.p2abc.services.guice.SqliteStorageModule;
 
 import com.google.inject.Module;
@@ -28,14 +25,6 @@ public class StorageModuleFactory {
 	public static synchronized Module[] getModulesForServiceConfiguration(ServiceType type) {
 		logger.entry();
 		
-		StorageConfiguration storageConfig = ServicesConfiguration.getStorageConfiguration();
-		
-		if(storageConfig instanceof SqliteStorageConfiguration) {
-			return logger.exit(new Module[]{new SqliteStorageModule((SqliteStorageConfiguration) storageConfig, type)});
-		}
-		
-		logger.info("no corresponding modules found!");
-		
-		return logger.exit(new Module[]{});
+		return logger.exit(new Module[]{new SqliteStorageModule(type)});
 	}
 }

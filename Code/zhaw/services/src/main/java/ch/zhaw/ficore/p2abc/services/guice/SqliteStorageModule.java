@@ -2,7 +2,8 @@ package ch.zhaw.ficore.p2abc.services.guice;
 
 import java.sql.SQLException;
 
-import ch.zhaw.ficore.p2abc.configuration.SqliteStorageConfiguration;
+import javax.naming.NamingException;
+
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.issuance.GenericIssuanceStorage;
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
@@ -19,13 +20,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
-import javax.naming.NamingException;
-
 public class SqliteStorageModule extends AbstractModule {
 
     private ServiceType type;
 
-    public SqliteStorageModule(SqliteStorageConfiguration configuration, ServiceType type) {
+    public SqliteStorageModule(ServiceType type) {
         this.type = type;
     }
 
