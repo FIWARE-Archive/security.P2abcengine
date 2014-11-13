@@ -34,9 +34,6 @@ public class ServicesConfiguration {
     /** Configuration data for user service. */
     private UserConfiguration userConfiguration;
 
-    /** Storage configuration. */
-    private StorageConfiguration storageConfiguration;
-
     private static Logger logger = LogManager.getLogger();
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
@@ -122,19 +119,8 @@ public class ServicesConfiguration {
 
     /** Private do-nothing constructor to prevent construction of instances. */
     public ServicesConfiguration () {
-        storageConfiguration = new SqliteStorageConfiguration();
     }
 
-
-    /**
-     * Returns the current storage configuration.
-     * 
-     * @return the current storage configuration
-     */
-    public static synchronized StorageConfiguration getStorageConfiguration() {
-        logger.entry();
-        return logger.exit(instance.storageConfiguration);
-    }
 
     /** Returns the current issuance configuration.
      *  
