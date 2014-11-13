@@ -7,4 +7,24 @@
     driverClassName="org.sqlite.JDBC"
     factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
     url="jdbc:sqlite:/tmp/blabla.db"/>
+	<Resource
+		name="cfg/ConnectionParameters/attributes"
+		type="ch.zhaw.ficore.p2abc.configuration.ConnectionParameters"
+		factory="org.apache.naming.factory.BeanFactory"
+		serverName="localhost"
+		serverPort="10389"
+		authenticationMethod="simple"
+		user="uid=admin, ou=system"
+		password="secret"
+		useTls="false"/>
+    <Resource
+		name="cfg/ConnectionParameters/authentication"
+		type="ch.zhaw.ficore.p2abc.configuration.ConnectionParameters"
+		factory="org.apache.naming.factory.BeanFactory"
+		serverName="localhost"
+		serverPort="10389"
+		authenticationMethod="simple"
+		user="uid=admin, ou=system"
+		password="secret"
+		useTls="false"/>
 </Context>

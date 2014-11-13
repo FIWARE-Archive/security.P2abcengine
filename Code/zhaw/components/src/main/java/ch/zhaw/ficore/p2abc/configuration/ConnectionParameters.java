@@ -1,9 +1,9 @@
 package ch.zhaw.ficore.p2abc.configuration;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -14,16 +14,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * service such as LDAP or a SQL database. It is assumed that the information in
  * this class is sufficient to connect.
  * 
- * This class is <em>almost</em> immutable: once connectivity has been
- * established, users of this class should call
- * {@link #passwordNoLongerNeeded()} to erase the memory containing the
- * password.
- * 
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
 @XmlRootElement(name="connection-parameters")
 @XmlAccessorType(XmlAccessType.FIELD)
+@SuppressWarnings("unused")
 public class ConnectionParameters {
     private static final int MAX_PORT = (1 << 16) - 1;
 
@@ -80,24 +76,52 @@ public class ConnectionParameters {
     public String getServerName() {
         return serverName;
     }
+    
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
 
     public int getServerPort() {
         return serverPort;
+    }
+    
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
     }
 
     public String getAuthenticationMethod() {
         return authenticationMethod;
     }
+    
+    public void setAuthenticationMethod(String authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
 
     public String getUser() {
         return user;
+    }
+    
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getPassword() {
         return password;
     }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public boolean usesTls() {
+        return useTls;
+    }
+    
+    public void setUseTls(boolean useTls) {
+        this.useTls = useTls;
+    }
+    
+    public boolean getUseTls() {
         return useTls;
     }
 

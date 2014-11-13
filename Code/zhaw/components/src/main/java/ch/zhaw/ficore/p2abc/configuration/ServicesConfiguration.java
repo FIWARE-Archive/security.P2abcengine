@@ -3,6 +3,8 @@ package ch.zhaw.ficore.p2abc.configuration;
 import java.io.File;
 import java.io.PrintStream;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -16,8 +18,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration.IdentitySource;
 
 
 /** Holds the configuration for all the services.
@@ -62,23 +62,29 @@ public class ServicesConfiguration {
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
     
-    private final static String defaultConfigPath = "/tmp/servicesConfiguration.xml";
     private static String configPath;
     
     static {
-        if(System.getProperty("configPath") == null) 
-            configPath = defaultConfigPath;
-        else
-            configPath = System.getProperty("configPath");
-        
-        /* We set a default configuration here */
-        ConnectionParameters cp = new ConnectionParameters("localhost", 10389, 10389, 10389, "uid=admin, ou=system", "secret", false);
-        IssuanceConfiguration cfgData = new IssuanceConfiguration(IdentitySource.LDAP, cp, IdentitySource.LDAP, cp, "(cn=_UID_)");
-        ServicesConfiguration.setIssuanceConfiguration(cfgData);
-        
-        /* and replace it with the configuration loaded from a file */
-        File f = new File(configPath);
-        ServicesConfiguration.loadFrom(f);
+        try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+
+            ConnectionParameters cpAttributes = (ConnectionParameters) envCtx.lookup("cfg/ConnectionParameters/attributes");
+            ConnectionParameters cpAuthentication = (ConnectionParameters) envCtx.lookup("cfg/ConnectionParameters/authentication");
+            IssuanceConfiguration.IdentitySource sourceAttributes = IssuanceConfiguration.IdentitySource.valueOf(
+                    (String) envCtx.lookup("cfg/Source/attributes"));
+            IssuanceConfiguration.IdentitySource sourceAuthentication = IssuanceConfiguration.IdentitySource.valueOf(
+                    (String) envCtx.lookup("cfg/Source/authentication"));
+            
+            IssuanceConfiguration cfgData = new IssuanceConfiguration(
+                    sourceAttributes, cpAttributes, sourceAuthentication, cpAuthentication, "(cn=_UID_)"
+            );
+            ServicesConfiguration.setIssuanceConfiguration(cfgData);
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            throw new RuntimeException(e);
+        }
     }
     
     /** Magic Cookie.
