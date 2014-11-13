@@ -99,10 +99,14 @@ public class LdapIssuanceService {
     @Path("/issuanceRequest/")
     @Consumes({MediaType.APPLICATION_XML})
     public Response issuanceRequest(IssuanceRequest request) {
+        
+        AttributeValueProvider attrValProvider = null;
+        AuthenticationProvider authProvider = null;
+        
         try {
             IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-            AttributeValueProvider attrValProvider = AttributeValueProvider.getAttributeValueProvider(configuration);
-            AuthenticationProvider authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
+            attrValProvider = AttributeValueProvider.getAttributeValueProvider(configuration);
+            authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 
             if(!authProvider.authenticate(request.authRequest.authInfo))
                 return Response.status(Response.Status.FORBIDDEN).build();
@@ -135,6 +139,12 @@ public class LdapIssuanceService {
         catch(Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+        finally {
+            if(attrValProvider != null)
+                attrValProvider.shutdown();
+            if(authProvider != null)
+                authProvider.shutdown();
         }
     }
 
@@ -305,14 +315,29 @@ public class LdapIssuanceService {
     @Path("/testAuthentication")
     @Consumes({MediaType.APPLICATION_XML})
     public Response testAuthentication(AuthenticationRequest authReq) {
+        
+        AuthenticationProvider authProvider = null;
 
-        IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-        AuthenticationProvider authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
-
-        if(authProvider.authenticate(authReq.authInfo))
-            return Response.ok("OK").build();
-        else
-            return Response.status(Response.Status.FORBIDDEN).entity("ERR").build();
+        try {
+            IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
+            authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
+    
+            if(authProvider.authenticate(authReq.authInfo)) {
+                authProvider.shutdown();
+                return Response.ok("OK").build();
+            }
+            else {
+                return Response.status(Response.Status.FORBIDDEN).entity("ERR").build();
+            }
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+        finally {
+            if(authProvider != null)
+                authProvider.shutdown();
+        }
     }
 
     /**
@@ -336,18 +361,25 @@ public class LdapIssuanceService {
     @Path("/attributeInfoCollection/{magicCookie}/{name}")
     public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
             @PathParam("name") String name) {
+        AttributeInfoProvider attribInfoProvider = null;
+        
         try {
             IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-            AttributeInfoProvider attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
+            attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 
-            if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie)) {
                 return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+            }
 
             return Response.ok(attribInfoProvider.getAttributes(name), MediaType.APPLICATION_XML).build();
         }
         catch(Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+        finally {
+            if(attribInfoProvider != null)
+                attribInfoProvider.shutdown();
         }
     }
 
