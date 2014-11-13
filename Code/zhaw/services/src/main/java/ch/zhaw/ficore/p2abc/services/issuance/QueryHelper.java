@@ -7,7 +7,10 @@ public class QueryHelper {
 	}
 	
 	public static String buildQuery(String query, String uid) {
-		return query.replaceAll("_UID_", uid.replaceAll("_", "__")).replaceAll("__", "_");
+	    /*TODO: Provide some mechanism to actually allow someone to use "_UID_" in the query
+	     * without being replaced by uid. 
+	    */
+		return query.replaceAll("_UID_", uid);
 	}
 	
 	public static String ldapSanitize(String input) {
