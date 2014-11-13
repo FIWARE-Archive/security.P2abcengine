@@ -36,6 +36,14 @@ import eu.abc4trust.returnTypes.ui.TokenCandidate;
 import eu.abc4trust.xml.FriendlyDescription;
 
 public class UserGUI {
+    
+    /**
+     * Serializes an object using JAXB to a XML.
+     * @param clazz Class of the object
+     * @param obj the object
+     * @return XML as string
+     * @throws JAXBException
+     */
     @SuppressWarnings("rawtypes")
     public static String toXML(Class clazz, Object obj) throws JAXBException {
         JAXBContext context = JAXBContext
@@ -47,11 +55,28 @@ public class UserGUI {
         return w.toString();
     }
     
+    /**
+     * Deserializes XML to an object.
+     * @param clazz Class of the object
+     * @param xml the input data
+     * @return the object
+     * @throws JAXBException
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {
         return JAXB.unmarshal(new StringReader(xml), clazz);
     }
     
+    /**
+     * Performs a post request and returns the result as an object. 
+     * @param url URL
+     * @param xml XML data to send (will be sent as application/xml).
+     * @param clazz class of the object to be returned (needed for deserialization)
+     * @return the object
+     * @throws ClientHandlerException 
+     * @throws UniformInterfaceException 
+     * @throws JAXBException
+     */
     @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, String xml, Class clazz) throws ClientHandlerException, UniformInterfaceException, JAXBException {
         Client client = new Client();
@@ -68,6 +93,14 @@ public class UserGUI {
         return fromXML(clazz, response.getEntity(String.class));
     }
     
+    /**
+     * Helper function that generates HTML for the UI. Specifically it generates
+     * the HTML for the identity selection. 
+     * @param tcs A list of TokenCandidates
+     * @param policyId Id of the policy used by the TokenCandidates
+     * @param uiContext Context string
+     * @return Div (HTML)
+     */
     public static Div getDivForTokenCandidates(List<TokenCandidate> tcs, int policyId, String uiContext) {
         Div enclosing = new Div();
         enclosing.appendChild(new P().appendChild(new Text(Integer.toString(tcs.size()))));
