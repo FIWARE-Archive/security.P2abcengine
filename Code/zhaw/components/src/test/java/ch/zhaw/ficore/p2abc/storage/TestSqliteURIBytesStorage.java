@@ -43,7 +43,6 @@ public class TestSqliteURIBytesStorage {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        // rcarver - setup the jndi context and the datasource
         storageFile = new File(dbName);
         myUri = new URI("http://www.zhaw.ch");
 
@@ -121,7 +120,6 @@ public class TestSqliteURIBytesStorage {
                             myStorage.put("zhaw.ch", "123".getBytes());
                         } catch (ClassNotFoundException | SQLException
                                 | UnsafeTableNameException | NamingException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -135,7 +133,6 @@ public class TestSqliteURIBytesStorage {
                             myStorage.put("zhaw.ch/"+v, "234".getBytes());
                         } catch (ClassNotFoundException | SQLException
                                 | UnsafeTableNameException | NamingException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -145,7 +142,6 @@ public class TestSqliteURIBytesStorage {
                 threads.add(thrd1);
                 threads.add(thrd2);
             }
-            //assertTrue(Arrays.equals(storage.get("zhaw.ch"), "123".getBytes()));
         }
         for(Thread thrd : threads) {
             thrd.join();

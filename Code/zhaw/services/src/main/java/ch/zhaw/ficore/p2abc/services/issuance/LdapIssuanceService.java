@@ -98,24 +98,6 @@ public class LdapIssuanceService {
         return Response.ok().build();
     }
 
-    @GET()
-    @Path("/writeConfig/{magicCookie}")
-    public Response writeConfig(@PathParam("magicCookie") String magicCookie) {
-        logger.entry();
-
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).build());
-
-        try {
-            ServicesConfiguration.saveTo();
-            return logger.exit(Response.ok().build());
-        }
-        catch(Exception e) {
-            logger.catching(e);
-            return logger.exit(ExceptionDumper.dumpException(e, logger));
-        }
-    }
-
 
     /**
      * This method is called by a user to initiate an issuance protocol. 
