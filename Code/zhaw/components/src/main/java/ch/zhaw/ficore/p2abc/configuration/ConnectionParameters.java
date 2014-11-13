@@ -1,10 +1,5 @@
 package ch.zhaw.ficore.p2abc.configuration;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -17,28 +12,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
-@XmlRootElement(name="connection-parameters")
-@XmlAccessorType(XmlAccessType.FIELD)
-@SuppressWarnings("unused")
+
 public class ConnectionParameters {
     private static final int MAX_PORT = (1 << 16) - 1;
 
-    @XmlElement(name="server-name")
     private String serverName;
-
-    @XmlElement(name="server-port")
     private int serverPort;
-
-    @XmlElement(name="authentication-method")
     private String authenticationMethod;
-
-    @XmlElement(name="user")
     private String user;
-
-    @XmlElement(name="password")
     private String password;
-
-    @XmlElement(name="use-tls")
     private boolean useTls;
 
     public ConnectionParameters() {
