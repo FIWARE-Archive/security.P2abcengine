@@ -36,7 +36,7 @@ public class TestSqliteURIBytesStorage {
 
     private static final String table = "TestTable";
 
-    private static SqliteURIBytesStorage storage;
+    private static JdbcURIBytesStorage storage;
     private static String dbName = "URIBytesStorage";
     private static File storageFile;
     private static URI myUri;
@@ -69,7 +69,7 @@ public class TestSqliteURIBytesStorage {
             LogManager.getLogger().catching(ex);
         }
         
-        storage = new SqliteURIBytesStorage(dbName, table);
+        storage = new JdbcURIBytesStorage(dbName, table);
     }
 
     @AfterClass
@@ -85,7 +85,7 @@ public class TestSqliteURIBytesStorage {
     @Test(expected=UnsafeTableNameException.class)
     public void testInvalidTableName() throws Exception {
         String tableName = "users; DROP TABLE customers";
-        SqliteURIBytesStorage invalidStorage = new SqliteURIBytesStorage("hi", tableName);
+        JdbcURIBytesStorage invalidStorage = new JdbcURIBytesStorage("hi", tableName);
         invalidStorage.get(myUri);
     }
     
@@ -106,7 +106,7 @@ public class TestSqliteURIBytesStorage {
          * with multiple threads involved. 
          */
         
-        SqliteURIBytesStorage storage2 = new SqliteURIBytesStorage(dbName, table);
+        JdbcURIBytesStorage storage2 = new JdbcURIBytesStorage(dbName, table);
         storage.put("zhaw.ch", "winterthur".getBytes());
         assertTrue(Arrays.equals(storage2.get("zhaw.ch"), "winterthur".getBytes()));
         List<Thread> threads = new ArrayList<Thread>();
@@ -115,9 +115,9 @@ public class TestSqliteURIBytesStorage {
                 Thread thrd1 = new Thread() {
                     @Override
                     public void run() {
-                        SqliteURIBytesStorage myStorage;
+                        JdbcURIBytesStorage myStorage;
                         try {
-                            myStorage = new SqliteURIBytesStorage(dbName, table);
+                            myStorage = new JdbcURIBytesStorage(dbName, table);
                             myStorage.put("zhaw.ch", "123".getBytes());
                         } catch (ClassNotFoundException | SQLException
                                 | UnsafeTableNameException | NamingException e) {
@@ -131,7 +131,7 @@ public class TestSqliteURIBytesStorage {
                     @Override
                     public void run() {
                         try {
-                            SqliteURIBytesStorage myStorage = new SqliteURIBytesStorage(dbName, table);
+                            JdbcURIBytesStorage myStorage = new JdbcURIBytesStorage(dbName, table);
                             myStorage.put("zhaw.ch/"+v, "234".getBytes());
                         } catch (ClassNotFoundException | SQLException
                                 | UnsafeTableNameException | NamingException e) {

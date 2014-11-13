@@ -41,7 +41,7 @@ import com.google.inject.name.Named;
  * 
  * @author mroman
  */
-public class SqliteURIBytesStorage extends URIBytesStorage {
+public class JdbcURIBytesStorage extends URIBytesStorage {
     private static final int DUMP_LIMIT = 1024;
     private DataSource dataSource;
     private String tableName;
@@ -76,7 +76,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @throws ClassNotFoundException when the SQLite JDBC driver can't be found
      */
     @Inject
-    public SqliteURIBytesStorage(@Named("sqliteDBPath") String dbName, @Named("sqliteTblName") String table)
+    public JdbcURIBytesStorage(@Named("sqliteDBPath") String dbName, @Named("sqliteTblName") String table)
             throws ClassNotFoundException, SQLException,
             UnsafeTableNameException, NamingException {
         logger = LogManager.getLogger();
@@ -178,14 +178,14 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
      * @param storage An SqliteURIBytesStorage object
      * @return an Object (usable for locking)
      */
-    private static synchronized ReentrantLock getLock(SqliteURIBytesStorage storage) {
+    private static synchronized ReentrantLock getLock(JdbcURIBytesStorage storage) {
         String key = storage.getDBName();
         if(locks.get(key) == null)
             locks.put(key, new ReentrantLock());
         return locks.get(key);
     }
 
-    private static void lock(SqliteURIBytesStorage storage, Logger logger) {
+    private static void lock(JdbcURIBytesStorage storage, Logger logger) {
         logger.entry();
         
         if(!useLocking) {
@@ -199,7 +199,7 @@ public class SqliteURIBytesStorage extends URIBytesStorage {
         logger.exit();
     }
 
-    private static void unlock(SqliteURIBytesStorage storage, Logger logger) {
+    private static void unlock(JdbcURIBytesStorage storage, Logger logger) {
         logger.entry();
         
         if(!useLocking) {
