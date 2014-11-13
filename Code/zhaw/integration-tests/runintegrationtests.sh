@@ -1,6 +1,4 @@
 #!/bin/sh
-rm /tmp/p2abc.db
-cp -f servicesConfiguration.xml /tmp/servicesConfiguration.xml
 cd ../services
 ./deploy.sh
 cd ../integration-tests
