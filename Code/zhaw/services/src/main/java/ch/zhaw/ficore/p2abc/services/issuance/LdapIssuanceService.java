@@ -65,7 +65,6 @@ public class LdapIssuanceService {
 
     private ObjectFactory of = new ObjectFactory(); 
 
-    //private static final String fileStoragePrefix = "issuer_storage/"; //TODO: Files
 
     private Logger logger;
 
@@ -77,24 +76,6 @@ public class LdapIssuanceService {
     @Path("/status")
     @Produces({MediaType.TEXT_PLAIN})
     public Response issuerStatus() {
-        /*try {
-			JAXBContext jc = JAXBContext.newInstance( new Class[] { QueryRule.class,
-					AuthenticationRequest.class, IssuanceRequest.class, AttributeInfoCollection.class,
-					LanguageValuePair.class, AttributeInformation.class, AuthInfoSimple.class
-			}
-					);
-			jc.generateSchema(new SchemaOutputResolver() {
-				@Override
-				public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-					File file = new File("/tmp/out.xsd");
-					return new StreamResult(file);
-				}
-			});
-
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}*/
         return Response.ok().build();
     }
 
@@ -150,8 +131,6 @@ public class LdapIssuanceService {
                     authProvider.getUserID(), credSpec));
 
             return initIssuanceProtocol(ServicesConfiguration.getMagicCookie(), ipa);
-
-            //return Response.ok(of.createIssuancePolicyAndAttributes(ipa), MediaType.APPLICATION_XML).build();
         }
         catch(Exception e) {
             logger.catching(e);
@@ -631,7 +610,6 @@ public class LdapIssuanceService {
                 + cryptoMechanism + "\"");
     }
 
-    // H2.1 Update(jdn): added crypto engine.
     /**
      * This method generates a fresh issuance key and the corresponding Issuer
      * parameters. The issuance key is stored in the Issuer’s key store, the
@@ -651,9 +629,6 @@ public class LdapIssuanceService {
      * 
      * @return
      * @throws Exception
-     */
-    /*
-     * curl --header "Content-Type:application/xml" -X POST -d @credSpecAndSysParams.xml http://localhost:9500/abce-services/issuer/setupIssuerParameters/?cryptoEngine=IDEMIX\&issuerParametersUid=urn%3A%2F%2Ftest%2Ffoobar\&hash=urn:abc4trust:1.0:hashalgorithm:sha-256
      */
     @POST()
     @Path("/setupIssuerParameters/{magicCookie}")
@@ -816,12 +791,6 @@ public class LdapIssuanceService {
             this.initIssuanceProtocolValidateInput(issuancePolicyAndAttributes);
 
             IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
-
-            /*this.loadCredentialSpecifications();
-
-	        this.loadIssuerParameters();*/ //commented out by munt. Apparentely these just load
-            //credSpecs from a preconfigured location on the file system. Our cred specs should already
-            //be in the storage used by the keyManager.
 
             IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper.initIssuanceProtocol(ip, attributes);
 
