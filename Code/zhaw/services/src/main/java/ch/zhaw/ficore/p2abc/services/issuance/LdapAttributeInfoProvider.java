@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
@@ -85,10 +86,12 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	public AttributeInfoCollection getAttributes(String name) {
 		logger.entry();
 		
+		LdapConnection con = null;
+		
 		try {
 			ConnectionParameters cfg = configuration.getAuthenticationConnectionParameters();
 			//cfg.setAuth(configuration.getLdapUser(), configuration.getLdapPassword());
-			LdapConnection con = new LdapConnection(cfg);
+			con = new LdapConnection(cfg);
 			
 			DirContext ctx = con.getInitialDirContext();
 			DirContext schema = ctx.getSchema("ou=schema");
@@ -119,7 +122,16 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 			logger.catching(e);
 			return logger.exit(null);
 		}
+		finally {
+		    if(con != null)
+                try {
+                    con.close();
+                } catch (NamingException e) {
+                    logger.catching(e);
+                }
+		}
 	}
+	
 	
 	/**
 	 * This function 'translates' an LDAP-Syntax into a Type supported by p2abc.

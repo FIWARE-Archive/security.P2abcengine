@@ -32,10 +32,12 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
     public List<eu.abc4trust.xml.Attribute> getAttributes(String query, String uid,
             CredentialSpecification credSpec) throws Exception {
 
+        LdapConnection connection = null;
+        
         try {
             query = QueryHelper.buildQuery(query, QueryHelper.ldapSanitize(uid));
             ConnectionParameters cfg = configuration.getAttributeConnectionParameters();
-            LdapConnection connection = new LdapConnection(cfg);
+            connection = new LdapConnection(cfg);
 
             LdapSearch srch = connection.newSearch();
             //srch.setName("dc=example, dc=com");
@@ -71,6 +73,10 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
         catch(Exception e) {
             e.printStackTrace();
             throw new IOException(e);
+        }
+        finally {
+            if(connection != null)
+                connection.close();
         }
     }
 }
