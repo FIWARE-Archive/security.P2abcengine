@@ -1,20 +1,7 @@
 package ch.zhaw.ficore.p2abc.configuration;
 
-import java.io.File;
-import java.io.PrintStream;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,33 +23,24 @@ import org.apache.logging.log4j.Logger;
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
-@XmlRootElement(name="configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class ServicesConfiguration {
 
     /** Configuration data for issuance service. */
-    @XmlElement(name="issuance-configuration")
     private IssuanceConfiguration issuanceConfiguration;
 
     /** Configuration data for verification service. */
-    @XmlElement(name="verification-configuration")
     private VerificationConfiguration verificationConfiguration;
 
     /** Configuration data for user service. */
-    @XmlElement(name="user-configuration")
     private UserConfiguration userConfiguration;
 
     /** Storage configuration. */
-    @XmlElements({
-        @XmlElement(type=SqliteStorageConfiguration.class, name="sqlite-storage-configuration")
-    })
     private StorageConfiguration storageConfiguration;
 
     private static Logger logger = LogManager.getLogger();
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
     
-    private static String configPath;
     
     static {
         try {
@@ -98,14 +76,12 @@ public class ServicesConfiguration {
      * only communicate over secure channels and secure applications when 
      * transmitting the magic cookie. 
      */
-    @XmlAttribute(name="magic-cookie")
     private static String magicCookie = "*magic*";
     
     /** URI base
      * The URI base is used as a prefix to URIs for example in the generation
      * of CredentialSpecifications.
      */
-    @XmlAttribute(name="uri-base")
     private static String uriBase = "urn:fiware:privacy:";
 
     /**
@@ -216,63 +192,6 @@ public class ServicesConfiguration {
         logger.entry();
         instance.issuanceConfiguration.setFakeSources();
         // TODO: Set more parameters?
-        logger.exit();
-    }
-    
-    public static synchronized void saveTo(File f) {
-        try {
-            PrintStream ps = new PrintStream(f, "UTF-8");
-            saveTo(ps);
-            ps.close();
-        }
-        catch(Exception e) {
-            logger.catching(e);
-            logger.warn("Error while  trying to save configuration!");
-        }
-        logger.exit();
-    }
-    
-    public static synchronized void saveTo() {
-        File f = new File(configPath);
-        saveTo(f);
-    }
-    
-    public static synchronized void saveTo(PrintStream ps) {
-        logger.entry();
-
-        logger.info("Saving services configuration to " + ps);
-
-        try {
-            JAXBContext jc = JAXBContext.newInstance(ServicesConfiguration.class);
-            Marshaller m = jc.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            m.marshal(instance, ps);
-        } catch (JAXBException e) {
-            logger.catching(e);
-            logger.warn("Error while trying to save configuration to " + ps + "; file may be corrupt!");
-        }
-
-        logger.exit();
-    }
-
-    public static synchronized void loadFrom(File ps) {
-        logger.entry();
-
-        logger.info("Loading services configuration from " + ps);
-
-        try {
-            JAXBContext jc = JAXBContext.newInstance(ServicesConfiguration.class);
-            Unmarshaller u = jc.createUnmarshaller();
-            ServicesConfiguration newConfiguration= (ServicesConfiguration) u.unmarshal(ps);
-            if (newConfiguration.isPlausible())
-                instance = newConfiguration;
-            else
-                logger.warn("Services configuration in " + ps + " is not plausible; keeping old configuration");
-        } catch (JAXBException e) {
-            logger.catching(e);
-            logger.warn("Error while trying to load configuration from " + ps + "; keeping old configuration");
-        }
-        
         logger.exit();
     }
     
