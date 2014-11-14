@@ -31,6 +31,12 @@
 		<env-entry-value> true </env-entry-value>
 		<env-entry-type> java.lang.Boolean </env-entry-type>
 	</env-entry>
+    <env-entry>
+		<description> BindQuery </description>
+		<env-entry-name>cfg/bindQuery</env-entry-name>
+		<env-entry-value>(cn=_UID_)</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
 	<env-entry>
 		<description> AttributeSource </description>
 		<env-entry-name>cfg/Source/attributes</env-entry-name>
