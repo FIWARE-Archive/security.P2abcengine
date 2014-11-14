@@ -79,7 +79,6 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
-import com.ibm.zurich.idmx.dm.Credential;
 
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
@@ -391,8 +390,45 @@ public class UserService {
                 f.setMethod("post");
                 credDiv.appendChild(f);
                 f.appendChild(new Input().setType("submit").setValue("Delete credential"));
+                f.appendChild(new Input().setType("hidden").setName("credUid").setValue(uri.toString()));
             }
             
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.status(Response.Status.BAD_REQUEST
+                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/deleteCredential/")
+    public Response deleteCredential(@FormParam("credUid") String credUid) {
+        try {
+            this.initializeHelper();
+            
+            UserHelper instance = UserHelper.getInstance();
+            
+            boolean success = instance.credentialManager.deleteCredential(new URI(credUid));
+            
+            String text = "";
+            String cls = "";
+            
+            if(success) {
+                text = "You've successfully deleted the credential!";
+                cls = "success";
+            }
+            else {
+                text = "Could not delete credential. Sorry about that.";
+                cls = "error";
+            }
+            
+            Html html = UserGUI.getHtmlPramble("Delete Credential");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Delete Credential")));
+            mainDiv.appendChild(new P().setCSSClass(cls).appendChild(new Text(text)));
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
