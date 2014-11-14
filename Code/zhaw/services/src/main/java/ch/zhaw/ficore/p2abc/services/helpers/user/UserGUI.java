@@ -8,6 +8,7 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Div;
@@ -110,7 +111,13 @@ public class UserGUI {
     
     public static Body getBody(Div mainDiv) {
         Div containerDiv = new Div().setCSSClass("containerDiv");
+        Div navDiv = new Div().setCSSClass("navDiv");
+        containerDiv.appendChild(navDiv);
         containerDiv.appendChild(mainDiv);
+        navDiv.appendChild(new A().setHref("./obtainCredential").appendChild(new Text("Obtain Credential")));
+        navDiv.appendChild(new A().setHref("./requestRessource").appendChild(new Text("Request Ressource")));
+        navDiv.appendChild(new A().setHref("./profile").appendChild(new Text("Profile")));
+        navDiv.appendChild(new Div().setStyle("clear: both"));
         return new Body().appendChild(containerDiv);
     }
     

@@ -25,6 +25,7 @@
 package ch.zhaw.ficore.p2abc.services.user;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,8 @@ import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.H2;
+import com.hp.gagawa.java.elements.H3;
+import com.hp.gagawa.java.elements.H4;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
@@ -72,6 +75,7 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
+import com.ibm.zurich.idmx.dm.Credential;
 
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
@@ -89,6 +93,9 @@ import eu.abc4trust.returnTypes.UiPresentationReturn;
 import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.Attribute;
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
@@ -231,6 +238,123 @@ public class UserService {
         }
     }
     
+    @GET()
+    @Path("/credentialSpecifications/")
+    public Response credentialSpecifications() {
+        log.entry();
+        
+        try {
+            this.initializeHelper();
+            
+            UserHelper instance = UserHelper.getInstance();
+            
+            List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
+            
+            for(URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
+                if(obj instanceof CredentialSpecification) {
+                    credSpecs.add((CredentialSpecification) obj);
+                }
+            }
+            
+            Html html = UserGUI.getHtmlPramble("Profile");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            
+            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
+            mainDiv.appendChild(new H3().appendChild(new Text("Credential Specifications")));
+            
+            for(CredentialSpecification credSpec : credSpecs) {
+                
+                Div credDiv = new Div().setCSSClass("credDiv");
+                mainDiv.appendChild(credDiv);
+                
+                AttributeDescriptions attribDescs = credSpec.getAttributeDescriptions();
+                List<AttributeDescription> attrDescs = attribDescs.getAttributeDescription();
+                
+                Table tbl = new Table();
+                credDiv.appendChild(new H4().appendChild(new Text(credSpec.getSpecificationUID().toString())));
+                credDiv.appendChild(tbl);
+                Tr tr = null;
+                tr = new Tr().setCSSClass("heading").appendChild(new Td().appendChild(new Text("Name")))
+                        .appendChild(new Td().appendChild(new Text("Type")))
+                        .appendChild(new Td().appendChild(new Text("Encoding")));
+                tbl.appendChild(tr);
+                
+                for(AttributeDescription attrDesc : attrDescs) {
+                    String name = attrDesc.getFriendlyAttributeName().get(0).getValue();
+                    String encoding = attrDesc.getEncoding().toString();
+                    String type = attrDesc.getDataType().toString();
+                    tr = new Tr().appendChild(new Td().appendChild(new Text(name)))
+                            .appendChild(new Td().appendChild(new Text(type)))
+                            .appendChild(new Td().appendChild(new Text(encoding)));
+                    tbl.appendChild(tr);
+                }
+            }
+            
+            return log.exit(Response.ok(html.write()).build());
+            
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.status(Response.Status.BAD_REQUEST
+                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/credentials/")
+    public Response profile() {
+        
+        log.entry();
+        
+        try {
+            this.initializeHelper();
+    
+            UserHelper instance = UserHelper.getInstance();
+    
+            List<URI> credentialUids;
+            
+            credentialUids = instance.credentialManager.listCredentials();
+            
+            Html html = UserGUI.getHtmlPramble("Profile");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            
+            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
+            mainDiv.appendChild(new H3().appendChild(new Text("Credentials")));
+            
+            for(URI uri : credentialUids) {
+                Div credDiv = new Div().setCSSClass("credDiv");
+                mainDiv.appendChild(credDiv);
+                eu.abc4trust.xml.Credential cred = instance.credentialManager.getCredential(uri);
+                CredentialDescription credDesc = cred.getCredentialDescription();
+                String credSpec = credDesc.getCredentialSpecificationUID().toString();
+                credDiv.appendChild(new H4().appendChild(new Text(credSpec + " ("+uri.toString()+")")));
+                List<Attribute> attribs = credDesc.getAttribute();
+                Table tbl = new Table();
+                credDiv.appendChild(tbl);
+                Tr tr = null;
+                tr = new Tr().setCSSClass("heading").appendChild(new Td().appendChild(new Text("Name")))
+                        .appendChild(new Td().appendChild(new Text("Value")));
+                tbl.appendChild(tr);
+                for(Attribute attrib : attribs) {
+                    AttributeDescription attribDesc = attrib.getAttributeDescription();
+                    String name = attribDesc.getFriendlyAttributeName().get(0).getValue();
+                    tr = new Tr().appendChild(new Td().appendChild(new Text(name))).appendChild(new Td().appendChild(new Text(attrib.getAttributeValue().toString())));
+                    tbl.appendChild(tr);
+                }
+            }
+            
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.status(Response.Status.BAD_REQUEST
+                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
+        }
+    }
+    
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
@@ -238,11 +362,11 @@ public class UserService {
         UiIssuanceArguments args = args_.getValue().uia;
         if(args.tokenCandidates.size() == 1 && args.tokenCandidates.get(0).credentials.size() == 0) {
             Html html = UserGUI.getHtmlPramble("Identity Selection");
-            Head head = new Head().appendChild(new Title().appendChild(new Text("Identity Selection")));
+            Head head = new Head().appendChild(new Title().appendChild(new Text("Obtain Credential [2]")));
             html.appendChild(head);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
+            mainDiv.appendChild(new H2().appendChild(new Text("Obtain Credential")));
             Div div = new Div();
             div.appendChild(new P().setCSSClass("info").appendChild(new Text("The issuer isn't asking you to reveal anything.")));
             Form f = new Form("./obtainCredential3");
@@ -376,7 +500,13 @@ public class UserService {
             if(r.getStatus() != 200)
                 throw new RuntimeException("Internal step failed!");
             
-            return Response.ok("Credential obtained!").build();
+            Html html = UserGUI.getHtmlPramble("Obtain Credential [3]");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            mainDiv.appendChild(new H2().appendChild(new Text("Obtain Credential")));
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new P().setCSSClass("success").appendChild(new Text("You've successfully obtained the requested credential from the issuer.")));
+            
+            return Response.ok(html.write()).build();
         }
         catch(Exception e) {
             log.catching(e);
@@ -396,7 +526,7 @@ public class UserService {
     @Path("/obtainCredential/")
     public Response obtainCredential() {
         try {
-            Html html = UserGUI.getHtmlPramble("Obtain Credential");
+            Html html = UserGUI.getHtmlPramble("Obtain Credential [1]");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Obtain Credential")));
