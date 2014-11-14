@@ -7,7 +7,7 @@ sudo /etc/init.d/apacheds-2.0.0-M17-default start
 
 echo "Building components"
 cd ../components
-mvn clean install
+mvn clean install -DskipTests
 cd ../services
 
 echo "Building Services (profile)"
