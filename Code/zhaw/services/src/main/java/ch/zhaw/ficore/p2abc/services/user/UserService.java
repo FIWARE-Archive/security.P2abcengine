@@ -119,17 +119,17 @@ public class UserService {
     private Logger log = LogManager.getLogger();
 
     private final String fileStoragePrefix = ""; //no prefix -- munt
-    
+
     private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
-    
+
     public static synchronized String getIssuerURL(String uiContext) {
         return uiContextToIssuerURL.get(uiContext);
     }
-    
+
     public static synchronized void putIssuerURL(String uiContext, String issuerURL) {
         uiContextToIssuerURL.put(uiContext, issuerURL);
     }
-    
+
     @GET()
     @Path("/status/")
     public Response status() {
@@ -151,7 +151,7 @@ public class UserService {
     public Response canBeSatisfied(
             PresentationPolicyAlternatives p) {
         log.entry();
-        
+
         this.initializeHelper();
 
         UserHelper instance = UserHelper.getInstance();
@@ -220,14 +220,14 @@ public class UserService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response createPresentationToken(
             UiPresentationReturn upr) {
-        
+
         log.entry();
 
         this.initializeHelper();
 
         UserHelper instance = UserHelper.getInstance();
 
-        
+
 
         try {
             PresentationToken presentationToken = instance.getEngine()
@@ -240,18 +240,18 @@ public class UserService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     @GET()
     @Path("/profile/")
     public Response profile() {
         log.entry();
-        
+
         try {
             Html html = UserGUI.getHtmlPramble("Profile");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-            
+
             String text = "Welcome to your profile! Here you can edit and manage your personal data and settings.";
             P p = new P().setCSSClass("info");
             mainDiv.appendChild(p);
@@ -259,19 +259,19 @@ public class UserService {
             p.appendChild(new Br());
             text = "Credentials contain attributes issued to you by issuers. Credential specifications specify what attributes a credential can or has to contain.";
             p.appendChild(new Text(text));
-            
+
             Ul ul = new Ul();
             ul.appendChild(new Li().appendChild(new A()
-                        .setHref("./credentials").appendChild(new Text("Manage credentials"))
+            .setHref("./credentials").appendChild(new Text("Manage credentials"))
                     ));
             ul.appendChild(new Li().appendChild(new A()
-                        .setHref("./credentialSpecifications").appendChild(new Text("Manage credential specifications"))
+            .setHref("./credentialSpecifications").appendChild(new Text("Manage credential specifications"))
                     ));
-            
+
             mainDiv.appendChild(ul);
-            
+
             return Response.ok(html.write()).build();
-            
+
         }
         catch(Exception e) {
             log.catching(e);
@@ -279,41 +279,41 @@ public class UserService {
                     ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
         }
     }
-    
+
     @GET()
     @Path("/credentialSpecifications/")
     public Response credentialSpecifications() {
         log.entry();
-        
+
         try {
             this.initializeHelper();
-            
+
             UserHelper instance = UserHelper.getInstance();
-            
+
             List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
-            
+
             for(URI uri : instance.keyStorage.listUris()) {
                 Object obj = SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
                 if(obj instanceof CredentialSpecification) {
                     credSpecs.add((CredentialSpecification) obj);
                 }
             }
-            
+
             Html html = UserGUI.getHtmlPramble("Profile");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
-            
+
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
             mainDiv.appendChild(new H3().appendChild(new Text("Credential Specifications")));
-            
+
             for(CredentialSpecification credSpec : credSpecs) {
-                
+
                 Div credDiv = new Div().setCSSClass("credDiv");
                 mainDiv.appendChild(credDiv);
-                
+
                 AttributeDescriptions attribDescs = credSpec.getAttributeDescriptions();
                 List<AttributeDescription> attrDescs = attribDescs.getAttributeDescription();
-                
+
                 Table tbl = new Table();
                 credDiv.appendChild(new H4().appendChild(new Text(credSpec.getSpecificationUID().toString())));
                 credDiv.appendChild(tbl);
@@ -322,7 +322,7 @@ public class UserService {
                         .appendChild(new Td().appendChild(new Text("Type")))
                         .appendChild(new Td().appendChild(new Text("Encoding")));
                 tbl.appendChild(tr);
-                
+
                 for(AttributeDescription attrDesc : attrDescs) {
                     String name = attrDesc.getFriendlyAttributeName().get(0).getValue();
                     String encoding = attrDesc.getEncoding().toString();
@@ -333,9 +333,9 @@ public class UserService {
                     tbl.appendChild(tr);
                 }
             }
-            
+
             return log.exit(Response.ok(html.write()).build());
-            
+
         }
         catch(Exception e) {
             log.catching(e);
@@ -343,29 +343,29 @@ public class UserService {
                     ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
         }
     }
-    
+
     @GET()
     @Path("/credentials/")
     public Response credentials() {
-        
+
         log.entry();
-        
+
         try {
             this.initializeHelper();
-    
+
             UserHelper instance = UserHelper.getInstance();
-    
+
             List<URI> credentialUids;
-            
+
             credentialUids = instance.credentialManager.listCredentials();
-            
+
             Html html = UserGUI.getHtmlPramble("Profile");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
-            
+
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
             mainDiv.appendChild(new H3().appendChild(new Text("Credentials")));
-            
+
             for(URI uri : credentialUids) {
                 Div credDiv = new Div().setCSSClass("credDiv");
                 mainDiv.appendChild(credDiv);
@@ -392,7 +392,7 @@ public class UserService {
                 f.appendChild(new Input().setType("submit").setValue("Delete credential"));
                 f.appendChild(new Input().setType("hidden").setName("credUid").setValue(uri.toString()));
             }
-            
+
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
@@ -401,20 +401,21 @@ public class UserService {
                     ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
         }
     }
-    
+
     @POST()
     @Path("/deleteCredential/")
     public Response deleteCredential(@FormParam("credUid") String credUid) {
         try {
             this.initializeHelper();
-            
+
             UserHelper instance = UserHelper.getInstance();
-            
+
             boolean success = instance.credentialManager.deleteCredential(new URI(credUid));
-            
+
+
             String text = "";
             String cls = "";
-            
+
             if(success) {
                 text = "You've successfully deleted the credential!";
                 cls = "success";
@@ -423,7 +424,7 @@ public class UserService {
                 text = "Could not delete credential. Sorry about that.";
                 cls = "error";
             }
-            
+
             Html html = UserGUI.getHtmlPramble("Delete Credential");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
@@ -437,7 +438,7 @@ public class UserService {
                     ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
         }
     }
-    
+
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
@@ -468,7 +469,7 @@ public class UserService {
                     .setValue(Integer.toString(0))); 
             f.appendChild(new Input().setType("submit").setValue("Continue"));
             div.appendChild(f);
-            
+
             mainDiv.appendChild(div);
             return Response.ok(html.write()).build();
         }
@@ -484,7 +485,7 @@ public class UserService {
             return Response.ok(html.write()).build();
         }
     }
-    
+
     /**
      * This is the second step for the User to obtain a credential from an issuer. 
      * This method will display the Identity Selection and direct the User to obtainCredential3
@@ -505,42 +506,42 @@ public class UserService {
         try {
             /* Make an IssuanceRequest */
             IssuanceRequest ir = new IssuanceRequest();
-            
+
             AuthInfoSimple authSimple = new AuthInfoSimple();
             authSimple.password = password;
             authSimple.username = username;
-            
+
             ir.credentialSpecificationUid = credSpecUid;
             ir.authRequest = new AuthenticationRequest(authSimple);
-            
+
             log.warn("issuerUrl: " + issuerUrl);
-            
+
             IssuanceMessageAndBoolean issuanceMessageAndBoolean = (IssuanceMessageAndBoolean) UserGUI.postRequest(
                     issuerUrl + "/issuanceRequest", 
                     UserGUI.toXML(IssuanceRequest.class, ir), 
                     IssuanceMessageAndBoolean.class);
-            
+
             IssuanceMessage firstIssuanceMessage = issuanceMessageAndBoolean.getIssuanceMessage();
-            
+
             Response r = issuanceProtocolStep(of.createIssuanceMessage(firstIssuanceMessage));
             if(r.getStatus() != 200)
                 throw new RuntimeException("Internal step failed!");
-            
+
             @SuppressWarnings("unchecked")
             IssuanceReturn issuanceReturn = ((JAXBElement<IssuanceReturn>)r.getEntity()).getValue();
-            
+
             putIssuerURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
-            
+
             return issuanceArguments(ObjectFactoryReturnTypes.wrap(issuanceReturn));
         }
         catch(Exception e) {
             log.catching(e);
             return log.exit(Response.status(Response.Status.BAD_REQUEST
-                        ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
+                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
         }
     }
-    
-    
+
+
     /**
      * This is the third step for a User to obtain a credential from an issuer. 
      * 
@@ -564,13 +565,13 @@ public class UserService {
             uir.uiContext = new URI(uiContext);
             uir.chosenIssuanceToken = Integer.parseInt(candidateId);
             uir.chosenPseudonymList = Integer.parseInt(pseudonymId);
-            
+
             String issuerUrl = getIssuerURL(uiContext);
-            
+
             Response r = issuanceProtocolStep(uir);
             if(r.getStatus() != 200)
                 throw new RuntimeException("Internal step failed!");
-            
+
             IssuanceMessage secondIssuanceMessage = ((JAXBElement<IssuanceMessage>)r.getEntity()).getValue();
             log.warn(UserGUI.toXML(IssuanceMessage.class, of.createIssuanceMessage(secondIssuanceMessage)));
             IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) UserGUI.postRequest(
@@ -578,17 +579,17 @@ public class UserService {
                     UserGUI.toXML(IssuanceMessage.class, of.createIssuanceMessage(secondIssuanceMessage)), 
                     IssuanceMessageAndBoolean.class);
             IssuanceMessage thirdIssuanceMessage = thirdIssuanceMessageAndBoolean.getIssuanceMessage();
-            
+
             r = issuanceProtocolStep(of.createIssuanceMessage(thirdIssuanceMessage));
             if(r.getStatus() != 200)
                 throw new RuntimeException("Internal step failed!");
-            
+
             Html html = UserGUI.getHtmlPramble("Obtain Credential [3]");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             mainDiv.appendChild(new H2().appendChild(new Text("Obtain Credential")));
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new P().setCSSClass("success").appendChild(new Text("You've successfully obtained the requested credential from the issuer.")));
-            
+
             return Response.ok(html.write()).build();
         }
         catch(Exception e) {
@@ -597,8 +598,8 @@ public class UserService {
         }
 
     }
-    
-    
+
+
     /**
      * This is the entry point for the User to obtain a credential from an issuer. 
      * This method will display a webpage asking for the required data and will direct
@@ -616,46 +617,46 @@ public class UserService {
             mainDiv.appendChild(new P().setCSSClass("info").appendChild(new Text("Please enter the information required to obtain the credential.")));
             Form f = new Form("./obtainCredential2");
             f.setMethod("post");
-            
+
             Table tbl = new Table();
             Tr row = null;
             f.appendChild(tbl);
-            
+
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Username:"))));
             row.appendChild(new Td().appendChild(new Input().setType("text").setName("un")));
             tbl.appendChild(row);
-            
+
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Password:"))));
             row.appendChild(new Td().appendChild(new Input().setType("password").setName("pw")));
             tbl.appendChild(row);
-            
+
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Issuer:"))));
             row.appendChild(new Td().appendChild(new Input().setType("text").setName("is")));
             tbl.appendChild(row);
-            
+
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label().appendChild(new Text("Credential specification:"))));
             Select sel = new Select().setName("cs");
             row.appendChild(new Td().appendChild(sel));
             tbl.appendChild(row);
-            
+
             f.appendChild(new Input().setType("submit").setValue("Obtain"));
-            
+
             mainDiv.appendChild(f);
-            
+
             this.initializeHelper();
             UserHelper instance = UserHelper.getInstance();
-            
+
             for(URI uri : instance.keyStorage.listUris()) {
                 Object obj = SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
                 if(obj instanceof CredentialSpecification) {
                     sel.appendChild(new Option().appendChild(new Text(uri.toString())));
                 }
             }
-            
+
             return Response.ok(html.write()).build();
         }
         catch(Exception e) {
@@ -663,7 +664,7 @@ public class UserService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     @POST
     @Path("/presentationArguments/")
     @Consumes ({ MediaType.APPLICATION_XML, MediaType.TEXT_XML})
@@ -672,24 +673,24 @@ public class UserService {
         Html html = new Html();
         Head head = new Head();
         head.appendChild(new Title().appendChild(new Text("Candidate Selection")));
-        
+
         html.appendChild(head);
-        
+
         Div mainDiv = new Div();
-        
+
         html.appendChild(new Body().appendChild(mainDiv));
-        
+
         for(TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-            
+
             Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates, tcpp.policyId, args.uiContext.toString());
-            
+
             mainDiv.appendChild(div);
         }
-        
+
         return Response.ok(html.write()).build();
     }
 
-    
+
 
     /**
      * This method performs one step in an interactive issuance protocol. On
@@ -733,7 +734,7 @@ public class UserService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response issuanceProtocolStep(
             JAXBElement<IssuanceMessage> jm) {
-        
+
         log.entry();
 
         this.initializeHelper();
@@ -891,7 +892,7 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             KeyManager keyManager = instance.keyManager;
 
             boolean r = keyManager.storeCredentialSpecification(
@@ -921,7 +922,7 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             KeyManager keyManager = instance.keyManager;
 
             boolean r = keyManager
@@ -949,7 +950,7 @@ public class UserService {
     public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
             IssuerParameters issuerParameters) {
-        
+
         log.entry();
 
         this.log.info("UserService - storeIssuerParameters - issuerParametersUid: "
@@ -960,7 +961,7 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             KeyManager keyManager = instance.keyManager;
 
             boolean r = keyManager.storeIssuerParameters(issuerParametersUid,
@@ -986,7 +987,7 @@ public class UserService {
         this.log.info("UserService loading...");
 
         try {
-         
+
             PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = true; 
 
             if (UserHelper.isInit()) {
@@ -1020,16 +1021,16 @@ public class UserService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response extractIssuanceMessage(
             IssuanceMessageAndBoolean issuanceMessageAndBoolean)
-                    {
+    {
         log.entry();
-        
+
         try {
-        
+
             IssuanceMessage issuanceMessage = issuanceMessageAndBoolean
                     .getIssuanceMessage();
-    
+
             ObjectFactory of = new ObjectFactory();
-    
+
             return log.exit(Response.ok(of.createIssuanceMessage(issuanceMessage),
                     MediaType.APPLICATION_XML).build());
         }
