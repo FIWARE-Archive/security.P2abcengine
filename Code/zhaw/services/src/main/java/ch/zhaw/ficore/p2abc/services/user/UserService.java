@@ -56,7 +56,9 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 
+import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
+import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H1;
@@ -67,6 +69,7 @@ import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
+import com.hp.gagawa.java.elements.Li;
 import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Select;
@@ -75,6 +78,7 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
+import com.hp.gagawa.java.elements.Ul;
 import com.ibm.zurich.idmx.dm.Credential;
 
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
@@ -239,6 +243,45 @@ public class UserService {
     }
     
     @GET()
+    @Path("/profile/")
+    public Response profile() {
+        log.entry();
+        
+        try {
+            Html html = UserGUI.getHtmlPramble("Profile");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
+            
+            String text = "Welcome to your profile! Here you can edit and manage your personal data and settings.";
+            P p = new P().setCSSClass("info");
+            mainDiv.appendChild(p);
+            p.appendChild(new Text(text));
+            p.appendChild(new Br());
+            text = "Credentials contain attributes issued to you by issuers. Credential specifications specify what attributes a credential can or has to contain.";
+            p.appendChild(new Text(text));
+            
+            Ul ul = new Ul();
+            ul.appendChild(new Li().appendChild(new A()
+                        .setHref("./credentials").appendChild(new Text("Manage credentials"))
+                    ));
+            ul.appendChild(new Li().appendChild(new A()
+                        .setHref("./credentialSpecifications").appendChild(new Text("Manage credential specifications"))
+                    ));
+            
+            mainDiv.appendChild(ul);
+            
+            return Response.ok(html.write()).build();
+            
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response.status(Response.Status.BAD_REQUEST
+                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
+        }
+    }
+    
+    @GET()
     @Path("/credentialSpecifications/")
     public Response credentialSpecifications() {
         log.entry();
@@ -304,7 +347,7 @@ public class UserService {
     
     @GET()
     @Path("/credentials/")
-    public Response profile() {
+    public Response credentials() {
         
         log.entry();
         
@@ -344,6 +387,10 @@ public class UserService {
                     tr = new Tr().appendChild(new Td().appendChild(new Text(name))).appendChild(new Td().appendChild(new Text(attrib.getAttributeValue().toString())));
                     tbl.appendChild(tr);
                 }
+                Form f = new Form("./deleteCredential");
+                f.setMethod("post");
+                credDiv.appendChild(f);
+                f.appendChild(new Input().setType("submit").setValue("Delete credential"));
             }
             
             return log.exit(Response.ok(html.write()).build());
