@@ -51,9 +51,10 @@ public class ServicesConfiguration {
             IssuanceConfiguration.IdentitySource sourceAuthentication = IssuanceConfiguration.IdentitySource.valueOf(
                     (String) envCtx.lookup("cfg/Source/authentication"));
             
+            String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
+            
             IssuanceConfiguration cfgData = new IssuanceConfiguration(
-                    sourceAttributes, cpAttributes, sourceAuthentication, cpAuthentication, "(cn=_UID_)"
-            );
+                    sourceAttributes, cpAttributes, sourceAuthentication, cpAuthentication, bindQuery);
             ServicesConfiguration.setIssuanceConfiguration(cfgData);
         }
         catch(Exception e) {
