@@ -9,18 +9,23 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import com.hp.gagawa.java.elements.B;
+import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.H3;
+import com.hp.gagawa.java.elements.Head;
+import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Li;
+import com.hp.gagawa.java.elements.Link;
 import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Select;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
+import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 import com.sun.jersey.api.client.Client;
@@ -36,6 +41,8 @@ import eu.abc4trust.returnTypes.ui.TokenCandidate;
 import eu.abc4trust.xml.FriendlyDescription;
 
 public class UserGUI {
+    
+    private static String cssURL = "/style.css";
     
     /**
      * Serializes an object using JAXB to a XML.
@@ -91,6 +98,29 @@ public class UserGUI {
             throw new RuntimeException("postRequest failed for: " + url +" got " + response.getStatus());
         
         return fromXML(clazz, response.getEntity(String.class));
+    }
+    
+    public static Html getHtmlPramble(String title) {
+        Html html = new Html();
+        Head head = new Head().appendChild(new Title().appendChild(new Text(title)));
+        html.appendChild(head);
+        head.appendChild(new Link().setHref(cssURL).setRel("stylesheet").setType("text/css"));
+        return html;
+    }
+    
+    public static Body getBody(Div mainDiv) {
+        Div containerDiv = new Div().setCSSClass("containerDiv");
+        containerDiv.appendChild(mainDiv);
+        return new Body().appendChild(containerDiv);
+    }
+    
+    public static Html errorPage(String msg) {
+        Html html = getHtmlPramble("ERROR");
+        Div mainDiv = new Div().setCSSClass("mainDiv");
+        html.appendChild(getBody(mainDiv));
+        mainDiv.appendChild(new H2().appendChild(new Text("Error")));
+        mainDiv.appendChild(new P().setCSSClass("error").appendChild(new Text(msg)));
+        return html;
     }
     
     /**

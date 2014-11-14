@@ -59,6 +59,7 @@ import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H1;
+import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
@@ -236,14 +237,14 @@ public class UserService {
     public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) {
         UiIssuanceArguments args = args_.getValue().uia;
         if(args.tokenCandidates.size() == 1 && args.tokenCandidates.get(0).credentials.size() == 0) {
-            Html html = new Html();
+            Html html = UserGUI.getHtmlPramble("Identity Selection");
             Head head = new Head().appendChild(new Title().appendChild(new Text("Identity Selection")));
             html.appendChild(head);
-            Div mainDiv = new Div();
-            html.appendChild(new Body().appendChild(mainDiv));
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
             Div div = new Div();
-            div.appendChild(new P().appendChild(new Text("The issuer isn't asking you to reveal anything.")));
+            div.appendChild(new P().setCSSClass("info").appendChild(new Text("The issuer isn't asking you to reveal anything.")));
             Form f = new Form("./obtainCredential3");
             f.setMethod("post");
             f.appendChild(new Input().setType("hidden")
@@ -327,7 +328,8 @@ public class UserService {
         }
         catch(Exception e) {
             log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
+            return log.exit(Response.status(Response.Status.BAD_REQUEST
+                        ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, log)).write()).build());
         }
     }
     
@@ -394,12 +396,11 @@ public class UserService {
     @Path("/obtainCredential/")
     public Response obtainCredential() {
         try {
-            Html html = new Html();
-            Head head = new Head().appendChild(new Title().appendChild(new Text("Obtain Credential")));
-            html.appendChild(head);
-            Div mainDiv = new Div();
-            html.appendChild(new Body().appendChild(mainDiv));
-            mainDiv.appendChild(new H1().appendChild(new Text("Obtain Credential")));
+            Html html = UserGUI.getHtmlPramble("Obtain Credential");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Obtain Credential")));
+            mainDiv.appendChild(new P().setCSSClass("info").appendChild(new Text("Please enter the information required to obtain the credential.")));
             Form f = new Form("./obtainCredential2");
             f.setMethod("post");
             
