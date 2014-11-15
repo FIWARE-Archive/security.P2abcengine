@@ -5,4 +5,6 @@ Code/zhaw/components/test*sql
 Code/zhaw/integration-tests/target/*
 */sandboxes/sandbox_*/out/*
 */sandboxes/sandbox_*/gen/*
+sandboxes/sandbox_*/out/*
+sandboxes/sandbox_*/gen/*
 Code/zhaw/components/*.class
