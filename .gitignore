@@ -7,4 +7,6 @@ Code/zhaw/integration-tests/target/*
 */sandboxes/sandbox_*/gen/*
 Code/zhaw/services/sandboxes/sandbox_1/out/*
 Code/zhaw/services/sandboxes/sandbox_1/gen/*
+Code/zhaw/services/sandboxes/sandbox_2/out/*
+Code/zhaw/services/sandboxes/sandbox_2/gen/*
 Code/zhaw/components/*.class
