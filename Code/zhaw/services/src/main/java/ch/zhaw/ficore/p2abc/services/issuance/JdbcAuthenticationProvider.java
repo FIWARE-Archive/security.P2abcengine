@@ -54,7 +54,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 		
 		String bindQuery = ServicesConfiguration.getIssuanceConfiguration().getBindQuery();
-		bindQuery = QueryHelper.buildQuery(bindQuery, simpleAuth.username);
+		bindQuery = QueryHelper.buildQuery(bindQuery, QueryHelper.sqlSanitize(simpleAuth.username));
 		
 		Connection conn = null;
 		ResultSet rs = null;

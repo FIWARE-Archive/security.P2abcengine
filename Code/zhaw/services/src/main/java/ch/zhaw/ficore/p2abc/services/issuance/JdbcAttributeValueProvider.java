@@ -53,7 +53,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
             Class.forName(connParams.getDriverString());
             conn = DriverManager.getConnection(connParams.getConnectionString());  
             
-            String sqlQuery = QueryHelper.buildQuery(query, uid);
+            String sqlQuery = QueryHelper.buildQuery(query, QueryHelper.sqlSanitize(uid));
             
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sqlQuery);
