@@ -24,6 +24,7 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 public class JdbcAuthenticationProvider extends AuthenticationProvider {
 	
     private Logger logger;
+    private String userId;
     
 	/**
 	 * Constructor
@@ -73,8 +74,12 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
                 dbHash = rs.getString(1);
             }
             
-            if(pwHash.equals(dbHash))
+            if(pwHash.equals(dbHash)) {
+                userId = simpleAuth.username;
                 return true;
+            }
+
+            
             return false;
             
 		}
@@ -95,6 +100,6 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 	}
 	
 	public String getUserID() {
-		return "CaroleKing";
+		return userId;
 	}
 }

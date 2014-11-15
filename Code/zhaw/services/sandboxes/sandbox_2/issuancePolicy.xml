@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<IssuancePolicy xmlns="http://abc4trust.eu/wp2/abcschemav1.0" Version="1.0">
+    <PresentationPolicy PolicyUID="http://thebestbank.com/creditcards/issuance/policy">
+      <Message>
+        <Nonce>KNsRu9cGzkaeabogeRVV</Nonce>
+        <ApplicationData>
+          <TestApplicationData>
+          <Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xsi:type="xs:string">Generic</Data>
+          </TestApplicationData>
+        </ApplicationData>
+      </Message>
+      </PresentationPolicy>
+	<CredentialTemplate>
+        <CredentialSpecUID>urn:fiware:privacy:credspec:userdata</CredentialSpecUID>
+        <IssuerParametersUID>http://mroman.ch/generic/issuance:idemix</IssuerParametersUID>
+        <UnknownAttributes/>
+    </CredentialTemplate>
+</IssuancePolicy>

@@ -52,7 +52,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
         
         try {
         
-            ConnectionParameters connParams = ServicesConfiguration.getIssuanceConfiguration().getAuthenticationConnectionParameters();
+            ConnectionParameters connParams = ServicesConfiguration.getIssuanceConfiguration().getAttributeConnectionParameters();
             Class.forName(connParams.getDriverString());
             conn = DriverManager.getConnection(connParams.getConnectionString());  
             

@@ -35,7 +35,7 @@ public class CredentialSpecGenerator {
 		ObjectFactory of = new ObjectFactory();
 		try {
 			CredentialSpecification credSpec = of.createCredentialSpecification();
-			credSpec.setSpecificationUID(new URI(ServicesConfiguration.getURIBase() + attrInfoCol.name));
+			credSpec.setSpecificationUID(new URI(ServicesConfiguration.getURIBase() + "credspec:" +  attrInfoCol.name));
 
 			credSpec.setVersion("1.0");
 			credSpec.setKeyBinding(true);

@@ -46,6 +46,8 @@ public abstract class AttributeValueProvider {
             return new LdapAttributeValueProvider(configuration);
         case FAKE:
             return new FakeAttributeValueProvider(configuration);
+        case JDBC:
+            return new JdbcAttributeValueProvider(configuration);
         default:
             return null;
         }

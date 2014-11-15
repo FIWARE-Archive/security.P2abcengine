@@ -1,0 +1,3 @@
+<query-rule>
+	<query-string>SELECT nickname, income FROM userdata WHERE nickname = '_UID_'</query-string>
+</query-rule>
