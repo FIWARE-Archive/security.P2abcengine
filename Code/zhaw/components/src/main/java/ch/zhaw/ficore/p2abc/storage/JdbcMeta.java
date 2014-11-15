@@ -20,6 +20,11 @@ public class JdbcMeta {
                 "(password      VARCHAR(40) PRIMARY KEY     NOT NULL," +
                 " username      TEXT    NOT NULL)";
         stmt.executeUpdate(sql);
+        stmt = conn.createStatement();
+        sql = "CREATE TABLE IF NOT EXISTS " + "userdata" +
+                "(nickname      VARCHAR(40) PRIMARY KEY     NOT NULL," +
+                " income        INT    NOT NULL)";
+        stmt.executeUpdate(sql);
         
         DatabaseMetaData md = conn.getMetaData();
         ResultSet rs = md.getColumns(null, null, "users", null);

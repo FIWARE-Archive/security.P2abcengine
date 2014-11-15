@@ -17,6 +17,8 @@
 		authenticationMethod="simple"
 		user="uid=admin, ou=system"
 		password="secret"
+		connectionString="jdbc:sqlite:/home/mroman/test.db"
+		driverString="org.sqlite.JDBC"
 		useTls="false"/>
 		
     <Resource

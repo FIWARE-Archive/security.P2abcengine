@@ -40,7 +40,7 @@
 	<env-entry>
 		<description> AttributeSource </description>
 		<env-entry-name>cfg/Source/attributes</env-entry-name>
-		<env-entry-value> FAKE </env-entry-value>
+		<env-entry-value> JDBC </env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>

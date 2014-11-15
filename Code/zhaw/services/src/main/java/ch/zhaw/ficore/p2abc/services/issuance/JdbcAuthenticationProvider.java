@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -54,13 +55,17 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 		String bindQuery = ServicesConfiguration.getIssuanceConfiguration().getBindQuery();
 		bindQuery = QueryHelper.buildQuery(bindQuery, simpleAuth.username);
 		
+		Connection conn = null;
+		ResultSet rs = null;
+		Statement stmt = null;
+		
 		try {
 		
 		    ConnectionParameters connParams = ServicesConfiguration.getIssuanceConfiguration().getAuthenticationConnectionParameters();
             Class.forName(connParams.getDriverString());
-            Connection conn = DriverManager.getConnection(connParams.getConnectionString());  
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(bindQuery);
+            conn = DriverManager.getConnection(connParams.getConnectionString());  
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(bindQuery);
             
             String pwHash = DigestUtils.sha1Hex(simpleAuth.password);
             String dbHash = "";
@@ -76,6 +81,16 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 		catch(Exception e) {
 		    logger.catching(e);
 		    return false;
+		}
+		finally {
+		    if(conn != null)
+                try {
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    logger.catching(e);
+                }
 		}
 	}
 	
