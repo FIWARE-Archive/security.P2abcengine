@@ -16,15 +16,13 @@ public class JdbcMeta {
         Connection conn = DriverManager.getConnection("jdbc:sqlite:" + tempFilePath);  
         
         Statement stmt = conn.createStatement();
-        String sql = "CREATE TABLE IF NOT EXISTS " + tableName +
-                "(hash          VARCHAR(40) PRIMARY KEY     NOT NULL," +
-                " uri           TEXT    NOT NULL, " + 
-                " value         BLOB    NOT NULL," +
-                " miau          INT     NOT NULL)";
+        String sql = "CREATE TABLE IF NOT EXISTS " + "users" +
+                "(password      VARCHAR(40) PRIMARY KEY     NOT NULL," +
+                " username      TEXT    NOT NULL)";
         stmt.executeUpdate(sql);
         
         DatabaseMetaData md = conn.getMetaData();
-        ResultSet rs = md.getColumns(null, null, "test2", null);
+        ResultSet rs = md.getColumns(null, null, "users", null);
         while(rs.next()) {
             System.out.println("Name: " + rs.getString(4));
             System.out.println("Type (as per java.sql.Types): " + rs.getString(5));

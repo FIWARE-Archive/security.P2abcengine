@@ -65,7 +65,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	    LdapConnection userConnection = null;
 
 	    try {
-	      String bindQuery = QueryHelper.buildQuery(configuration.getBindQuery(), 
+	      String bindQuery = QueryHelper.buildQuery(configuration.getBindQuery(),
 	          QueryHelper.ldapSanitize(simpleAuth.username));
 	      System.out.println("q:"+bindQuery);
 

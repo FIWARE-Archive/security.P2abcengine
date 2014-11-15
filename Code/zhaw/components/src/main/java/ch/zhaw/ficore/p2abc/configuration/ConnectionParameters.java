@@ -22,6 +22,8 @@ public class ConnectionParameters {
     private String user;
     private String password;
     private boolean useTls;
+    private String connectionString;
+    private String driverString;
 
     public ConnectionParameters() {
         super();
@@ -105,6 +107,22 @@ public class ConnectionParameters {
     
     public boolean getUseTls() {
         return useTls;
+    }
+    
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
+    }
+    
+    public String getConnectionString() {
+        return connectionString;
+    }
+    
+    public void setDriverString(String driverString) {
+        this.driverString = driverString;
+    }
+    
+    public String getDriverString() {
+        return driverString;
     }
 
     @Override

@@ -21,6 +21,7 @@ public class IssuanceConfiguration {
         KEYROCK,  /** Use keyrock. */
         LDAP,     /** Use LDAP. */
         FAKE,     /** Use a fake (testing only). */
+        JDBC      /** Use JDBC **/
     }
 
     /** What attribute source should we use? */

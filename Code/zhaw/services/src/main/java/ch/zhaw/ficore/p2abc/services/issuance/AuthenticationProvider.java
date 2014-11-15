@@ -13,8 +13,11 @@ import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
  * @author mroman
  */
 public abstract class AuthenticationProvider {
+    
+    protected IssuanceConfiguration configuration;
 	
 	public AuthenticationProvider(IssuanceConfiguration configuration) {
+	    this.configuration = configuration;
 	}
 	
 	/**
@@ -26,11 +29,13 @@ public abstract class AuthenticationProvider {
 	 * @return an implementation of an AuthenticationProvider
 	 */
 	public static AuthenticationProvider getAuthenticationProvider(IssuanceConfiguration configuration) {
-		switch(configuration.getAttributeSource()) {
+		switch(configuration.getAuthenticationSource()) {
 		case FAKE:
 			return new FakeAuthenticationProvider(configuration);
 		case LDAP:
 			return new LdapAuthenticationProvider(configuration);
+		case JDBC:
+		    return new JdbcAuthenticationProvider(configuration);
 		default:
 	    throw new RuntimeException(configuration.getAttributeSource() + " is not a supported AuthenticationProvider!");
 		}
