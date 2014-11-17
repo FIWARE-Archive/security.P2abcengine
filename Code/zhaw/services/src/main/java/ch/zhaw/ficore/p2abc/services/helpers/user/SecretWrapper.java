@@ -30,30 +30,20 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-import org.w3c.dom.Element;
-
-import com.ibm.zurich.idmx.key.IssuerPublicKey;
 import com.ibm.zurich.idmx.utils.GroupParameters;
-import com.ibm.zurich.idmx.utils.Parser;
 
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
-import eu.abc4trust.smartcard.BasicSmartcard;
-import eu.abc4trust.smartcard.CredentialBases;
 import eu.abc4trust.smartcard.RSAKeyPair;
 import eu.abc4trust.smartcard.RSASignatureSystem;
 import eu.abc4trust.smartcard.RSAVerificationKey;
 import eu.abc4trust.smartcard.Smartcard;
 import eu.abc4trust.smartcard.SmartcardBlob;
-import eu.abc4trust.smartcard.SmartcardStatusCode;
 import eu.abc4trust.smartcard.SoftwareSmartcard;
-import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.Secret;
 import eu.abc4trust.xml.SmartcardSystemParameters;
 import eu.abc4trust.xml.SystemParameters;
 
 public class SecretWrapper {
-
-    private final boolean useSoftwareSmartcard;
 
     //
     RSAKeyPair sk_root = getSigningKeyForTest();
@@ -90,14 +80,11 @@ public class SecretWrapper {
     }
 
     public SecretWrapper(Secret secret) {
-        this.useSoftwareSmartcard = false;
         this.secret = secret;
     }
 
     public SecretWrapper(CryptoEngine cryptoEngine, Random random,
             SystemParameters systemParameters) {
-        this.useSoftwareSmartcard = true;
-
         URI deviceUri = URI.create("secret://software-smartcard-"
                 + random.nextInt(9999999));
 
@@ -147,53 +134,6 @@ public class SecretWrapper {
                 + this.softwareSmartcard);
     }
 
-    public boolean isSecretOnSmartcard() {
-        return this.useSoftwareSmartcard;
-    }
+   
 
-    public URI getSecretUID() {
-        if (this.useSoftwareSmartcard) {
-            return this.softwareSmartcard.getDeviceURI(this.pin);
-        } else {
-            return this.secret.getSecretDescription().getSecretUID();
-        }
-    }
-
-    public void addIssuerParameters(IssuerParameters issuerParameters) {
-        if (this.useSoftwareSmartcard) {
-            IssuerPublicKey isPK = (IssuerPublicKey) Parser.getInstance()
-                    .parse((Element) issuerParameters.getCryptoParams()
-                            .getAny().get(0));
-            //
-            BigInteger R0 = isPK.getCapR()[0];
-            BigInteger S = isPK.getCapS();
-            BigInteger n = isPK.getN();
-            CredentialBases credBases = new CredentialBases(R0, S, n);
-
-            this.softwareSmartcard.getNewNonceForSignature();
-            URI parametersUri = issuerParameters.getParametersUID();
-
-            SmartcardStatusCode universityResult = this.softwareSmartcard
-                    .addIssuerParameters(this.sk_root, parametersUri,
-                            credBases);
-            if (universityResult != SmartcardStatusCode.OK) {
-                throw new RuntimeException(
-                        "Could not add IssuerParams to smartcard... "
-                                + universityResult);
-            }
-
-        }
-    }
-
-    public Secret getSecret() {
-        return this.secret;
-    }
-
-    public BasicSmartcard getSoftwareSmartcard() {
-        return this.softwareSmartcard;
-    }
-
-    public int getPin() {
-        return this.pin;
-    }
 }
