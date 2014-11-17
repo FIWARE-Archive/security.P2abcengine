@@ -1,6 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.sql.Connection;
@@ -16,8 +15,6 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
-import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.ldap.helper.LdapSearch;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;

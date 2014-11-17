@@ -52,6 +52,7 @@ import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
 import eu.abc4trust.ri.servicehelper.SystemParametersHelper;
 import eu.abc4trust.xml.Attribute;
@@ -70,6 +71,7 @@ public class IssuanceHelper extends AbstractHelper {
     static Logger log = LogManager.getLogger();
 
     private static IssuanceHelper instance;
+    public KeyStorage keyStorage;
     
     public IssuanceStorage issuanceStorage;
    
@@ -172,6 +174,7 @@ public class IssuanceHelper extends AbstractHelper {
 
         this.keyManager = injector.getInstance(KeyManager.class);
         this.issuanceStorage = injector.getInstance(IssuanceStorage.class);
+        this.keyStorage = injector.getInstance(KeyStorage.class);
 
         String systemParametersResource = this.fileStoragePrefix
                 + SYSTEM_PARAMS_NAME_BRIDGED;

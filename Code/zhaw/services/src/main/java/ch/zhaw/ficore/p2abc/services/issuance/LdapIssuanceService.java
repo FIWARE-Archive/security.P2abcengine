@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -18,26 +19,43 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
-import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
+import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
+import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
+
+import com.hp.gagawa.java.elements.Div;
+import com.hp.gagawa.java.elements.H2;
+import com.hp.gagawa.java.elements.H3;
+import com.hp.gagawa.java.elements.H4;
+import com.hp.gagawa.java.elements.H5;
+import com.hp.gagawa.java.elements.Html;
+import com.hp.gagawa.java.elements.Table;
+import com.hp.gagawa.java.elements.Td;
+import com.hp.gagawa.java.elements.Text;
+import com.hp.gagawa.java.elements.Tr;
+
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.util.CryptoUriUtil;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
@@ -77,6 +95,86 @@ public class LdapIssuanceService {
     @Produces({MediaType.TEXT_PLAIN})
     public Response issuerStatus() {
         return Response.ok().build();
+    }
+    
+    @GET()
+    @Path("/credentialSpecifications/")
+    public Response credentialSpecifications() {
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
+
+            for(URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
+                if(obj instanceof CredentialSpecification) {
+                    credSpecs.add((CredentialSpecification) obj);
+                }
+            }
+
+            Html html = IssuerGUI.getHtmlPramble("Profile");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+
+            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
+            mainDiv.appendChild(new H3().appendChild(new Text("Credential Specifications")));
+
+            for(CredentialSpecification credSpec : credSpecs) {
+
+                Div credDiv = new Div().setCSSClass("credDiv");
+                mainDiv.appendChild(credDiv);
+
+                AttributeDescriptions attribDescs = credSpec.getAttributeDescriptions();
+                List<AttributeDescription> attrDescs = attribDescs.getAttributeDescription();
+                credDiv.appendChild(new H4().appendChild(new Text(credSpec.getSpecificationUID().toString())));
+                
+                
+
+                for(AttributeDescription attrDesc : attrDescs) {
+                    String name = attrDesc.getType().toString();
+                    String encoding = attrDesc.getEncoding().toString();
+                    String type = attrDesc.getDataType().toString();
+                    
+                    credDiv.appendChild(new H5().appendChild(new Text(name)));
+                    Table tbl = new Table(); 
+                    credDiv.appendChild(tbl);
+                    Tr tr = null;
+                    tr = new Tr().setCSSClass("heading")
+                            .appendChild(new Td().appendChild(new Text("DataType")))
+                            .appendChild(new Td().appendChild(new Text("Encoding")));
+                    tbl.appendChild(tr);
+
+                    Table fdTbl = new Table();
+                    tr = new Tr().setCSSClass("heading").appendChild(new Td().appendChild(new Text("Language")))
+                            .appendChild(new Td().appendChild(new Text("Value")));
+                    fdTbl.appendChild(tr);
+                    
+                    for(FriendlyDescription fd : attrDesc.getFriendlyAttributeName()) {
+                        tr = new Tr().appendChild(new Td().appendChild(new Text(fd.getLang())))
+                                .appendChild(new Td().appendChild(new Text(fd.getValue())));
+                        fdTbl.appendChild(tr);
+                    }
+                    
+                    tr = new Tr()
+                            .appendChild(new Td().appendChild(new Text(type)))
+                            .appendChild(new Td().appendChild(new Text(encoding)));
+                    tbl.appendChild(tr);
+                    credDiv.appendChild(fdTbl);
+                }
+            }
+
+            return logger.exit(Response.ok(html.write()).build());
+
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response.status(Response.Status.BAD_REQUEST
+                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, logger)).write()).build());
+        }
     }
 
 
