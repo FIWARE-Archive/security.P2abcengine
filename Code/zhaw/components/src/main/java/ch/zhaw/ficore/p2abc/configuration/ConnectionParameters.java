@@ -34,13 +34,20 @@ public class ConnectionParameters {
      * 
      * Uses authentication method "simple" by default.
      * 
-     * @param serverName the server to connect to
-     * @param serverPort the port number; may be 0 for default
-     * @param normalDefaultPort the default port when not using TLS
-     * @param tlsDefaultPort the default port when using TLS
-     * @param user the user name to use when authenticating
-     * @param password the password to use when authenticating
-     * @param useTls whether or not to use TLS
+     * @param serverName
+     *            the server to connect to
+     * @param serverPort
+     *            the port number; may be 0 for default
+     * @param normalDefaultPort
+     *            the default port when not using TLS
+     * @param tlsDefaultPort
+     *            the default port when using TLS
+     * @param user
+     *            the user name to use when authenticating
+     * @param password
+     *            the password to use when authenticating
+     * @param useTls
+     *            whether or not to use TLS
      */
     public ConnectionParameters(String serverName, int serverPort,
             int normalDefaultPort, int tlsDefaultPort, String user,
@@ -60,7 +67,7 @@ public class ConnectionParameters {
     public String getServerName() {
         return serverName;
     }
-    
+
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
@@ -68,7 +75,7 @@ public class ConnectionParameters {
     public int getServerPort() {
         return serverPort;
     }
-    
+
     public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
     }
@@ -76,7 +83,7 @@ public class ConnectionParameters {
     public String getAuthenticationMethod() {
         return authenticationMethod;
     }
-    
+
     public void setAuthenticationMethod(String authenticationMethod) {
         this.authenticationMethod = authenticationMethod;
     }
@@ -84,7 +91,7 @@ public class ConnectionParameters {
     public String getUser() {
         return user;
     }
-    
+
     public void setUser(String user) {
         this.user = user;
     }
@@ -92,7 +99,7 @@ public class ConnectionParameters {
     public String getPassword() {
         return password;
     }
-    
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -100,27 +107,27 @@ public class ConnectionParameters {
     public boolean usesTls() {
         return useTls;
     }
-    
+
     public void setUseTls(boolean useTls) {
         this.useTls = useTls;
     }
-    
+
     public boolean getUseTls() {
         return useTls;
     }
-    
+
     public void setConnectionString(String connectionString) {
         this.connectionString = connectionString;
     }
-    
+
     public String getConnectionString() {
         return connectionString;
     }
-    
+
     public void setDriverString(String driverString) {
         this.driverString = driverString;
     }
-    
+
     public String getDriverString() {
         return driverString;
     }

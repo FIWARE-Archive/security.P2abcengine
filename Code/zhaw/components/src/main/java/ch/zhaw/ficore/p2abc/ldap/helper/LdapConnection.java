@@ -16,7 +16,7 @@ import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
  * Contains an DirContext (LDAPConnection)
  * 
  * @author mroman
- *
+ * 
  */
 public class LdapConnection {
     private DirContext initialDirContext;

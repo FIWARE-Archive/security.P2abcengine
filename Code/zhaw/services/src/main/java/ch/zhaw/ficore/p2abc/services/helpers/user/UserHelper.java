@@ -53,31 +53,26 @@ public class UserHelper extends AbstractHelper {
 
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
-    public KeyStorage keyStorage; 
-    
-    
+    public KeyStorage keyStorage;
 
     public static synchronized UserHelper initInstanceForService(
             CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules)
-                    throws URISyntaxException {
+            Module... modules) throws URISyntaxException {
 
         initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
-
-        
 
         System.out.println("UserHelper.initInstance : DONE");
 
         return instance;
     }
-    
+
     public static synchronized void loadSystemParameters() {
         instance.checkIfSystemParametersAreLoaded();
     }
 
     private static void initializeInstanceField(CryptoEngine cryptoEngine,
             String fileStoragePrefix, Module... modules)
-                    throws URISyntaxException {
+            throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
@@ -92,12 +87,13 @@ public class UserHelper extends AbstractHelper {
 
     public static synchronized UserHelper getInstance() {
         if (instance == null) {
-            System.out.println("initInstance not called before using UserHelper!");
-            throw new IllegalStateException("initInstance not called before using UserHelper!");
+            System.out
+                    .println("initInstance not called before using UserHelper!");
+            throw new IllegalStateException(
+                    "initInstance not called before using UserHelper!");
         }
         return instance;
     }
-
 
     private UserAbcEngine engine;
     public AbcSmartcardManager smartcardManager;
@@ -106,26 +102,30 @@ public class UserHelper extends AbstractHelper {
 
     private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
             Module... modules) throws URISyntaxException {
-        logger.info("UserHelper : : create instance " + cryptoEngine + " : " + fileStoragePrefix);
+        logger.info("UserHelper : : create instance " + cryptoEngine + " : "
+                + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
         try {
-            Module m = ProductionModuleFactory.newModule(cryptoEngine); 
+            Module m = ProductionModuleFactory.newModule(cryptoEngine);
             Module combinedModule = Modules.override(m).with(modules);
             Injector injector = Guice.createInjector(combinedModule);
 
             this.keyManager = injector.getInstance(KeyManager.class);
             this.keyStorage = injector.getInstance(KeyStorage.class);
-            this.credentialManager = injector.getInstance(CredentialManager.class);
-            this.smartcardManager = injector.getInstance(AbcSmartcardManager.class);
+            this.credentialManager = injector
+                    .getInstance(CredentialManager.class);
+            this.smartcardManager = injector
+                    .getInstance(AbcSmartcardManager.class);
             this.cardStorage = injector.getInstance(CardStorage.class);
-            this.reloadTokens = injector.getInstance(ReloadTokensCommunicationStrategy.class);
+            this.reloadTokens = injector
+                    .getInstance(ReloadTokensCommunicationStrategy.class);
             //
             UserAbcEngine e = injector.getInstance(UserAbcEngine.class);
             this.engine = new SynchronizedUserAbcEngineImpl(e);
 
-
-            if((cryptoEngine == CryptoEngine.UPROVE) || (cryptoEngine == CryptoEngine.BRIDGED)) {
-                throw new RuntimeException("We only support Idemix. Sorry :("); 
+            if ((cryptoEngine == CryptoEngine.UPROVE)
+                    || (cryptoEngine == CryptoEngine.BRIDGED)) {
+                throw new RuntimeException("We only support Idemix. Sorry :(");
             }
 
         } catch (Exception e) {

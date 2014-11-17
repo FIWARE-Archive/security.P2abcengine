@@ -69,6 +69,7 @@ import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.IssuerParametersInput;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.SystemParameters;
+
 //from Code/core-abce/abce-services (COPY)
 
 @Path("/issuance")
@@ -84,22 +85,22 @@ public class LdapIssuanceService {
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
 
-    private ObjectFactory of = new ObjectFactory(); 
-
+    private ObjectFactory of = new ObjectFactory();
 
     private Logger logger;
 
-    public LdapIssuanceService() throws ClassNotFoundException, SQLException, UnsafeTableNameException {
+    public LdapIssuanceService() throws ClassNotFoundException, SQLException,
+            UnsafeTableNameException {
         logger = LogManager.getLogger();
     }
 
     @GET()
     @Path("/status")
-    @Produces({MediaType.TEXT_PLAIN})
+    @Produces({ MediaType.TEXT_PLAIN })
     public Response issuerStatus() {
         return Response.ok().build();
     }
-    
+
     @GET()
     @Path("/credentialSpecifications/")
     public Response credentialSpecifications() {
@@ -112,9 +113,10 @@ public class LdapIssuanceService {
 
             List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
 
-            for(URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage.getValue(uri));
-                if(obj instanceof CredentialSpecification) {
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
                     credSpecs.add((CredentialSpecification) obj);
                 }
             }
@@ -124,155 +126,186 @@ public class LdapIssuanceService {
             html.appendChild(IssuerGUI.getBody(mainDiv));
 
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-            mainDiv.appendChild(new H3().appendChild(new Text("Credential Specifications")));
+            mainDiv.appendChild(new H3().appendChild(new Text(
+                    "Credential Specifications")));
 
-            for(CredentialSpecification credSpec : credSpecs) {
+            for (CredentialSpecification credSpec : credSpecs) {
 
                 Div credDiv = new Div().setCSSClass("credDiv");
                 mainDiv.appendChild(credDiv);
 
-                AttributeDescriptions attribDescs = credSpec.getAttributeDescriptions();
-                List<AttributeDescription> attrDescs = attribDescs.getAttributeDescription();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec.getSpecificationUID().toString())));
-                
-                
+                AttributeDescriptions attribDescs = credSpec
+                        .getAttributeDescriptions();
+                List<AttributeDescription> attrDescs = attribDescs
+                        .getAttributeDescription();
+                credDiv.appendChild(new H4().appendChild(new Text(credSpec
+                        .getSpecificationUID().toString())));
 
-                for(AttributeDescription attrDesc : attrDescs) {
+                for (AttributeDescription attrDesc : attrDescs) {
                     String name = attrDesc.getType().toString();
                     String encoding = attrDesc.getEncoding().toString();
                     String type = attrDesc.getDataType().toString();
-                    
+
                     credDiv.appendChild(new H5().appendChild(new Text(name)));
                     Div topGroup = new Div().setCSSClass("group");
                     Div group = new Div().setCSSClass("group");
-                    Table tbl = new Table(); 
+                    Table tbl = new Table();
                     group.appendChild(tbl);
                     Tr tr = null;
-                    tr = new Tr().setCSSClass("heading")
-                            .appendChild(new Td().appendChild(new Text("DataType")))
-                            .appendChild(new Td().appendChild(new Text("Encoding")));
+                    tr = new Tr()
+                            .setCSSClass("heading")
+                            .appendChild(
+                                    new Td().appendChild(new Text("DataType")))
+                            .appendChild(
+                                    new Td().appendChild(new Text("Encoding")));
                     tbl.appendChild(tr);
-                    
+
                     credDiv.appendChild(topGroup);
                     topGroup.appendChild(group);
                     group = new Div().setCSSClass("group");
 
                     Table fdTbl = new Table();
-                    tr = new Tr().setCSSClass("heading").appendChild(new Td().appendChild(new Text("Language")))
-                            .appendChild(new Td().appendChild(new Text("Value")));
+                    tr = new Tr()
+                            .setCSSClass("heading")
+                            .appendChild(
+                                    new Td().appendChild(new Text("Language")))
+                            .appendChild(
+                                    new Td().appendChild(new Text("Value")));
                     fdTbl.appendChild(tr);
-                    
-                    for(FriendlyDescription fd : attrDesc.getFriendlyAttributeName()) {
-                        tr = new Tr().appendChild(new Td().appendChild(new Text(fd.getLang())))
-                                .appendChild(new Td().appendChild(new Text(fd.getValue())));
+
+                    for (FriendlyDescription fd : attrDesc
+                            .getFriendlyAttributeName()) {
+                        tr = new Tr().appendChild(
+                                new Td().appendChild(new Text(fd.getLang())))
+                                .appendChild(
+                                        new Td().appendChild(new Text(fd
+                                                .getValue())));
                         fdTbl.appendChild(tr);
                     }
-                    
-                    tr = new Tr()
-                            .appendChild(new Td().appendChild(new Text(type)))
-                            .appendChild(new Td().appendChild(new Text(encoding)));
+
+                    tr = new Tr().appendChild(
+                            new Td().appendChild(new Text(type))).appendChild(
+                            new Td().appendChild(new Text(encoding)));
                     tbl.appendChild(tr);
                     group.appendChild(fdTbl);
-                    
+
                     Form f = new Form("");
                     tbl = new Table().setCSSClass("pad");
                     tr = new Tr().appendChild(
-                                new Td().appendChild(new Label().appendChild(new Text("Language:"))))
+                            new Td().appendChild(new Label()
+                                    .appendChild(new Text("Language:"))))
                             .appendChild(
-                                new Td().appendChild(new Input().setType("text").setName("language")));
+                                    new Td().appendChild(new Input().setType(
+                                            "text").setName("language")));
                     tbl.appendChild(tr);
                     tr = new Tr().appendChild(
-                            new Td().appendChild(new Label().appendChild(new Text("Value:"))))
-                        .appendChild(
-                            new Td().appendChild(new Input().setType("text").setName("Value")));
+                            new Td().appendChild(new Label()
+                                    .appendChild(new Text("Value:"))))
+                            .appendChild(
+                                    new Td().appendChild(new Input().setType(
+                                            "text").setName("Value")));
                     tbl.appendChild(tr);
                     f.appendChild(tbl);
-                    f.appendChild(new Input().setType("submit").setValue("Add new friendly description"));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            "Add new friendly description"));
                     group.appendChild(f);
 
-                    
                     topGroup.appendChild(group);
                     f = new Form("");
-                    f.appendChild(new Input().setType("submit").setValue("Delete attribute"));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            "Delete attribute"));
                     topGroup.appendChild(f);
                 }
             }
 
             return logger.exit(Response.ok(html.write()).build());
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
-            return logger.exit(Response.status(Response.Status.BAD_REQUEST
-                    ).entity(UserGUI.errorPage(ExceptionDumper.dumpExceptionStr(e, logger)).write()).build());
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
         }
     }
 
-
     /**
-     * This method is called by a user to initiate an issuance protocol. 
-     * The user must provide an issuance request containing his authentication information
-     * and the uid of the corresponding credential specification. The issuer will then try to authenticate
-     * the user by using an authentication source (e.g. LDAP) and fetch the attributes required by 
-     * the credential specification from an attribute source (e.g. LDAP) and initiates the round based
-     * issuance protocol. 
+     * This method is called by a user to initiate an issuance protocol. The
+     * user must provide an issuance request containing his authentication
+     * information and the uid of the corresponding credential specification.
+     * The issuer will then try to authenticate the user by using an
+     * authentication source (e.g. LDAP) and fetch the attributes required by
+     * the credential specification from an attribute source (e.g. LDAP) and
+     * initiates the round based issuance protocol.
      * 
-     * If authentication of the user fails this method will return the status code FORBIDDEN.
-     * If the issuer is missing the credential specification, the issuance policy or the query rule this
-     * method will return status code NOT_FOUND. 
+     * If authentication of the user fails this method will return the status
+     * code FORBIDDEN. If the issuer is missing the credential specification,
+     * the issuance policy or the query rule this method will return status code
+     * NOT_FOUND.
      * 
-     * @param request a valid IssuanceRequset
+     * @param request
+     *            a valid IssuanceRequset
      * @return Response (IssuanceMessageAndBoolean)
      */
     @POST()
     @Path("/issuanceRequest/")
-    @Consumes({MediaType.APPLICATION_XML})
+    @Consumes({ MediaType.APPLICATION_XML })
     public Response issuanceRequest(IssuanceRequest request) {
-        
+
         AttributeValueProvider attrValProvider = null;
         AuthenticationProvider authProvider = null;
-        
-        try {
-            IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-            attrValProvider = AttributeValueProvider.getAttributeValueProvider(configuration);
-            authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
 
-            if(!authProvider.authenticate(request.authRequest.authInfo))
+        try {
+            IssuanceConfiguration configuration = ServicesConfiguration
+                    .getIssuanceConfiguration();
+            attrValProvider = AttributeValueProvider
+                    .getAttributeValueProvider(configuration);
+            authProvider = AuthenticationProvider
+                    .getAuthenticationProvider(configuration);
+
+            if (!authProvider.authenticate(request.authRequest.authInfo))
                 return Response.status(Response.Status.FORBIDDEN).build();
 
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            CredentialSpecification credSpec = instance.keyManager.getCredentialSpecification(
-                    new URI(request.credentialSpecificationUid));
-            IssuancePolicy ip = instance.issuanceStorage.getIssuancePolicy(
-                    new URI(request.credentialSpecificationUid));
-            QueryRule qr = instance.issuanceStorage.getQueryRule(
-                    new URI(request.credentialSpecificationUid));
+            CredentialSpecification credSpec = instance.keyManager
+                    .getCredentialSpecification(new URI(
+                            request.credentialSpecificationUid));
+            IssuancePolicy ip = instance.issuanceStorage
+                    .getIssuancePolicy(new URI(
+                            request.credentialSpecificationUid));
+            QueryRule qr = instance.issuanceStorage.getQueryRule(new URI(
+                    request.credentialSpecificationUid));
 
-            if(credSpec == null)
-                return Response.status(Response.Status.NOT_FOUND).entity(errNoCredSpec).build();
-            if(ip == null)
-                return Response.status(Response.Status.NOT_FOUND).entity(errNoIssuancePolicy).build();
-            if(qr == null)
-                return Response.status(Response.Status.NOT_FOUND).entity(errNoQueryRule).build();
+            if (credSpec == null)
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNoCredSpec).build();
+            if (ip == null)
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNoIssuancePolicy).build();
+            if (qr == null)
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNoQueryRule).build();
 
-            IssuancePolicyAndAttributes ipa = of.createIssuancePolicyAndAttributes();
+            IssuancePolicyAndAttributes ipa = of
+                    .createIssuancePolicyAndAttributes();
 
             ipa.setIssuancePolicy(ip);
-            ipa.getAttribute().addAll(attrValProvider.getAttributes(qr.queryString,
-                    authProvider.getUserID(), credSpec));
+            ipa.getAttribute().addAll(
+                    attrValProvider.getAttributes(qr.queryString,
+                            authProvider.getUserID(), credSpec));
 
-            return initIssuanceProtocol(ServicesConfiguration.getMagicCookie(), ipa);
-        }
-        catch(Exception e) {
+            return initIssuanceProtocol(ServicesConfiguration.getMagicCookie(),
+                    ipa);
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
-        }
-        finally {
-            if(attrValProvider != null)
+        } finally {
+            if (attrValProvider != null)
                 attrValProvider.shutdown();
-            if(authProvider != null)
+            if (authProvider != null)
                 authProvider.shutdown();
         }
     }
@@ -282,32 +315,37 @@ public class LdapIssuanceService {
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
-     * @param magicCookie the magic cookie
-     * @param credentialSpecificationUid UID of the credSpec
+     * @param magicCookie
+     *            the magic cookie
+     * @param credentialSpecificationUid
+     *            UID of the credSpec
      * @return Response
      */
     @PUT()
     @Path("/storeQueryRule/{magicCookie}/{credentialSpecificationUid}")
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response storeQueryRule(@PathParam("magicCookie") String magicCookie,
+    @Consumes({ MediaType.APPLICATION_XML })
+    public Response storeQueryRule(
+            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
             QueryRule rule) {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            instance.issuanceStorage.addQueryRule(new URI(credentialSpecificationUid), rule);
+            instance.issuanceStorage.addQueryRule(new URI(
+                    credentialSpecificationUid), rule);
             return logger.exit(Response.ok("OK").build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
@@ -318,36 +356,41 @@ public class LdapIssuanceService {
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
-     * This method will return status code NOT_FOUND if no query rule with the given
-     * uid is found. 
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct. This method will return status code NOT_FOUND if no query rule
+     * with the given uid is found.
      * 
-     * @param magicCookie the magic cookie
+     * @param magicCookie
+     *            the magic cookie
      * @param credentialSpecificationUid
      * @return QueryRule
      */
     @GET()
     @Path("/getQueryRule/{magicCookie}/{credentialSpecificationUid}")
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response getQueryRule(@PathParam("magicCookie") String magicCookie,
+    @Consumes({ MediaType.APPLICATION_XML })
+    public Response getQueryRule(
+            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            QueryRule rule = instance.issuanceStorage.getQueryRule(new URI(credentialSpecificationUid));
-            if(rule == null)
-                return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+            QueryRule rule = instance.issuanceStorage.getQueryRule(new URI(
+                    credentialSpecificationUid));
+            if (rule == null)
+                return logger.exit(Response.status(Response.Status.NOT_FOUND)
+                        .build());
             else
-                return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+                return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML)
+                        .build());
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
@@ -358,32 +401,37 @@ public class LdapIssuanceService {
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
-     * @param magicCookie the magic cookie
-     * @param credentialSpecificationUid UID of the credSpec
+     * @param magicCookie
+     *            the magic cookie
+     * @param credentialSpecificationUid
+     *            UID of the credSpec
      * @return Response
      */
     @PUT()
     @Path("/storeIssuancePolicy/{magicCookie}/{credentialSpecificationUid}")
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response storeIssuancePolicy(@PathParam("magicCookie") String magicCookie,
+    @Consumes({ MediaType.APPLICATION_XML })
+    public Response storeIssuancePolicy(
+            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
             IssuancePolicy policy) {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            instance.issuanceStorage.addIssuancePolicy(new URI(credentialSpecificationUid), policy);
+            instance.issuanceStorage.addIssuancePolicy(new URI(
+                    credentialSpecificationUid), policy);
             return logger.exit(Response.ok("OK").build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
@@ -394,160 +442,175 @@ public class LdapIssuanceService {
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
-     * This method will return status code NOT_FOUND if no issuance policy with the given
-     * uid is found. 
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct. This method will return status code NOT_FOUND if no issuance
+     * policy with the given uid is found.
      * 
-     * @param magicCookie the magic cookie
+     * @param magicCookie
+     *            the magic cookie
      * @param credentialSpecificationUid
      * @return IssuancePolicy
      */
     @GET()
     @Path("/getIssuancePolicy/{magicCookie}/{credentialSpecificationUid}")
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response getIssuancePolicy(@PathParam("magicCookie") String magicCookie,
+    @Consumes({ MediaType.APPLICATION_XML })
+    public Response getIssuancePolicy(
+            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            IssuancePolicy policy = instance.issuanceStorage.getIssuancePolicy(new URI(credentialSpecificationUid));
-            if(policy == null)
-                return logger.exit(Response.status(Response.Status.NOT_FOUND).build());
+            IssuancePolicy policy = instance.issuanceStorage
+                    .getIssuancePolicy(new URI(credentialSpecificationUid));
+            if (policy == null)
+                return logger.exit(Response.status(Response.Status.NOT_FOUND)
+                        .build());
             else
-                return logger.exit(Response.ok(of.createIssuancePolicy(policy), MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+                return logger.exit(Response.ok(of.createIssuancePolicy(policy),
+                        MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
-
     /**
-     * This method can be used to test the authentication.
-     * It returns a response with status code OK if the authentication
-     * was successful, otherwise it returns a response with status code FORBIDDEN.
+     * This method can be used to test the authentication. It returns a response
+     * with status code OK if the authentication was successful, otherwise it
+     * returns a response with status code FORBIDDEN.
      * 
-     * This method will return status code FORBIDDEN if authentication failed. 
+     * This method will return status code FORBIDDEN if authentication failed.
      * 
-     * @param authReq an AuthenticationRequest
+     * @param authReq
+     *            an AuthenticationRequest
      * @return response
      */
     @POST()
     @Path("/testAuthentication")
-    @Consumes({MediaType.APPLICATION_XML})
+    @Consumes({ MediaType.APPLICATION_XML })
     public Response testAuthentication(AuthenticationRequest authReq) {
-        
+
         AuthenticationProvider authProvider = null;
 
         try {
-            IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-            authProvider = AuthenticationProvider.getAuthenticationProvider(configuration);
-    
-            if(authProvider.authenticate(authReq.authInfo)) {
+            IssuanceConfiguration configuration = ServicesConfiguration
+                    .getIssuanceConfiguration();
+            authProvider = AuthenticationProvider
+                    .getAuthenticationProvider(configuration);
+
+            if (authProvider.authenticate(authReq.authInfo)) {
                 authProvider.shutdown();
                 return Response.ok("OK").build();
+            } else {
+                return Response.status(Response.Status.FORBIDDEN).entity("ERR")
+                        .build();
             }
-            else {
-                return Response.status(Response.Status.FORBIDDEN).entity("ERR").build();
-            }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
-        }
-        finally {
-            if(authProvider != null)
+        } finally {
+            if (authProvider != null)
                 authProvider.shutdown();
         }
     }
 
     /**
-     * This method can be used to obtain the AttributeInfoCollection
-     * that may later be converted into a CredentialSpecification. 
-     * This method contacts the identity source to obtain the necessary
-     * attributes for <em>name</em>. <em>name</em> refers to a <em>kind</em> of credential
-     * a user can get issued. For example <em>name</em> may refer to an objectClass
-     * in LDAP. However, the exact behaviour of <em>name</em> depends on the configuration
-     * of this service. 
+     * This method can be used to obtain the AttributeInfoCollection that may
+     * later be converted into a CredentialSpecification. This method contacts
+     * the identity source to obtain the necessary attributes for <em>name</em>.
+     * <em>name</em> refers to a <em>kind</em> of credential a user can get
+     * issued. For example <em>name</em> may refer to an objectClass in LDAP.
+     * However, the exact behaviour of <em>name</em> depends on the
+     * configuration of this service.
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
-     * @param magicCookie the magic cookie
-     * @param name name (see description of this method above)
+     * @param magicCookie
+     *            the magic cookie
+     * @param name
+     *            name (see description of this method above)
      * @return an AttributeInfoCollection as application/xml.
      */
     @GET()
     @Path("/attributeInfoCollection/{magicCookie}/{name}")
-    public Response attributeInfoCollection(@PathParam("magicCookie") String magicCookie, 
+    public Response attributeInfoCollection(
+            @PathParam("magicCookie") String magicCookie,
             @PathParam("name") String name) {
         AttributeInfoProvider attribInfoProvider = null;
-        
-        try {
-            IssuanceConfiguration configuration = ServicesConfiguration.getIssuanceConfiguration();
-            attribInfoProvider = AttributeInfoProvider.getAttributeInfoProvider(configuration);
 
-            if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie)) {
-                return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+        try {
+            IssuanceConfiguration configuration = ServicesConfiguration
+                    .getIssuanceConfiguration();
+            attribInfoProvider = AttributeInfoProvider
+                    .getAttributeInfoProvider(configuration);
+
+            if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie)) {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity(errMagicCookie).build();
             }
 
-            return Response.ok(attribInfoProvider.getAttributes(name), MediaType.APPLICATION_XML).build();
-        }
-        catch(Exception e) {
+            return Response.ok(attribInfoProvider.getAttributes(name),
+                    MediaType.APPLICATION_XML).build();
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
-        }
-        finally {
-            if(attribInfoProvider != null)
+        } finally {
+            if (attribInfoProvider != null)
                 attribInfoProvider.shutdown();
         }
     }
 
     /**
-     * Generates (or creates) the corresponding CredentialSpecification
-     * for a given AttributeInfoCollection. This method assumes that the
-     * given AttributeInfoCollection is sane. 
+     * Generates (or creates) the corresponding CredentialSpecification for a
+     * given AttributeInfoCollection. This method assumes that the given
+     * AttributeInfoCollection is sane.
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
-     * @param magicCookie the magic cookie
-     * @param attrInfoColl the AttributeInfoCollection
+     * @param magicCookie
+     *            the magic cookie
+     * @param attrInfoColl
+     *            the AttributeInfoCollection
      * @return a CredentialSpecification
      */
     @POST()
     @Path("/genCredSpec/{magicCookie}")
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response genCredSpec(@PathParam("magicCookie") String magicCookie, AttributeInfoCollection attrInfoCol) {
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build();
+    @Consumes({ MediaType.APPLICATION_XML })
+    public Response genCredSpec(@PathParam("magicCookie") String magicCookie,
+            AttributeInfoCollection attrInfoCol) {
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build();
 
         try {
 
-            return Response.ok(of.createCredentialSpecification(new CredentialSpecGenerator().
-                    generateCredentialSpecification(attrInfoCol)),
-                    MediaType.APPLICATION_XML).build();
-        }
-        catch(Exception e) {
+            return Response
+                    .ok(of.createCredentialSpecification(new CredentialSpecGenerator()
+                            .generateCredentialSpecification(attrInfoCol)),
+                            MediaType.APPLICATION_XML).build();
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
-
     /*
-     * The following section contains code copied from the original issuance service from the tree
-     * Code/core-abce/abce-service
+     * The following section contains code copied from the original issuance
+     * service from the tree Code/core-abce/abce-service
      */
 
     /* SECTION */
@@ -562,10 +625,13 @@ public class LdapIssuanceService {
 
                 logger.info("Initializing IssuanceHelper...");
 
-                IssuanceHelper.initInstanceForService(cryptoEngine,
-                        "", "", 
-                        StorageModuleFactory.getModulesForServiceConfiguration(
-                                ServiceType.ISSUANCE));
+                IssuanceHelper
+                        .initInstanceForService(
+                                cryptoEngine,
+                                "",
+                                "",
+                                StorageModuleFactory
+                                        .getModulesForServiceConfiguration(ServiceType.ISSUANCE));
 
                 logger.info("IssuanceHelper is initialized");
             }
@@ -580,25 +646,30 @@ public class LdapIssuanceService {
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
-     * @param magicCookie the magic cookie
-     * @param credentialSpecificationUid UID of the CredentialSpecification
-     * @param credSpec the CredentialSpecification to store
+     * @param magicCookie
+     *            the magic cookie
+     * @param credentialSpecificationUid
+     *            UID of the CredentialSpecification
+     * @param credSpec
+     *            the CredentialSpecification to store
      * @return Response
      */
     @PUT()
     @Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeCredentialSpecification(
-            @PathParam("magicCookie") String magicCookie, 
+            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         logger.info("IssuanceService - storeCredentialSpecification: \""
                 + credentialSpecifationUid + "\"");
@@ -616,8 +687,9 @@ public class LdapIssuanceService {
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r1);
 
-            return logger.exit(
-                    Response.ok(of.createABCEBoolean(createABCEBoolean), MediaType.APPLICATION_XML).build());
+            return logger.exit(Response.ok(
+                    of.createABCEBoolean(createABCEBoolean),
+                    MediaType.APPLICATION_XML).build());
         } catch (Exception ex) {
             logger.catching(ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
@@ -629,12 +701,14 @@ public class LdapIssuanceService {
      * 
      * This method is protected by the magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
-     * This method will return status code NOT_FOUND if no credential specification with the
-     * given uid is found. 
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct. This method will return status code NOT_FOUND if no credential
+     * specification with the given uid is found.
      * 
-     * @param magicCookie the magic cookie
-     * @param credentialSpecificationUid UID of the CredentialSpecification to retreive
+     * @param magicCookie
+     *            the magic cookie
+     * @param credentialSpecificationUid
+     *            UID of the CredentialSpecification to retreive
      * @return Response (CredentialSpecification)
      */
     @GET()
@@ -644,26 +718,30 @@ public class LdapIssuanceService {
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
-        logger.info("IssuanceService - getCredentialSpecification: " + credentialSpecificationUid);
-
+        logger.info("IssuanceService - getCredentialSpecification: "
+                + credentialSpecificationUid);
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
 
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            CredentialSpecification credSpec = instance.keyManager.getCredentialSpecification(new URI(credentialSpecificationUid));
+            CredentialSpecification credSpec = instance.keyManager
+                    .getCredentialSpecification(new URI(
+                            credentialSpecificationUid));
 
-            if(credSpec == null) {
-                return logger.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCredSpec).build());
-            }
-            else
-                return logger.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
-        } 
-        catch(Exception ex) {
+            if (credSpec == null) {
+                return logger.exit(Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNoCredSpec).build());
+            } else
+                return logger.exit(Response.ok(
+                        of.createCredentialSpecification(credSpec),
+                        MediaType.APPLICATION_XML).build());
+        } catch (Exception ex) {
             logger.catching(ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
         }
@@ -688,7 +766,8 @@ public class LdapIssuanceService {
      * 
      * Protected by magic cookie
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
      * @param magicCookie
      * @param securityLevel
@@ -703,18 +782,20 @@ public class LdapIssuanceService {
             @PathParam("magicCookie") String magicCookie,
             @QueryParam("securityLevel") int securityLevel,
             @QueryParam("cryptoMechanism") URI cryptoMechanism)
-                    throws Exception {
+            throws Exception {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             logger.info("IssuanceService - setupSystemParameters "
                     + securityLevel + ", " + cryptoMechanism);
 
-            CryptoEngine cryptoEngine = this.parseCryptoMechanism(cryptoMechanism);
+            CryptoEngine cryptoEngine = this
+                    .parseCryptoMechanism(cryptoMechanism);
 
             this.initializeHelper(cryptoEngine);
 
@@ -731,11 +812,10 @@ public class LdapIssuanceService {
             SystemParameters serializeSp = SystemParametersUtil
                     .serialize(systemParameters);
 
-            return logger.exit(
-                    Response.ok(this.of.createSystemParameters(serializeSp), 
-                            MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+            return logger.exit(Response.ok(
+                    this.of.createSystemParameters(serializeSp),
+                    MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
@@ -786,27 +866,29 @@ public class LdapIssuanceService {
      * 
      * Protected by magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      * 
      * @return
      * @throws Exception
      */
     @POST()
     @Path("/setupIssuerParameters/{magicCookie}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response setupIssuerParameters(
             @PathParam("magicCookie") String magicCookie,
-            IssuerParametersInput issuerParametersInput)
-                    throws Exception {
+            IssuerParametersInput issuerParametersInput) throws Exception {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             CryptoEngine cryptoEngine = this
-                    .parseCryptoMechanism(issuerParametersInput.getAlgorithmID());
+                    .parseCryptoMechanism(issuerParametersInput
+                            .getAlgorithmID());
 
             this.initializeHelper(cryptoEngine);
 
@@ -818,14 +900,17 @@ public class LdapIssuanceService {
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
             KeyManager keyManager = instance.keyManager;
-            SystemParameters systemParameters = keyManager.getSystemParameters();
+            SystemParameters systemParameters = keyManager
+                    .getSystemParameters();
 
-            URI credentialSpecUid = issuerParametersInput.getCredentialSpecUID();
+            URI credentialSpecUid = issuerParametersInput
+                    .getCredentialSpecUID();
             CredentialSpecification credspec = keyManager
                     .getCredentialSpecification(credentialSpecUid);
 
             if (credspec == null) {
-                return logger.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCredSpec).build());
+                return logger.exit(Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNoCredSpec).build());
             }
 
             URI issuerParametersUid = issuerParametersInput.getParametersUID();
@@ -844,17 +929,17 @@ public class LdapIssuanceService {
             logger.info("IssuanceService - issuerParameters generated");
 
             List<Object> objs = systemParameters.getAny();
-            for(Object obj : objs)
+            for (Object obj : objs)
                 System.out.println(obj + "-" + obj.getClass());
 
             SystemParameters serializeSp = SystemParametersUtil
                     .serialize(systemParameters);
 
             issuerParameters.setSystemParameters(serializeSp);
-            return logger.exit(Response.ok(this.of.createIssuerParameters(issuerParameters), 
+            return logger.exit(Response.ok(
+                    this.of.createIssuerParameters(issuerParameters),
                     MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
@@ -923,29 +1008,33 @@ public class LdapIssuanceService {
      * 
      * Protected by magic cookie.
      * 
-     * This method will return status code FORBIDDEN if the magic cookie is not correct.
+     * This method will return status code FORBIDDEN if the magic cookie is not
+     * correct.
      */
     @POST()
     @Path("/initIssuanceProtocol/{magicCookie}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response initIssuanceProtocol(
             @PathParam("magicCookie") String magicCookie,
             IssuancePolicyAndAttributes issuancePolicyAndAttributes)
-                    throws Exception {
+            throws Exception {
 
         logger.entry();
 
-        if(!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN).entity(errMagicCookie).build());
+        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
+            return logger.exit(Response.status(Response.Status.FORBIDDEN)
+                    .entity(errMagicCookie).build());
 
         try {
             IssuancePolicy ip = issuancePolicyAndAttributes.getIssuancePolicy();
-            List<Attribute> attributes = issuancePolicyAndAttributes.getAttribute();
+            List<Attribute> attributes = issuancePolicyAndAttributes
+                    .getAttribute();
 
             URI issuerParametersUid = ip.getCredentialTemplate()
                     .getIssuerParametersUID();
 
-            CryptoEngine cryptoEngine = this.getCryptoEngine(issuerParametersUid);
+            CryptoEngine cryptoEngine = this
+                    .getCryptoEngine(issuerParametersUid);
 
             this.initializeHelper(cryptoEngine);
 
@@ -953,12 +1042,15 @@ public class LdapIssuanceService {
 
             IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
 
-            IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper.initIssuanceProtocol(ip, attributes);
+            IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper
+                    .initIssuanceProtocol(ip, attributes);
 
-            return logger.exit(Response.ok(this.of
-                    .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean), MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+            return logger
+                    .exit(Response
+                            .ok(this.of
+                                    .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean),
+                                    MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
@@ -1005,9 +1097,8 @@ public class LdapIssuanceService {
      */
     @POST()
     @Path("/issuanceProtocolStep")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    public Response issuanceProtocolStep(
-            final IssuanceMessage issuanceMessage) {
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    public Response issuanceProtocolStep(final IssuanceMessage issuanceMessage) {
 
         logger.entry();
 
@@ -1021,11 +1112,13 @@ public class LdapIssuanceService {
 
             IssuanceMessageAndBoolean response;
             try {
-                response = IssuanceHelper.getInstance().issueStep(engine, issuanceMessage);
+                response = IssuanceHelper.getInstance().issueStep(engine,
+                        issuanceMessage);
             } catch (Exception e) {
                 logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user...");
                 e.printStackTrace();
-                throw new IllegalStateException("Failed to proces IssuanceMessage from user");
+                throw new IllegalStateException(
+                        "Failed to proces IssuanceMessage from user");
             }
 
             IssuanceMessage issuanceMessageFromResponce = response
@@ -1038,10 +1131,10 @@ public class LdapIssuanceService {
                         + issuanceMessageFromResponce.getContext());
             }
 
-            return logger.exit(Response.ok(this.of.createIssuanceMessageAndBoolean(response),
+            return logger.exit(Response.ok(
+                    this.of.createIssuanceMessageAndBoolean(response),
                     MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }

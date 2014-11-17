@@ -72,9 +72,9 @@ public class IssuanceHelper extends AbstractHelper {
 
     private static IssuanceHelper instance;
     public KeyStorage keyStorage;
-    
+
     public IssuanceStorage issuanceStorage;
-   
+
     public static synchronized IssuanceHelper initInstanceForService(
             CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix,
             String fileStoragePrefix, Module... modules) throws Exception {
@@ -91,8 +91,6 @@ public class IssuanceHelper extends AbstractHelper {
         return instance;
     }
 
-    
-
     /**
      * Private constructor
      * 
@@ -101,24 +99,21 @@ public class IssuanceHelper extends AbstractHelper {
      *            IssuerAbcEnginge
      * @throws Exception
      */
-    private IssuanceHelper(CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix,
-            String fileStoragePrefix,
+    private IssuanceHelper(CryptoEngine cryptoEngine,
+            String systemAndIssuerParamsPrefix, String fileStoragePrefix,
             String[] revocationAuthorityParametersResourcesList,
-            Module... modules)
-                    throws Exception {
+            Module... modules) throws Exception {
         IssuanceHelper.log
-        .info("IssuanceHelper : create instance for issuer service "
-                + cryptoEngine + " : " + fileStoragePrefix);
+                .info("IssuanceHelper : create instance for issuer service "
+                        + cryptoEngine + " : " + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
         this.fileStoragePrefix = fileStoragePrefix;
         UProveUtils uproveUtils = new UProveUtils();
-        this.setupSingleEngineForService(
-                cryptoEngine, uproveUtils,
+        this.setupSingleEngineForService(cryptoEngine, uproveUtils,
                 revocationAuthorityParametersResourcesList, modules);
 
         new SecureRandom();
     }
-
 
     /**
      * @return true if IssuanceHelper has been initialized
@@ -127,7 +122,6 @@ public class IssuanceHelper extends AbstractHelper {
         return instance != null;
     }
 
-
     /**
      * @return initialized instance of IssuanceHelper
      */
@@ -135,7 +129,8 @@ public class IssuanceHelper extends AbstractHelper {
         log.info("IssuanceHelper.getInstance : " + instance
                 + (instance == null ? "" : " : " + instance.cryptoEngine));
         if (instance == null) {
-            throw new IllegalStateException("getInstance not called before using IssuanceHelper!");
+            throw new IllegalStateException(
+                    "getInstance not called before using IssuanceHelper!");
         }
         return instance;
     }
@@ -151,16 +146,12 @@ public class IssuanceHelper extends AbstractHelper {
     private final String fileStoragePrefix;
     private CredentialManager credentialManager;
 
-
-    private void setupSingleEngineForService(
-            CryptoEngine cryptoEngine, UProveUtils uproveUtils,
+    private void setupSingleEngineForService(CryptoEngine cryptoEngine,
+            UProveUtils uproveUtils,
             String[] revocationAuthorityParametersResourcesList,
-            Module... modules)
-                    throws Exception {
+            Module... modules) throws Exception {
 
-
-        Module newModule = ProductionModuleFactory
-                .newModule(cryptoEngine); 
+        Module newModule = ProductionModuleFactory.newModule(cryptoEngine);
         Module combinedModule = Modules.override(newModule).with(modules);
         Injector injector = Guice.createInjector(combinedModule);
 
@@ -195,7 +186,6 @@ public class IssuanceHelper extends AbstractHelper {
 
     private SystemParameters generatedSystemParameters = null;
 
-
     public SystemParameters createNewSystemParametersWithIdemixSpecificKeylength(
             int idemixKeylength, int uproveKeylength) throws IOException,
             KeyManagerException, Exception {
@@ -207,21 +197,20 @@ public class IssuanceHelper extends AbstractHelper {
 
     private SystemParameters createNewSystemParametersWithIdemixSpecificKeylength(
             int idemixKeylength, int uproveKeylength, KeyManager keyManager)
-                    throws IOException,
-                    KeyManagerException, Exception {
+            throws IOException, KeyManagerException, Exception {
         IssuanceHelper.log.info("- create new system parameters with keysize: "
                 + idemixKeylength);
         // ok - we have to generate them from scratch...
         this.generatedSystemParameters = SystemParametersUtil
                 .generatePilotSystemParameters_WithIdemixSpecificKeySize(
-                        idemixKeylength, uproveKeylength, UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE);
-
+                        idemixKeylength, uproveKeylength,
+                        UPROVE_ISSUER_NUMBER_OF_CREDENTIAL_TOKENS_TO_GENERATE);
 
         // store in keyManager
         keyManager.storeSystemParameters(this.generatedSystemParameters);
 
         IdemixCryptoEngineUserImpl
-        .loadIdemixSystemParameters(this.generatedSystemParameters);
+                .loadIdemixSystemParameters(this.generatedSystemParameters);
 
         IssuanceHelper.log.info("- new SystemParameters.");
 
@@ -229,13 +218,13 @@ public class IssuanceHelper extends AbstractHelper {
     }
 
     private IssuerParameters setupAndStoreIssuerParameters(
-            CryptoEngine cryptoEngine,
-            IssuerAbcEngine initEngine,
+            CryptoEngine cryptoEngine, IssuerAbcEngine initEngine,
             KeyManager keyManager, CredentialManager credentialManager,
             String systemAndIssuerParamsPrefix,
             SystemParameters systemParameters,
             CredentialSpecification credSpec, URI hash, URI issuerParamsUid,
-            URI revocationParamsUid, List<FriendlyDescription> friendlyDescriptions) throws Exception {
+            URI revocationParamsUid,
+            List<FriendlyDescription> friendlyDescriptions) throws Exception {
         IssuerParameters issuerParameters;
         IssuanceHelper.log.info(" - create Issuer Parameters!");
 
@@ -258,11 +247,15 @@ public class IssuanceHelper extends AbstractHelper {
     private IssuerParameters setupIssuerParameters(CryptoEngine cryptoEngine,
             IssuerAbcEngine initEngine, SystemParameters systemParameters,
             CredentialSpecification credSpec, URI hash, URI issuerParamsUid,
-            URI revocationParamsUid, List<FriendlyDescription> friendlyDescriptions) {
+            URI revocationParamsUid,
+            List<FriendlyDescription> friendlyDescriptions) {
         IssuerParameters issuerParameters;
-        issuerParameters =
-                initEngine.setupIssuerParameters(credSpec, systemParameters, issuerParamsUid, hash,
-                        /*URI.create("Idemix")*/URI.create(this.cryptoEngine.toString()), revocationParamsUid, friendlyDescriptions);
+        issuerParameters = initEngine
+                .setupIssuerParameters(credSpec, systemParameters,
+                        issuerParamsUid, hash,
+                        /* URI.create("Idemix") */URI.create(this.cryptoEngine
+                                .toString()), revocationParamsUid,
+                        friendlyDescriptions);
         return issuerParameters;
     }
 
@@ -286,9 +279,9 @@ public class IssuanceHelper extends AbstractHelper {
             }
             issuerParameters = this.setupAndStoreIssuerParameters(cryptoEngine,
                     engine, akeyManager, this.credentialManager,
-                    systemAndIssuerParamsPrefix,
-                    systemParameters, credSpec, hash, issuerParamsUid,
-                    revocationParamsUid, friendlyDescriptions);
+                    systemAndIssuerParamsPrefix, systemParameters, credSpec,
+                    hash, issuerParamsUid, revocationParamsUid,
+                    friendlyDescriptions);
             break;
         case UPROVE:
             engine = this.uproveEngine;
@@ -304,9 +297,9 @@ public class IssuanceHelper extends AbstractHelper {
             }
             issuerParameters = this.setupAndStoreIssuerParameters(cryptoEngine,
                     engine, akeyManager, this.credentialManager,
-                    systemAndIssuerParamsPrefix,
-                    systemParameters, credSpec, hash, issuerParamsUid,
-                    revocationParamsUid, friendlyDescriptions);
+                    systemAndIssuerParamsPrefix, systemParameters, credSpec,
+                    hash, issuerParamsUid, revocationParamsUid,
+                    friendlyDescriptions);
 
             break;
         default:
@@ -318,65 +311,82 @@ public class IssuanceHelper extends AbstractHelper {
         return issuerParameters;
     }
 
-
     /**
      * Process next step of issuance on IssuanceMessager
      * 
-     * @param issuanceMessage IssuanceMessager as String
+     * @param issuanceMessage
+     *            IssuanceMessager as String
      * @return
      * @throws Exception
      */
-    public IssuanceMessageAndBoolean issueStep(IssuanceMessage issuanceMessage) throws Exception {
-        IssuanceHelper.log.info("IssuanceHelper - step_jaxb - marchalled object: "
-                + issuanceMessage);
+    public IssuanceMessageAndBoolean issueStep(IssuanceMessage issuanceMessage)
+            throws Exception {
+        IssuanceHelper.log
+                .info("IssuanceHelper - step_jaxb - marchalled object: "
+                        + issuanceMessage);
 
-        if(this.singleEngine==null) {
-            throw new IllegalStateException("IssuanceHelper.issueStep called without specifying CryptoEngine!");
+        if (this.singleEngine == null) {
+            throw new IllegalStateException(
+                    "IssuanceHelper.issueStep called without specifying CryptoEngine!");
         }
         return this.issueStep(this.singleEngine, issuanceMessage);
     }
 
-    public IssuanceMessageAndBoolean issueStep(ProductionModule.CryptoEngine cryptoEngine, IssuanceMessage issuanceMessage) throws Exception {
-        return this.issueStep(oldCryptoEngineToNewCryptoEngine(cryptoEngine), issuanceMessage);
+    public IssuanceMessageAndBoolean issueStep(
+            ProductionModule.CryptoEngine cryptoEngine,
+            IssuanceMessage issuanceMessage) throws Exception {
+        return this.issueStep(oldCryptoEngineToNewCryptoEngine(cryptoEngine),
+                issuanceMessage);
     }
+
     /**
      * Process next step of issuance on IssuanceMessager
      * 
-     * @param issuanceMessage IssuanceMessager as String
+     * @param issuanceMessage
+     *            IssuanceMessager as String
      * @return
      * @throws Exception
      */
-    public IssuanceMessageAndBoolean issueStep(CryptoEngine cryptoEngine, IssuanceMessage issuanceMessage) throws Exception {
-        IssuanceHelper.log.info("IssuanceHelper - step_jaxb - marchalled object: "
-                + issuanceMessage);
+    public IssuanceMessageAndBoolean issueStep(CryptoEngine cryptoEngine,
+            IssuanceMessage issuanceMessage) throws Exception {
+        IssuanceHelper.log
+                .info("IssuanceHelper - step_jaxb - marchalled object: "
+                        + issuanceMessage);
 
         IssuerAbcEngine useEngine;
-        if(this.singleEngine!=null) {
-            if(this.cryptoEngine != cryptoEngine) {
-                throw new IllegalStateException("IssuanceHelper.issueStep called specifying CryptoEngine - but not initialized using BRIDGED! - running " + this.cryptoEngine + " - requesting " + cryptoEngine);
+        if (this.singleEngine != null) {
+            if (this.cryptoEngine != cryptoEngine) {
+                throw new IllegalStateException(
+                        "IssuanceHelper.issueStep called specifying CryptoEngine - but not initialized using BRIDGED! - running "
+                                + this.cryptoEngine
+                                + " - requesting "
+                                + cryptoEngine);
             } else {
                 useEngine = this.singleEngine;
             }
         } else {
-            if(cryptoEngine == CryptoEngine.IDEMIX) {
+            if (cryptoEngine == CryptoEngine.IDEMIX) {
                 useEngine = this.idemixEngine;
-            } else if(cryptoEngine == CryptoEngine.UPROVE) {
+            } else if (cryptoEngine == CryptoEngine.UPROVE) {
                 useEngine = this.uproveEngine;
             } else {
-                throw new IllegalStateException("IssuanceHelper.issueStep : idemix/uprove engine not initialized...");
+                throw new IllegalStateException(
+                        "IssuanceHelper.issueStep : idemix/uprove engine not initialized...");
             }
         }
         return this.issueStep(useEngine, issuanceMessage);
     }
 
-
-    private IssuanceMessageAndBoolean issueStep(IssuerAbcEngine useEngine, IssuanceMessage issuanceMessage) throws Exception {
+    private IssuanceMessageAndBoolean issueStep(IssuerAbcEngine useEngine,
+            IssuanceMessage issuanceMessage) throws Exception {
 
         IssuanceMessageAndBoolean response;
         try {
             response = useEngine.issuanceProtocolStep(issuanceMessage);
         } catch (Exception e) {
-            System.err.println("- IssuerABCE could not process Step IssuanceMessage from UserABCE : " + e);
+            System.err
+                    .println("- IssuerABCE could not process Step IssuanceMessage from UserABCE : "
+                            + e);
 
             throw new Exception("Could not process next step on issuauce : ", e);
         }
@@ -390,20 +400,21 @@ public class IssuanceHelper extends AbstractHelper {
     }
 
     private IssuanceMessageAndBoolean initIssuanceProtocol(
-            IssuerAbcEngine useEngine,
-            List<Attribute> issuerAtts, IssuancePolicy clonedIssuancePolicy,
-            URI policyIssuerParametersUID) throws Exception {
+            IssuerAbcEngine useEngine, List<Attribute> issuerAtts,
+            IssuancePolicy clonedIssuancePolicy, URI policyIssuerParametersUID)
+            throws Exception {
         IssuanceMessageAndBoolean response = null;
         try {
 
-
-            IssuanceHelper.log.info(" - call ABCE - policy : " + clonedIssuancePolicy
-                    + " : " + policyIssuerParametersUID
+            IssuanceHelper.log.info(" - call ABCE - policy : "
+                    + clonedIssuancePolicy + " : " + policyIssuerParametersUID
                     + " - attributes : " + issuerAtts);
-            response = useEngine.initIssuanceProtocol(clonedIssuancePolicy, issuerAtts);
+            response = useEngine.initIssuanceProtocol(clonedIssuancePolicy,
+                    issuerAtts);
 
         } catch (Exception e) {
-            System.err.println("- got Exception from ABCE Engine - try to create sample XML");
+            System.err
+                    .println("- got Exception from ABCE Engine - try to create sample XML");
             e.printStackTrace();
             throw new Exception("Failed to initIsuanceProtocol", e);
         }
@@ -417,10 +428,9 @@ public class IssuanceHelper extends AbstractHelper {
         return response;
     }
 
-
     public IssuanceMessageAndBoolean initIssuanceProtocol(
             IssuancePolicy issuancePolicy, List<Attribute> attributes)
-                    throws Exception {
+            throws Exception {
         IssuerAbcEngine engine;
         IssuanceMessageAndBoolean issuanceMessageAndBoolean = null;
         this.validateIssuancePolicy(issuancePolicy);

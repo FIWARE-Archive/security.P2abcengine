@@ -38,7 +38,8 @@ public class IssuanceResponse_String {
         this.context = null;
     }
 
-    public IssuanceResponse_String(String xml, boolean lastmessage, String context) {
+    public IssuanceResponse_String(String xml, boolean lastmessage,
+            String context) {
         this.xml = xml;
         this.lastmessage = lastmessage;
         this.context = context;

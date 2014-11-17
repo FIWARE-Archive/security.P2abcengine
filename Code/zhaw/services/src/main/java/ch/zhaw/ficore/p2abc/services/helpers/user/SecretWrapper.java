@@ -55,17 +55,20 @@ public class SecretWrapper {
     int puk;
 
     Secret secret;
-    
+
     /**
-     * This method was copied from RSASignatureSystemTest because this class somehow relies on that.
-     * This whole class was copied from a src/test tree because the UserService needs SecretWrapper and
-     * SecretWrapper was in core-abce/abce-components/src/test/java-ms-allowed/eu/abc4trust/abce/utils/SecretWrapper.java
-     * which doesn't sound very good. 
+     * This method was copied from RSASignatureSystemTest because this class
+     * somehow relies on that. This whole class was copied from a src/test tree
+     * because the UserService needs SecretWrapper and SecretWrapper was in
+     * core-
+     * abce/abce-components/src/test/java-ms-allowed/eu/abc4trust/abce/utils
+     * /SecretWrapper.java which doesn't sound very good.
      * 
-     * The original comment for this method was:
-     * > Get a pre-made signing key, that is guaranteed correct.
+     * The original comment for this method was: > Get a pre-made signing key,
+     * that is guaranteed correct.
      * 
-     * It is unknown whether this needs to be static or should actually better be generated randomly. 
+     * It is unknown whether this needs to be static or should actually better
+     * be generated randomly.
      * 
      * -- munt
      */
@@ -112,7 +115,7 @@ public class SecretWrapper {
         scSysParams.setSubgroupOrder(subgroupOrder);
         scSysParams.setZkChallengeSizeBytes(zkChallengeSizeBytes);
         scSysParams
-        .setZkStatisticalHidingSizeBytes(zkStatisticalHidingSizeBytes);
+                .setZkStatisticalHidingSizeBytes(zkStatisticalHidingSizeBytes);
         scSysParams.setDeviceSecretSizeBytes(deviceSecretSizeBytes);
         scSysParams.setSignatureNonceLengthBytes(signatureNonceLengthBytes);
         scSysParams.setZkNonceSizeBytes(zkNonceSizeBytes);
@@ -133,7 +136,5 @@ public class SecretWrapper {
         System.out.println("SoftwareSmartcard is now init'ed "
                 + this.softwareSmartcard);
     }
-
-   
 
 }

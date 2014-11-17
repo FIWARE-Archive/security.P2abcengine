@@ -35,21 +35,19 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
     public boolean checkForPseudonym(String primaryKey) throws IOException {
         try {
             return pseudonymsStorageIssuer.containsKey(primaryKey);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
 
     public void addPseudonymPrimaryKey(String primaryKey) throws IOException {
         try {
-            pseudonymsStorageIssuer.put(primaryKey, new byte[]{(byte)0});
-        }
-        catch(Exception e) {
+            pseudonymsStorageIssuer.put(primaryKey, new byte[] { (byte) 0 });
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
-    
+
     public void deletePseudonym(String primaryKey) throws Exception {
         pseudonymsStorageIssuer.delete(primaryKey);
     }
@@ -61,8 +59,7 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
     public void addToken(URI tokenuid, byte[] token) throws IOException {
         try {
             tokensStorageIssuer.put(tokenuid, token);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
@@ -73,18 +70,22 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
 
         byte[] result = getToken(tokenuid);
 
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+                result);
         ObjectInput objectInput = new ObjectInputStream(byteArrayInputStream);
-        IssuanceToken tokenResult = (IssuanceToken)objectInput.readObject();
+        IssuanceToken tokenResult = (IssuanceToken) objectInput.readObject();
 
         // Close the streams..
         objectInput.close();
         byteArrayInputStream.close();
 
-        List<PseudonymInToken> pseudonyms = tokenResult.getIssuanceTokenDescription().getPresentationTokenDescription().getPseudonym();
+        List<PseudonymInToken> pseudonyms = tokenResult
+                .getIssuanceTokenDescription()
+                .getPresentationTokenDescription().getPseudonym();
 
-        for(PseudonymInToken p: pseudonyms) {
-            String primaryKey = DatatypeConverter.printBase64Binary(p.getPseudonymValue());
+        for (PseudonymInToken p : pseudonyms) {
+            String primaryKey = DatatypeConverter.printBase64Binary(p
+                    .getPseudonymValue());
             deletePseudonym(primaryKey);
         }
 
@@ -93,25 +94,24 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
 
         return true;
     }
-    
-    public void addIssuanceLogEntry(URI entryUID, byte[] bytes) throws IOException {
+
+    public void addIssuanceLogEntry(URI entryUID, byte[] bytes)
+            throws IOException {
         try {
             logStorageIssuer.put(entryUID, bytes);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
-    
+
     public byte[] getIssuanceLogEntry(URI entryUID) throws Exception {
         try {
             return logStorageIssuer.get(entryUID);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
-    
+
     public boolean deleteIssuanceLogEntry(URI entryUID) throws Exception {
         logStorageIssuer.delete(entryUID);
         return true;

@@ -6,16 +6,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.zhaw.ficore.p2abc.services.issuance.AuthenticationInformation;
 
-@XmlRootElement(name="auth-request")
+@XmlRootElement(name = "auth-request")
 public class AuthenticationRequest {
-	@XmlElements({
-		@XmlElement(type=AuthInfoSimple.class, name="auth-info-simple", required=true)
-	})
-	public AuthenticationInformation authInfo;
-	
-	public AuthenticationRequest() {}
-	
-	public AuthenticationRequest(AuthenticationInformation authInfo) {
-		this.authInfo = authInfo;
-	}
+    @XmlElements({ @XmlElement(type = AuthInfoSimple.class, name = "auth-info-simple", required = true) })
+    public AuthenticationInformation authInfo;
+
+    public AuthenticationRequest() {
+    }
+
+    public AuthenticationRequest(AuthenticationInformation authInfo) {
+        this.authInfo = authInfo;
+    }
 }

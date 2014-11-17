@@ -88,8 +88,8 @@ public class AttributeValueConverter {
         } catch (Exception e) {
             throw new IllegalStateException(
                     "Could not convert value to correct data type : " + value
-                    + " - of class : " + value.getClass()
-                    + " - datatype " + dataType);
+                            + " - of class : " + value.getClass()
+                            + " - datatype " + dataType);
         }
 
         throw new IllegalStateException(

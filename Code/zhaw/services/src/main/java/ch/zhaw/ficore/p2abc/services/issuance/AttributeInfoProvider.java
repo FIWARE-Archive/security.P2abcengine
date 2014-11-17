@@ -6,12 +6,12 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 
-
-/** Serves as a Factory for AttributeInfoProviders.
+/**
+ * Serves as a Factory for AttributeInfoProviders.
  * 
- * An AttributeInfoProvider is capable of providing meta-information
- * about Attributes from an identity source. This meta-information
- * is required to create corresponding CredentialSpecifications. 
+ * An AttributeInfoProvider is capable of providing meta-information about
+ * Attributes from an identity source. This meta-information is required to
+ * create corresponding CredentialSpecifications.
  * 
  * @author mroman
  */
@@ -26,16 +26,18 @@ public abstract class AttributeInfoProvider {
 
     /**
      * Factory method to construct an AttributeInfoProvider for a given
-     * ServiceConfiguration. The AttributeInfoProvider will receive
-     * a reference to the configuration.
+     * ServiceConfiguration. The AttributeInfoProvider will receive a reference
+     * to the configuration.
      * 
-     * @param configuration Configuration
+     * @param configuration
+     *            Configuration
      * @return an implementation of an AttributeInfoProvider
      */
-    public static AttributeInfoProvider getAttributeInfoProvider(IssuanceConfiguration configuration) {
+    public static AttributeInfoProvider getAttributeInfoProvider(
+            IssuanceConfiguration configuration) {
         logger.entry();
 
-        switch(configuration.getAttributeSource()) {
+        switch (configuration.getAttributeSource()) {
         case FAKE:
             return logger.exit(new FakeAttributeInfoProvider(configuration));
         case LDAP:
@@ -43,15 +45,15 @@ public abstract class AttributeInfoProvider {
         case JDBC:
             return logger.exit(new JdbcAttributeInfoProvider(configuration));
         default:
-            logger.error("Identity source " + configuration.getAttributeSource() +
-                    " not supported");
+            logger.error("Identity source "
+                    + configuration.getAttributeSource() + " not supported");
             return logger.exit(null);
         }
     }
 
     /**
-     * Called when this AttributeInfoProvider is no longer required. 
-     * Providers should close open sockets/connections/files etc. on shutdown.
+     * Called when this AttributeInfoProvider is no longer required. Providers
+     * should close open sockets/connections/files etc. on shutdown.
      */
     public abstract void shutdown();
 
@@ -63,7 +65,8 @@ public abstract class AttributeInfoProvider {
      * 
      * The exact behaviour of <em>name</em> is provider specific.
      * 
-     * @param name <em>name</em>
+     * @param name
+     *            <em>name</em>
      * @return An AttributeInfoCollection
      */
     public abstract AttributeInfoCollection getAttributes(String name);
