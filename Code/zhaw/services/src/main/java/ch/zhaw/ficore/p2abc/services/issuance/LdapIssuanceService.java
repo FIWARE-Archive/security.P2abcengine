@@ -38,11 +38,14 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
 import com.hp.gagawa.java.elements.Div;
+import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.H3;
 import com.hp.gagawa.java.elements.H4;
 import com.hp.gagawa.java.elements.H5;
 import com.hp.gagawa.java.elements.Html;
+import com.hp.gagawa.java.elements.Input;
+import com.hp.gagawa.java.elements.Label;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
@@ -140,13 +143,19 @@ public class LdapIssuanceService {
                     String type = attrDesc.getDataType().toString();
                     
                     credDiv.appendChild(new H5().appendChild(new Text(name)));
+                    Div topGroup = new Div().setCSSClass("group");
+                    Div group = new Div().setCSSClass("group");
                     Table tbl = new Table(); 
-                    credDiv.appendChild(tbl);
+                    group.appendChild(tbl);
                     Tr tr = null;
                     tr = new Tr().setCSSClass("heading")
                             .appendChild(new Td().appendChild(new Text("DataType")))
                             .appendChild(new Td().appendChild(new Text("Encoding")));
                     tbl.appendChild(tr);
+                    
+                    credDiv.appendChild(topGroup);
+                    topGroup.appendChild(group);
+                    group = new Div().setCSSClass("group");
 
                     Table fdTbl = new Table();
                     tr = new Tr().setCSSClass("heading").appendChild(new Td().appendChild(new Text("Language")))
@@ -163,7 +172,29 @@ public class LdapIssuanceService {
                             .appendChild(new Td().appendChild(new Text(type)))
                             .appendChild(new Td().appendChild(new Text(encoding)));
                     tbl.appendChild(tr);
-                    credDiv.appendChild(fdTbl);
+                    group.appendChild(fdTbl);
+                    
+                    Form f = new Form("");
+                    tbl = new Table().setCSSClass("pad");
+                    tr = new Tr().appendChild(
+                                new Td().appendChild(new Label().appendChild(new Text("Language:"))))
+                            .appendChild(
+                                new Td().appendChild(new Input().setType("text").setName("language")));
+                    tbl.appendChild(tr);
+                    tr = new Tr().appendChild(
+                            new Td().appendChild(new Label().appendChild(new Text("Value:"))))
+                        .appendChild(
+                            new Td().appendChild(new Input().setType("text").setName("Value")));
+                    tbl.appendChild(tr);
+                    f.appendChild(tbl);
+                    f.appendChild(new Input().setType("submit").setValue("Add new friendly description"));
+                    group.appendChild(f);
+
+                    
+                    topGroup.appendChild(group);
+                    f = new Form("");
+                    f.appendChild(new Input().setType("submit").setValue("Delete attribute"));
+                    topGroup.appendChild(f);
                 }
             }
 
