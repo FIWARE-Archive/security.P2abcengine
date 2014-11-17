@@ -103,6 +103,124 @@ public class LdapIssuanceService {
     }
     
     @POST()
+    @Path("/deleteFriendlyDescription/")
+    public Response deleteFriendlyDescription(
+            @FormParam("i") int index,
+            @FormParam("cs") String credSpecUid,
+            @FormParam("language") String language) {
+        
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification)obj;
+                    }
+                }
+            }
+            
+
+            if(credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(IssuerGUI.errorPage(
+                                "Credential specification could not be found!")
+                                .write()).build());
+            }
+            
+            AttributeDescription attrDesc =
+                    credSpec.getAttributeDescriptions().getAttributeDescription().get(index);
+            
+            FriendlyDescription fd = null;
+            
+            for(FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
+                if(fc.getLang().equals(language)) {
+                    fd = fc; break;
+                }
+            
+            if(fd != null)
+                attrDesc.getFriendlyAttributeName().remove(fd);
+            
+            instance.keyManager.storeCredentialSpecification(new URI(credSpecUid), credSpec);
+            
+            
+            return credentialSpecifications();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/deleteAttribute/")
+    public Response deleteAttribute(
+            @FormParam("i") int index,
+            @FormParam("cs") String credSpecUid) {
+        
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification)obj;
+                    }
+                }
+            }
+            
+
+            if(credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(IssuerGUI.errorPage(
+                                "Credential specification could not be found!")
+                                .write()).build());
+            }
+            
+
+            credSpec.getAttributeDescriptions().getAttributeDescription().remove(index);
+
+            
+            instance.keyManager.storeCredentialSpecification(new URI(credSpecUid), credSpec);
+            
+            
+            return credentialSpecifications();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @POST()
     @Path("/addFriendlyDescription/")
     public Response addFriendlyDescription(
             @FormParam("i") int index,
@@ -235,16 +353,32 @@ public class LdapIssuanceService {
                             .appendChild(
                                     new Td().appendChild(new Text("Language")))
                             .appendChild(
-                                    new Td().appendChild(new Text("Value")));
+                                    new Td().appendChild(new Text("Value")))
+                            .appendChild(
+                                    new Td().appendChild(new Text("Action")));
                     fdTbl.appendChild(tr);
-
+                    
+                    Form f = null;
+                    
                     for (FriendlyDescription fd : attrDesc
                             .getFriendlyAttributeName()) {
+                        f = new Form("./deleteFriendlyDescription").setMethod("post").setCSSClass("nopad");
+                        f.appendChild(new Input().setType("hidden").setName("language")
+                                .setValue(fd.getLang()));
+                        f.appendChild(new Input().setType("hidden").setValue(
+                                credSpec.getSpecificationUID().toString())
+                                .setName("cs"));
+                        f.appendChild(new Input().setType("hidden").setValue(
+                                Integer.toString(index))
+                                .setName("i"));
+                        f.appendChild(new Input().setType("submit").setValue("delete"));
                         tr = new Tr().appendChild(
                                 new Td().appendChild(new Text(fd.getLang())))
                                 .appendChild(
                                         new Td().appendChild(new Text(fd
-                                                .getValue())));
+                                                .getValue())))
+                                .appendChild(
+                                        new Td().appendChild(f));
                         fdTbl.appendChild(tr);
                     }
 
@@ -254,7 +388,7 @@ public class LdapIssuanceService {
                     tbl.appendChild(tr);
                     group.appendChild(fdTbl);
 
-                    Form f = new Form("./addFriendlyDescription").setMethod("post");
+                    f = new Form("./addFriendlyDescription").setMethod("post");
                     tbl = new Table().setCSSClass("pad");
                     tr = new Tr().appendChild(
                             new Td().appendChild(new Label()
