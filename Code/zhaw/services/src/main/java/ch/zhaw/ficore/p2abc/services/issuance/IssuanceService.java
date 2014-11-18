@@ -102,16 +102,15 @@ public class IssuanceService {
     public Response issuerStatus() {
         return Response.ok().build();
     }
-    
+
     @POST()
     @Path("/deleteFriendlyDescription/")
-    public Response deleteFriendlyDescription(
-            @FormParam("i") int index,
+    public Response deleteFriendlyDescription(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid,
             @FormParam("language") String language) {
-        
+
         logger.entry();
-        
+
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
 
@@ -125,39 +124,38 @@ public class IssuanceService {
                 if (obj instanceof CredentialSpecification) {
                     if (((CredentialSpecification) obj).getSpecificationUID()
                             .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification)obj;
+                        credSpec = (CredentialSpecification) obj;
                     }
                 }
             }
-            
 
-            if(credSpec == null) {
+            if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
                         .entity(IssuerGUI.errorPage(
                                 "Credential specification could not be found!")
                                 .write()).build());
             }
-            
-            AttributeDescription attrDesc =
-                    credSpec.getAttributeDescriptions().getAttributeDescription().get(index);
-            
+
+            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
+                    .getAttributeDescription().get(index);
+
             FriendlyDescription fd = null;
-            
-            for(FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
-                if(fc.getLang().equals(language)) {
-                    fd = fc; break;
+
+            for (FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
+                if (fc.getLang().equals(language)) {
+                    fd = fc;
+                    break;
                 }
-            
-            if(fd != null)
+
+            if (fd != null)
                 attrDesc.getFriendlyAttributeName().remove(fd);
-            
-            instance.keyManager.storeCredentialSpecification(new URI(credSpecUid), credSpec);
-            
-            
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
             return credentialSpecifications();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -166,15 +164,14 @@ public class IssuanceService {
                             .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/deleteAttribute/")
-    public Response deleteAttribute(
-            @FormParam("i") int index,
+    public Response deleteAttribute(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid) {
-        
+
         logger.entry();
-        
+
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
 
@@ -188,30 +185,27 @@ public class IssuanceService {
                 if (obj instanceof CredentialSpecification) {
                     if (((CredentialSpecification) obj).getSpecificationUID()
                             .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification)obj;
+                        credSpec = (CredentialSpecification) obj;
                     }
                 }
             }
-            
 
-            if(credSpec == null) {
+            if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
                         .entity(IssuerGUI.errorPage(
                                 "Credential specification could not be found!")
                                 .write()).build());
             }
-            
 
-            credSpec.getAttributeDescriptions().getAttributeDescription().remove(index);
+            credSpec.getAttributeDescriptions().getAttributeDescription()
+                    .remove(index);
 
-            
-            instance.keyManager.storeCredentialSpecification(new URI(credSpecUid), credSpec);
-            
-            
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
             return credentialSpecifications();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -220,17 +214,16 @@ public class IssuanceService {
                             .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/addFriendlyDescription/")
-    public Response addFriendlyDescription(
-            @FormParam("i") int index,
+    public Response addFriendlyDescription(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid,
             @FormParam("language") String language,
             @FormParam("value") String value) {
-        
+
         logger.entry();
-        
+
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
 
@@ -244,35 +237,33 @@ public class IssuanceService {
                 if (obj instanceof CredentialSpecification) {
                     if (((CredentialSpecification) obj).getSpecificationUID()
                             .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification)obj;
+                        credSpec = (CredentialSpecification) obj;
                     }
                 }
             }
-            
 
-            if(credSpec == null) {
+            if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
                         .entity(IssuerGUI.errorPage(
                                 "Credential specification could not be found!")
                                 .write()).build());
             }
-            
-            AttributeDescription attrDesc =
-                    credSpec.getAttributeDescriptions().getAttributeDescription().get(index);
-            
+
+            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
+                    .getAttributeDescription().get(index);
+
             FriendlyDescription fd = new FriendlyDescription();
             fd.setLang(language);
             fd.setValue(value);
-            
+
             attrDesc.getFriendlyAttributeName().add(fd);
-            
-            instance.keyManager.storeCredentialSpecification(new URI(credSpecUid), credSpec);
-            
-            
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
             return credentialSpecifications();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -281,49 +272,53 @@ public class IssuanceService {
                             .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/obtainCredentialSpecification2")
     public Response obtainCredentialSpecification2(@FormParam("n") String name) {
         logger.entry();
-        
+
         try {
-            Response r = this.attributeInfoCollection(ServicesConfiguration.getMagicCookie(), name);
-            if(r.getStatus() != 200) {
+            Response r = this.attributeInfoCollection(
+                    ServicesConfiguration.getMagicCookie(), name);
+            if (r.getStatus() != 200) {
                 logger.exit(Response
                         .status(Response.Status.BAD_REQUEST)
                         .entity(IssuerGUI.errorPage(
                                 "Could not obtain attribute info collection!")
                                 .write()).build());
             }
-            
-            AttributeInfoCollection  aic = (AttributeInfoCollection)r.getEntity();
+
+            AttributeInfoCollection aic = (AttributeInfoCollection) r
+                    .getEntity();
             r = this.genCredSpec(ServicesConfiguration.getMagicCookie(), aic);
-            
-            if(r.getStatus() != 200) {
+
+            if (r.getStatus() != 200) {
                 logger.exit(Response
                         .status(Response.Status.BAD_REQUEST)
                         .entity(IssuerGUI.errorPage(
                                 "Could not generate credential specification!")
                                 .write()).build());
             }
-            
+
             @SuppressWarnings("unchecked")
-            CredentialSpecification credSpec = ((JAXBElement<CredentialSpecification>) r.getEntity()).getValue();
-            
-            r = this.storeCredentialSpecification(ServicesConfiguration.getMagicCookie(), credSpec.getSpecificationUID(), credSpec);
-            
-            if(r.getStatus() != 200) {
+            CredentialSpecification credSpec = ((JAXBElement<CredentialSpecification>) r
+                    .getEntity()).getValue();
+
+            r = this.storeCredentialSpecification(
+                    ServicesConfiguration.getMagicCookie(),
+                    credSpec.getSpecificationUID(), credSpec);
+
+            if (r.getStatus() != 200) {
                 logger.exit(Response
                         .status(Response.Status.BAD_REQUEST)
                         .entity(IssuerGUI.errorPage(
                                 "Could not store credential specification!")
                                 .write()).build());
             }
-            
+
             return credentialSpecifications();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -332,38 +327,86 @@ public class IssuanceService {
                             .write()).build());
         }
     }
-    
+
+    @GET()
+    @Path("/issuerParameters/")
+    public Response issuerParameters() {
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            Html html = IssuerGUI.getHtmlPramble("Issuer Parameters");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+
+            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof IssuerParameters) {
+                    issuerParams.add((IssuerParameters) obj);
+                }
+            }
+
+            for (IssuerParameters ip : issuerParams) {
+                mainDiv.appendChild(new P().appendChild(new Text(ip
+                        .getParametersUID().toString()
+                        + ";"
+                        + ip.getCredentialSpecUID().toString())));
+            }
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+
     @GET()
     @Path("/obtainCredentialSpecification")
     public Response obtainCredentialSpecification() {
         logger.entry();
-        
+
         try {
-            Html html = IssuerGUI.getHtmlPramble("Obtain credential specification [1]");
+            Html html = IssuerGUI
+                    .getHtmlPramble("Obtain credential specification [1]");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Obtain credential specification")));
-            mainDiv.appendChild(new P().setCSSClass("info").appendChild(new Text(
-                    "Please enter the name of the structure or data container in the underlying identity source you whish to " +
-                    "generate a credential specification from. For an LDAP identity source this might be the name of an object class or " +
-                    "for SQL name might be the name of a table. However, the exact behaviour of name is provider specific. Please refer to your service's" +
-                    " configuration. "
-                    )));
-            
-            Form f = new Form("./obtainCredentialSpecification2").setMethod("post");
+            mainDiv.appendChild(new H2().appendChild(new Text(
+                    "Obtain credential specification")));
+            mainDiv.appendChild(new P()
+                    .setCSSClass("info")
+                    .appendChild(
+                            new Text(
+                                    "Please enter the name of the structure or data container in the underlying identity source you whish to "
+                                            + "generate a credential specification from. For an LDAP identity source this might be the name of an object class or "
+                                            + "for SQL name might be the name of a table. However, the exact behaviour of name is provider specific. Please refer to your service's"
+                                            + " configuration. ")));
+
+            Form f = new Form("./obtainCredentialSpecification2")
+                    .setMethod("post");
             Table tbl = new Table();
             Tr tr = new Tr();
-            tr.appendChild(new Td().appendChild(new Label().appendChild(new Text("Name:"))));
-            tr.appendChild(new Td().appendChild(new Input().setType("text").setName("n")));
+            tr.appendChild(new Td().appendChild(new Label()
+                    .appendChild(new Text("Name:"))));
+            tr.appendChild(new Td().appendChild(new Input().setType("text")
+                    .setName("n")));
             tbl.appendChild(tr);
             f.appendChild(tbl);
             f.appendChild(new Input().setType("submit").setValue("Obtain"));
-            
+
             mainDiv.appendChild(f);
-            
+
             return Response.ok(html.write()).build();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -400,12 +443,10 @@ public class IssuanceService {
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
             mainDiv.appendChild(new H3().appendChild(new Text(
                     "Credential Specifications")));
-            
-            
 
             for (CredentialSpecification credSpec : credSpecs) {
-                int index = 0; 
-                
+                int index = 0;
+
                 Div credDiv = new Div().setCSSClass("credDiv");
                 mainDiv.appendChild(credDiv);
 
@@ -449,28 +490,32 @@ public class IssuanceService {
                             .appendChild(
                                     new Td().appendChild(new Text("Action")));
                     fdTbl.appendChild(tr);
-                    
+
                     Form f = null;
-                    
+
                     for (FriendlyDescription fd : attrDesc
                             .getFriendlyAttributeName()) {
-                        f = new Form("./deleteFriendlyDescription").setMethod("post").setCSSClass("nopad");
-                        f.appendChild(new Input().setType("hidden").setName("language")
-                                .setValue(fd.getLang()));
-                        f.appendChild(new Input().setType("hidden").setValue(
-                                credSpec.getSpecificationUID().toString())
-                                .setName("cs"));
-                        f.appendChild(new Input().setType("hidden").setValue(
-                                Integer.toString(index))
-                                .setName("i"));
-                        f.appendChild(new Input().setType("submit").setValue("delete"));
-                        tr = new Tr().appendChild(
-                                new Td().appendChild(new Text(fd.getLang())))
+                        f = new Form("./deleteFriendlyDescription").setMethod(
+                                "post").setCSSClass("nopad");
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("language").setValue(fd.getLang()));
+                        f.appendChild(new Input()
+                                .setType("hidden")
+                                .setValue(
+                                        credSpec.getSpecificationUID()
+                                                .toString()).setName("cs"));
+                        f.appendChild(new Input().setType("hidden")
+                                .setValue(Integer.toString(index)).setName("i"));
+                        f.appendChild(new Input().setType("submit").setValue(
+                                "delete"));
+                        tr = new Tr()
+                                .appendChild(
+                                        new Td().appendChild(new Text(fd
+                                                .getLang())))
                                 .appendChild(
                                         new Td().appendChild(new Text(fd
                                                 .getValue())))
-                                .appendChild(
-                                        new Td().appendChild(f));
+                                .appendChild(new Td().appendChild(f));
                         fdTbl.appendChild(tr);
                     }
 
@@ -499,26 +544,26 @@ public class IssuanceService {
                     f.appendChild(tbl);
                     f.appendChild(new Input().setType("submit").setValue(
                             "Add new friendly description"));
-                    f.appendChild(new Input().setType("hidden").setValue(
-                            credSpec.getSpecificationUID().toString())
+                    f.appendChild(new Input()
+                            .setType("hidden")
+                            .setValue(credSpec.getSpecificationUID().toString())
                             .setName("cs"));
-                    f.appendChild(new Input().setType("hidden").setValue(
-                            Integer.toString(index))
-                            .setName("i"));
+                    f.appendChild(new Input().setType("hidden")
+                            .setValue(Integer.toString(index)).setName("i"));
                     group.appendChild(f);
 
                     topGroup.appendChild(group);
                     f = new Form("./deleteAttribute").setMethod("post");
                     f.appendChild(new Input().setType("submit").setValue(
                             "Delete attribute"));
-                    f.appendChild(new Input().setType("hidden").setValue(
-                            credSpec.getSpecificationUID().toString())
+                    f.appendChild(new Input()
+                            .setType("hidden")
+                            .setValue(credSpec.getSpecificationUID().toString())
                             .setName("cs"));
-                    f.appendChild(new Input().setType("hidden").setValue(
-                            Integer.toString(index))
-                            .setName("i"));
+                    f.appendChild(new Input().setType("hidden")
+                            .setValue(Integer.toString(index)).setName("i"));
                     topGroup.appendChild(f);
-                    
+
                     index++;
                 }
             }

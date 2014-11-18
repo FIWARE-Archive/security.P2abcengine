@@ -49,4 +49,5 @@ public interface IssuanceStorage {
      * @return the IssuancePolicy bound to the givin CredentialSpecification
      */
     public IssuancePolicy getIssuancePolicy(URI credSpecUid) throws Exception;
+
 }
