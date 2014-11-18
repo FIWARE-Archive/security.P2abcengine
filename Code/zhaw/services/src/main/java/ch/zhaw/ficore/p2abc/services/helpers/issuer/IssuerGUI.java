@@ -73,10 +73,8 @@ public class IssuerGUI {
         Div navDiv = new Div().setCSSClass("navDiv");
         containerDiv.appendChild(navDiv);
         containerDiv.appendChild(mainDiv);
-        navDiv.appendChild(new A().setHref("./obtainCredential").appendChild(
-                new Text("Obtain Credential")));
-        navDiv.appendChild(new A().setHref("./requestRessource").appendChild(
-                new Text("Request Ressource")));
+        navDiv.appendChild(new A().setHref("./obtainCredentialSpecification").appendChild(
+                new Text("Obtain Credential Specification")));
         navDiv.appendChild(new A().setHref("./profile").appendChild(
                 new Text("Profile")));
         navDiv.appendChild(new Div().setStyle("clear: both"));

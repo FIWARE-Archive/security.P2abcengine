@@ -75,7 +75,7 @@ import eu.abc4trust.xml.SystemParameters;
 //from Code/core-abce/abce-services (COPY)
 
 @Path("/issuance")
-public class LdapIssuanceService {
+public class IssuanceService {
     @Context
     ServletContext context;
 
@@ -91,7 +91,7 @@ public class LdapIssuanceService {
 
     private Logger logger;
 
-    public LdapIssuanceService() throws ClassNotFoundException, SQLException,
+    public IssuanceService() throws ClassNotFoundException, SQLException,
             UnsafeTableNameException {
         logger = LogManager.getLogger();
     }
