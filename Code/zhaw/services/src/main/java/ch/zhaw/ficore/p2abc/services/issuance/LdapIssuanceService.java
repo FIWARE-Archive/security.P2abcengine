@@ -47,6 +47,7 @@ import com.hp.gagawa.java.elements.H5;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
+import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
@@ -270,6 +271,97 @@ public class LdapIssuanceService {
             
             
             return credentialSpecifications();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/obtainCredentialSpecification2")
+    public Response obtainCredentialSpecification2(@FormParam("n") String name) {
+        logger.entry();
+        
+        try {
+            Response r = this.attributeInfoCollection(ServicesConfiguration.getMagicCookie(), name);
+            if(r.getStatus() != 200) {
+                logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                "Could not obtain attribute info collection!")
+                                .write()).build());
+            }
+            
+            AttributeInfoCollection  aic = (AttributeInfoCollection)r.getEntity();
+            r = this.genCredSpec(ServicesConfiguration.getMagicCookie(), aic);
+            
+            if(r.getStatus() != 200) {
+                logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                "Could not generate credential specification!")
+                                .write()).build());
+            }
+            
+            @SuppressWarnings("unchecked")
+            CredentialSpecification credSpec = ((JAXBElement<CredentialSpecification>) r.getEntity()).getValue();
+            
+            r = this.storeCredentialSpecification(ServicesConfiguration.getMagicCookie(), credSpec.getSpecificationUID(), credSpec);
+            
+            if(r.getStatus() != 200) {
+                logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                "Could not store credential specification!")
+                                .write()).build());
+            }
+            
+            return credentialSpecifications();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/obtainCredentialSpecification")
+    public Response obtainCredentialSpecification() {
+        logger.entry();
+        
+        try {
+            Html html = IssuerGUI.getHtmlPramble("Obtain credential specification [1]");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Obtain credential specification")));
+            mainDiv.appendChild(new P().setCSSClass("info").appendChild(new Text(
+                    "Please enter the name of the structure or data container in the underlying identity source you whish to " +
+                    "generate a credential specification from. For an LDAP identity source this might be the name of an object class or " +
+                    "for SQL name might be the name of a table. However, the exact behaviour of name is provider specific. Please refer to your service's" +
+                    " configuration. "
+                    )));
+            
+            Form f = new Form("./obtainCredentialSpecification2").setMethod("post");
+            Table tbl = new Table();
+            Tr tr = new Tr();
+            tr.appendChild(new Td().appendChild(new Label().appendChild(new Text("Name:"))));
+            tr.appendChild(new Td().appendChild(new Input().setType("text").setName("n")));
+            tbl.appendChild(tr);
+            f.appendChild(tbl);
+            f.appendChild(new Input().setType("submit").setValue("Obtain"));
+            
+            mainDiv.appendChild(f);
+            
+            return Response.ok(html.write()).build();
         }
         catch(Exception e) {
             logger.catching(e);
