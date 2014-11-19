@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -78,11 +79,12 @@ import eu.abc4trust.xml.SystemParameters;
 public class IssuanceService {
     @Context
     ServletContext context;
+    @Context
+    HttpServletRequest request;
 
     private static final URI CRYPTOMECHANISM_URI_IDEMIX = URI
             .create("urn:abc4trust:1.0:algorithm:idemix");
 
-    private static final String errMagicCookie = "Magic-Cookie is not correct!";
     private static final String errNoCredSpec = "CredentialSpecification is missing!";
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
@@ -97,14 +99,14 @@ public class IssuanceService {
     }
 
     @GET()
-    @Path("/status")
+    @Path("/protected/status")
     @Produces({ MediaType.TEXT_PLAIN })
     public Response issuerStatus() {
-        return Response.ok().build();
+        return Response.ok(request.getRemoteUser()).build();
     }
 
     @POST()
-    @Path("/deleteFriendlyDescription/")
+    @Path("/protected/deleteFriendlyDescription/")
     public Response deleteFriendlyDescription(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid,
             @FormParam("language") String language) {
@@ -166,7 +168,7 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/deleteAttribute/")
+    @Path("/protected/deleteAttribute/")
     public Response deleteAttribute(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid) {
 
@@ -216,7 +218,7 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/addFriendlyDescription/")
+    @Path("/protected/addFriendlyDescription/")
     public Response addFriendlyDescription(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid,
             @FormParam("language") String language,
@@ -274,13 +276,12 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/obtainCredentialSpecification2")
+    @Path("/protected/obtainCredentialSpecification2")
     public Response obtainCredentialSpecification2(@FormParam("n") String name) {
         logger.entry();
 
         try {
-            Response r = this.attributeInfoCollection(
-                    ServicesConfiguration.getMagicCookie(), name);
+            Response r = this.attributeInfoCollection(name);
             if (r.getStatus() != 200) {
                 logger.exit(Response
                         .status(Response.Status.BAD_REQUEST)
@@ -291,7 +292,7 @@ public class IssuanceService {
 
             AttributeInfoCollection aic = (AttributeInfoCollection) r
                     .getEntity();
-            r = this.genCredSpec(ServicesConfiguration.getMagicCookie(), aic);
+            r = this.genCredSpec(aic);
 
             if (r.getStatus() != 200) {
                 logger.exit(Response
@@ -306,7 +307,6 @@ public class IssuanceService {
                     .getEntity()).getValue();
 
             r = this.storeCredentialSpecification(
-                    ServicesConfiguration.getMagicCookie(),
                     credSpec.getSpecificationUID(), credSpec);
 
             if (r.getStatus() != 200) {
@@ -329,7 +329,7 @@ public class IssuanceService {
     }
 
     @GET()
-    @Path("/issuerParameters/")
+    @Path("/protected/issuerParameters/")
     public Response issuerParameters() {
         logger.entry();
 
@@ -371,7 +371,7 @@ public class IssuanceService {
     }
 
     @GET()
-    @Path("/obtainCredentialSpecification")
+    @Path("/protected/obtainCredentialSpecification")
     public Response obtainCredentialSpecification() {
         logger.entry();
 
@@ -417,7 +417,7 @@ public class IssuanceService {
     }
 
     @GET()
-    @Path("/credentialSpecifications/")
+    @Path("/protected/credentialSpecifications/")
     public Response credentialSpecifications() {
         logger.entry();
 
@@ -647,8 +647,7 @@ public class IssuanceService {
                     attrValProvider.getAttributes(qr.queryString,
                             authProvider.getUserID(), credSpec));
 
-            return initIssuanceProtocol(ServicesConfiguration.getMagicCookie(),
-                    ipa);
+            return initIssuanceProtocol(ipa);
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -675,18 +674,13 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/storeQueryRule/{magicCookie}/{credentialSpecificationUid}")
+    @Path("/protected/storeQueryRule/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeQueryRule(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
             QueryRule rule) {
 
         logger.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
@@ -716,17 +710,12 @@ public class IssuanceService {
      * @return QueryRule
      */
     @GET()
-    @Path("/getQueryRule/{magicCookie}/{credentialSpecificationUid}")
+    @Path("/protected/getQueryRule/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response getQueryRule(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
         logger.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
@@ -761,18 +750,13 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/storeIssuancePolicy/{magicCookie}/{credentialSpecificationUid}")
+    @Path("/protected/storeIssuancePolicy/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeIssuancePolicy(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
             IssuancePolicy policy) {
 
         logger.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
@@ -802,17 +786,12 @@ public class IssuanceService {
      * @return IssuancePolicy
      */
     @GET()
-    @Path("/getIssuancePolicy/{magicCookie}/{credentialSpecificationUid}")
+    @Path("/protected/getIssuancePolicy/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response getIssuancePolicy(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
         logger.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
@@ -893,9 +872,8 @@ public class IssuanceService {
      * @return an AttributeInfoCollection as application/xml.
      */
     @GET()
-    @Path("/attributeInfoCollection/{magicCookie}/{name}")
+    @Path("/protected/attributeInfoCollection/{name}")
     public Response attributeInfoCollection(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("name") String name) {
         AttributeInfoProvider attribInfoProvider = null;
 
@@ -905,10 +883,6 @@ public class IssuanceService {
             attribInfoProvider = AttributeInfoProvider
                     .getAttributeInfoProvider(configuration);
 
-            if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie)) {
-                return Response.status(Response.Status.FORBIDDEN)
-                        .entity(errMagicCookie).build();
-            }
 
             return Response.ok(attribInfoProvider.getAttributes(name),
                     MediaType.APPLICATION_XML).build();
@@ -938,13 +912,11 @@ public class IssuanceService {
      * @return a CredentialSpecification
      */
     @POST()
-    @Path("/genCredSpec/{magicCookie}")
+    @Path("/protected/genCredSpec/")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response genCredSpec(@PathParam("magicCookie") String magicCookie,
+    public Response genCredSpec(
             AttributeInfoCollection attrInfoCol) {
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build();
+        
 
         try {
 
@@ -1008,18 +980,13 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
+    @Path("/protected/storeCredentialSpecification/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeCredentialSpecification(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
 
         logger.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         logger.info("IssuanceService - storeCredentialSpecification: \""
                 + credentialSpecifationUid + "\"");
@@ -1062,15 +1029,11 @@ public class IssuanceService {
      * @return Response (CredentialSpecification)
      */
     @GET()
-    @Path("/getCredentialSpecification/{magicCookie}/{credentialSpecificationUid}")
+    @Path("/protected/getCredentialSpecification/{credentialSpecificationUid}")
     public Response getCredentialSpecification(
             @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
         logger.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         logger.info("IssuanceService - getCredentialSpecification: "
                 + credentialSpecificationUid);
@@ -1126,19 +1089,15 @@ public class IssuanceService {
      * @throws Exception
      */
     @POST()
-    @Path("/setupSystemParameters/{magicCookie}")
+    @Path("/protected/setupSystemParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response setupSystemParameters(
-            @PathParam("magicCookie") String magicCookie,
             @QueryParam("securityLevel") int securityLevel,
             @QueryParam("cryptoMechanism") URI cryptoMechanism)
             throws Exception {
 
         logger.entry();
 
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             logger.info("IssuanceService - setupSystemParameters "
@@ -1223,17 +1182,13 @@ public class IssuanceService {
      * @throws Exception
      */
     @POST()
-    @Path("/setupIssuerParameters/{magicCookie}")
+    @Path("/protected/setupIssuerParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response setupIssuerParameters(
-            @PathParam("magicCookie") String magicCookie,
             IssuerParametersInput issuerParametersInput) throws Exception {
 
         logger.entry();
 
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             CryptoEngine cryptoEngine = this
@@ -1362,18 +1317,14 @@ public class IssuanceService {
      * correct.
      */
     @POST()
-    @Path("/initIssuanceProtocol/{magicCookie}")
+    @Path("/protected/initIssuanceProtocol/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response initIssuanceProtocol(
-            @PathParam("magicCookie") String magicCookie,
             IssuancePolicyAndAttributes issuancePolicyAndAttributes)
             throws Exception {
 
         logger.entry();
 
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return logger.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             IssuancePolicy ip = issuancePolicyAndAttributes.getIssuancePolicy();
