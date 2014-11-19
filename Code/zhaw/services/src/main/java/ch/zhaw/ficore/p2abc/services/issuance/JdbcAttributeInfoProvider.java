@@ -78,7 +78,13 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
                         || type == java.sql.Types.SMALLINT) {
                     aiCol.addAttribute(rs.getString(4), "xs:integer",
                             "urn:abc4trust:1.0:encoding:integer:signed");
-                } else {
+                  
+                } else if (type == java.sql.Types.TIMESTAMP || type == java.sql.Types.TIME ||
+                        type == java.sql.Types.DATE) {
+                    aiCol.addAttribute(rs.getString(4), "xs:dateTime",
+                            "urn:abc4trust:1.0:encoding:dateTime:unix:unsigned");
+                }
+                else {
                     throw new RuntimeException("Unknown type: " + type);
                 }
             }
