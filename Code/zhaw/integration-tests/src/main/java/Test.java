@@ -1,6 +1,11 @@
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.api.client.config.*;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -177,8 +182,14 @@ public class Test {
         return input.replaceAll("REPLACE-THIS-CONTEXT", contextString);
     }
     
+    public static Client getClient() {
+        Client c = Client.create();
+        c.addFilter(new HTTPBasicAuthFilter("both", "tomcat"));
+        return c;
+    }
+    
     public static String testVerifyTokenAgainstPolicy(String ppapt) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(verificationServiceURL + "verifyTokenAgainstPolicy");
@@ -191,7 +202,7 @@ public class Test {
     }
     
     public static String testCreatePresentationTokenUi(String pr) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "createPresentationTokenUi");
@@ -204,7 +215,7 @@ public class Test {
     }
     
     public static String testCreatePresentationToken(String ppa) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "createPresentationToken");
@@ -217,7 +228,7 @@ public class Test {
     }
     
     public static String testCreatePresentationPolicy(String ppa) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(verificationServiceURL + "createPresentationPolicy");
@@ -230,7 +241,7 @@ public class Test {
     }
     
     public static String testIssuanceStepUser2(String im) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "issuanceProtocolStep");
@@ -243,7 +254,7 @@ public class Test {
     }
     
     public static String testIssuanceStepIssuer1(String im) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "issuanceProtocolStep");
@@ -256,7 +267,7 @@ public class Test {
     }
     
     public static String testIssuanceStepUserUi1(String uir) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "issuanceProtocolStepUi");
@@ -269,7 +280,7 @@ public class Test {
     }
     
     public static String testIssuanceStepUser1(String im) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "issuanceProtocolStep");
@@ -282,7 +293,7 @@ public class Test {
     }
     
     public static String testExtractIssuanceMessage(String imab) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "extractIssuanceMessage");
@@ -295,7 +306,7 @@ public class Test {
     }
     
     public static String testIssuanceRequest(String ir) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "issuanceRequest");
@@ -308,7 +319,7 @@ public class Test {
     }
     
     public static void testStoreIssParamsAtUser(String p) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "storeIssuerParameters/" + issuanceURI);
@@ -320,7 +331,7 @@ public class Test {
     }
     
     public static void testStoreIssParamsAtVerifier(String p) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(verificationServiceURL + "storeIssuerParameters/" + magic +"/" + issuanceURI);
@@ -332,7 +343,7 @@ public class Test {
     }
     
     public static String testSetupIssuerParametersIssuer(String input) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "setupIssuerParameters/" + magic);
@@ -346,7 +357,7 @@ public class Test {
     }
     
     public static void testStoreSysParamsAtUser(String sp) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "storeSystemParameters");
@@ -358,7 +369,7 @@ public class Test {
     }
     
     public static void testStoreSysParamsAtVerifier(String sp) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(verificationServiceURL + "storeSystemParameters/" + magic);
@@ -370,7 +381,7 @@ public class Test {
     }
     
     public static void testStoreCredSpecAtUser(String credSpec) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "storeCredentialSpecification/" + credSpecURI);
@@ -382,7 +393,7 @@ public class Test {
     }
     
     public static void testStoreCredSpecAtVerifier(String credSpec) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(verificationServiceURL + "storeCredentialSpecification/" + magic + "/" + credSpecURI);
@@ -396,7 +407,7 @@ public class Test {
     public static String testSetupSystemParametersIssuer() {
         String uri = "setupSystemParameters/" + magic + "/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix";
         
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + uri);
@@ -410,7 +421,7 @@ public class Test {
     }
     
     public static String testGetIssuancePolicyFromIssuer() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "getIssuancePolicy/" + magic + "/" + credSpecURI);
@@ -423,7 +434,7 @@ public class Test {
     }
     
     public static void testStoreIssuancePolicyAtIssuer(String ip) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "storeIssuancePolicy/" + magic + "/" + credSpecURI);
@@ -435,7 +446,7 @@ public class Test {
     }
     
     public static String testGetQueryRuleFromIssuer() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "getQueryRule/" + magic + "/" + credSpecURI);
@@ -448,7 +459,7 @@ public class Test {
     }
     
     public static void testStoreQueryRuleAtIssuer(String queryRule) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "storeQueryRule/" + magic + "/" + credSpecURI);
@@ -460,7 +471,7 @@ public class Test {
     }
     
     public static String testGetCredSpecFromIssuer() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "getCredentialSpecification/" + magic + "/" + credSpecURI);
@@ -473,7 +484,7 @@ public class Test {
     }
     
     public static void testStoreCredSpecAtIssuer(String credSpec) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "storeCredentialSpecification/" + magic + "/" + credSpecURI);
@@ -485,7 +496,7 @@ public class Test {
     }
     
     public static String testAuthentication(String authRequest) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "testAuthentication");
@@ -499,7 +510,7 @@ public class Test {
     }
     
     public static String testGenCredSpec(String attributeInfoCollection) {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "genCredSpec/" + magic + "/");
@@ -514,7 +525,7 @@ public class Test {
     }
     
     public static String testAttributeInfoCollection() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "attributeInfoCollection/" + magic + "/" + credSpecName);
@@ -527,7 +538,7 @@ public class Test {
     }
 
     public static void testUserStatus() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(userServiceURL + "status");
@@ -538,7 +549,7 @@ public class Test {
     }
     
     public static void testIssuanceStatus() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "status");
@@ -549,7 +560,7 @@ public class Test {
     }
     
     public static void testVerificationStatus() {
-        Client client = Client.create();
+        Client client = getClient(); 
 
         WebResource webResource = client
                 .resource(verificationServiceURL + "status");
