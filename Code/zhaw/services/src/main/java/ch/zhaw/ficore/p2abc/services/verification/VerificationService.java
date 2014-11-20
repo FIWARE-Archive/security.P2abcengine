@@ -62,6 +62,7 @@ import eu.abc4trust.xml.SystemParameters;
 //import java.util.logging.Logger;
 //import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
 
+@SuppressWarnings("unused")
 @Path("/verification")
 public class VerificationService {
 

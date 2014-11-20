@@ -41,6 +41,8 @@ import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
+import com.hp.gagawa.java.elements.A;
+import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H2;
@@ -50,11 +52,13 @@ import com.hp.gagawa.java.elements.H5;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
+import com.hp.gagawa.java.elements.Li;
 import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
+import com.hp.gagawa.java.elements.Ul;
 
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
@@ -344,6 +348,7 @@ public class IssuanceService {
             Html html = IssuerGUI.getHtmlPramble("Issuer Parameters");
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Issuer Parameters")));
 
             List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
 
@@ -354,13 +359,36 @@ public class IssuanceService {
                     issuerParams.add((IssuerParameters) obj);
                 }
             }
+            
+            Table tbl = new Table();
+            Tr tr = null;
+            
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Text("Issuer Parameters Uid")))
+                    .appendChild(
+                            new Td().appendChild(new Text("Credential Specification Uid")))
+                     .appendChild(
+                             new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
 
             for (IssuerParameters ip : issuerParams) {
-                mainDiv.appendChild(new P().appendChild(new Text(ip
-                        .getParametersUID().toString()
-                        + ";"
-                        + ip.getCredentialSpecUID().toString())));
+                String cs = ip.getCredentialSpecUID().toString();
+                String is = ip.getParametersUID().toString();
+                
+                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("is").setValue(is));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+                
+                tr = new Tr().appendChild(
+                        new Td().appendChild(new Text(is)))
+                        .appendChild(
+                                new Td().appendChild(new Text(cs)))
+                        .appendChild(
+                                new Td().appendChild(f));
+                tbl.appendChild(tr);
             }
+            mainDiv.appendChild(tbl);
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
@@ -449,7 +477,7 @@ public class IssuanceService {
                                 .write()).build());
             }
             
-            return credentialSpecifications();
+            return logger.exit(credentialSpecifications());
         }
         catch (Exception e) {
             return logger.exit(Response
@@ -630,6 +658,47 @@ public class IssuanceService {
                     .entity(UserGUI.errorPage(
                             ExceptionDumper.dumpExceptionStr(e, logger))
                             .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/protected/gui/profile/")
+    public Response profile() {
+        logger.entry();
+
+        try {
+            Html html = UserGUI.getHtmlPramble("Profile");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
+
+            String text = "Welcome to your profile! Here you can edit and manage your settings.";
+            P p = new P().setCSSClass("info");
+            mainDiv.appendChild(p);
+            p.appendChild(new Text(text));
+            p.appendChild(new Br());
+            text = "Credential specifications specify what attributes a credential can or has to contain.";
+            p.appendChild(new Text(text));
+
+            Ul ul = new Ul();
+            ul.appendChild(new Li().appendChild(new A()
+                    .setHref("./issuerParameters").appendChild(
+                            new Text("Manage issuer parameters"))));
+            ul.appendChild(new Li().appendChild(new A().setHref(
+                    "./credentialSpecifications").appendChild(
+                    new Text("Manage credential specifications"))));
+
+            mainDiv.appendChild(ul);
+
+            return logger.exit(Response.ok(html.write()).build());
+
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger)).write())
+                    .build());
         }
     }
 

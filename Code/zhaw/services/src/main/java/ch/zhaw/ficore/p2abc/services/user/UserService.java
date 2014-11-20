@@ -273,7 +273,7 @@ public class UserService {
 
             mainDiv.appendChild(ul);
 
-            return Response.ok(html.write()).build();
+            return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
             log.catching(e);
