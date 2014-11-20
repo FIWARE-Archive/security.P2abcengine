@@ -110,16 +110,24 @@ public class Test {
         
         /* Extract issuance message */
         String firstIssuanceMessage = testExtractIssuanceMessage(issuanceMessageAndBoolean);
+        System.out.println("--- firstIssuanceMessage");
+        System.out.println(firstIssuanceMessage);
         
         /* Issuance steps in the protocol */
         String issuanceReturn = testIssuanceStepUser1(firstIssuanceMessage);
         String contextString = getContextString(issuanceReturn);
+        System.out.println("--- issuanceReturn");
+        System.out.println(issuanceReturn);
         System.out.println(contextString);
         
         String uiIssuanceReturn = readTextFile("uiIssuanceReturn.xml");
         uiIssuanceReturn = replaceContextString(uiIssuanceReturn, contextString);
+        System.out.println("--- uiIssuanceReturn");
+        System.out.println(uiIssuanceReturn);
         
         String secondIssuanceMessage = testIssuanceStepUserUi1(uiIssuanceReturn);
+        System.out.println("--- secondIssuanceMessage");
+        System.out.println(secondIssuanceMessage);
         
         
         String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer1(secondIssuanceMessage);
