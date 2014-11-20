@@ -90,7 +90,7 @@ public class VerificationService {
     }
 
     @GET()
-    @Path("/status/")
+    @Path("/protected/status/")
     public Response status() {
         return Response.ok().build();
     }
@@ -130,7 +130,7 @@ public class VerificationService {
         }
     }
 
-    @Path("/getToken")
+    @Path("/protected/getToken")
     @GET()
     public Response getToken(@QueryParam("tokenUID") URI tokenUid) {
         log.entry();
@@ -147,7 +147,7 @@ public class VerificationService {
         }
     }
 
-    @Path("/deleteToken")
+    @Path("/protected/deleteToken")
     @POST()
     public Response deleteToken(@QueryParam("tokenUID") URI tokenUid) {
         log.entry();
@@ -166,17 +166,13 @@ public class VerificationService {
     }
 
     @PUT()
-    @Path("/storeSystemParameters/{magicCookie}")
+    @Path("/protected/storeSystemParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeSystemParameters(
-            @PathParam("magicCookie") String magicCookie,
             SystemParameters systemParameters) {
 
         log.entry();
 
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return log.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             VerificationHelper verificationHelper = VerificationHelper
@@ -198,18 +194,13 @@ public class VerificationService {
     }
 
     @PUT()
-    @Path("/storeIssuerParameters/{magicCookie}/{issuerParametersUid}")
+    @Path("/protected/storeIssuerParameters/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeIssuerParameters(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("issuerParametersUid") URI issuerParametersUid,
             IssuerParameters issuerParameters) {
 
         log.entry();
-
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return log.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         this.log.info("VerificationService - storeIssuerParameters - issuerParametersUid: "
                 + issuerParametersUid
@@ -268,17 +259,13 @@ public class VerificationService {
     }
 
     @PUT()
-    @Path("/storeCredentialSpecification/{magicCookie}/{credentialSpecifationUid}")
+    @Path("/protected/storeCredentialSpecification/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeCredentialSpecification(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
         log.entry();
 
-        if (!ServicesConfiguration.isMagicCookieCorrect(magicCookie))
-            return log.exit(Response.status(Response.Status.FORBIDDEN)
-                    .entity(errMagicCookie).build());
 
         try {
             VerificationHelper verificationHelper = VerificationHelper

@@ -15,8 +15,10 @@ import java.io.*;
 public class Test {
 
     private static String userServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/user/";
-    private static String verificationServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/verification/";
-    private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
+    private static String verificationServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/verification/protected/";
+    private static String verificationServiceURLUnprot = "http://localhost:8888/zhaw-p2abc-webservices/verification/"; 
+    private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/protected/";
+    private static String issuanceServiceURLUnprot = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
@@ -309,7 +311,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "issuanceRequest");
+                .resource(issuanceServiceURLUnprot + "issuanceRequest");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -334,7 +336,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(verificationServiceURL + "storeIssuerParameters/" + magic +"/" + issuanceURI);
+                .resource(verificationServiceURL + "storeIssuerParameters/" + issuanceURI);
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -346,7 +348,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "setupIssuerParameters/" + magic);
+                .resource(issuanceServiceURL + "setupIssuerParameters/");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -372,7 +374,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(verificationServiceURL + "storeSystemParameters/" + magic);
+                .resource(verificationServiceURL + "storeSystemParameters/");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -396,7 +398,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(verificationServiceURL + "storeCredentialSpecification/" + magic + "/" + credSpecURI);
+                .resource(verificationServiceURL + "storeCredentialSpecification/" + credSpecURI);
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -405,7 +407,7 @@ public class Test {
     }
     
     public static String testSetupSystemParametersIssuer() {
-        String uri = "setupSystemParameters/" + magic + "/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix";
+        String uri = "setupSystemParameters/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix";
         
         Client client = getClient(); 
 
@@ -424,7 +426,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "getIssuancePolicy/" + magic + "/" + credSpecURI);
+                .resource(issuanceServiceURL + "getIssuancePolicy/" + credSpecURI);
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -437,7 +439,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "storeIssuancePolicy/" + magic + "/" + credSpecURI);
+                .resource(issuanceServiceURL + "storeIssuancePolicy/" + credSpecURI);
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -449,7 +451,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "getQueryRule/" + magic + "/" + credSpecURI);
+                .resource(issuanceServiceURL + "getQueryRule/" + credSpecURI);
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -462,7 +464,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "storeQueryRule/" + magic + "/" + credSpecURI);
+                .resource(issuanceServiceURL + "storeQueryRule/" + credSpecURI);
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -474,7 +476,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "getCredentialSpecification/" + magic + "/" + credSpecURI);
+                .resource(issuanceServiceURL + "getCredentialSpecification/" + credSpecURI);
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -487,7 +489,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "storeCredentialSpecification/" + magic + "/" + credSpecURI);
+                .resource(issuanceServiceURL + "storeCredentialSpecification/" + credSpecURI);
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -499,7 +501,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "testAuthentication");
+                .resource(issuanceServiceURLUnprot + "testAuthentication");
 
         ClientResponse response = webResource.type("application/xml")
                 .post(ClientResponse.class, authRequest);
@@ -513,7 +515,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "genCredSpec/" + magic + "/");
+                .resource(issuanceServiceURL + "genCredSpec/");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -528,7 +530,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "attributeInfoCollection/" + magic + "/" + credSpecName);
+                .resource(issuanceServiceURL + "attributeInfoCollection/" + credSpecName);
 
         ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -553,6 +555,7 @@ public class Test {
 
         WebResource webResource = client
                 .resource(issuanceServiceURL + "status");
+
 
         ClientResponse response = webResource.get(ClientResponse.class);
 

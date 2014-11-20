@@ -36,6 +36,8 @@ curl -X PUT --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'ht
 echo "Setup issuer parameters"
 curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/issuance/setupIssuerParameters/*magic*' > ./out/issuerParameters.xml
 
+exit 0
+echo "FU"
 
 # Store Issuer Parameters at user.
 # This method is not specified in H2.2.

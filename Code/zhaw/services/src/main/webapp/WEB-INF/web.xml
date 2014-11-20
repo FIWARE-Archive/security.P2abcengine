@@ -2,7 +2,28 @@
 <!-- This web.xml file is not required when using Servlet 3.0 container, 
      see implementation details http://jersey.java.net/nonav/documentation/latest/jax-rs.html#d4e194 -->
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-    <servlet>
+	<security-constraint> 
+   <!-- web resources that are protected -->
+   <web-resource-collection>
+     <web-resource-name>A Protected Page</web-resource-name>
+     <url-pattern>/issuance/protected/*</url-pattern>
+   </web-resource-collection>
+
+   <auth-constraint>
+     <!-- role-name indicates roles that are allowed
+       to access the web resource specified above -->
+     <role-name>tomcat</role-name>
+     <role-name>role1</role-name>
+   </auth-constraint>
+  </security-constraint> 
+
+  <login-config>
+   <auth-method>BASIC</auth-method>
+   <realm-name>Basic Authentication Example</realm-name>
+  </login-config>   
+
+
+	 <servlet>
         <servlet-name>FI-Core Privacy Services</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
@@ -40,13 +61,13 @@
 	<env-entry>
 		<description> AttributeSource </description>
 		<env-entry-name>cfg/Source/attributes</env-entry-name>
-		<env-entry-value> JDBC </env-entry-value>
+		<env-entry-value> FAKE </env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> AuthenticationSource </description>
 		<env-entry-name>cfg/Source/authentication</env-entry-name>
-		<env-entry-value> JDBC </env-entry-value>
+		<env-entry-value> FAKE </env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<resource-env-ref>
