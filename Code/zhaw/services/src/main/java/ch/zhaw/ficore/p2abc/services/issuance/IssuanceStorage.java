@@ -1,6 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URI;
+import java.util.List;
 
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import eu.abc4trust.xml.IssuancePolicy;
@@ -39,6 +40,14 @@ public interface IssuanceStorage {
      * @return the QueryRule bound to the given CredentialSpecification
      */
     public QueryRule getQueryRule(URI credSpecUid) throws Exception;
+    
+    /**
+     * Returns a list of URIs of QueryRules.
+     * 
+     * @return List of URIs
+     * @throws Exception
+     */
+    public List<URI> listQueryRules() throws Exception;
 
     /**
      * Get the IssuancePolicy bound to a CredentialSpecification as denoted by

@@ -400,6 +400,65 @@ public class IssuanceService {
                             .write()).build());
         }
     }
+    
+    @GET()
+    @Path("/protected/gui/queryRules/")
+    public Response queryRules() {
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            Html html = IssuerGUI.getHtmlPramble("Query Rules");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Query Rules")));
+            
+            
+            Table tbl = new Table();
+            Tr tr = null;
+            
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Text("Credential specification")))
+                    .appendChild(
+                            new Td().appendChild(new Text("Query string")))
+                     .appendChild(
+                             new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
+
+            for (URI uri : instance.issuanceStorage.listQueryRules()) {
+                QueryRule qr = (instance.issuanceStorage.getQueryRule(uri));
+            
+                String qs = (qr.queryString.length() > 0) ? qr.queryString : "(empty)";
+                String cs = uri.toString();
+                
+                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("cs").setValue(cs));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+                
+                tr = new Tr().appendChild(
+                        new Td().appendChild(new Text(cs)))
+                        .appendChild(
+                                new Td().appendChild(new Text(qs)))
+                        .appendChild(
+                                new Td().appendChild(f));
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
 
     @GET()
     @Path("/protected/gui/obtainCredentialSpecification")
@@ -687,6 +746,9 @@ public class IssuanceService {
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./credentialSpecifications").appendChild(
                     new Text("Manage credential specifications"))));
+            ul.appendChild(new Li().appendChild(new A().setHref(
+                    "./queryRules").appendChild(
+                    new Text("Manage query rules"))));
 
             mainDiv.appendChild(ul);
 

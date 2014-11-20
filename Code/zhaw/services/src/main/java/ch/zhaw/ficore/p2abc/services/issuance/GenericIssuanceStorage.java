@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -68,5 +69,10 @@ public class GenericIssuanceStorage implements IssuanceStorage {
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+ 
+    public List<URI> listQueryRules() throws Exception {
+        return queryRuleStorage.keys();
     }
 }
