@@ -38,7 +38,6 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
-import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
 import com.hp.gagawa.java.elements.A;
