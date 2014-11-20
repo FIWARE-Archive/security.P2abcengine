@@ -37,6 +37,8 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
 import com.hp.gagawa.java.elements.Div;
@@ -88,6 +90,7 @@ public class IssuanceService {
     private static final String errNoCredSpec = "CredentialSpecification is missing!";
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
+    private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
 
     private ObjectFactory of = new ObjectFactory();
 
@@ -106,7 +109,7 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/protected/deleteFriendlyDescription/")
+    @Path("/protected/gui/deleteFriendlyDescription/")
     public Response deleteFriendlyDescription(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid,
             @FormParam("language") String language) {
@@ -168,7 +171,7 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/protected/deleteAttribute/")
+    @Path("/protected/gui/deleteAttribute/")
     public Response deleteAttribute(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid) {
 
@@ -218,7 +221,7 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/protected/addFriendlyDescription/")
+    @Path("/protected/gui/addFriendlyDescription/")
     public Response addFriendlyDescription(@FormParam("i") int index,
             @FormParam("cs") String credSpecUid,
             @FormParam("language") String language,
@@ -276,7 +279,7 @@ public class IssuanceService {
     }
 
     @POST()
-    @Path("/protected/obtainCredentialSpecification2")
+    @Path("/protected/gui/obtainCredentialSpecification2")
     public Response obtainCredentialSpecification2(@FormParam("n") String name) {
         logger.entry();
 
@@ -329,7 +332,7 @@ public class IssuanceService {
     }
 
     @GET()
-    @Path("/protected/issuerParameters/")
+    @Path("/protected/gui/issuerParameters/")
     public Response issuerParameters() {
         logger.entry();
 
@@ -371,7 +374,7 @@ public class IssuanceService {
     }
 
     @GET()
-    @Path("/protected/obtainCredentialSpecification")
+    @Path("/protected/gui/obtainCredentialSpecification")
     public Response obtainCredentialSpecification() {
         logger.entry();
 
@@ -415,9 +418,50 @@ public class IssuanceService {
                             .write()).build());
         }
     }
+    
+    @POST()
+    @Path("/protected/gui/deleteCredentialSpecification")
+    public Response deleteCredentialSpecification(@FormParam("cs") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                errNoCredSpec)
+                                .write()).build());
+            
+            //@#@#^%$ KeyStorage has no delete()
+            if(instance.keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
+                keyStorage.delete(new URI(credSpecUid));
+            }
+            else {
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                errNotImplemented)
+                                .write()).build());
+            }
+            
+            return credentialSpecifications();
+        }
+        catch (Exception e) {
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
 
     @GET()
-    @Path("/protected/credentialSpecifications/")
+    @Path("/protected/gui/credentialSpecifications/")
     public Response credentialSpecifications() {
         logger.entry();
 
@@ -566,6 +610,15 @@ public class IssuanceService {
 
                     index++;
                 }
+                
+                Form f = new Form("./deleteCredentialSpecification").setMethod("post");
+                f.appendChild(new Input().setType("submit").setValue(
+                        "Delete credential specification"));
+                f.appendChild(new Input()
+                        .setType("hidden")
+                        .setValue(credSpec.getSpecificationUID().toString())
+                        .setName("cs"));
+                credDiv.appendChild(f);
             }
 
             return logger.exit(Response.ok(html.write()).build());
