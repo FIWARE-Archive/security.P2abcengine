@@ -20,10 +20,9 @@ public class Test {
     private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/protected/";
     private static String issuanceServiceURLUnprot = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
     private static String credSpecName = "test";
-    private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
+    private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Acredspec%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
-    
-    private static String magic = "*magic*";
+
 
     /**
      * Performs the whole more or less adopted from the ancient tutorial.
@@ -96,6 +95,9 @@ public class Test {
         
         /* Setup IssuerParameters */
         String issuerParameters = testSetupIssuerParametersIssuer(readTextFile("issuerParametersInput.xml"));
+        System.out.println("--- issuerParameters");
+        System.out.println(issuerParameters);
+        
         
         /* Store IssuerParameters at User and Verifier */
         testStoreIssParamsAtUser(issuerParameters);
@@ -174,6 +176,8 @@ public class Test {
             while((line = br.readLine()) != null)
                 lines += line + "\n";
             br.close();
+            System.out.println("*** " + path);
+            System.out.println(lines);
             return lines;
         }
         catch(Exception e) {
@@ -202,7 +206,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(verificationServiceURL + "verifyTokenAgainstPolicy");
+                .resource(verificationServiceURLUnprot + "verifyTokenAgainstPolicy");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -241,7 +245,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(verificationServiceURL + "createPresentationPolicy");
+                .resource(verificationServiceURLUnprot + "createPresentationPolicy");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -267,7 +271,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(issuanceServiceURL + "issuanceProtocolStep");
+                .resource(issuanceServiceURLUnprot + "issuanceProtocolStep");
 
         
         ClientResponse response = webResource.type("application/xml")

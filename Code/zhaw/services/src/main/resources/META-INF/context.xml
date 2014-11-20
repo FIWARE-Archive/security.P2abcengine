@@ -6,7 +6,7 @@
 		scope="Unshareable"
 		driverClassName="org.sqlite.JDBC"
 		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"	
-		url="jdbc:sqlite:/tmp/new.db"/>
+		url="jdbc:sqlite:/tmp/blabla.db"/>
 		
 	<Resource
 		name="cfg/ConnectionParameters/attributes"

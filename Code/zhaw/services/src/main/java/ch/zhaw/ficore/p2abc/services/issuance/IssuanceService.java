@@ -1215,7 +1215,7 @@ public class IssuanceService {
 
             if (credspec == null) {
                 return logger.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNoCredSpec).build());
+                        .entity(errNoCredSpec + "(" + credentialSpecUid.toString() + ")").build());
             }
 
             URI issuerParametersUid = issuerParametersInput.getParametersUID();
