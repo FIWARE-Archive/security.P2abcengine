@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @author mroman
  */
-@XmlRootElement(name = "auth-info")
+@XmlRootElement(name = "auth-info", namespace="http://abc4trust.eu/wp2/abcschemav1.0")
 public abstract class AuthenticationInformation {
 
 }
