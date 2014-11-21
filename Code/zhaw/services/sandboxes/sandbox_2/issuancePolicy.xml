@@ -12,8 +12,8 @@
       </Message>
       </PresentationPolicy>
 	<CredentialTemplate>
-        <CredentialSpecUID>urn:fiware:privacy:credspec:userdata</CredentialSpecUID>
-        <IssuerParametersUID>http://mroman.ch/generic/issuance:idemix</IssuerParametersUID>
+        <CredentialSpecUID>urn:fiware:privacy:userdata</CredentialSpecUID>
+        <IssuerParametersUID>urn:fiware:privacy:userdata:issuer-params</IssuerParametersUID>
         <UnknownAttributes/>
     </CredentialTemplate>
 </IssuancePolicy>

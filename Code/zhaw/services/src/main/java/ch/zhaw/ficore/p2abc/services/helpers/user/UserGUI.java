@@ -109,6 +109,24 @@ public class UserGUI {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return fromXML(clazz, response.getEntity(String.class));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static Object getRequest(String url, Class clazz)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.get(
+                ClientResponse.class);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("getRequest failed for: " + url
                     + " got " + response.getStatus());
 
         return fromXML(clazz, response.getEntity(String.class));

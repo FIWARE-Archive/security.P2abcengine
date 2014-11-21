@@ -431,6 +431,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
 
     public void put(String key, byte[] bytes) throws SQLException {
         logger.entry(key, bytes);
+        logger.info(" - put " + key + "-" + bytes.length + " bytes");
 
         lock(this, logger);
 

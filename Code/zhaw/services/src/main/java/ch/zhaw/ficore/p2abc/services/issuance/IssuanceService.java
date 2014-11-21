@@ -37,6 +37,7 @@ import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.Settings;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
@@ -362,6 +363,61 @@ public class IssuanceService {
 
             return credentialSpecifications();
         } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/getSettings/")
+    public Response getSettings() {
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            Settings settings = new Settings();
+            
+            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof IssuerParameters) {
+                    IssuerParameters ip = (IssuerParameters) obj;
+                    
+                    SystemParameters serializeSp = SystemParametersUtil
+                            .serialize(ip.getSystemParameters());
+
+                    ip.setSystemParameters(serializeSp);
+                    
+                    issuerParams.add(ip);
+                }
+            }
+            
+            List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    credSpecs.add((CredentialSpecification) obj);
+                }
+            }
+            
+            settings.credentialSpecifications = credSpecs;
+            settings.issuerParametersList = issuerParams;
+            settings.systemParameters = SystemParametersUtil.serialize(instance.keyManager.getSystemParameters());
+            
+            return logger.exit(Response.ok(settings).build());
+        }
+        catch(Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -1587,13 +1643,10 @@ public class IssuanceService {
     }
 
     private CryptoEngine getCryptoEngine(URI issuerParametersUid) {
-        if (issuerParametersUid.toString().endsWith("idemix")) {
-            return CryptoEngine.IDEMIX;
-        }
-
-        throw new IllegalArgumentException(
-                "Unkown crypto engine from issuer parameters uid: \""
-                        + issuerParametersUid + "\"");
+        /*
+         * there was some endsWith check on the Uid actually. We only support Idemix for now. -- munt
+         */
+        return CryptoEngine.IDEMIX;
     }
 
     private void initIssuanceProtocolValidateInput(
