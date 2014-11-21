@@ -11,12 +11,17 @@
 	<properties>
 		<jersey.version>1.10</jersey.version>
 		<jetty.version>6.1.26</jetty.version>
-		<!-- Prevent maven warning
-		  [WARNING] Using platform encoding (UTF-8 actually) to copy filtered
-		  resources, i.e. build is platform dependent
-		 -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Prevent maven warning [WARNING] Using platform encoding (UTF-8 actually) 
+			to copy filtered resources, i.e. build is platform dependent -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-repository.dev.java.net</id>
+			<name>Java.net Maven 2 Repository</name>
+			<url>http://download.java.net/maven/2</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.hp.gagawa</groupId>
@@ -60,12 +65,12 @@
 			<artifactId>jetty-util</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>eu.abc4trust.ri</groupId>
 			<artifactId>abce-jetty-package</artifactId>
@@ -86,12 +91,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
 		</dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-dbcp2</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-web</artifactId>
 			<version>2.0.2</version>
@@ -127,6 +132,33 @@
 		<finalName>zhaw-p2abc-webservices</finalName>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>schemagen</id>
+						<goals>
+							<goal>schemagen</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<transformSchemas>
+						<transformSchema>
+							<uri>http://abc4trust.eu/wp2/abcschemav1.0</uri>
+            <!-- 
+							<toPrefix>abc</toPrefix>
+              -->
+							<toFile>p2abc.xsd</toFile>
+						</transformSchema>
+					</transformSchemas>
+					<includes>
+						<include>ch/zhaw/ficore/p2abc/services/issuance/xml/*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
@@ -136,47 +168,46 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-      <plugin>
-        <groupId>com.ning.maven.plugins</groupId>
-        <artifactId>maven-duplicate-finder-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
-      </plugin>
+			<plugin>
+				<groupId>com.ning.maven.plugins</groupId>
+				<artifactId>maven-duplicate-finder-plugin</artifactId>
+				<version>1.0.8</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+			</plugin>
 		</plugins>
 	</build>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.0</version>
-        <configuration>
-          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 	<profiles>
 		<profile>
 			<id>ldap-ui-service</id>
 			<properties>
 				<packaging.type>war</packaging.type>
-          <!-- Prevent maven warning
-            [WARNING] Using platform encoding (UTF-8 actually) to copy filtered
-            resources, i.e. build is platform dependent
-          -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+				<!-- Prevent maven warning [WARNING] Using platform encoding (UTF-8 actually) 
+					to copy filtered resources, i.e. build is platform dependent -->
+				<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -188,13 +219,13 @@
 						<artifactId>maven-war-plugin</artifactId>
 						<version>2.1.1</version>
 						<configuration>
-                <webResources>
-                    <resource>
-                        <!-- this is relative to the pom.xml directory -->
-                        <directory>${project.basedir}/src/main/resources
-                        </directory>
-                    </resource>
-                </webResources>
+							<webResources>
+								<resource>
+									<!-- this is relative to the pom.xml directory -->
+									<directory>${project.basedir}/src/main/resources
+									</directory>
+								</resource>
+							</webResources>
 						</configuration>
 					</plugin>
 				</plugins>
