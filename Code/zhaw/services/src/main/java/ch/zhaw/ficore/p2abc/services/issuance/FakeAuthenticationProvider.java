@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationInformation;
 
 /**
  * An AuthenticationProvider that is not coupled with any actual identity

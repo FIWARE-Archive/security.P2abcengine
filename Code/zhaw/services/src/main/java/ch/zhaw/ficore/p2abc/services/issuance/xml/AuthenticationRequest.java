@@ -4,7 +4,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ch.zhaw.ficore.p2abc.services.issuance.AuthenticationInformation;
 
 @XmlRootElement(name = "auth-request")
 public class AuthenticationRequest {

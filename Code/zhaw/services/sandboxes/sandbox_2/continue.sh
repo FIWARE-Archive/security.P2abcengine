@@ -7,7 +7,7 @@
 set -e
 # Setup System Parameters.
 echo "Setup System Parameters"
-curl -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/issuance/setupSystemParameters/*magic*/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix' > ./out/systemparameters.xml
+curl --user both:tomcat -X POST --header 'Content-Type: text/xml' 'http://localhost:8888/zhaw-p2abc-webservices/issuance/protected/setupSystemParameters/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix' > ./out/systemparameters.xml
 
 # Store credential specification at user.
 # This method is not specified in H2.2.
@@ -18,7 +18,7 @@ cat ./out/storeCredentialSpecificationAtUserResponce.xml
 # Store credential specification at verifier.
 # This method is not specified in H2.2.
 echo "Store credential specification at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./gen/credSpec.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeCredentialSpecification/*magic*/urn%3Afiware%3Aprivacy%3Acredspec%3Auserdata' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
+curl --user both:tomcat -X PUT --header 'Content-Type: text/xml' -d @./gen/credSpec.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeCredentialSpecification/*magic*/urn%3Afiware%3Aprivacy%3Acredspec%3Auserdata' > ./out/storeCredentialSpecificationAtVerifierResponce.xml
 cat ./out/storeCredentialSpecificationAtVerifierResponce.xml
 
 
@@ -30,14 +30,12 @@ curl -X PUT --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'ht
 # Store System parameters at verifier.
 # This method is not specified in H2.2.
 echo "Store System parameters at Verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeSystemParameters/*magic*' > ./out/storeSystemParametersResponceAtVerifier.xml
+curl --user both:tomcat -X PUT --header 'Content-Type: text/xml' -d @./out/systemparameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/protected/storeSystemParameters/' > ./out/storeSystemParametersResponceAtVerifier.xml
 
 # Setup issuer parameters.
 echo "Setup issuer parameters"
-curl -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/issuance/setupIssuerParameters/*magic*' > ./out/issuerParameters.xml
+curl --user both:tomcat -X POST --header 'Content-Type: text/xml' -d @./issuerParametersInput.xml 'http://localhost:8888/zhaw-p2abc-webservices/issuance/protected/setupIssuerParameters/' > ./out/issuerParameters.xml
 
-exit 0
-echo "FU"
 
 # Store Issuer Parameters at user.
 # This method is not specified in H2.2.
@@ -47,7 +45,9 @@ curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'ht
 # Store Issuer Parameters at verifier.
 # This method is not specified in H2.2.
 echo "Store Issuer Parameters at verifier"
-curl -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/storeIssuerParameters/*magic*/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix' > ./out/storeIssuerParametersAtVerifier.xml
+curl --user both:tomcat -X PUT --header 'Content-Type: text/xml' -d @./out/issuerParameters.xml 'http://localhost:8888/zhaw-p2abc-webservices/verification/protected/storeIssuerParameters/http%3A%2F%2Fmroman.ch%2Fgeneric%2Fissuance%3Aidemix' > ./out/storeIssuerParametersAtVerifier.xml
+
+exit
 
 # Create smartcard at user.
 # This method is not specified in H2.2.

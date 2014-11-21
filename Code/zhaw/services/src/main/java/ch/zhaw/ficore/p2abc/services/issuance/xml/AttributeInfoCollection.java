@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "attribute-info-collection")
+@XmlRootElement(name = "attribute-info-collection", namespace="http://www.backbase.com/ns/widgets")
 public class AttributeInfoCollection {
 
-    @XmlElement(name = "name", required = true)
+    @XmlElement(name = "name", required = true, namespace="http://www.backbase.com/ns/widgets")
     public String name;
 
     @XmlElementWrapper(name = "attributes", required = true)
