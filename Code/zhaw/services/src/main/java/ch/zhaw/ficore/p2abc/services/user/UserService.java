@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
@@ -293,7 +294,7 @@ public class UserService {
         log.entry();
         
         try {
-            Settings settings = (Settings) UserGUI.getRequest(url, Settings.class);
+            Settings settings = (Settings) RESTHelper.getRequest(url, Settings.class);
             
             for(IssuerParameters ip : settings.issuerParametersList) {
                 Response r = this.storeIssuerParameters(ip.getParametersUID(), ip);
@@ -598,9 +599,9 @@ public class UserService {
 
             log.warn("issuerUrl: " + issuerUrl);
 
-            IssuanceMessageAndBoolean issuanceMessageAndBoolean = (IssuanceMessageAndBoolean) UserGUI
+            IssuanceMessageAndBoolean issuanceMessageAndBoolean = (IssuanceMessageAndBoolean) RESTHelper
                     .postRequest(issuerUrl + "/issuanceRequest",
-                            UserGUI.toXML(IssuanceRequest.class, ir),
+                            RESTHelper.toXML(IssuanceRequest.class, ir),
                             IssuanceMessageAndBoolean.class);
 
             IssuanceMessage firstIssuanceMessage = issuanceMessageAndBoolean
@@ -663,12 +664,12 @@ public class UserService {
 
             IssuanceMessage secondIssuanceMessage = ((JAXBElement<IssuanceMessage>) r
                     .getEntity()).getValue();
-            log.warn(UserGUI.toXML(IssuanceMessage.class,
+            log.warn(RESTHelper.toXML(IssuanceMessage.class,
                     of.createIssuanceMessage(secondIssuanceMessage)));
-            IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) UserGUI
+            IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) RESTHelper
                     .postRequest(
                             issuerUrl + "/issuanceProtocolStep",
-                            UserGUI.toXML(
+                            RESTHelper.toXML(
                                     IssuanceMessage.class,
                                     of.createIssuanceMessage(secondIssuanceMessage)),
                             IssuanceMessageAndBoolean.class);
