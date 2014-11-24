@@ -12,7 +12,7 @@
       </Message>
       </PresentationPolicy>
 	<CredentialTemplate>
-        <CredentialSpecUID>urn:fiware:privacy:credspec:test</CredentialSpecUID>
+        <CredentialSpecUID>urn:fiware:privacy:test</CredentialSpecUID>
         <IssuerParametersUID>urn:fiware:privacy:issuance:idemix</IssuerParametersUID>
         <UnknownAttributes/>
     </CredentialTemplate>

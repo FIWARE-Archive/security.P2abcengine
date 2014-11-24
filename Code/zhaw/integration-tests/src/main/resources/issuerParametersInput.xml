@@ -7,7 +7,7 @@
   <abc:ParametersUID>urn:fiware:privacy:issuance:idemix</abc:ParametersUID>
   <abc:FriendlyIssuerDescription lang="en">Issuer parameters for integration-test</abc:FriendlyIssuerDescription>
   <abc:AlgorithmID>urn:abc4trust:1.0:algorithm:idemix</abc:AlgorithmID>
-  <abc:CredentialSpecUID>urn:fiware:privacy:credspec:test</abc:CredentialSpecUID>
+  <abc:CredentialSpecUID>urn:fiware:privacy:test</abc:CredentialSpecUID>
   <abc:HashAlgorithm>urn:abc4trust:1.0:hashalgorithm:sha-256</abc:HashAlgorithm>
   <abc:RevocationParametersUID>urn:fiware:privacy:revocation</abc:RevocationParametersUID>
 </abc:IssuerParametersInput>

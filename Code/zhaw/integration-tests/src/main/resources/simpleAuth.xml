@@ -1,6 +1,7 @@
-<auth-request>
-	<auth-info-simple>
-		<username>CaroleKing</username>
-		<password>Jazzman</password>
-	</auth-info-simple>
-</auth-request>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<abc:auth-request xmlns:abc="http://abc4trust.eu/wp2/abcschemav1.0">
+	<abc:auth-info-simple>
+		<abc:username>CaroleKing</abc:username>
+		<abc:password>Jazzman</abc:password>
+	</abc:auth-info-simple>
+</abc:auth-request>
