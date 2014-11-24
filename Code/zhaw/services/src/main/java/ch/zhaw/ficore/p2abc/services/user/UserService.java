@@ -53,10 +53,10 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.Settings;
+import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
