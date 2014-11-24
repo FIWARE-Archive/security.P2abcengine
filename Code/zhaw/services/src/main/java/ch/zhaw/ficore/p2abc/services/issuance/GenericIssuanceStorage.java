@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
 
-import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
 import com.google.inject.Inject;

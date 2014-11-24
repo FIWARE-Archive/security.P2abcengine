@@ -33,11 +33,11 @@ import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.Settings;
+import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
@@ -1169,7 +1169,7 @@ public class IssuanceService {
 
 
             return Response.ok(attribInfoProvider.getAttributes(name),
-                    MediaType.APPLICATION_XML).build();
+                    MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));

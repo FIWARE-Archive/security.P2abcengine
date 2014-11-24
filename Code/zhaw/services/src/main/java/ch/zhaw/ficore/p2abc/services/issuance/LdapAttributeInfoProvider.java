@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 
 /**
  * An AttributeInfoProvider that is capable of providing attribute

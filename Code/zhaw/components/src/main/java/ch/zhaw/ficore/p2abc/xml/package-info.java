@@ -4,7 +4,7 @@
         },
         elementFormDefault = XmlNsForm.QUALIFIED
 ) 
-package ch.zhaw.ficore.p2abc.services.issuance.xml;
+package ch.zhaw.ficore.p2abc.xml;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlNsForm;

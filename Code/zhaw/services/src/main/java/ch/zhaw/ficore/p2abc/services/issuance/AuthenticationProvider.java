@@ -1,7 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationInformation;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 
 /**
  * Serves as a Factory for AuthenticationProviders.
