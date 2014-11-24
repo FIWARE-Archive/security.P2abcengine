@@ -369,63 +369,6 @@ public class IssuanceGUI {
     }
     
     @GET()
-    @Path("/getSettings/")
-    public Response getSettings() {
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-            
-            Settings settings = new Settings();
-            
-            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof IssuerParameters) {
-                    IssuerParameters ip = (IssuerParameters) obj;
-                    
-                    SystemParameters serializeSp = SystemParametersUtil
-                            .serialize(ip.getSystemParameters());
-
-                    ip.setSystemParameters(serializeSp);
-                    
-                    issuerParams.add(ip);
-                }
-            }
-            
-            List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    credSpecs.add((CredentialSpecification) obj);
-                }
-            }
-            
-            settings.credentialSpecifications = credSpecs;
-            settings.issuerParametersList = issuerParams;
-            settings.systemParameters = SystemParametersUtil.serialize(instance.keyManager.getSystemParameters());
-            
-            return logger.exit(Response.ok(settings).build());
-        }
-        catch(Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-
-    
-    
-    @GET()
     @Path("/queryRules/")
     public Response queryRules() {
         logger.entry();
