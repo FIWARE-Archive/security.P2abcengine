@@ -2,7 +2,9 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +47,7 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
@@ -193,63 +197,7 @@ public class IssuanceGUI {
     
     
 
-    @POST()
-    @Path("/addFriendlyDescription/")
-    public Response addFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language,
-            @FormParam("value") String value) {
-
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            CredentialSpecification credSpec = null;
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    if (((CredentialSpecification) obj).getSpecificationUID()
-                            .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification) obj;
-                    }
-                }
-            }
-
-            if (credSpec == null) {
-                return logger.exit(Response
-                        .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
-            }
-
-            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
-                    .getAttributeDescription().get(index);
-
-            FriendlyDescription fd = new FriendlyDescription();
-            fd.setLang(language);
-            fd.setValue(value);
-
-            attrDesc.getFriendlyAttributeName().add(fd);
-
-            instance.keyManager.storeCredentialSpecification(new URI(
-                    credSpecUid), credSpec);
-
-            return credentialSpecifications();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
+    
     
     @POST()
     @Path("/deleteCredentialSpecification")
@@ -291,6 +239,35 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }*/
+    
+    @POST()
+    @Path("/protected/addFriendlyDescription/")
+    public Response addFriendlyDescription(@FormParam("i") int index,
+            @FormParam("cs") String credSpecUid,
+            @FormParam("language") String language,
+            @FormParam("value") String value) {
+        logger.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("i", Integer.toString(index));
+            params.add("language", language);
+            params.add("value", value);
+            
+            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/addFriendlyDescription/"
+                    + URLEncoder.encode(credSpecUid,"UTF-8"), params);
+            
+            return credentialSpecifications();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
     
     @POST()
     @Path("/protected/generateIssuerParameters/")

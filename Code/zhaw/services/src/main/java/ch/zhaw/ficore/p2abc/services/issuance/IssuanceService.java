@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -44,6 +45,7 @@ import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.util.CryptoUriUtil;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
+import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
@@ -224,6 +226,63 @@ public class IssuanceService {
                 attrValProvider.shutdown();
             if (authProvider != null)
                 authProvider.shutdown();
+        }
+    }
+    
+    @POST()
+    @Path("/protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid}")
+    public Response addFriendlyDescription(@FormParam("i") int index,
+            @PathParam("credentialSpecificationUid") String credSpecUid,
+            @FormParam("language") String language,
+            @FormParam("value") String value) {
+
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification) obj;
+                    }
+                }
+            }
+
+            if (credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(IssuerGUI.errorPage(
+                                "Credential specification could not be found!")
+                                .write()).build());
+            }
+
+            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
+                    .getAttributeDescription().get(index);
+
+            FriendlyDescription fd = new FriendlyDescription();
+            fd.setLang(language);
+            fd.setValue(value);
+
+            attrDesc.getFriendlyAttributeName().add(fd);
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
+            return logger.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ExceptionDumper.dumpExceptionStr(e, logger))
+                            ).build();
         }
     }
     

@@ -2,7 +2,10 @@ package ch.zhaw.ficore.p2abc.services.helpers;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -117,6 +120,25 @@ public class RESTHelper {
 
         ClientResponse response = webResource.type("application/xml").post(
                 ClientResponse.class);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return response.getEntity(String.class);
+    }
+    
+    public static Object postRequest(String url, MultivaluedMap<String, String> params)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type(MediaType.
+                APPLICATION_FORM_URLENCODED_TYPE).post(
+                ClientResponse.class, params);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
