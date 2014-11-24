@@ -423,71 +423,7 @@ public class IssuanceGUI {
         }
     }
 
-    @GET()
-    @Path("/issuerParameters/")
-    public Response issuerParameters() {
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            Html html = IssuerGUI.getHtmlPramble("Issuer Parameters");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Issuer Parameters")));
-
-            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof IssuerParameters) {
-                    issuerParams.add((IssuerParameters) obj);
-                }
-            }
-            
-            Table tbl = new Table();
-            Tr tr = null;
-            
-            tr = new Tr().appendChild(
-                    new Td().appendChild(new Text("Issuer Parameters Uid")))
-                    .appendChild(
-                            new Td().appendChild(new Text("Credential Specification Uid")))
-                     .appendChild(
-                             new Td().appendChild(new Text("Action")))
-                    .setCSSClass("heading");
-            tbl.appendChild(tr);
-
-            for (IssuerParameters ip : issuerParams) {
-                String cs = ip.getCredentialSpecUID().toString();
-                String is = ip.getParametersUID().toString();
-                
-                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
-                f.appendChild(new Input().setType("hidden").setName("is").setValue(is));
-                f.appendChild(new Input().setType("submit").setValue("Delete"));
-                
-                tr = new Tr().appendChild(
-                        new Td().appendChild(new Text(is)))
-                        .appendChild(
-                                new Td().appendChild(new Text(cs)))
-                        .appendChild(
-                                new Td().appendChild(f));
-                tbl.appendChild(tr);
-            }
-            mainDiv.appendChild(tbl);
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
+    
     
     @GET()
     @Path("/queryRules/")
@@ -634,6 +570,66 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }*/
+    
+    @GET()
+    @Path("/protected/issuerParameters/")
+    public Response issuerParameters() {
+        logger.entry();
+
+        try {
+            Settings settings = 
+                    (Settings) RESTHelper.getRequest(issuanceServiceURL + "getSettings/", 
+                    Settings.class);
+
+            Html html = IssuerGUI.getHtmlPramble("Issuer Parameters");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Issuer Parameters")));
+
+            List<IssuerParameters> issuerParams = settings.issuerParametersList;
+
+            
+            
+            Table tbl = new Table();
+            Tr tr = null;
+            
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Text("Issuer Parameters Uid")))
+                    .appendChild(
+                            new Td().appendChild(new Text("Credential Specification Uid")))
+                     .appendChild(
+                             new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
+
+            for (IssuerParameters ip : issuerParams) {
+                String cs = ip.getCredentialSpecUID().toString();
+                String is = ip.getParametersUID().toString();
+                
+                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("is").setValue(is));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+                
+                tr = new Tr().appendChild(
+                        new Td().appendChild(new Text(is)))
+                        .appendChild(
+                                new Td().appendChild(new Text(cs)))
+                        .appendChild(
+                                new Td().appendChild(f));
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
 
     @GET()
     @Path("/protected/credentialSpecifications/")
@@ -809,7 +805,7 @@ public class IssuanceGUI {
     }
     
     @GET()
-    @Path("/profile/")
+    @Path("/protected/profile/")
     public Response profile() {
         logger.entry();
 
