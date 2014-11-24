@@ -230,6 +230,68 @@ public class IssuanceService {
     }
     
     @POST()
+    @Path("/protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid}")
+    public Response deleteFriendlyDescription(@FormParam("i") int index,
+            @PathParam("credentialSpecificationUid") String credSpecUid,
+            @FormParam("language") String language) {
+
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification) obj;
+                    }
+                }
+            }
+
+            if (credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(IssuerGUI.errorPage(
+                                "Credential specification could not be found!")
+                                .write()).build());
+            }
+
+            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
+                    .getAttributeDescription().get(index);
+
+            FriendlyDescription fd = null;
+
+            for (FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
+                if (fc.getLang().equals(language)) {
+                    fd = fc;
+                    break;
+                }
+
+            if (fd != null)
+                attrDesc.getFriendlyAttributeName().remove(fd);
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
+            return logger.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @POST()
     @Path("/protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid}")
     public Response addFriendlyDescription(@FormParam("i") int index,
             @PathParam("credentialSpecificationUid") String credSpecUid,
