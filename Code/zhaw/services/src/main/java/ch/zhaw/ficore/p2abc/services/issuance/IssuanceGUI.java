@@ -2,9 +2,7 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +10,6 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -65,13 +62,7 @@ public class IssuanceGUI {
     @Context
     HttpServletRequest request;
 
-    private static final URI CRYPTOMECHANISM_URI_IDEMIX = URI
-            .create("urn:abc4trust:1.0:algorithm:idemix");
-
-    private static final String errNoCredSpec = "CredentialSpecification is missing!";
-    private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
-    private static final String errNoQueryRule = "QueryRule is missing!";
-    private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
+    
 
     private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
     

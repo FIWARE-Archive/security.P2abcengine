@@ -1,12 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.helpers.user;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
-
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.B;
@@ -29,11 +23,6 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
 
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
 import eu.abc4trust.returnTypes.ui.PseudonymListCandidate;

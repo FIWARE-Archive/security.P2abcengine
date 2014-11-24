@@ -72,7 +72,7 @@ public class IssuanceService {
     private static final String errNoCredSpec = "CredentialSpecification is missing!";
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
-    private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
+    //private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
 
     private ObjectFactory of = new ObjectFactory();
 

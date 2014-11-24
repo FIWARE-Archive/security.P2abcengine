@@ -2,7 +2,6 @@ package ch.zhaw.ficore.p2abc.services.helpers;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -92,6 +91,7 @@ public class RESTHelper {
         return fromXML(clazz, response.getEntity(String.class));
     }
     
+    @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
@@ -147,6 +147,7 @@ public class RESTHelper {
         return response.getEntity(String.class);
     }
     
+    @SuppressWarnings("rawtypes")
     public static Object putRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
