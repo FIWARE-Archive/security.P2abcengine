@@ -8,7 +8,6 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -32,42 +31,19 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
+import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
-import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
-import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
-
-import com.hp.gagawa.java.elements.A;
-import com.hp.gagawa.java.elements.Br;
-import com.hp.gagawa.java.elements.Div;
-import com.hp.gagawa.java.elements.Form;
-import com.hp.gagawa.java.elements.H2;
-import com.hp.gagawa.java.elements.H3;
-import com.hp.gagawa.java.elements.H4;
-import com.hp.gagawa.java.elements.H5;
-import com.hp.gagawa.java.elements.Html;
-import com.hp.gagawa.java.elements.Input;
-import com.hp.gagawa.java.elements.Label;
-import com.hp.gagawa.java.elements.Li;
-import com.hp.gagawa.java.elements.P;
-import com.hp.gagawa.java.elements.Table;
-import com.hp.gagawa.java.elements.Td;
-import com.hp.gagawa.java.elements.Text;
-import com.hp.gagawa.java.elements.Tr;
-import com.hp.gagawa.java.elements.Ul;
-
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.util.CryptoUriUtil;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
-import eu.abc4trust.xml.AttributeDescription;
-import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
@@ -326,6 +302,34 @@ public class IssuanceService {
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
+    
+    @GET()
+    @Path("/protected/queryRules/")
+    public Response queryRules() {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            IssuanceStorage storage = instance.issuanceStorage;
+            List<URI> uris = storage.listQueryRules();
+            List<String> uriStrings = new ArrayList<String>();
+            List<QueryRule> queryRules = new ArrayList<QueryRule>();
+            for(URI uri : uris) {
+                uriStrings.add(uri.toString());
+                queryRules.add(storage.getQueryRule(uri));
+            }
+            QueryRuleCollection qrc = new QueryRuleCollection();
+            qrc.queryRules = queryRules;
+            qrc.uris = uriStrings;
+            return logger.exit(Response.ok(qrc).build());
+        }
+        catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+    }
 
     /**
      * Store IssuancePolicy.
@@ -521,13 +525,6 @@ public class IssuanceService {
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
-
-    /*
-     * The following section contains code copied from the original issuance
-     * service from the tree Code/core-abce/abce-service
-     */
-
-    /* SECTION */
 
     private void initializeHelper(CryptoEngine cryptoEngine) {
         logger.info("IssuanceService loading...");

@@ -2,47 +2,28 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
-import ch.zhaw.ficore.p2abc.services.ServiceType;
-import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.xml.CredentialSpecificationCollection;
-import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
-import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
-import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Br;
@@ -63,24 +44,12 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 
-import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
-import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
-import eu.abc4trust.keyManager.KeyManager;
-import eu.abc4trust.util.CryptoUriUtil;
-import eu.abc4trust.xml.ABCEBoolean;
-import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
-import eu.abc4trust.xml.IssuanceMessage;
-import eu.abc4trust.xml.IssuanceMessageAndBoolean;
-import eu.abc4trust.xml.IssuancePolicy;
-import eu.abc4trust.xml.IssuancePolicyAndAttributes;
 import eu.abc4trust.xml.IssuerParameters;
-import eu.abc4trust.xml.IssuerParametersInput;
 import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.SystemParameters;
 
 //from Code/core-abce/abce-services (COPY)
 
@@ -316,67 +285,6 @@ public class IssuanceGUI {
         }
     }
     
-    @GET()
-    @Path("/queryRules/")
-    public Response queryRules() {
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            Html html = IssuerGUI.getHtmlPramble("Query Rules");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Query Rules")));
-            
-            
-            Table tbl = new Table();
-            Tr tr = null;
-            
-            tr = new Tr().appendChild(
-                    new Td().appendChild(new Text("Credential specification")))
-                    .appendChild(
-                            new Td().appendChild(new Text("Query string")))
-                     .appendChild(
-                             new Td().appendChild(new Text("Action")))
-                    .setCSSClass("heading");
-            tbl.appendChild(tr);
-
-            for (URI uri : instance.issuanceStorage.listQueryRules()) {
-                QueryRule qr = (instance.issuanceStorage.getQueryRule(uri));
-            
-                String qs = (qr.queryString.length() > 0) ? qr.queryString : "(empty)";
-                String cs = uri.toString();
-                
-                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
-                f.appendChild(new Input().setType("hidden").setName("cs").setValue(cs));
-                f.appendChild(new Input().setType("submit").setValue("Delete"));
-                
-                tr = new Tr().appendChild(
-                        new Td().appendChild(new Text(cs)))
-                        .appendChild(
-                                new Td().appendChild(new Text(qs)))
-                        .appendChild(
-                                new Td().appendChild(f));
-                tbl.appendChild(tr);
-            }
-            mainDiv.appendChild(tbl);
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-
-    
-    
     @POST()
     @Path("/deleteCredentialSpecification")
     public Response deleteCredentialSpecification(@FormParam("cs") String credSpecUid) {
@@ -417,6 +325,65 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }*/
+    
+    @GET()
+    @Path("/protected/queryRules/")
+    public Response queryRules() {
+        logger.entry();
+
+        try {
+            QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper.getRequest(issuanceServiceURL + "protected/queryRules", 
+                    QueryRuleCollection.class);
+
+            Html html = IssuerGUI.getHtmlPramble("Query Rules");
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(IssuerGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Query Rules")));
+            
+            
+            Table tbl = new Table();
+            Tr tr = null;
+            
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Text("Credential specification")))
+                    .appendChild(
+                            new Td().appendChild(new Text("Query string")))
+                     .appendChild(
+                             new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
+
+            for(int i = 0; i < qrc.queryRules.size(); i++) {
+                URI uri = new URI(qrc.uris.get(i));
+                QueryRule qr = qrc.queryRules.get(i);
+            
+                String qs = (qr.queryString.length() > 0) ? qr.queryString : "(empty)";
+                String cs = uri.toString();
+                
+                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("cs").setValue(cs));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+                
+                tr = new Tr().appendChild(
+                        new Td().appendChild(new Text(cs)))
+                        .appendChild(
+                                new Td().appendChild(new Text(qs)))
+                        .appendChild(
+                                new Td().appendChild(f));
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
     
     @POST()
     @Path("/protected/obtainCredentialSpecification2")
