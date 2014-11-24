@@ -73,50 +73,23 @@ public class IssuanceGUI {
     public IssuanceGUI()  {
         logger = LogManager.getLogger();
     }
-    /*
     
-
     @POST()
-    @Path("/deleteAttribute/")
-    public Response deleteAttribute(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid) {
-
+    @Path("/protected/deleteAttribute")
+    public Response deleteAttribute(@FormParam("cs") String credSpecUid,
+            @FormParam("i") int index) {
         logger.entry();
-
+        
         try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            CredentialSpecification credSpec = null;
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    if (((CredentialSpecification) obj).getSpecificationUID()
-                            .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification) obj;
-                    }
-                }
-            }
-
-            if (credSpec == null) {
-                return logger.exit(Response
-                        .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
-            }
-
-            credSpec.getAttributeDescriptions().getAttributeDescription()
-                    .remove(index);
-
-            instance.keyManager.storeCredentialSpecification(new URI(
-                    credSpecUid), credSpec);
-
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("i", Integer.toString(index));
+            
+            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/deleteAttribute/"
+                    + URLEncoder.encode(credSpecUid,"UTF-8"), params);
+            
             return credentialSpecifications();
-        } catch (Exception e) {
+        }
+        catch(Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -126,50 +99,26 @@ public class IssuanceGUI {
         }
     }
     
-    
-
-    
-    
     @POST()
-    @Path("/deleteCredentialSpecification")
+    @Path("/protected/deleteCredentialSpecification/")
     public Response deleteCredentialSpecification(@FormParam("cs") String credSpecUid) {
         logger.entry();
         
         try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
+            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/delete/"
+                    + URLEncoder.encode(credSpecUid,"UTF-8"));
             
-            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
-                return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNoCredSpec)
-                                .write()).build());
-            
-            //@#@#^%$ KeyStorage has no delete()
-            if(instance.keyStorage instanceof GenericKeyStorage) {
-                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
-                keyStorage.delete(new URI(credSpecUid));
-            }
-            else {
-                return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNotImplemented)
-                                .write()).build());
-            }
-            
-            return logger.exit(credentialSpecifications());
+            return credentialSpecifications();
         }
-        catch (Exception e) {
+        catch(Exception e) {
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
                             ExceptionDumper.dumpExceptionStr(e, logger))
                             .write()).build());
         }
-    }*/
+    }
     
     @POST()
     @Path("/protected/addFriendlyDescription/")
@@ -318,13 +267,13 @@ public class IssuanceGUI {
                     + URLEncoder.encode(name, "UTF-8"), AttributeInfoCollection.class);
             
             CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.postRequest(
-                    issuanceServiceURL + "protected/genCredSpec", 
+                    issuanceServiceURL + "protected/credentialSpecification/generate", 
                     RESTHelper.toXML(AttributeInfoCollection.class, aic), 
                     CredentialSpecification.class);
             
 
            RESTHelper.putRequest(
-                   issuanceServiceURL + "protected/storeCredentialSpecification/"
+                   issuanceServiceURL + "protected/credentialSpecification/store/"
                    + URLEncoder.encode(credSpec.getSpecificationUID().toString(),"UTF-8"),
                    RESTHelper.toXML(CredentialSpecification.class, of.createCredentialSpecification(credSpec)), String.class);
 

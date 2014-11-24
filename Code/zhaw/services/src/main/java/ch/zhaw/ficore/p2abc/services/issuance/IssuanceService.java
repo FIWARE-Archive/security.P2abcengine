@@ -32,6 +32,7 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
+import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
@@ -72,7 +73,7 @@ public class IssuanceService {
     private static final String errNoCredSpec = "CredentialSpecification is missing!";
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
-    //private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
+    private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
 
     private ObjectFactory of = new ObjectFactory();
 
@@ -91,6 +92,96 @@ public class IssuanceService {
     }
 
    
+    @POST()
+    @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
+    public Response deleteCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                errNoCredSpec)
+                                .write()).build());
+            
+            //@#@#^%$ KeyStorage has no delete()
+            if(instance.keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
+                keyStorage.delete(new URI(credSpecUid));
+            }
+            else {
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                errNotImplemented)
+                                .write()).build());
+            }
+            
+            return logger.exit(Response.ok("OK").build());
+        }
+        catch (Exception e) {
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}")
+    public Response deleteAttribute(@FormParam("i") int index,
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification) obj;
+                    }
+                }
+            }
+
+            if (credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(IssuerGUI.errorPage(
+                                "Credential specification could not be found!")
+                                .write()).build());
+            }
+
+            credSpec.getAttributeDescriptions().getAttributeDescription()
+                    .remove(index);
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
+            return logger.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
 
     
     @GET()
@@ -399,7 +490,7 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/storeQueryRule/{credentialSpecificationUid}")
+    @Path("/protected/queryRule/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeQueryRule(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
@@ -435,7 +526,7 @@ public class IssuanceService {
      * @return QueryRule
      */
     @GET()
-    @Path("/protected/getQueryRule/{credentialSpecificationUid}")
+    @Path("/protected/queryRule/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response getQueryRule(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
@@ -503,7 +594,7 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/storeIssuancePolicy/{credentialSpecificationUid}")
+    @Path("/protected/issuancePolicy/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeIssuancePolicy(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
@@ -539,7 +630,7 @@ public class IssuanceService {
      * @return IssuancePolicy
      */
     @GET()
-    @Path("/protected/getIssuancePolicy/{credentialSpecificationUid}")
+    @Path("/protected/issuancePolicy/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response getIssuancePolicy(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
@@ -665,9 +756,9 @@ public class IssuanceService {
      * @return a CredentialSpecification
      */
     @POST()
-    @Path("/protected/genCredSpec/")
+    @Path("/protected/credentialSpecification/generate")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response genCredSpec(
+    public Response generateCredentialSpecification(
             AttributeInfoCollection attrInfoCol) {
         
 
@@ -726,7 +817,7 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/storeCredentialSpecification/{credentialSpecifationUid}")
+    @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeCredentialSpecification(
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
@@ -775,7 +866,7 @@ public class IssuanceService {
      * @return Response (CredentialSpecification)
      */
     @GET()
-    @Path("/protected/getCredentialSpecification/{credentialSpecificationUid}")
+    @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
     public Response getCredentialSpecification(
             @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
