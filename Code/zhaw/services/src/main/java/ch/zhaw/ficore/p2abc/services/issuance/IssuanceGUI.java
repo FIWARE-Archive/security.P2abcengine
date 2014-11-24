@@ -484,8 +484,51 @@ public class IssuanceGUI {
         }
     }
 
+    
+    
+    @POST()
+    @Path("/deleteCredentialSpecification")
+    public Response deleteCredentialSpecification(@FormParam("cs") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                errNoCredSpec)
+                                .write()).build());
+            
+            //@#@#^%$ KeyStorage has no delete()
+            if(instance.keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
+                keyStorage.delete(new URI(credSpecUid));
+            }
+            else {
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(IssuerGUI.errorPage(
+                                errNotImplemented)
+                                .write()).build());
+            }
+            
+            return logger.exit(credentialSpecifications());
+        }
+        catch (Exception e) {
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }*/
+    
     @GET()
-    @Path("/obtainCredentialSpecification")
+    @Path("/protected/obtainCredentialSpecification")
     public Response obtainCredentialSpecification() {
         logger.entry();
 
@@ -529,47 +572,6 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }
-    
-    @POST()
-    @Path("/deleteCredentialSpecification")
-    public Response deleteCredentialSpecification(@FormParam("cs") String credSpecUid) {
-        logger.entry();
-        
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-            
-            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
-                return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNoCredSpec)
-                                .write()).build());
-            
-            //@#@#^%$ KeyStorage has no delete()
-            if(instance.keyStorage instanceof GenericKeyStorage) {
-                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
-                keyStorage.delete(new URI(credSpecUid));
-            }
-            else {
-                return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNotImplemented)
-                                .write()).build());
-            }
-            
-            return logger.exit(credentialSpecifications());
-        }
-        catch (Exception e) {
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }*/
     
     @GET()
     @Path("/protected/issuerParameters/")
