@@ -226,6 +226,42 @@ public class IssuanceService {
                 authProvider.shutdown();
         }
     }
+    
+    @POST()
+    @Path("/protected/generateIssuerParameters/{credentialSpecificationUid}")
+    public Response generateIssuerParameters(
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            URI algorithmID = new URI("urn:abc4trust:1.0:algorithm:idemix");
+            URI hashAlgorithm = new URI("urn:abc4trust:1.0:hashalgorithm:sha-256");
+            IssuerParametersInput ip = new IssuerParametersInput();
+            
+            ip.setAlgorithmID(algorithmID);
+            ip.setHashAlgorithm(hashAlgorithm);
+            
+            ip.setCredentialSpecUID(new URI(credSpecUid));
+            ip.setParametersUID(new URI(credSpecUid+":issuer-params"));
+            ip.setRevocationParametersUID(new URI(credSpecUid+":revocation-params"));
+            
+            Response r = setupIssuerParameters(ip);
+            
+            if(r.getStatus() != 200) {
+                throw new RuntimeException("Internal step failed! (" + r.getStatus() + ")");
+            }
+            
+            return Response.ok("OK").build();
+            
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
+        }
+    }
 
     /**
      * Store QueryRule.

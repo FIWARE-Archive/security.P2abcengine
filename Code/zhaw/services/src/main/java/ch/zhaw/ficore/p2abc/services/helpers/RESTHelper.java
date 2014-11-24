@@ -89,6 +89,42 @@ public class RESTHelper {
         return fromXML(clazz, response.getEntity(String.class));
     }
     
+    public static Object postRequest(String url, Class clazz)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type("application/xml").post(
+                ClientResponse.class);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return fromXML(clazz, response.getEntity(String.class));
+    }
+    
+    public static Object postRequest(String url)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type("application/xml").post(
+                ClientResponse.class);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return response.getEntity(String.class);
+    }
+    
     public static Object putRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {

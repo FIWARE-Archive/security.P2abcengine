@@ -10,6 +10,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -190,42 +191,7 @@ public class IssuanceGUI {
         }
     }
     
-    @POST()
-    @Path("/generateIssuerParameters/")
-    public Response generateIssuerParameters(
-            @FormParam("cs") String credSpecUid) {
-        logger.entry();
-        
-        try {
-            URI algorithmID = new URI("urn:abc4trust:1.0:algorithm:idemix");
-            URI hashAlgorithm = new URI("urn:abc4trust:1.0:hashalgorithm:sha-256");
-            IssuerParametersInput ip = new IssuerParametersInput();
-            
-            ip.setAlgorithmID(algorithmID);
-            ip.setHashAlgorithm(hashAlgorithm);
-            
-            ip.setCredentialSpecUID(new URI(credSpecUid));
-            ip.setParametersUID(new URI(credSpecUid+":issuer-params"));
-            ip.setRevocationParametersUID(new URI(credSpecUid+":revocation-params"));
-            
-            Response r = setupIssuerParameters(ip);
-            
-            if(r.getStatus() != 200) {
-                throw new RuntimeException("Internal step failed! (" + r.getStatus() + ")");
-            }
-            
-            return issuerParameters();
-            
-        }
-        catch(Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
+    
 
     @POST()
     @Path("/addFriendlyDescription/")
@@ -325,6 +291,28 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }*/
+    
+    @POST()
+    @Path("/protected/generateIssuerParameters/")
+    public Response generateIssuerParameters(
+            @FormParam("cs") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            RESTHelper.postRequest(issuanceServiceURL + "protected/generateIssuerParameters/"
+                    + URLEncoder.encode(credSpecUid,"UTF-8"));
+            
+            return issuerParameters();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
     
     @GET()
     @Path("/protected/queryRules/")
