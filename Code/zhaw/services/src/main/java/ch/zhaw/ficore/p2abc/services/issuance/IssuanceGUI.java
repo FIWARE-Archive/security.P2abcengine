@@ -1,6 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -314,59 +315,6 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }
-
-    @POST()
-    @Path("/obtainCredentialSpecification2")
-    public Response obtainCredentialSpecification2(@FormParam("n") String name) {
-        logger.entry();
-
-        try {
-            Response r = this.attributeInfoCollection(name);
-            if (r.getStatus() != 200) {
-                logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                "Could not obtain attribute info collection!")
-                                .write()).build());
-            }
-
-            AttributeInfoCollection aic = (AttributeInfoCollection) r
-                    .getEntity();
-            r = this.genCredSpec(aic);
-
-            if (r.getStatus() != 200) {
-                logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                "Could not generate credential specification!")
-                                .write()).build());
-            }
-
-            @SuppressWarnings("unchecked")
-            CredentialSpecification credSpec = ((JAXBElement<CredentialSpecification>) r
-                    .getEntity()).getValue();
-
-            r = this.storeCredentialSpecification(
-                    credSpec.getSpecificationUID(), credSpec);
-
-            if (r.getStatus() != 200) {
-                logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                "Could not store credential specification!")
-                                .write()).build());
-            }
-
-            return credentialSpecifications();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
     
     @GET()
     @Path("/queryRules/")
@@ -469,6 +417,39 @@ public class IssuanceGUI {
                             .write()).build());
         }
     }*/
+    
+    @POST()
+    @Path("/protected/obtainCredentialSpecification2")
+    public Response obtainCredentialSpecification2(@FormParam("n") String name) {
+        logger.entry();
+
+        try {
+            AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper.getRequest(issuanceServiceURL + "protected/attributeInfoCollection/"
+                    + URLEncoder.encode(name, "UTF-8"), AttributeInfoCollection.class);
+            
+            CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.postRequest(
+                    issuanceServiceURL + "protected/genCredSpec", 
+                    RESTHelper.toXML(AttributeInfoCollection.class, aic), 
+                    CredentialSpecification.class);
+            
+
+           RESTHelper.putRequest(
+                   issuanceServiceURL + "protected/storeCredentialSpecification/"
+                   + URLEncoder.encode(credSpec.getSpecificationUID().toString(),"UTF-8"),
+                   RESTHelper.toXML(CredentialSpecification.class, of.createCredentialSpecification(credSpec)), String.class);
+
+           
+
+            return credentialSpecifications();
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            .write()).build());
+        }
+    }
     
     @GET()
     @Path("/protected/obtainCredentialSpecification")

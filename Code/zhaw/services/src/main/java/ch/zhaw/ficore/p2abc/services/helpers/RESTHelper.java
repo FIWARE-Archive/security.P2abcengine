@@ -89,6 +89,24 @@ public class RESTHelper {
         return fromXML(clazz, response.getEntity(String.class));
     }
     
+    public static Object putRequest(String url, String xml, Class clazz)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type("application/xml").put(
+                ClientResponse.class, xml);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return fromXML(clazz, response.getEntity(String.class));
+    }
+    
     @SuppressWarnings("rawtypes")
     public static Object getRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,

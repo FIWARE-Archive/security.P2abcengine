@@ -477,7 +477,7 @@ public class IssuanceService {
 
 
             return Response.ok(attribInfoProvider.getAttributes(name),
-                    MediaType.APPLICATION_JSON).build();
+                    MediaType.APPLICATION_XML).build();
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
