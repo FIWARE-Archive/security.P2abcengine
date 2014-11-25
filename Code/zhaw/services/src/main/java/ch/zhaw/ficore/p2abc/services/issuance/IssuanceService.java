@@ -674,18 +674,24 @@ public class IssuanceService {
     }
 
     /**
-     * Retrieve a QueryRule.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct. This method will return status code NOT_FOUND if no query rule
-     * with the given uid is found.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     * @return QueryRule
+     * <b>Path</b>: /protected/queryRule/get/{credentialSpecificationUid} <br>
+     * <br>
+     * <b>Description</b>: Retrieves a previously stored query rule. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification the query rule is associated with.</li>
+     * </ul>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Query rule could not be found.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>QueryRule</tt><br>
+     * @param credentialSpecificationUid UID of the credential specification
+     * @return Response
      */
     @GET()
     @Path("/protected/queryRule/get/{credentialSpecificationUid}")
