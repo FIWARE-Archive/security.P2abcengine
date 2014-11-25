@@ -84,7 +84,7 @@ public class IssuanceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("i", Integer.toString(index));
             
-            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/deleteAttribute/"
+            RESTHelper.deleteRequest(issuanceServiceURL + "protected/credentialSpecification/deleteAttribute/"
                     + URLEncoder.encode(credSpecUid,"UTF-8"), params);
             
             return credentialSpecifications();

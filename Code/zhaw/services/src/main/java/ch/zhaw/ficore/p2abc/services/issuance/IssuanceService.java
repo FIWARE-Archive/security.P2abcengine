@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -84,6 +85,17 @@ public class IssuanceService {
         logger = LogManager.getLogger();
     }
 
+    /**
+     * <b>Path</b>: /protected/status<br>
+     * <br>
+     * <b>Description</b>: This method is available when the service is running.
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK</li>
+     * </ul>
+     * @return Response
+     */
     @GET()
     @Path("/protected/status")
     @Produces({ MediaType.TEXT_PLAIN })
@@ -92,6 +104,25 @@ public class IssuanceService {
     }
 
    
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid}<br>
+     * <br>
+     * <b>Description</b>: Deletes a credential specification that was stored under the given identifier. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to delete</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Credential specification was not found</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param credSpecUid UID of the credential specification
+     * @return Response
+     */
     @POST()
     @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
     public Response deleteCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
@@ -104,10 +135,9 @@ public class IssuanceService {
             
             if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
                 return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNoCredSpec)
-                                .write()).build());
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(
+                                errNoCredSpec)).build();
             
             //@#@#^%$ KeyStorage has no delete()
             if(instance.keyStorage instanceof GenericKeyStorage) {
@@ -117,9 +147,8 @@ public class IssuanceService {
             else {
                 return logger.exit(Response
                         .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNotImplemented)
-                                .write()).build());
+                        .entity(
+                                errNotImplemented)).build();
             }
             
             return logger.exit(Response.ok("OK").build());
@@ -127,13 +156,36 @@ public class IssuanceService {
         catch (Exception e) {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
     
-    @POST()
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes an attribute from a credential specification. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to delete the attribute from.</li>
+     * </ul>
+     * <b>Delete parameters</b>:
+     * <ul>
+     *  <li>i - Index of the attribute (in the credential specification) to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     *  <li>404 - Credential specification was not found</li>
+     * </ul>
+     * @param index Index of the attribute
+     * @param credSpecUid UID of the credential specification
+     * @return Response
+     */
+    @DELETE()
     @Path("/protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}")
     public Response deleteAttribute(@FormParam("i") int index,
             @PathParam("credentialSpecificationUid") String credSpecUid) {
@@ -184,6 +236,22 @@ public class IssuanceService {
     }
 
     
+    /**
+     * <b>Path</b>: /getSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns the settings of this issuance service. Settings includes issuer parameters,
+     * credential specifications and the system parameters. This method is usually called by a user service
+     * to download the settings. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>Settings</tt><br>
+     * @return
+     */
     @GET()
     @Path("/getSettings/")
     public Response getSettings() {
@@ -242,6 +310,9 @@ public class IssuanceService {
    
 
     /**
+     * <b>Path</b>: /issuanceRequest/ (POST)<br>
+     * <br>
+     * <b>Description</b>:
      * This method is called by a user to initiate an issuance protocol. The
      * user must provide an issuance request containing his authentication
      * information and the uid of the corresponding credential specification.
@@ -253,7 +324,18 @@ public class IssuanceService {
      * If authentication of the user fails this method will return the status
      * code FORBIDDEN. If the issuer is missing the credential specification,
      * the issuance policy or the query rule this method will return status code
-     * NOT_FOUND.
+     * NOT_FOUND.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>401 - Authentication failed</li>
+     *  <li>404 - A resource needed to process the request was not found</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuanceRequest</tt><br>
+     * <b>Return type</b>: <tt>IssuanceMessageAndBoolean</tt><br>
      * 
      * @param request
      *            a valid IssuanceRequset

@@ -475,6 +475,7 @@ public class UserService {
      *  <li>200 - OK (application/xml)</li>
      *  <li>400 - ERROR</li>
      * </ul>
+     * <br>
      * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
      * <b>Return type</b>: <tt>IssuanceReturn</tt><br>
      * 

@@ -197,7 +197,26 @@ public class RESTHelper {
                 ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RuntimeException("deleteRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return response.getEntity(String.class);
+    }
+    
+    public static Object deleteRequest(String url, MultivaluedMap<String, String> params)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type(MediaType.
+                APPLICATION_FORM_URLENCODED_TYPE).delete(
+                ClientResponse.class, params);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("deleteRequest failed for: " + url
                     + " got " + response.getStatus() + "|" + response.getEntity(String.class));
 
         return response.getEntity(String.class);
