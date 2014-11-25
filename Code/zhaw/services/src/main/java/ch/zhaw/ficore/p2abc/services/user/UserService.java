@@ -26,7 +26,6 @@ package ch.zhaw.ficore.p2abc.services.user;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -92,7 +91,19 @@ public class UserService {
 
     
     private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
+    private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
 
+    /**
+     * <b>Path</b>: /status/ (GET)<br>
+     * <br>
+     * <b>Description</b>: If the service is running this method is available.<br>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK</li>
+     * </ul>
+     * @return Response
+     */
     @GET()
     @Path("/status/")
     public Response status() {
@@ -100,13 +111,25 @@ public class UserService {
     }
 
     /**
-     * This method, on input a presentation policy p, decides whether the
+     * <b>Path:</b> /canBeSatisfied/ (POST)<br>
+     * <br>
+     * <b>Description</b>: 
+     * This method, on input of a presentation policy decides whether the
      * credentials in the User’s credential store could be used to produce a
-     * valid presentation token satisfying the policy p. If so, this method
-     * returns true, otherwise, it returns false.
+     * valid presentation token satisfying the policy. If so, this method
+     * returns true, otherwise, it returns false. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type:</b> <tt>PresentationPolicyAlternatives</tt><br>
+     * <b>Return type:</b> <tt>ABCEBoolean</tt><br>
      * 
-     * @param p
-     * @return
+     * @param p PresentationPolicyAlternatives
+     * @return Response
      */
     @POST()
     @Path("/canBeSatisfied/")
@@ -132,7 +155,10 @@ public class UserService {
     }
 
     /**
-     * This method, on input a presentation policy alternatives p, returns an
+     * <b>Path</b>: /createPresentationToken/ (POST)<br>
+     * <br>
+     * <b>Description</b>:
+     * This method, on input a presentation policy alternatives, returns an
      * argument to be passed to the UI for choosing how to satisfy the policy,
      * or returns an error if the policy cannot be satisfied (if the
      * canBeSatisfied method would have returned false). For returning such an
@@ -147,10 +173,19 @@ public class UserService {
      * UiPresentationReturn object from a UiPresentationArguments object). The
      * return value of the UI must then be passed to the method
      * createPresentationToken(UiPresentationReturn) for creating a presentation
-     * token.
+     * token.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: PresentationPolicyAlternatives<br>
+     * <b>Return type</b>: UiPresentationArguments<br>
      * 
-     * @param p
-     * @return
+     * @param p PresentationPolicyAlternatives
+     * @return Response
      * @throws CannotSatisfyPolicyException
      * @throws CredentialManagerException
      * @throws KeyManagerException
@@ -179,6 +214,23 @@ public class UserService {
 
     }
 
+    /**
+     * <b>Path</b>: /createPresentationTokenUi/ (POST)<br>
+     * <br>
+     * <b>Description</b>: Performs the next step to complete creation of presentation tokens. This method should
+     * be called when the user interface is done with its selection. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul> 
+     * <br>
+     * <b>Input type:</b> <tt>UiPresentationReturn</tt><br>
+     * <b>Return type:</b> <tt>PresentationToken</tt><br>
+     * @param upr UiPresentationReturn
+     * @return Response
+     */
     @POST()
     @Path("/createPresentationTokenUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -275,6 +327,8 @@ public class UserService {
      *  <li>200 - OK (application/xml)</li>
      *  <li>400 - ERROR</li>
      * </ul>
+     * <br>
+     * <b>Return type:</b> <tt>Settings</tt> <br>
      * @return Response
      */
     @GET()
@@ -340,6 +394,8 @@ public class UserService {
      *  <li>200 - OK (application/xml)</li>
      *  <li>400 - ERROR</li>
      * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>CredentialCollection</tt><br>
      * @return Response
      */
     @GET()
@@ -382,6 +438,9 @@ public class UserService {
     
 
     /**
+     * <b>Path</b>: /issuanceProtocolStep/ (POST)<br>
+     * <br>
+     * <b>Description</b>:
      * This method performs one step in an interactive issuance protocol. On
      * input an incoming issuance message im obtained from the Issuer, it either
      * returns the outgoing issuance message that is to be sent back to the
@@ -409,10 +468,18 @@ public class UserService {
      * other component that is capable of rendering a UiIssuanceReturn object
      * from a UiIssuanceArguments object); the method
      * issuanceProtocolStep(UiIssuanceReturn) should then be invoked with the
-     * object returned by the UI.
+     * object returned by the UI.<br>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
+     * <b>Return type</b>: <tt>IssuanceReturn</tt><br>
      * 
-     * @param im
-     * @return
+     * @param jm IssuanceMessage
+     * @return Response
      * @throws CannotSatisfyPolicyException
      * @throws CryptoEngineException
      * @throws KeyManagerException
@@ -444,6 +511,24 @@ public class UserService {
         }
     }
 
+    
+    /**
+     * <b>Path</b>: /issuanceProtocolStepUi/ (POST)<br>
+     * <br>
+     * <b>Description</b>: This method performs the next step in the issuance protocol after the UI is done with its
+     * selection. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>UiIssuanceReturn</tt><br>
+     * <b>Return type</b>: <tt>IssuanceMessage</tt><br>
+     * @param uir
+     * @return
+     */
     @POST()
     @Path("/issuanceProtocolStepUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -469,12 +554,27 @@ public class UserService {
 
 
     /**
+     * <b>Path</b>: /credential/delete/{credentialUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>:
      * This method deletes the credential with the given identifier from the
      * credential store. If deleting is not possible (e.g. if the referred
-     * credential does not exist) the method returns false, and true otherwise.
-     * 
-     * @param credentialUid
-     * @return
+     * credential does not exist) the method returns false, and true otherwise.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialUid - UID of the Credential</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param credentialUid - UID of the credential
+     * @return Response
      */
     @DELETE()
     @Path("/credential/delete/{credentialUid}")
@@ -515,7 +615,7 @@ public class UserService {
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK</li>
+     *  <li>200 - OK (application/xml)</li>
      *  <li>400 - ERROR</li>
      *  <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual UID or is invalid.</li>
      * </ul>
@@ -557,6 +657,23 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /systemParameters/store (PUT)<br>
+     * <br>
+     * <b>Description</b>: Store (and overwrite existing) system parameters at the service. This method returns
+     * true if the system parameters were successfully stored.
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>SystemParameters</tt><br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param systemParameters
+     * @return
+     */
     @PUT()
     @Path("/systemParameters/store")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -588,6 +705,26 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /issuerParameters/store/{issuerParametersUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Store (and overwrite existing) issuer parameters at the service (using the given
+     * identifier). This method returns
+     * true if the system parameters were successfully stored.
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     *  <li>409 - <em>issuerParametersUid</em> does not match or is invalid.
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuerParameters</tt><br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param issuerParametersUid UID of the IssuerParameters
+     * @param issuerParameters IssuerParameters
+     * @return Response
+     */
     @PUT()
     @Path("/issuerParameters/store/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -605,6 +742,9 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
+            
+            if(!(issuerParametersUid.toString().equals(issuerParameters.getParametersUID().toString())))
+                return log.exit(Response.status(Response.Status.CONFLICT).entity(errIssParamsUid).build());
 
             KeyManager keyManager = instance.keyManager;
 
@@ -658,6 +798,23 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /extractIssuanceMessage/ (POST)<br>
+     * <br>
+     * <b>Description</b>: This method extracts the IssuanceMessage from an IssuanceMessageAndBoolean and
+     * returns the IssuanceMessage.<br>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type:</b> <tt>IssuanceMessageAndBoolean</tt><br>
+     * <b>Return type:</b> <tt>IssuanceMessage</tt><br>
+     * @param issuanceMessageAndBoolean
+     * @return
+     */
     @POST()
     @Path("/extractIssuanceMessage/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
