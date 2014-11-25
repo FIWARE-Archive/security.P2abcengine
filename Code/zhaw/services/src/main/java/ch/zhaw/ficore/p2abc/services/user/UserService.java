@@ -268,8 +268,7 @@ public class UserService {
                 if (obj instanceof IssuerParameters) {
                     IssuerParameters ip = (IssuerParameters) obj;
                     
-                    SystemParameters serializeSp = SystemParametersUtil
-                            .serialize(ip.getSystemParameters());
+                    SystemParameters serializeSp = (ip.getSystemParameters());
 
                     ip.setSystemParameters(serializeSp);
                     
