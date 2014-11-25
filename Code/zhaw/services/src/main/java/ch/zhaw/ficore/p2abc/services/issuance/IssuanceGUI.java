@@ -134,7 +134,7 @@ public class IssuanceGUI {
             params.add("language", language);
             params.add("value", value);
             
-            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/addFriendlyDescription/"
+            RESTHelper.putRequest(issuanceServiceURL + "protected/credentialSpecification/addFriendlyDescription/"
                     + URLEncoder.encode(credSpecUid,"UTF-8"), params);
             
             return credentialSpecifications();
@@ -161,7 +161,7 @@ public class IssuanceGUI {
             params.add("i", Integer.toString(index));
             params.add("language", language);
             
-            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/deleteFriendlyDescription/"
+            RESTHelper.deleteRequest(issuanceServiceURL + "protected/credentialSpecification/deleteFriendlyDescription/"
                     + URLEncoder.encode(credSpecUid,"UTF-8"), params);
             
             return credentialSpecifications();
@@ -183,7 +183,7 @@ public class IssuanceGUI {
         logger.entry();
         
         try {
-            RESTHelper.postRequest(issuanceServiceURL + "protected/generateIssuerParameters/"
+            RESTHelper.postRequest(issuanceServiceURL + "protected/issuerParameters/generate/"
                     + URLEncoder.encode(credSpecUid,"UTF-8"));
             
             return issuerParameters();

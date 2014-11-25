@@ -402,7 +402,34 @@ public class IssuanceService {
         }
     }
     
-    @POST()
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes a friendly description from a credential specification. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to delete the friendly description from.
+     * </ul>
+     * <br>
+     * <b>Delete parameters</b>:
+     * <ul>
+     *  <li>i - Index of the attribute the friendly description belongs to. </li>
+     *  <li>language - Language identifier of the friendly description to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Credential specification could not be found.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param index
+     * @param credSpecUid
+     * @param language
+     * @return
+     */
+    @DELETE()
     @Path("/protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid}")
     public Response deleteFriendlyDescription(@FormParam("i") int index,
             @PathParam("credentialSpecificationUid") String credSpecUid,
@@ -464,7 +491,36 @@ public class IssuanceService {
         }
     }
     
-    @POST()
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Adds a friendly description to an attribute of a credential specification.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification.<li>
+     * </ul>
+     * <br>
+     * <b>Put parameters</b>:
+     * <ul>
+     *  <li>i - Index of the attribute to add the friendly description to.</li>
+     *  <li>language - Language identifier.</li>
+     *  <li>value - Value of the friendly description.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Credential specification could not be found.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param index
+     * @param credSpecUid
+     * @param language
+     * @param value
+     * @return
+     */
+    @PUT()
     @Path("/protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid}")
     public Response addFriendlyDescription(@FormParam("i") int index,
             @PathParam("credentialSpecificationUid") String credSpecUid,
@@ -521,8 +577,27 @@ public class IssuanceService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/issuerParameters/generate/{credentialSpecificationUid}<br>
+     * <br>
+     * <b>Description</b>: Generates issuer parameters for a specified credential specification.
+     * The generated issuer parameters will automatically be stored at this issuance service.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to generate the issuer parameters for.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 -OK</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param credSpecUid
+     * @return
+     */
     @POST()
-    @Path("/protected/generateIssuerParameters/{credentialSpecificationUid}")
+    @Path("/protected/issuerParameters/generate/{credentialSpecificationUid}")
     public Response generateIssuerParameters(
             @PathParam("credentialSpecificationUid") String credSpecUid) {
         logger.entry();
@@ -557,20 +632,25 @@ public class IssuanceService {
         }
     }
 
-    /**
-     * Store QueryRule.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     *            UID of the credSpec
-     * @return Response
-     */
+   /**
+    * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid} <br>
+    * <br>
+    * <b>Description</b>: Stores a query rule and associates it with the specified credential specification. 
+    * A query rule is stored at the issuance service with the given credential specification UID which the
+    * issuance service will use to look up the corresponding query rule. <br>
+    * <br>
+    * <b>Response status:</b>
+    * <ul>
+    *   <li>200 - OK</li>
+    *   <li>400 - ERROR</li>
+    * </ul>
+    * <br>
+    * <b>Input type</b>: <tt>QueryRule</tt><br>
+    * 
+    * @param credentialSpecificationUid UID of the credential specification
+    * @param rule QueryRule
+    * @return Response
+    */
     @PUT()
     @Path("/protected/queryRule/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
