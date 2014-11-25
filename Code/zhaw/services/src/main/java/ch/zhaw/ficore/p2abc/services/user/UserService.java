@@ -418,36 +418,6 @@ public class UserService {
         }
     }
 
-   
-
-    @POST
-    @Path("/presentationArguments/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response presentationArguments(
-            JAXBElement<UiPresentationArguments> args_) {
-        UiPresentationArguments args = args_.getValue();
-        Html html = new Html();
-        Head head = new Head();
-        head.appendChild(new Title()
-                .appendChild(new Text("Candidate Selection")));
-
-        html.appendChild(head);
-
-        Div mainDiv = new Div();
-
-        html.appendChild(new Body().appendChild(mainDiv));
-
-        for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-
-            Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates,
-                    tcpp.policyId, args.uiContext.toString());
-
-            mainDiv.appendChild(div);
-        }
-
-        return Response.ok(html.write()).build();
-    }
-
     /**
      * This method performs one step in an interactive issuance protocol. On
      * input an incoming issuance message im obtained from the Issuer, it either
@@ -534,35 +504,7 @@ public class UserService {
         }
     }
 
-    /**
-     * This method returns an array of all unique credential identifiers (UIDs)
-     * available in the Credential Manager.
-     * 
-     * @return
-     */
-    @GET()
-    @Path("/listCredentials/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response listCredentials() {
-        log.entry();
-
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        List<URI> credentialUids;
-        try {
-            credentialUids = instance.credentialManager.listCredentials();
-
-            URISet uriList = this.of.createURISet();
-            uriList.getURI().addAll(credentialUids);
-            return log.exit(Response.ok(of.createURISet(uriList),
-                    MediaType.APPLICATION_XML).build());
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
-        }
-    }
+   
 
     /**
      * This method returns the description of the credential with the given

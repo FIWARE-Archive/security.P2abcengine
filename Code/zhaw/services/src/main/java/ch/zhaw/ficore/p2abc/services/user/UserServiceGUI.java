@@ -631,7 +631,7 @@ public class UserServiceGUI {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
-    }/*
+    }
 
     @POST
     @Path("/presentationArguments/")
@@ -659,7 +659,7 @@ public class UserServiceGUI {
         }
 
         return Response.ok(html.write()).build();
-    }*/
+    }
 
     
 
