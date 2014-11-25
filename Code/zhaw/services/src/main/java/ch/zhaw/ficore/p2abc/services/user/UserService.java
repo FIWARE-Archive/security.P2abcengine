@@ -291,7 +291,7 @@ public class UserService {
             settings.issuerParametersList = issuerParams;
             settings.systemParameters = /*SystemParametersUtil.serialize*/(instance.keyManager.getSystemParameters());
             
-            return log.exit(Response.ok(settings).build());
+            return log.exit(Response.ok(settings, MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
             log.catching(e);
@@ -328,7 +328,7 @@ public class UserService {
             CredentialCollection credCol = new CredentialCollection();
             credCol.credentials = credentials;
 
-            return log.exit(Response.ok(credCol).build());
+            return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(Response

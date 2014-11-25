@@ -227,7 +227,7 @@ public class IssuanceService {
             settings.issuerParametersList = issuerParams;
             settings.systemParameters = SystemParametersUtil.serialize(instance.keyManager.getSystemParameters());
             
-            return logger.exit(Response.ok(settings).build());
+            return logger.exit(Response.ok(settings, MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
             logger.catching(e);
@@ -571,7 +571,7 @@ public class IssuanceService {
             QueryRuleCollection qrc = new QueryRuleCollection();
             qrc.queryRules = queryRules;
             qrc.uris = uriStrings;
-            return logger.exit(Response.ok(qrc).build());
+            return logger.exit(Response.ok(qrc, MediaType.APPLICATION_XML).build());
         }
         catch (Exception e) {
             logger.catching(e);
