@@ -335,9 +335,8 @@ public class UserService {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
 
@@ -372,51 +371,13 @@ public class UserService {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, log)))
+                    .build();
         }
     }
 
-    @POST()
-    @Path("/deleteCredential/")
-    public Response deleteCredential(@FormParam("credUid") String credUid) {
-        try {
-            this.initializeHelper();
-
-            UserHelper instance = UserHelper.getInstance();
-
-            boolean success = instance.credentialManager
-                    .deleteCredential(new URI(credUid));
-
-            String text = "";
-            String cls = "";
-
-            if (success) {
-                text = "You've successfully deleted the credential!";
-                cls = "success";
-            } else {
-                text = "Could not delete credential. Sorry about that.";
-                cls = "error";
-            }
-
-            Html html = UserGUI.getHtmlPramble("Delete Credential");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text(
-                    "Delete Credential")));
-            mainDiv.appendChild(new P().setCSSClass(cls).appendChild(
-                    new Text(text)));
-            return log.exit(Response.ok(html.write()).build());
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
-        }
-    }
+    
 
     /**
      * This method performs one step in an interactive issuance protocol. On
@@ -549,7 +510,7 @@ public class UserService {
      * @return
      */
     @DELETE()
-    @Path("/deleteCredential/{credentialUid}")
+    @Path("/credential/delete/{credentialUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response deleteCredential(
             @PathParam("credentialUid") URI credentialUid) {

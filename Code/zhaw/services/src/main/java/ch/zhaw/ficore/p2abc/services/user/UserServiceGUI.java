@@ -25,6 +25,7 @@
 package ch.zhaw.ficore.p2abc.services.user;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -327,28 +328,20 @@ public class UserServiceGUI {
                     .build());
         }
     }
-    /*
+    
     @POST()
     @Path("/deleteCredential/")
     public Response deleteCredential(@FormParam("credUid") String credUid) {
         try {
-            this.initializeHelper();
-
-            UserHelper instance = UserHelper.getInstance();
-
-            boolean success = instance.credentialManager
-                    .deleteCredential(new URI(credUid));
+            
+            RESTHelper.deleteRequest(userServiceURL + "credential/delete/"
+                    + URLEncoder.encode(credUid, "UTF-8"));
 
             String text = "";
             String cls = "";
 
-            if (success) {
-                text = "You've successfully deleted the credential!";
-                cls = "success";
-            } else {
-                text = "Could not delete credential. Sorry about that.";
-                cls = "error";
-            }
+            text = "You've successfully deleted the credential!";
+            cls = "success";
 
             Html html = UserGUI.getHtmlPramble("Delete Credential");
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -367,7 +360,7 @@ public class UserServiceGUI {
                     .build());
         }
     }
-    */
+    
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
