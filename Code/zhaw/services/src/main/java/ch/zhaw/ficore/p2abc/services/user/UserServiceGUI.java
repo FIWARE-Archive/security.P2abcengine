@@ -367,7 +367,7 @@ public class UserServiceGUI {
                     .build());
         }
     }
-
+    */
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -422,7 +422,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(div);
             return Response.ok(html.write()).build();
         }
-    }*/
+    }
 
     /**
      * This is the second step for the User to obtain a credential from an
@@ -438,7 +438,7 @@ public class UserServiceGUI {
      * @param credSpecUid
      *            UID of the CredentialSpecification of the Credential to obtain
      * @return
-     *//*
+     */
     @POST
     @Path("/obtainCredential2")
     public Response obtainCredential2(@FormParam("un") String username,
@@ -465,15 +465,10 @@ public class UserServiceGUI {
 
             IssuanceMessage firstIssuanceMessage = issuanceMessageAndBoolean
                     .getIssuanceMessage();
-
-            Response r = issuanceProtocolStep(of
-                    .createIssuanceMessage(firstIssuanceMessage));
-            if (r.getStatus() != 200)
-                throw new RuntimeException("Internal step failed!");
-
-            @SuppressWarnings("unchecked")
-            IssuanceReturn issuanceReturn = ((JAXBElement<IssuanceReturn>) r
-                    .getEntity()).getValue();
+            
+            IssuanceReturn issuanceReturn = (IssuanceReturn) RESTHelper.postRequest(userServiceURL + "issuanceProtocolStep",
+                    RESTHelper.toXML(IssuanceMessage.class, of.createIssuanceMessage(firstIssuanceMessage)),
+                    IssuanceReturn.class);
 
             putIssuerURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
 
@@ -487,7 +482,7 @@ public class UserServiceGUI {
                             ExceptionDumper.dumpExceptionStr(e, log)).write())
                     .build());
         }
-    }*/
+    }
 
     /**
      * This is the third step for a User to obtain a credential from an issuer.
@@ -501,7 +496,7 @@ public class UserServiceGUI {
      * @param uiContext
      *            Context identifier
      * @return
-     */ /*
+     */ 
     @SuppressWarnings("unchecked")
     @POST
     @Path("/obtainCredential3")
@@ -517,14 +512,13 @@ public class UserServiceGUI {
 
             String issuerUrl = getIssuerURL(uiContext);
 
-            Response r = issuanceProtocolStep(uir);
-            if (r.getStatus() != 200)
-                throw new RuntimeException("Internal step failed!");
+            
+            IssuanceMessage secondIssuanceMessage = (IssuanceMessage) RESTHelper.postRequest(
+                    userServiceURL + "issuanceProtocolStepUi",
+                    RESTHelper.toXML(UiIssuanceReturn.class, uir),
+                    IssuanceMessage.class);
 
-            IssuanceMessage secondIssuanceMessage = ((JAXBElement<IssuanceMessage>) r
-                    .getEntity()).getValue();
-            log.warn(RESTHelper.toXML(IssuanceMessage.class,
-                    of.createIssuanceMessage(secondIssuanceMessage)));
+
             IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) RESTHelper
                     .postRequest(
                             issuerUrl + "/issuanceProtocolStep",
@@ -535,10 +529,10 @@ public class UserServiceGUI {
             IssuanceMessage thirdIssuanceMessage = thirdIssuanceMessageAndBoolean
                     .getIssuanceMessage();
 
-            r = issuanceProtocolStep(of
-                    .createIssuanceMessage(thirdIssuanceMessage));
-            if (r.getStatus() != 200)
-                throw new RuntimeException("Internal step failed!");
+            
+            RESTHelper.postRequest(
+                    userServiceURL + "issuanceProtocolStep", 
+                    RESTHelper.toXML(IssuanceMessage.class, of.createIssuanceMessage(thirdIssuanceMessage)), IssuanceReturn.class);
 
             Html html = UserGUI.getHtmlPramble("Obtain Credential [3]");
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -557,7 +551,7 @@ public class UserServiceGUI {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
 
-    } */
+    } 
 
     /**
      * This is the entry point for the User to obtain a credential from an
@@ -565,7 +559,7 @@ public class UserServiceGUI {
      * and will direct the User to obtainCredential2
      * 
      * @return
-     *//*
+     */
     @GET
     @Path("/obtainCredential/")
     public Response obtainCredential() {
@@ -618,17 +612,18 @@ public class UserServiceGUI {
             f.appendChild(new Input().setType("submit").setValue("Obtain"));
 
             mainDiv.appendChild(f);
+            
+            Settings settings = 
+                    (Settings) RESTHelper.getRequest(userServiceURL + "getSettings/", 
+                    Settings.class);
 
-            this.initializeHelper();
-            UserHelper instance = UserHelper.getInstance();
+            List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    sel.appendChild(new Option().appendChild(new Text(uri
-                            .toString())));
-                }
+
+            for (CredentialSpecification credSpec : credSpecs) {
+                URI uri = credSpec.getSpecificationUID();
+                sel.appendChild(new Option().appendChild(new Text(uri
+                        .toString())));
             }
 
             return Response.ok(html.write()).build();
@@ -636,7 +631,7 @@ public class UserServiceGUI {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
-    }
+    }/*
 
     @POST
     @Path("/presentationArguments/")
