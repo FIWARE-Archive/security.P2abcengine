@@ -38,7 +38,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
@@ -57,7 +56,6 @@ import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
-import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.exceptions.CannotSatisfyPolicyException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
@@ -69,7 +67,6 @@ import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
-import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
@@ -93,16 +90,8 @@ public class UserService {
 
     private final String fileStoragePrefix = ""; // no prefix -- munt
 
-    private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
-
-    public static synchronized String getIssuerURL(String uiContext) {
-        return uiContextToIssuerURL.get(uiContext);
-    }
-
-    public static synchronized void putIssuerURL(String uiContext,
-            String issuerURL) {
-        uiContextToIssuerURL.put(uiContext, issuerURL);
-    }
+    
+    private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
 
     @GET()
     @Path("/status/")
@@ -214,7 +203,28 @@ public class UserService {
     }
 
     
-    
+    /**
+     * <b>Path</b>: /loadSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Download and load settings from an issuer or any settings provider. This method
+     * will cause the user service to make a <tt>GET</tt> request to the specified <tt>url</tt> and download
+     * the contents which must be valid <tt>Settings</tt>. DO NOT use this method with untrusted URLs or
+     * issuers (or any other settings providers) with DIFFERENT system parameters as this method will overwrite
+     * existing system parameters. See also {@link #getSettings()}. <br>
+     * <br>
+     * <b>Query parameters</b>: 
+     * <ul>
+     *  <li>url - a valid URL (String)</li>
+     * </ul>
+     * <br>
+     * <b>Response Status</b>: 
+     * <ul>
+     *  <li>200 - OK </li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param url URL to download settings from.
+     * @return
+     */
     @GET()
     @Path("/loadSettings/")
     public Response loadSettings(@QueryParam("url") String url) {
@@ -238,7 +248,7 @@ public class UserService {
             Response r = this.storeSystemParameters(settings.systemParameters);
             log.info(settings.systemParameters + "|" + settings.systemParameters.toString());
             if(r.getStatus() != 200)
-                throw new RuntimeException("Could not system parameters!");
+                throw new RuntimeException("Could not load system parameters!");
             
             return log.exit(Response.ok().build());
         }
@@ -248,6 +258,25 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /getSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns the settings of the user service as obtained from an issuance service. 
+     * Settings includes issuer parameters, credential specifications and the system parameters.
+     * This method may thus be used to retrieve all credential specifications stored at the user service
+     * and their corresponding issuer parameters. The return type of this method is <tt>Settings</tt>.<br>
+     * <br>
+     * The user service is capable of downloading settings from an issuer (or from 
+     * anything that provides settings). To download settings use <tt>/loadSetting?url=...</tt>
+     * ({@link #loadSettings(String)}). <br>
+     * <br>
+     * <b>Response Status</b>: 
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @return Response
+     */
     @GET()
     @Path("/getSettings/")
     public Response getSettings() {
@@ -301,6 +330,18 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /credential/list (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns all obtained credentials as a <tt>CredentialCollection</tt>.<br>
+     * <br>
+     * <b>Response Status</b>: 
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @return Response
+     */
     @GET()
     @Path("/credential/list")
     public Response credentials() {
@@ -426,41 +467,6 @@ public class UserService {
         }
     }
 
-   
-
-    /**
-     * This method returns the description of the credential with the given
-     * unique identifier. The unique credential identifier credUid is the
-     * identifier which was included in the credential description that was
-     * returned at successful completion of the issuance protocol.
-     * 
-     * @param credUid
-     * @return
-     */
-    @GET()
-    @Path("/getCredentialDescription/{credentialUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response getCredentialDescription(
-            @PathParam("credentialUid") URI credUid) {
-        log.entry();
-
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        try {
-            CredentialDescription credDesc = instance.credentialManager
-                    .getCredentialDescription(credUid);
-
-            return log.exit(Response.ok(
-                    of.createCredentialDescription(credDesc),
-                    MediaType.APPLICATION_XML).build());
-
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     /**
      * This method deletes the credential with the given identifier from the
@@ -497,15 +503,39 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores a credential specification under the given UID. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     *  <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual UID or is invalid.</li>
+     * </ul>
+     * @param credentialSpecificationUid UID of the credential specification.
+     * @param credSpec The credential specification.
+     * @return Response
+     */
     @PUT()
-    @Path("/storeCredentialSpecification/{credentialSpecifationUid}")
+    @Path("/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeCredentialSpecification(
-            @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
+            @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
             CredentialSpecification credSpec) {
         log.entry();
 
         try {
+            
+            if(!credentialSpecificationUid.toString().equals(credSpec.getSpecificationUID().toString()))
+                    return log.exit(Response.status(Response.Status.CONFLICT).entity(errCredSpecUid).build());
+            
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
@@ -513,7 +543,7 @@ public class UserService {
             KeyManager keyManager = instance.keyManager;
 
             boolean r = keyManager.storeCredentialSpecification(
-                    credentialSpecifationUid, credSpec);
+                    credentialSpecificationUid, credSpec);
 
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
@@ -528,7 +558,7 @@ public class UserService {
     }
 
     @PUT()
-    @Path("/storeSystemParameters/")
+    @Path("/systemParameters/store")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeSystemParameters(SystemParameters systemParameters) {
         log.entry();
@@ -559,7 +589,7 @@ public class UserService {
     }
 
     @PUT()
-    @Path("/storeIssuerParameters/{issuerParametersUid}")
+    @Path("/issuerParameters/store/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
