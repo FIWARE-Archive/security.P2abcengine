@@ -26,35 +26,24 @@ package ch.zhaw.ficore.p2abc.services.user;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
-import ch.zhaw.ficore.p2abc.services.ServiceType;
-import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
@@ -85,22 +74,12 @@ import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 
-import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
-import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
-import eu.abc4trust.cryptoEngine.CryptoEngineException;
-import eu.abc4trust.exceptions.CannotSatisfyPolicyException;
-import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
-import eu.abc4trust.keyManager.KeyManager;
-import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
 import eu.abc4trust.returnTypes.UiIssuanceArguments;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
-import eu.abc4trust.returnTypes.UiPresentationReturn;
 import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
-import eu.abc4trust.util.DummyForNewABCEInterfaces;
-import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
@@ -109,26 +88,13 @@ import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
-import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.PresentationPolicyAlternatives;
-import eu.abc4trust.xml.PresentationToken;
-import eu.abc4trust.xml.SystemParameters;
-import eu.abc4trust.xml.URISet;
 
 @Path("/user-gui")
 public class UserServiceGUI {
 
-    private static final CryptoEngine CRYPTO_ENGINE = CryptoEngine.IDEMIX; // use
-                                                                           // idemix
-                                                                           // always
-                                                                           // --
-                                                                           // munt
-
     private final ObjectFactory of = new ObjectFactory();
     private Logger log = LogManager.getLogger();
-
-    private final String fileStoragePrefix = ""; // no prefix -- munt
 
     private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
     
@@ -490,7 +456,6 @@ public class UserServiceGUI {
      *            Context identifier
      * @return
      */ 
-    @SuppressWarnings("unchecked")
     @POST
     @Path("/obtainCredential3")
     public Response obtainCredential3(@FormParam("policyId") String policyId,
