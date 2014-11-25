@@ -70,7 +70,7 @@ public class UserHelper extends AbstractHelper {
         instance.checkIfSystemParametersAreLoaded();
     }
 
-    private static void initializeInstanceField(CryptoEngine cryptoEngine,
+    private static synchronized void initializeInstanceField(CryptoEngine cryptoEngine,
             String fileStoragePrefix, Module... modules)
             throws URISyntaxException {
         if (instance != null) {

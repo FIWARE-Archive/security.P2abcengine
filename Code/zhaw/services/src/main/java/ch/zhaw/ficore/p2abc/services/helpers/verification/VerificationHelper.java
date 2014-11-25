@@ -468,7 +468,7 @@ public class VerificationHelper extends AbstractHelper {
                 "xmlns:ns2=\"http://abc4trust.eu/wp2/abcschemav1.0\"", "");
 
         return (PresentationToken) XmlUtils.getObjectFromXML(
-                new ByteArrayInputStream(patched.getBytes()), true);
+                new ByteArrayInputStream(patched.getBytes("UTF-8")), true);
 
     }
 
