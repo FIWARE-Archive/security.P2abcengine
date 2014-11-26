@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.fiware</groupId>
-  <artifactId>privacy-ge</artifactId>
+  <artifactId>privacy-ge-zhaw</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
   
