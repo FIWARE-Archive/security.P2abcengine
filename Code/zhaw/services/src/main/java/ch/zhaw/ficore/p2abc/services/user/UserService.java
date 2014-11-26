@@ -38,6 +38,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -55,6 +56,7 @@ import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.services.issuance.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
@@ -282,6 +284,39 @@ public class UserService {
                     .entity(UserGUI.errorPage(
                             ExceptionDumper.dumpExceptionStr(e, log)).write())
                     .build());
+        }
+    }
+    
+    @GET()
+    @Path("/loadSettings/")
+    public Response loadSettings(@QueryParam("url") String url) {
+        log.entry();
+        
+        try {
+            Settings settings = (Settings) UserGUI.getRequest(url, Settings.class);
+            
+            for(IssuerParameters ip : settings.issuerParametersList) {
+                Response r = this.storeIssuerParameters(ip.getParametersUID(), ip);
+                if(r.getStatus() != 200)
+                    throw new RuntimeException("Could not load issuer parameters!");
+            }
+            
+            for(CredentialSpecification cs : settings.credentialSpecifications) {
+                Response r = this.storeCredentialSpecification(cs.getSpecificationUID(), cs);
+                if(r.getStatus() != 200)
+                    throw new RuntimeException("Could not load credential specification!");
+            }
+            
+            Response r = this.storeSystemParameters(settings.systemParameters);
+            log.info(settings.systemParameters + "|" + settings.systemParameters.toString());
+            if(r.getStatus() != 200)
+                throw new RuntimeException("Could not system parameters!");
+            
+            return log.exit(Response.ok().build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
