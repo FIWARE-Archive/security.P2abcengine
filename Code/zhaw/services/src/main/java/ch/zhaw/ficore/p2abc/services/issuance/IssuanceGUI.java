@@ -298,12 +298,12 @@ public class IssuanceGUI {
             tbl.appendChild(tr);
             tr = new Tr()
                     .appendChild(
-                            new Td().appendChild(new Label().appendChild(new Text("Query rule:"))))
+                            new Td().appendChild(new Label().appendChild(new Text("Query string:"))))
                     .appendChild(
                             new Td().appendChild(new Input().setType("text").setName("qr")));
             tbl.appendChild(tr);
             f.appendChild(tbl);
-            f.appendChild(new Input().setType("submit").setValue("Add"));
+            f.appendChild(new Input().setType("submit").setValue("Add query rule"));
             
             mainDiv.appendChild(f);
 

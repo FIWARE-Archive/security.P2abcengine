@@ -197,7 +197,7 @@ public class Test {
     
     public static Client getClient() {
         Client c = Client.create();
-        c.addFilter(new HTTPBasicAuthFilter("both", "tomcat"));
+        c.addFilter(new HTTPBasicAuthFilter("api", "jura"));
         return c;
     }
     
@@ -335,7 +335,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(userServiceURL + "storeIssuerParameters/" + issuanceURI);
+                .resource(userServiceURL + "issuerParameters/store/" + issuanceURI);
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -373,7 +373,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(userServiceURL + "storeSystemParameters");
+                .resource(userServiceURL + "systemParameters/store");
 
         
         ClientResponse response = webResource.type("application/xml")
@@ -397,7 +397,7 @@ public class Test {
         Client client = getClient(); 
 
         WebResource webResource = client
-                .resource(userServiceURL + "storeCredentialSpecification/" + credSpecURI);
+                .resource(userServiceURL + "credentialSpecification/store/" + credSpecURI);
 
         
         ClientResponse response = webResource.type("application/xml")
