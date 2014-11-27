@@ -16,7 +16,7 @@
     </abc:Message>
     <abc:Credential Alias="#ticket">
       <abc:CredentialSpecAlternatives>
-        <abc:CredentialSpecUID>urn:fiware:privacy:credspec:test</abc:CredentialSpecUID>
+        <abc:CredentialSpecUID>urn:fiware:privacy:test</abc:CredentialSpecUID>
       </abc:CredentialSpecAlternatives>
       <abc:IssuerAlternatives>
         <abc:IssuerParametersUID>urn:fiware:privacy:issuance:idemix</abc:IssuerParametersUID>

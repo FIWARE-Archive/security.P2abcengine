@@ -11,8 +11,8 @@ import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.ldap.helper.LdapConnection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationInformation;
+import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 
 /**
  * An AuthenticationProvider for LDAP.

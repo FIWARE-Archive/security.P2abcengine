@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -30,36 +31,16 @@ import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.QueryRule;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.Settings;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
-
-import com.hp.gagawa.java.elements.A;
-import com.hp.gagawa.java.elements.Br;
-import com.hp.gagawa.java.elements.Div;
-import com.hp.gagawa.java.elements.Form;
-import com.hp.gagawa.java.elements.H2;
-import com.hp.gagawa.java.elements.H3;
-import com.hp.gagawa.java.elements.H4;
-import com.hp.gagawa.java.elements.H5;
-import com.hp.gagawa.java.elements.Html;
-import com.hp.gagawa.java.elements.Input;
-import com.hp.gagawa.java.elements.Label;
-import com.hp.gagawa.java.elements.Li;
-import com.hp.gagawa.java.elements.P;
-import com.hp.gagawa.java.elements.Table;
-import com.hp.gagawa.java.elements.Td;
-import com.hp.gagawa.java.elements.Text;
-import com.hp.gagawa.java.elements.Tr;
-import com.hp.gagawa.java.elements.Ul;
-
+import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
@@ -67,7 +48,6 @@ import eu.abc4trust.util.CryptoUriUtil;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.AttributeDescription;
-import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
@@ -95,7 +75,11 @@ public class IssuanceService {
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
     private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
-
+    private static final String defaultIPUid = "abc4trust:default-issuance-policy";
+    private static final String sysParamsUid = "abc4trust:system_parameters_uid"; //this is hardcoded within p2abc engine
+    private static final int sysParamsSecurityLevel = 80;
+    private static final String sysParamsCryptoMechanism = "urn:abc4trust:1.0:algorithm:idemix";
+    
     private ObjectFactory of = new ObjectFactory();
 
     private Logger logger;
@@ -103,8 +87,43 @@ public class IssuanceService {
     public IssuanceService() throws ClassNotFoundException, SQLException,
             UnsafeTableNameException {
         logger = LogManager.getLogger();
+        setup();
     }
+    
+    private void setup() {
+        try {
+            //This will load the defaultIssuancePolicy and will also
+            //setup system parameters 80,idemix if non exist.
+            
+            this.initializeHelper(CryptoEngine.IDEMIX);
+    
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            String ipDefault = instance.readTextFile("defaultIssuancePolicy.xml");
+            IssuancePolicy ip = (IssuancePolicy) RESTHelper.fromXML(IssuancePolicy.class, ipDefault);
+            
+            instance.issuanceStorage.addIssuancePolicy(new URI(defaultIPUid), ip);
+            
+            if(!instance.keyManager.hasSystemParameters())
+                this.setupSystemParameters(sysParamsSecurityLevel, new URI(sysParamsCryptoMechanism));
+        }
+        catch(Exception e) {
+            ExceptionDumper.dumpExceptionStr(e, logger);
+        }
+    }
+    
 
+    /**
+     * <b>Path</b>: /protected/status<br>
+     * <br>
+     * <b>Description</b>: This method is available when the service is running.
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK</li>
+     * </ul>
+     * @return Response
+     */
     @GET()
     @Path("/protected/status")
     @Produces({ MediaType.TEXT_PLAIN })
@@ -112,72 +131,92 @@ public class IssuanceService {
         return Response.ok(request.getRemoteUser()).build();
     }
 
+   
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid}<br>
+     * <br>
+     * <b>Description</b>: Deletes a credential specification that was stored under the given identifier. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to delete</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Credential specification was not found</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param credSpecUid UID of the credential specification
+     * @return Response
+     */
     @POST()
-    @Path("/protected/gui/deleteFriendlyDescription/")
-    public Response deleteFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language) {
-
+    @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
+    public Response deleteCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
         logger.entry();
-
+        
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
 
             IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            CredentialSpecification credSpec = null;
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    if (((CredentialSpecification) obj).getSpecificationUID()
-                            .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification) obj;
-                    }
-                }
-            }
-
-            if (credSpec == null) {
+            
+            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
+                        .entity(
+                                errNoCredSpec)).build();
+            
+            //@#@#^%$ KeyStorage has no delete()
+            if(instance.keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
+                keyStorage.delete(new URI(credSpecUid));
             }
-
-            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
-                    .getAttributeDescription().get(index);
-
-            FriendlyDescription fd = null;
-
-            for (FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
-                if (fc.getLang().equals(language)) {
-                    fd = fc;
-                    break;
-                }
-
-            if (fd != null)
-                attrDesc.getFriendlyAttributeName().remove(fd);
-
-            instance.keyManager.storeCredentialSpecification(new URI(
-                    credSpecUid), credSpec);
-
-            return credentialSpecifications();
-        } catch (Exception e) {
-            logger.catching(e);
+            else {
+                return logger.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(
+                                errNotImplemented)).build();
+            }
+            
+            return logger.exit(Response.ok("OK").build());
+        }
+        catch (Exception e) {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
-
-    @POST()
-    @Path("/protected/gui/deleteAttribute/")
+    
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes an attribute from a credential specification. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to delete the attribute from.</li>
+     * </ul>
+     * <b>Delete parameters</b>:
+     * <ul>
+     *  <li>i - Index of the attribute (in the credential specification) to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     *  <li>404 - Credential specification was not found</li>
+     * </ul>
+     * @param index Index of the attribute
+     * @param credSpecUid UID of the credential specification
+     * @return Response
+     */
+    @DELETE()
+    @Path("/protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}")
     public Response deleteAttribute(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid) {
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
 
         logger.entry();
 
@@ -202,9 +241,8 @@ public class IssuanceService {
             if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
+                        .entity(
+                                "Credential specification could not be found!")).build();
             }
 
             credSpec.getAttributeDescriptions().getAttributeDescription()
@@ -213,165 +251,33 @@ public class IssuanceService {
             instance.keyManager.storeCredentialSpecification(new URI(
                     credSpecUid), credSpec);
 
-            return credentialSpecifications();
+            return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
+
     
-    @POST()
-    @Path("/protected/gui/generateIssuerParameters/")
-    public Response generateIssuerParameters(
-            @FormParam("cs") String credSpecUid) {
-        logger.entry();
-        
-        try {
-            URI algorithmID = new URI("urn:abc4trust:1.0:algorithm:idemix");
-            URI hashAlgorithm = new URI("urn:abc4trust:1.0:hashalgorithm:sha-256");
-            IssuerParametersInput ip = new IssuerParametersInput();
-            
-            ip.setAlgorithmID(algorithmID);
-            ip.setHashAlgorithm(hashAlgorithm);
-            
-            ip.setCredentialSpecUID(new URI(credSpecUid));
-            ip.setParametersUID(new URI(credSpecUid+":issuer-params"));
-            ip.setRevocationParametersUID(new URI(credSpecUid+":revocation-params"));
-            
-            Response r = setupIssuerParameters(ip);
-            
-            if(r.getStatus() != 200) {
-                throw new RuntimeException("Internal step failed! (" + r.getStatus() + ")");
-            }
-            
-            return issuerParameters();
-            
-        }
-        catch(Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-
-    @POST()
-    @Path("/protected/gui/addFriendlyDescription/")
-    public Response addFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language,
-            @FormParam("value") String value) {
-
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            CredentialSpecification credSpec = null;
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    if (((CredentialSpecification) obj).getSpecificationUID()
-                            .toString().equals(credSpecUid)) {
-                        credSpec = (CredentialSpecification) obj;
-                    }
-                }
-            }
-
-            if (credSpec == null) {
-                return logger.exit(Response
-                        .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
-            }
-
-            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
-                    .getAttributeDescription().get(index);
-
-            FriendlyDescription fd = new FriendlyDescription();
-            fd.setLang(language);
-            fd.setValue(value);
-
-            attrDesc.getFriendlyAttributeName().add(fd);
-
-            instance.keyManager.storeCredentialSpecification(new URI(
-                    credSpecUid), credSpec);
-
-            return credentialSpecifications();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-
-    @POST()
-    @Path("/protected/gui/obtainCredentialSpecification2")
-    public Response obtainCredentialSpecification2(@FormParam("n") String name) {
-        logger.entry();
-
-        try {
-            Response r = this.attributeInfoCollection(name);
-            if (r.getStatus() != 200) {
-                logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                "Could not obtain attribute info collection!")
-                                .write()).build());
-            }
-
-            AttributeInfoCollection aic = (AttributeInfoCollection) r
-                    .getEntity();
-            r = this.genCredSpec(aic);
-
-            if (r.getStatus() != 200) {
-                logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                "Could not generate credential specification!")
-                                .write()).build());
-            }
-
-            @SuppressWarnings("unchecked")
-            CredentialSpecification credSpec = ((JAXBElement<CredentialSpecification>) r
-                    .getEntity()).getValue();
-
-            r = this.storeCredentialSpecification(
-                    credSpec.getSpecificationUID(), credSpec);
-
-            if (r.getStatus() != 200) {
-                logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                "Could not store credential specification!")
-                                .write()).build());
-            }
-
-            return credentialSpecifications();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-    
+    /**
+     * <b>Path</b>: /getSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns the settings of this issuance service. Settings includes issuer parameters,
+     * credential specifications and the system parameters. This method is usually called by a user service
+     * to download the settings. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>Settings</tt><br>
+     * @return
+     */
     @GET()
     @Path("/getSettings/")
     public Response getSettings() {
@@ -415,456 +321,23 @@ public class IssuanceService {
             settings.issuerParametersList = issuerParams;
             settings.systemParameters = SystemParametersUtil.serialize(instance.keyManager.getSystemParameters());
             
-            return logger.exit(Response.ok(settings).build());
+            return logger.exit(Response.ok(settings, MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
 
-    @GET()
-    @Path("/protected/gui/issuerParameters/")
-    public Response issuerParameters() {
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            Html html = IssuerGUI.getHtmlPramble("Issuer Parameters");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Issuer Parameters")));
-
-            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof IssuerParameters) {
-                    issuerParams.add((IssuerParameters) obj);
-                }
-            }
-            
-            Table tbl = new Table();
-            Tr tr = null;
-            
-            tr = new Tr().appendChild(
-                    new Td().appendChild(new Text("Issuer Parameters Uid")))
-                    .appendChild(
-                            new Td().appendChild(new Text("Credential Specification Uid")))
-                     .appendChild(
-                             new Td().appendChild(new Text("Action")))
-                    .setCSSClass("heading");
-            tbl.appendChild(tr);
-
-            for (IssuerParameters ip : issuerParams) {
-                String cs = ip.getCredentialSpecUID().toString();
-                String is = ip.getParametersUID().toString();
-                
-                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
-                f.appendChild(new Input().setType("hidden").setName("is").setValue(is));
-                f.appendChild(new Input().setType("submit").setValue("Delete"));
-                
-                tr = new Tr().appendChild(
-                        new Td().appendChild(new Text(is)))
-                        .appendChild(
-                                new Td().appendChild(new Text(cs)))
-                        .appendChild(
-                                new Td().appendChild(f));
-                tbl.appendChild(tr);
-            }
-            mainDiv.appendChild(tbl);
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-    
-    @GET()
-    @Path("/protected/gui/queryRules/")
-    public Response queryRules() {
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            Html html = IssuerGUI.getHtmlPramble("Query Rules");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Query Rules")));
-            
-            
-            Table tbl = new Table();
-            Tr tr = null;
-            
-            tr = new Tr().appendChild(
-                    new Td().appendChild(new Text("Credential specification")))
-                    .appendChild(
-                            new Td().appendChild(new Text("Query string")))
-                     .appendChild(
-                             new Td().appendChild(new Text("Action")))
-                    .setCSSClass("heading");
-            tbl.appendChild(tr);
-
-            for (URI uri : instance.issuanceStorage.listQueryRules()) {
-                QueryRule qr = (instance.issuanceStorage.getQueryRule(uri));
-            
-                String qs = (qr.queryString.length() > 0) ? qr.queryString : "(empty)";
-                String cs = uri.toString();
-                
-                Form f = new Form("./deleteIssuerParameters").setMethod("post").setCSSClass("nopad");
-                f.appendChild(new Input().setType("hidden").setName("cs").setValue(cs));
-                f.appendChild(new Input().setType("submit").setValue("Delete"));
-                
-                tr = new Tr().appendChild(
-                        new Td().appendChild(new Text(cs)))
-                        .appendChild(
-                                new Td().appendChild(new Text(qs)))
-                        .appendChild(
-                                new Td().appendChild(f));
-                tbl.appendChild(tr);
-            }
-            mainDiv.appendChild(tbl);
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-
-    @GET()
-    @Path("/protected/gui/obtainCredentialSpecification")
-    public Response obtainCredentialSpecification() {
-        logger.entry();
-
-        try {
-            Html html = IssuerGUI
-                    .getHtmlPramble("Obtain credential specification [1]");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text(
-                    "Obtain credential specification")));
-            mainDiv.appendChild(new P()
-                    .setCSSClass("info")
-                    .appendChild(
-                            new Text(
-                                    "Please enter the name of the structure or data container in the underlying identity source you whish to "
-                                            + "generate a credential specification from. For an LDAP identity source this might be the name of an object class or "
-                                            + "for SQL name might be the name of a table. However, the exact behaviour of name is provider specific. Please refer to your service's"
-                                            + " configuration. ")));
-
-            Form f = new Form("./obtainCredentialSpecification2")
-                    .setMethod("post");
-            Table tbl = new Table();
-            Tr tr = new Tr();
-            tr.appendChild(new Td().appendChild(new Label()
-                    .appendChild(new Text("Name:"))));
-            tr.appendChild(new Td().appendChild(new Input().setType("text")
-                    .setName("n")));
-            tbl.appendChild(tr);
-            f.appendChild(tbl);
-            f.appendChild(new Input().setType("submit").setValue("Obtain"));
-
-            mainDiv.appendChild(f);
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-    
-    @POST()
-    @Path("/protected/gui/deleteCredentialSpecification")
-    public Response deleteCredentialSpecification(@FormParam("cs") String credSpecUid) {
-        logger.entry();
-        
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-            
-            if(instance.keyManager.getCredentialSpecification(new URI(credSpecUid)) == null)
-                return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNoCredSpec)
-                                .write()).build());
-            
-            //@#@#^%$ KeyStorage has no delete()
-            if(instance.keyStorage instanceof GenericKeyStorage) {
-                GenericKeyStorage keyStorage = (GenericKeyStorage)instance.keyStorage;
-                keyStorage.delete(new URI(credSpecUid));
-            }
-            else {
-                return logger.exit(Response
-                        .status(Response.Status.BAD_REQUEST)
-                        .entity(IssuerGUI.errorPage(
-                                errNotImplemented)
-                                .write()).build());
-            }
-            
-            return logger.exit(credentialSpecifications());
-        }
-        catch (Exception e) {
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-
-    @GET()
-    @Path("/protected/gui/credentialSpecifications/")
-    public Response credentialSpecifications() {
-        logger.entry();
-
-        try {
-            this.initializeHelper(CryptoEngine.IDEMIX);
-
-            IssuanceHelper instance = IssuanceHelper.getInstance();
-
-            List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    credSpecs.add((CredentialSpecification) obj);
-                }
-            }
-
-            Html html = IssuerGUI.getHtmlPramble("Profile");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-
-            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-            mainDiv.appendChild(new H3().appendChild(new Text(
-                    "Credential Specifications")));
-
-            for (CredentialSpecification credSpec : credSpecs) {
-                int index = 0;
-
-                Div credDiv = new Div().setCSSClass("credDiv");
-                mainDiv.appendChild(credDiv);
-
-                AttributeDescriptions attribDescs = credSpec
-                        .getAttributeDescriptions();
-                List<AttributeDescription> attrDescs = attribDescs
-                        .getAttributeDescription();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                        .getSpecificationUID().toString())));
-
-                for (AttributeDescription attrDesc : attrDescs) {
-                    String name = attrDesc.getType().toString();
-                    String encoding = attrDesc.getEncoding().toString();
-                    String type = attrDesc.getDataType().toString();
-
-                    credDiv.appendChild(new H5().appendChild(new Text(name)));
-                    Div topGroup = new Div().setCSSClass("group");
-                    Div group = new Div().setCSSClass("group");
-                    Table tbl = new Table();
-                    group.appendChild(tbl);
-                    Tr tr = null;
-                    tr = new Tr()
-                            .setCSSClass("heading")
-                            .appendChild(
-                                    new Td().appendChild(new Text("DataType")))
-                            .appendChild(
-                                    new Td().appendChild(new Text("Encoding")));
-                    tbl.appendChild(tr);
-
-                    credDiv.appendChild(topGroup);
-                    topGroup.appendChild(group);
-                    group = new Div().setCSSClass("group");
-
-                    Table fdTbl = new Table();
-                    tr = new Tr()
-                            .setCSSClass("heading")
-                            .appendChild(
-                                    new Td().appendChild(new Text("Language")))
-                            .appendChild(
-                                    new Td().appendChild(new Text("Value")))
-                            .appendChild(
-                                    new Td().appendChild(new Text("Action")));
-                    fdTbl.appendChild(tr);
-
-                    Form f = null;
-
-                    for (FriendlyDescription fd : attrDesc
-                            .getFriendlyAttributeName()) {
-                        f = new Form("./deleteFriendlyDescription").setMethod(
-                                "post").setCSSClass("nopad");
-                        f.appendChild(new Input().setType("hidden")
-                                .setName("language").setValue(fd.getLang()));
-                        f.appendChild(new Input()
-                                .setType("hidden")
-                                .setValue(
-                                        credSpec.getSpecificationUID()
-                                                .toString()).setName("cs"));
-                        f.appendChild(new Input().setType("hidden")
-                                .setValue(Integer.toString(index)).setName("i"));
-                        f.appendChild(new Input().setType("submit").setValue(
-                                "delete"));
-                        tr = new Tr()
-                                .appendChild(
-                                        new Td().appendChild(new Text(fd
-                                                .getLang())))
-                                .appendChild(
-                                        new Td().appendChild(new Text(fd
-                                                .getValue())))
-                                .appendChild(new Td().appendChild(f));
-                        fdTbl.appendChild(tr);
-                    }
-
-                    tr = new Tr().appendChild(
-                            new Td().appendChild(new Text(type))).appendChild(
-                            new Td().appendChild(new Text(encoding)));
-                    tbl.appendChild(tr);
-                    group.appendChild(fdTbl);
-
-                    f = new Form("./addFriendlyDescription").setMethod("post");
-                    tbl = new Table().setCSSClass("pad");
-                    tr = new Tr().appendChild(
-                            new Td().appendChild(new Label()
-                                    .appendChild(new Text("Language:"))))
-                            .appendChild(
-                                    new Td().appendChild(new Input().setType(
-                                            "text").setName("language")));
-                    tbl.appendChild(tr);
-                    tr = new Tr().appendChild(
-                            new Td().appendChild(new Label()
-                                    .appendChild(new Text("Value:"))))
-                            .appendChild(
-                                    new Td().appendChild(new Input().setType(
-                                            "text").setName("value")));
-                    tbl.appendChild(tr);
-                    f.appendChild(tbl);
-                    f.appendChild(new Input().setType("submit").setValue(
-                            "Add new friendly description"));
-                    f.appendChild(new Input()
-                            .setType("hidden")
-                            .setValue(credSpec.getSpecificationUID().toString())
-                            .setName("cs"));
-                    f.appendChild(new Input().setType("hidden")
-                            .setValue(Integer.toString(index)).setName("i"));
-                    group.appendChild(f);
-
-                    topGroup.appendChild(group);
-                    f = new Form("./deleteAttribute").setMethod("post");
-                    f.appendChild(new Input().setType("submit").setValue(
-                            "Delete attribute"));
-                    f.appendChild(new Input()
-                            .setType("hidden")
-                            .setValue(credSpec.getSpecificationUID().toString())
-                            .setName("cs"));
-                    f.appendChild(new Input().setType("hidden")
-                            .setValue(Integer.toString(index)).setName("i"));
-                    topGroup.appendChild(f);
-
-                    index++;
-                }
-                
-                Form f = new Form("./deleteCredentialSpecification").setMethod("post");
-                f.appendChild(new Input().setType("submit").setValue(
-                        "Delete credential specification"));
-                f.appendChild(new Input()
-                        .setType("hidden")
-                        .setValue(credSpec.getSpecificationUID().toString())
-                        .setName("cs"));
-                credDiv.appendChild(f);
-                f = new Form("./generateIssuerParameters").setMethod("post");
-                f.appendChild(new Input().setType("submit").setValue(
-                        "Generate issuer parameters"));
-                f.appendChild(new Input()
-                        .setType("hidden")
-                        .setValue(credSpec.getSpecificationUID().toString())
-                        .setName("cs"));
-                credDiv.appendChild(f);
-            }
-
-            return logger.exit(Response.ok(html.write()).build());
-
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
-        }
-    }
-    
-    @GET()
-    @Path("/protected/gui/profile/")
-    public Response profile() {
-        logger.entry();
-
-        try {
-            Html html = UserGUI.getHtmlPramble("Profile");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(IssuerGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-
-            String text = "Welcome to your profile! Here you can edit and manage your settings.";
-            P p = new P().setCSSClass("info");
-            mainDiv.appendChild(p);
-            p.appendChild(new Text(text));
-            p.appendChild(new Br());
-            text = "Credential specifications specify what attributes a credential can or has to contain.";
-            p.appendChild(new Text(text));
-
-            Ul ul = new Ul();
-            ul.appendChild(new Li().appendChild(new A()
-                    .setHref("./issuerParameters").appendChild(
-                            new Text("Manage issuer parameters"))));
-            ul.appendChild(new Li().appendChild(new A().setHref(
-                    "./credentialSpecifications").appendChild(
-                    new Text("Manage credential specifications"))));
-            ul.appendChild(new Li().appendChild(new A().setHref(
-                    "./queryRules").appendChild(
-                    new Text("Manage query rules"))));
-
-            mainDiv.appendChild(ul);
-
-            return logger.exit(Response.ok(html.write()).build());
-
-        } catch (Exception e) {
-            logger.catching(e);
-            return logger.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger)).write())
-                    .build());
-        }
-    }
+   
 
     /**
+     * <b>Path</b>: /issuanceRequest/ (POST)<br>
+     * <br>
+     * <b>Description</b>:
      * This method is called by a user to initiate an issuance protocol. The
      * user must provide an issuance request containing his authentication
      * information and the uid of the corresponding credential specification.
@@ -876,7 +349,18 @@ public class IssuanceService {
      * If authentication of the user fails this method will return the status
      * code FORBIDDEN. If the issuer is missing the credential specification,
      * the issuance policy or the query rule this method will return status code
-     * NOT_FOUND.
+     * NOT_FOUND.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>401 - Authentication failed</li>
+     *  <li>404 - A resource needed to process the request was not found</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuanceRequest</tt><br>
+     * <b>Return type</b>: <tt>IssuanceMessageAndBoolean</tt><br>
      * 
      * @param request
      *            a valid IssuanceRequset
@@ -912,6 +396,15 @@ public class IssuanceService {
                             request.credentialSpecificationUid));
             QueryRule qr = instance.issuanceStorage.getQueryRule(new URI(
                     request.credentialSpecificationUid));
+            
+            if(ip == null) {
+                //No specific issuance policy was registered so we'll use a default one.
+                ip = instance.issuanceStorage.getIssuancePolicy(new URI(defaultIPUid));
+                if(ip != null) {
+                    ip.getCredentialTemplate().setCredentialSpecUID(new URI(request.credentialSpecificationUid));
+                    ip.getCredentialTemplate().setIssuerParametersUID(new URI(request.credentialSpecificationUid + ":issuer-params"));
+                }
+            }
 
             if (credSpec == null)
                 return Response.status(Response.Status.NOT_FOUND)
@@ -942,23 +435,255 @@ public class IssuanceService {
                 authProvider.shutdown();
         }
     }
-
+    
     /**
-     * Store QueryRule.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     *            UID of the credSpec
-     * @return Response
+     * <b>Path</b>: /protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes a friendly description from a credential specification. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to delete the friendly description from.
+     * </ul>
+     * <br>
+     * <b>Delete parameters</b>:
+     * <ul>
+     *  <li>i - Index of the attribute the friendly description belongs to. </li>
+     *  <li>language - Language identifier of the friendly description to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Credential specification could not be found.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param index
+     * @param credSpecUid
+     * @param language
+     * @return
+     */
+    @DELETE()
+    @Path("/protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid}")
+    public Response deleteFriendlyDescription(@FormParam("i") int index,
+            @PathParam("credentialSpecificationUid") String credSpecUid,
+            @FormParam("language") String language) {
+
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification) obj;
+                    }
+                }
+            }
+
+            if (credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(
+                                "Credential specification could not be found!")).build();
+            }
+
+            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
+                    .getAttributeDescription().get(index);
+
+            FriendlyDescription fd = null;
+
+            for (FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
+                if (fc.getLang().equals(language)) {
+                    fd = fc;
+                    break;
+                }
+
+            if (fd != null)
+                attrDesc.getFriendlyAttributeName().remove(fd);
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
+            return logger.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Adds a friendly description to an attribute of a credential specification.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification.<li>
+     * </ul>
+     * <br>
+     * <b>Put parameters</b>:
+     * <ul>
+     *  <li>i - Index of the attribute to add the friendly description to.</li>
+     *  <li>language - Language identifier.</li>
+     *  <li>value - Value of the friendly description.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Credential specification could not be found.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param index
+     * @param credSpecUid
+     * @param language
+     * @param value
+     * @return
      */
     @PUT()
-    @Path("/protected/storeQueryRule/{credentialSpecificationUid}")
+    @Path("/protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid}")
+    public Response addFriendlyDescription(@FormParam("i") int index,
+            @PathParam("credentialSpecificationUid") String credSpecUid,
+            @FormParam("language") String language,
+            @FormParam("value") String value) {
+
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            CredentialSpecification credSpec = null;
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    if (((CredentialSpecification) obj).getSpecificationUID()
+                            .toString().equals(credSpecUid)) {
+                        credSpec = (CredentialSpecification) obj;
+                    }
+                }
+            }
+
+            if (credSpec == null) {
+                return logger.exit(Response
+                        .status(Response.Status.NOT_FOUND)
+                        .entity(
+                                "Credential specification could not be found!")).build();
+            }
+
+            AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
+                    .getAttributeDescription().get(index);
+
+            FriendlyDescription fd = new FriendlyDescription();
+            fd.setLang(language);
+            fd.setValue(value);
+
+            attrDesc.getFriendlyAttributeName().add(fd);
+
+            instance.keyManager.storeCredentialSpecification(new URI(
+                    credSpecUid), credSpec);
+
+            return logger.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(ExceptionDumper.dumpExceptionStr(e, logger))
+                            ).build();
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /protected/issuerParameters/generate/{credentialSpecificationUid}<br>
+     * <br>
+     * <b>Description</b>: Generates issuer parameters for a specified credential specification.
+     * The generated issuer parameters will automatically be stored at this issuance service.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to generate the issuer parameters for.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 -OK</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param credSpecUid
+     * @return
+     */
+    @POST()
+    @Path("/protected/issuerParameters/generate/{credentialSpecificationUid}")
+    public Response generateIssuerParameters(
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            URI algorithmID = new URI("urn:abc4trust:1.0:algorithm:idemix");
+            URI hashAlgorithm = new URI("urn:abc4trust:1.0:hashalgorithm:sha-256");
+            IssuerParametersInput ip = new IssuerParametersInput();
+            
+            ip.setAlgorithmID(algorithmID);
+            ip.setHashAlgorithm(hashAlgorithm);
+            
+            ip.setCredentialSpecUID(new URI(credSpecUid));
+            ip.setParametersUID(new URI(credSpecUid+":issuer-params"));
+            ip.setRevocationParametersUID(new URI(credSpecUid+":revocation-params"));
+            
+            Response r = setupIssuerParameters(ip);
+            
+            if(r.getStatus() != 200) {
+                throw new RuntimeException("Internal step failed! (" + r.getStatus() + ")");
+            }
+            
+            return Response.ok("OK").build();
+            
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
+        }
+    }
+
+   /**
+    * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid} <br>
+    * <br>
+    * <b>Description</b>: Stores a query rule and associates it with the specified credential specification. 
+    * A query rule is stored at the issuance service with the given credential specification UID which the
+    * issuance service will use to look up the corresponding query rule. <br>
+    * <br>
+    * <b>Response status:</b>
+    * <ul>
+    *   <li>200 - OK</li>
+    *   <li>400 - ERROR</li>
+    * </ul>
+    * <br>
+    * <b>Input type</b>: <tt>QueryRule</tt><br>
+    * 
+    * @param credentialSpecificationUid UID of the credential specification
+    * @param rule QueryRule
+    * @return Response
+    */
+    @PUT()
+    @Path("/protected/queryRule/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeQueryRule(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
@@ -980,21 +705,27 @@ public class IssuanceService {
     }
 
     /**
-     * Retrieve a QueryRule.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct. This method will return status code NOT_FOUND if no query rule
-     * with the given uid is found.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     * @return QueryRule
+     * <b>Path</b>: /protected/queryRule/get/{credentialSpecificationUid} <br>
+     * <br>
+     * <b>Description</b>: Retrieves a previously stored query rule. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification the query rule is associated with.</li>
+     * </ul>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>404 - Query rule could not be found.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>QueryRule</tt><br>
+     * @param credentialSpecificationUid UID of the credential specification
+     * @return Response
      */
     @GET()
-    @Path("/protected/getQueryRule/{credentialSpecificationUid}")
+    @Path("/protected/queryRule/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response getQueryRule(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
@@ -1018,6 +749,34 @@ public class IssuanceService {
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
+    
+    @GET()
+    @Path("/protected/queryRule/list")
+    public Response queryRules() {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            IssuanceStorage storage = instance.issuanceStorage;
+            List<URI> uris = storage.listQueryRules();
+            List<String> uriStrings = new ArrayList<String>();
+            List<QueryRule> queryRules = new ArrayList<QueryRule>();
+            for(URI uri : uris) {
+                uriStrings.add(uri.toString());
+                queryRules.add(storage.getQueryRule(uri));
+            }
+            QueryRuleCollection qrc = new QueryRuleCollection();
+            qrc.queryRules = queryRules;
+            qrc.uris = uriStrings;
+            return logger.exit(Response.ok(qrc, MediaType.APPLICATION_XML).build());
+        }
+        catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+    }
 
     /**
      * Store IssuancePolicy.
@@ -1034,7 +793,7 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/storeIssuancePolicy/{credentialSpecificationUid}")
+    @Path("/protected/issuancePolicy/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeIssuancePolicy(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
@@ -1070,7 +829,7 @@ public class IssuanceService {
      * @return IssuancePolicy
      */
     @GET()
-    @Path("/protected/getIssuancePolicy/{credentialSpecificationUid}")
+    @Path("/protected/issuancePolicy/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response getIssuancePolicy(
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
@@ -1196,9 +955,9 @@ public class IssuanceService {
      * @return a CredentialSpecification
      */
     @POST()
-    @Path("/protected/genCredSpec/")
+    @Path("/protected/credentialSpecification/generate")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response genCredSpec(
+    public Response generateCredentialSpecification(
             AttributeInfoCollection attrInfoCol) {
         
 
@@ -1213,13 +972,6 @@ public class IssuanceService {
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
-
-    /*
-     * The following section contains code copied from the original issuance
-     * service from the tree Code/core-abce/abce-service
-     */
-
-    /* SECTION */
 
     private void initializeHelper(CryptoEngine cryptoEngine) {
         logger.info("IssuanceService loading...");
@@ -1264,7 +1016,7 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/storeCredentialSpecification/{credentialSpecifationUid}")
+    @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeCredentialSpecification(
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
@@ -1313,7 +1065,7 @@ public class IssuanceService {
      * @return Response (CredentialSpecification)
      */
     @GET()
-    @Path("/protected/getCredentialSpecification/{credentialSpecificationUid}")
+    @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
     public Response getCredentialSpecification(
             @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {

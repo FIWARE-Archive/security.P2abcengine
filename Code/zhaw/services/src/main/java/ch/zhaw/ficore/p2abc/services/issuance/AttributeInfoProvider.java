@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 
 /**
  * Serves as a Factory for AttributeInfoProviders.

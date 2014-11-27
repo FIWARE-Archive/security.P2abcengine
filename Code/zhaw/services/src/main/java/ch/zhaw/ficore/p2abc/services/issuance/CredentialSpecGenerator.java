@@ -4,9 +4,9 @@ import java.net.URI;
 import java.util.List;
 
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AttributeInformation;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.LanguageValuePair;
+import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.AttributeInformation;
+import ch.zhaw.ficore.p2abc.xml.LanguageValuePair;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;

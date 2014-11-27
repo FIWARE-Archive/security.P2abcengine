@@ -26,20 +26,17 @@ package ch.zhaw.ficore.p2abc.services.user;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
@@ -51,37 +48,10 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthInfoSimple;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.IssuanceRequest;
-import ch.zhaw.ficore.p2abc.services.issuance.xml.Settings;
-
-import com.hp.gagawa.java.elements.A;
-import com.hp.gagawa.java.elements.Body;
-import com.hp.gagawa.java.elements.Br;
-import com.hp.gagawa.java.elements.Div;
-import com.hp.gagawa.java.elements.Form;
-import com.hp.gagawa.java.elements.H1;
-import com.hp.gagawa.java.elements.H2;
-import com.hp.gagawa.java.elements.H3;
-import com.hp.gagawa.java.elements.H4;
-import com.hp.gagawa.java.elements.Head;
-import com.hp.gagawa.java.elements.Html;
-import com.hp.gagawa.java.elements.Input;
-import com.hp.gagawa.java.elements.Label;
-import com.hp.gagawa.java.elements.Li;
-import com.hp.gagawa.java.elements.Option;
-import com.hp.gagawa.java.elements.P;
-import com.hp.gagawa.java.elements.Select;
-import com.hp.gagawa.java.elements.Table;
-import com.hp.gagawa.java.elements.Td;
-import com.hp.gagawa.java.elements.Text;
-import com.hp.gagawa.java.elements.Title;
-import com.hp.gagawa.java.elements.Tr;
-import com.hp.gagawa.java.elements.Ul;
-
+import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.abce.internal.user.credentialManager.CredentialManagerException;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
@@ -91,17 +61,11 @@ import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
-import eu.abc4trust.returnTypes.UiIssuanceArguments;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
-import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
-import eu.abc4trust.xml.Attribute;
-import eu.abc4trust.xml.AttributeDescription;
-import eu.abc4trust.xml.AttributeDescriptions;
-import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
@@ -110,7 +74,6 @@ import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.SystemParameters;
-import eu.abc4trust.xml.URISet;
 
 @Path("/user")
 public class UserService {
@@ -126,17 +89,21 @@ public class UserService {
 
     private final String fileStoragePrefix = ""; // no prefix -- munt
 
-    private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
+    
+    private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
+    private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
 
-    public static synchronized String getIssuerURL(String uiContext) {
-        return uiContextToIssuerURL.get(uiContext);
-    }
-
-    public static synchronized void putIssuerURL(String uiContext,
-            String issuerURL) {
-        uiContextToIssuerURL.put(uiContext, issuerURL);
-    }
-
+    /**
+     * <b>Path</b>: /status/ (GET)<br>
+     * <br>
+     * <b>Description</b>: If the service is running this method is available.<br>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK</li>
+     * </ul>
+     * @return Response
+     */
     @GET()
     @Path("/status/")
     public Response status() {
@@ -144,13 +111,25 @@ public class UserService {
     }
 
     /**
-     * This method, on input a presentation policy p, decides whether the
+     * <b>Path:</b> /canBeSatisfied/ (POST)<br>
+     * <br>
+     * <b>Description</b>: 
+     * This method, on input of a presentation policy decides whether the
      * credentials in the User’s credential store could be used to produce a
-     * valid presentation token satisfying the policy p. If so, this method
-     * returns true, otherwise, it returns false.
+     * valid presentation token satisfying the policy. If so, this method
+     * returns true, otherwise, it returns false. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type:</b> <tt>PresentationPolicyAlternatives</tt><br>
+     * <b>Return type:</b> <tt>ABCEBoolean</tt><br>
      * 
-     * @param p
-     * @return
+     * @param p PresentationPolicyAlternatives
+     * @return Response
      */
     @POST()
     @Path("/canBeSatisfied/")
@@ -176,7 +155,10 @@ public class UserService {
     }
 
     /**
-     * This method, on input a presentation policy alternatives p, returns an
+     * <b>Path</b>: /createPresentationToken/ (POST)<br>
+     * <br>
+     * <b>Description</b>:
+     * This method, on input a presentation policy alternatives, returns an
      * argument to be passed to the UI for choosing how to satisfy the policy,
      * or returns an error if the policy cannot be satisfied (if the
      * canBeSatisfied method would have returned false). For returning such an
@@ -191,10 +173,19 @@ public class UserService {
      * UiPresentationReturn object from a UiPresentationArguments object). The
      * return value of the UI must then be passed to the method
      * createPresentationToken(UiPresentationReturn) for creating a presentation
-     * token.
+     * token.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: PresentationPolicyAlternatives<br>
+     * <b>Return type</b>: UiPresentationArguments<br>
      * 
-     * @param p
-     * @return
+     * @param p PresentationPolicyAlternatives
+     * @return Response
      * @throws CannotSatisfyPolicyException
      * @throws CredentialManagerException
      * @throws KeyManagerException
@@ -223,6 +214,23 @@ public class UserService {
 
     }
 
+    /**
+     * <b>Path</b>: /createPresentationTokenUi/ (POST)<br>
+     * <br>
+     * <b>Description</b>: Performs the next step to complete creation of presentation tokens. This method should
+     * be called when the user interface is done with its selection. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul> 
+     * <br>
+     * <b>Input type:</b> <tt>UiPresentationReturn</tt><br>
+     * <b>Return type:</b> <tt>PresentationToken</tt><br>
+     * @param upr UiPresentationReturn
+     * @return Response
+     */
     @POST()
     @Path("/createPresentationTokenUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -246,54 +254,36 @@ public class UserService {
         }
     }
 
-    @GET()
-    @Path("/profile/")
-    public Response profile() {
-        log.entry();
-
-        try {
-            Html html = UserGUI.getHtmlPramble("Profile");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-
-            String text = "Welcome to your profile! Here you can edit and manage your personal data and settings.";
-            P p = new P().setCSSClass("info");
-            mainDiv.appendChild(p);
-            p.appendChild(new Text(text));
-            p.appendChild(new Br());
-            text = "Credentials contain attributes issued to you by issuers. Credential specifications specify what attributes a credential can or has to contain.";
-            p.appendChild(new Text(text));
-
-            Ul ul = new Ul();
-            ul.appendChild(new Li().appendChild(new A()
-                    .setHref("./credentials").appendChild(
-                            new Text("Manage credentials"))));
-            ul.appendChild(new Li().appendChild(new A().setHref(
-                    "./credentialSpecifications").appendChild(
-                    new Text("Manage credential specifications"))));
-
-            mainDiv.appendChild(ul);
-
-            return log.exit(Response.ok(html.write()).build());
-
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
-        }
-    }
     
+    /**
+     * <b>Path</b>: /loadSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Download and load settings from an issuer or any settings provider. This method
+     * will cause the user service to make a <tt>GET</tt> request to the specified <tt>url</tt> and download
+     * the contents which must be valid <tt>Settings</tt>. DO NOT use this method with untrusted URLs or
+     * issuers (or any other settings providers) with DIFFERENT system parameters as this method will overwrite
+     * existing system parameters. See also {@link #getSettings()}. <br>
+     * <br>
+     * <b>Query parameters</b>: 
+     * <ul>
+     *  <li>url - a valid URL (String)</li>
+     * </ul>
+     * <br>
+     * <b>Response Status</b>: 
+     * <ul>
+     *  <li>200 - OK </li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * @param url URL to download settings from.
+     * @return
+     */
     @GET()
     @Path("/loadSettings/")
     public Response loadSettings(@QueryParam("url") String url) {
         log.entry();
         
         try {
-            Settings settings = (Settings) UserGUI.getRequest(url, Settings.class);
+            Settings settings = (Settings) RESTHelper.getRequest(url, Settings.class);
             
             for(IssuerParameters ip : settings.issuerParametersList) {
                 Response r = this.storeIssuerParameters(ip.getParametersUID(), ip);
@@ -310,7 +300,7 @@ public class UserService {
             Response r = this.storeSystemParameters(settings.systemParameters);
             log.info(settings.systemParameters + "|" + settings.systemParameters.toString());
             if(r.getStatus() != 200)
-                throw new RuntimeException("Could not system parameters!");
+                throw new RuntimeException("Could not load system parameters!");
             
             return log.exit(Response.ok().build());
         }
@@ -320,16 +310,55 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /getSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns the settings of the user service as obtained from an issuance service. 
+     * Settings includes issuer parameters, credential specifications and the system parameters.
+     * This method may thus be used to retrieve all credential specifications stored at the user service
+     * and their corresponding issuer parameters. The return type of this method is <tt>Settings</tt>.<br>
+     * <br>
+     * The user service is capable of downloading settings from an issuer (or from 
+     * anything that provides settings). To download settings use <tt>/loadSetting?url=...</tt>
+     * ({@link #loadSettings(String)}). <br>
+     * <br>
+     * <b>Response Status</b>: 
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type:</b> <tt>Settings</tt> <br>
+     * @return Response
+     */
     @GET()
-    @Path("/credentialSpecifications/")
-    public Response credentialSpecifications() {
+    @Path("/getSettings/")
+    public Response getSettings() {
         log.entry();
 
         try {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
+            
+            Settings settings = new Settings();
+            
+            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
 
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof IssuerParameters) {
+                    IssuerParameters ip = (IssuerParameters) obj;
+                    
+                    SystemParameters serializeSp = (ip.getSystemParameters());
+
+                    ip.setSystemParameters(serializeSp);
+                    
+                    issuerParams.add(ip);
+                }
+            }
+            
             List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
 
             for (URI uri : instance.keyStorage.listUris()) {
@@ -339,65 +368,38 @@ public class UserService {
                     credSpecs.add((CredentialSpecification) obj);
                 }
             }
-
-            Html html = UserGUI.getHtmlPramble("Profile");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-
-            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-            mainDiv.appendChild(new H3().appendChild(new Text(
-                    "Credential Specifications")));
-
-            for (CredentialSpecification credSpec : credSpecs) {
-
-                Div credDiv = new Div().setCSSClass("credDiv");
-                mainDiv.appendChild(credDiv);
-
-                AttributeDescriptions attribDescs = credSpec
-                        .getAttributeDescriptions();
-                List<AttributeDescription> attrDescs = attribDescs
-                        .getAttributeDescription();
-
-                Table tbl = new Table();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                        .getSpecificationUID().toString())));
-                credDiv.appendChild(tbl);
-                Tr tr = null;
-                tr = new Tr()
-                        .setCSSClass("heading")
-                        .appendChild(new Td().appendChild(new Text("Name")))
-                        .appendChild(new Td().appendChild(new Text("Type")))
-                        .appendChild(new Td().appendChild(new Text("Encoding")));
-                tbl.appendChild(tr);
-
-                for (AttributeDescription attrDesc : attrDescs) {
-                    String name = attrDesc.getFriendlyAttributeName().get(0)
-                            .getValue();
-                    String encoding = attrDesc.getEncoding().toString();
-                    String type = attrDesc.getDataType().toString();
-                    tr = new Tr()
-                            .appendChild(new Td().appendChild(new Text(name)))
-                            .appendChild(new Td().appendChild(new Text(type)))
-                            .appendChild(
-                                    new Td().appendChild(new Text(encoding)));
-                    tbl.appendChild(tr);
-                }
-            }
-
-            return log.exit(Response.ok(html.write()).build());
-
-        } catch (Exception e) {
+            
+            settings.credentialSpecifications = credSpecs;
+            settings.issuerParametersList = issuerParams;
+            settings.systemParameters = /*SystemParametersUtil.serialize*/(instance.keyManager.getSystemParameters());
+            
+            return log.exit(Response.ok(settings, MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
 
+    /**
+     * <b>Path</b>: /credential/list (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns all obtained credentials as a <tt>CredentialCollection</tt>.<br>
+     * <br>
+     * <b>Response Status</b>: 
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>CredentialCollection</tt><br>
+     * @return Response
+     */
     @GET()
-    @Path("/credentials/")
+    @Path("/credential/list")
     public Response credentials() {
 
         log.entry();
@@ -410,403 +412,35 @@ public class UserService {
             List<URI> credentialUids;
 
             credentialUids = instance.credentialManager.listCredentials();
-
-            Html html = UserGUI.getHtmlPramble("Profile");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-
-            mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
-            mainDiv.appendChild(new H3().appendChild(new Text("Credentials")));
+            
+            List<eu.abc4trust.xml.Credential> credentials = new ArrayList<eu.abc4trust.xml.Credential>();
 
             for (URI uri : credentialUids) {
-                Div credDiv = new Div().setCSSClass("credDiv");
-                mainDiv.appendChild(credDiv);
                 eu.abc4trust.xml.Credential cred = instance.credentialManager
                         .getCredential(uri);
-                CredentialDescription credDesc = cred
-                        .getCredentialDescription();
-                String credSpec = credDesc.getCredentialSpecificationUID()
-                        .toString();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                        + " (" + uri.toString() + ")")));
-                List<Attribute> attribs = credDesc.getAttribute();
-                Table tbl = new Table();
-                credDiv.appendChild(tbl);
-                Tr tr = null;
-                tr = new Tr().setCSSClass("heading")
-                        .appendChild(new Td().appendChild(new Text("Name")))
-                        .appendChild(new Td().appendChild(new Text("Value")));
-                tbl.appendChild(tr);
-                for (Attribute attrib : attribs) {
-                    AttributeDescription attribDesc = attrib
-                            .getAttributeDescription();
-                    String name = attribDesc.getFriendlyAttributeName().get(0)
-                            .getValue();
-                    tr = new Tr().appendChild(
-                            new Td().appendChild(new Text(name))).appendChild(
-                            new Td().appendChild(new Text(attrib
-                                    .getAttributeValue().toString())));
-                    tbl.appendChild(tr);
-                }
-                Form f = new Form("./deleteCredential");
-                f.setMethod("post");
-                credDiv.appendChild(f);
-                f.appendChild(new Input().setType("submit").setValue(
-                        "Delete credential"));
-                f.appendChild(new Input().setType("hidden").setName("credUid")
-                        .setValue(uri.toString()));
+                credentials.add(cred);
             }
+            
+            CredentialCollection credCol = new CredentialCollection();
+            credCol.credentials = credentials;
 
-            return log.exit(Response.ok(html.write()).build());
+            return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, log)))
+                    .build();
         }
     }
 
-    @POST()
-    @Path("/deleteCredential/")
-    public Response deleteCredential(@FormParam("credUid") String credUid) {
-        try {
-            this.initializeHelper();
-
-            UserHelper instance = UserHelper.getInstance();
-
-            boolean success = instance.credentialManager
-                    .deleteCredential(new URI(credUid));
-
-            String text = "";
-            String cls = "";
-
-            if (success) {
-                text = "You've successfully deleted the credential!";
-                cls = "success";
-            } else {
-                text = "Could not delete credential. Sorry about that.";
-                cls = "error";
-            }
-
-            Html html = UserGUI.getHtmlPramble("Delete Credential");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text(
-                    "Delete Credential")));
-            mainDiv.appendChild(new P().setCSSClass(cls).appendChild(
-                    new Text(text)));
-            return log.exit(Response.ok(html.write()).build());
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
-        }
-    }
-
-    @POST()
-    @Path("/issuanceArguments/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) {
-        UiIssuanceArguments args = args_.getValue().uia;
-        if (args.tokenCandidates.size() == 1
-                && args.tokenCandidates.get(0).credentials.size() == 0) {
-            Html html = UserGUI.getHtmlPramble("Identity Selection");
-            Head head = new Head().appendChild(new Title()
-                    .appendChild(new Text("Obtain Credential [2]")));
-            html.appendChild(head);
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text(
-                    "Obtain Credential")));
-            Div div = new Div();
-            div.appendChild(new P()
-                    .setCSSClass("info")
-                    .appendChild(
-                            new Text(
-                                    "The issuer isn't asking you to reveal anything.")));
-            Form f = new Form("./obtainCredential3");
-            f.setMethod("post");
-            f.appendChild(new Input().setType("hidden").setName("uic")
-                    .setValue(args.uiContext.toString()));
-            f.appendChild(new Input().setType("hidden").setName("policyId") // chosenPolicy
-                    .setValue(Integer.toString(0)));
-            f.appendChild(new Input().setType("hidden").setName("candidateId") // chosenPresentationToken
-                                                                               // or
-                                                                               // chosenIssuanceToken
-                                                                               // (weird
-                                                                               // stuff)
-                    .setValue(Integer.toString(0)));
-            f.appendChild(new Input().setType("hidden").setName("pseudonymId") // chosenPseudonymList
-                    .setValue(Integer.toString(0)));
-            f.appendChild(new Input().setType("submit").setValue("Continue"));
-            div.appendChild(f);
-
-            mainDiv.appendChild(div);
-            return Response.ok(html.write()).build();
-        } else {
-            Html html = new Html();
-            Head head = new Head().appendChild(new Title()
-                    .appendChild(new Text("Identity Selection")));
-            html.appendChild(head);
-            Div mainDiv = new Div();
-            html.appendChild(new Body().appendChild(mainDiv));
-            mainDiv.appendChild(new H1().appendChild(new Text(
-                    "Obtain Credential")));
-            Div div = UserGUI.getDivForTokenCandidates(args.tokenCandidates, 0,
-                    args.uiContext.toString());
-            mainDiv.appendChild(div);
-            return Response.ok(html.write()).build();
-        }
-    }
+    
 
     /**
-     * This is the second step for the User to obtain a credential from an
-     * issuer. This method will display the Identity Selection and direct the
-     * User to obtainCredential3
-     * 
-     * @param username
-     *            Username (authInfo)
-     * @param password
-     *            Password (authInfo)
-     * @param issuerUrl
-     *            URL of the issuance service
-     * @param credSpecUid
-     *            UID of the CredentialSpecification of the Credential to obtain
-     * @return
-     */
-    @POST
-    @Path("/obtainCredential2")
-    public Response obtainCredential2(@FormParam("un") String username,
-            @FormParam("pw") String password,
-            @FormParam("is") String issuerUrl,
-            @FormParam("cs") String credSpecUid) {
-        try {
-            /* Make an IssuanceRequest */
-            IssuanceRequest ir = new IssuanceRequest();
-
-            AuthInfoSimple authSimple = new AuthInfoSimple();
-            authSimple.password = password;
-            authSimple.username = username;
-
-            ir.credentialSpecificationUid = credSpecUid;
-            ir.authRequest = new AuthenticationRequest(authSimple);
-
-            log.warn("issuerUrl: " + issuerUrl);
-
-            IssuanceMessageAndBoolean issuanceMessageAndBoolean = (IssuanceMessageAndBoolean) UserGUI
-                    .postRequest(issuerUrl + "/issuanceRequest",
-                            UserGUI.toXML(IssuanceRequest.class, ir),
-                            IssuanceMessageAndBoolean.class);
-
-            IssuanceMessage firstIssuanceMessage = issuanceMessageAndBoolean
-                    .getIssuanceMessage();
-
-            Response r = issuanceProtocolStep(of
-                    .createIssuanceMessage(firstIssuanceMessage));
-            if (r.getStatus() != 200)
-                throw new RuntimeException("Internal step failed!");
-
-            @SuppressWarnings("unchecked")
-            IssuanceReturn issuanceReturn = ((JAXBElement<IssuanceReturn>) r
-                    .getEntity()).getValue();
-
-            putIssuerURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
-
-            return issuanceArguments(ObjectFactoryReturnTypes
-                    .wrap(issuanceReturn));
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
-                    .build());
-        }
-    }
-
-    /**
-     * This is the third step for a User to obtain a credential from an issuer.
-     * 
-     * @param policyId
-     *            Chosen Policy
-     * @param candidateId
-     *            Chosen Candidate
-     * @param pseudonymId
-     *            Chosen Pseudonymlist
-     * @param uiContext
-     *            Context identifier
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    @POST
-    @Path("/obtainCredential3")
-    public Response obtainCredential3(@FormParam("policyId") String policyId,
-            @FormParam("candidateId") String candidateId,
-            @FormParam("pseudonymId") String pseudonymId,
-            @FormParam("uic") String uiContext) {
-        try {
-            UiIssuanceReturn uir = new UiIssuanceReturn();
-            uir.uiContext = new URI(uiContext);
-            uir.chosenIssuanceToken = Integer.parseInt(candidateId);
-            uir.chosenPseudonymList = Integer.parseInt(pseudonymId);
-
-            String issuerUrl = getIssuerURL(uiContext);
-
-            Response r = issuanceProtocolStep(uir);
-            if (r.getStatus() != 200)
-                throw new RuntimeException("Internal step failed!");
-
-            IssuanceMessage secondIssuanceMessage = ((JAXBElement<IssuanceMessage>) r
-                    .getEntity()).getValue();
-            log.warn(UserGUI.toXML(IssuanceMessage.class,
-                    of.createIssuanceMessage(secondIssuanceMessage)));
-            IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) UserGUI
-                    .postRequest(
-                            issuerUrl + "/issuanceProtocolStep",
-                            UserGUI.toXML(
-                                    IssuanceMessage.class,
-                                    of.createIssuanceMessage(secondIssuanceMessage)),
-                            IssuanceMessageAndBoolean.class);
-            IssuanceMessage thirdIssuanceMessage = thirdIssuanceMessageAndBoolean
-                    .getIssuanceMessage();
-
-            r = issuanceProtocolStep(of
-                    .createIssuanceMessage(thirdIssuanceMessage));
-            if (r.getStatus() != 200)
-                throw new RuntimeException("Internal step failed!");
-
-            Html html = UserGUI.getHtmlPramble("Obtain Credential [3]");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            mainDiv.appendChild(new H2().appendChild(new Text(
-                    "Obtain Credential")));
-            html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new P()
-                    .setCSSClass("success")
-                    .appendChild(
-                            new Text(
-                                    "You've successfully obtained the requested credential from the issuer.")));
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
-        }
-
-    }
-
-    /**
-     * This is the entry point for the User to obtain a credential from an
-     * issuer. This method will display a webpage asking for the required data
-     * and will direct the User to obtainCredential2
-     * 
-     * @return
-     */
-    @GET
-    @Path("/obtainCredential/")
-    public Response obtainCredential() {
-        try {
-            Html html = UserGUI.getHtmlPramble("Obtain Credential [1]");
-            Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
-            mainDiv.appendChild(new H2().appendChild(new Text(
-                    "Obtain Credential")));
-            mainDiv.appendChild(new P()
-                    .setCSSClass("info")
-                    .appendChild(
-                            new Text(
-                                    "Please enter the information required to obtain the credential.")));
-            Form f = new Form("./obtainCredential2");
-            f.setMethod("post");
-
-            Table tbl = new Table();
-            Tr row = null;
-            f.appendChild(tbl);
-
-            row = new Tr();
-            row.appendChild(new Td().appendChild(new Label()
-                    .appendChild(new Text("Username:"))));
-            row.appendChild(new Td().appendChild(new Input().setType("text")
-                    .setName("un")));
-            tbl.appendChild(row);
-
-            row = new Tr();
-            row.appendChild(new Td().appendChild(new Label()
-                    .appendChild(new Text("Password:"))));
-            row.appendChild(new Td().appendChild(new Input()
-                    .setType("password").setName("pw")));
-            tbl.appendChild(row);
-
-            row = new Tr();
-            row.appendChild(new Td().appendChild(new Label()
-                    .appendChild(new Text("Issuer:"))));
-            row.appendChild(new Td().appendChild(new Input().setType("text")
-                    .setName("is")));
-            tbl.appendChild(row);
-
-            row = new Tr();
-            row.appendChild(new Td().appendChild(new Label()
-                    .appendChild(new Text("Credential specification:"))));
-            Select sel = new Select().setName("cs");
-            row.appendChild(new Td().appendChild(sel));
-            tbl.appendChild(row);
-
-            f.appendChild(new Input().setType("submit").setValue("Obtain"));
-
-            mainDiv.appendChild(f);
-
-            this.initializeHelper();
-            UserHelper instance = UserHelper.getInstance();
-
-            for (URI uri : instance.keyStorage.listUris()) {
-                Object obj = SerializationUtils.deserialize(instance.keyStorage
-                        .getValue(uri));
-                if (obj instanceof CredentialSpecification) {
-                    sel.appendChild(new Option().appendChild(new Text(uri
-                            .toString())));
-                }
-            }
-
-            return Response.ok(html.write()).build();
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
-        }
-    }
-
-    @POST
-    @Path("/presentationArguments/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response presentationArguments(
-            JAXBElement<UiPresentationArguments> args_) {
-        UiPresentationArguments args = args_.getValue();
-        Html html = new Html();
-        Head head = new Head();
-        head.appendChild(new Title()
-                .appendChild(new Text("Candidate Selection")));
-
-        html.appendChild(head);
-
-        Div mainDiv = new Div();
-
-        html.appendChild(new Body().appendChild(mainDiv));
-
-        for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-
-            Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates,
-                    tcpp.policyId, args.uiContext.toString());
-
-            mainDiv.appendChild(div);
-        }
-
-        return Response.ok(html.write()).build();
-    }
-
-    /**
+     * <b>Path</b>: /issuanceProtocolStep/ (POST)<br>
+     * <br>
+     * <b>Description</b>:
      * This method performs one step in an interactive issuance protocol. On
      * input an incoming issuance message im obtained from the Issuer, it either
      * returns the outgoing issuance message that is to be sent back to the
@@ -834,10 +468,19 @@ public class UserService {
      * other component that is capable of rendering a UiIssuanceReturn object
      * from a UiIssuanceArguments object); the method
      * issuanceProtocolStep(UiIssuanceReturn) should then be invoked with the
-     * object returned by the UI.
+     * object returned by the UI.<br>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
+     * <b>Return type</b>: <tt>IssuanceReturn</tt><br>
      * 
-     * @param im
-     * @return
+     * @param jm IssuanceMessage
+     * @return Response
      * @throws CannotSatisfyPolicyException
      * @throws CryptoEngineException
      * @throws KeyManagerException
@@ -869,6 +512,24 @@ public class UserService {
         }
     }
 
+    
+    /**
+     * <b>Path</b>: /issuanceProtocolStepUi/ (POST)<br>
+     * <br>
+     * <b>Description</b>: This method performs the next step in the issuance protocol after the UI is done with its
+     * selection. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>UiIssuanceReturn</tt><br>
+     * <b>Return type</b>: <tt>IssuanceMessage</tt><br>
+     * @param uir
+     * @return
+     */
     @POST()
     @Path("/issuanceProtocolStepUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -892,80 +553,32 @@ public class UserService {
         }
     }
 
-    /**
-     * This method returns an array of all unique credential identifiers (UIDs)
-     * available in the Credential Manager.
-     * 
-     * @return
-     */
-    @GET()
-    @Path("/listCredentials/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response listCredentials() {
-        log.entry();
-
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        List<URI> credentialUids;
-        try {
-            credentialUids = instance.credentialManager.listCredentials();
-
-            URISet uriList = this.of.createURISet();
-            uriList.getURI().addAll(credentialUids);
-            return log.exit(Response.ok(of.createURISet(uriList),
-                    MediaType.APPLICATION_XML).build());
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
-        }
-    }
 
     /**
-     * This method returns the description of the credential with the given
-     * unique identifier. The unique credential identifier credUid is the
-     * identifier which was included in the credential description that was
-     * returned at successful completion of the issuance protocol.
-     * 
-     * @param credUid
-     * @return
-     */
-    @GET()
-    @Path("/getCredentialDescription/{credentialUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response getCredentialDescription(
-            @PathParam("credentialUid") URI credUid) {
-        log.entry();
-
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        try {
-            CredentialDescription credDesc = instance.credentialManager
-                    .getCredentialDescription(credUid);
-
-            return log.exit(Response.ok(
-                    of.createCredentialDescription(credDesc),
-                    MediaType.APPLICATION_XML).build());
-
-        } catch (CredentialManagerException ex) {
-            throw new WebApplicationException(ex,
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
+     * <b>Path</b>: /credential/delete/{credentialUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>:
      * This method deletes the credential with the given identifier from the
      * credential store. If deleting is not possible (e.g. if the referred
-     * credential does not exist) the method returns false, and true otherwise.
-     * 
-     * @param credentialUid
-     * @return
+     * credential does not exist) the method returns false, and true otherwise.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialUid - UID of the Credential</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param credentialUid - UID of the credential
+     * @return Response
      */
     @DELETE()
-    @Path("/deleteCredential/{credentialUid}")
+    @Path("/credential/delete/{credentialUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response deleteCredential(
             @PathParam("credentialUid") URI credentialUid) {
@@ -991,15 +604,39 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores a credential specification under the given UID. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     *  <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual UID or is invalid.</li>
+     * </ul>
+     * @param credentialSpecificationUid UID of the credential specification.
+     * @param credSpec The credential specification.
+     * @return Response
+     */
     @PUT()
-    @Path("/storeCredentialSpecification/{credentialSpecifationUid}")
+    @Path("/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeCredentialSpecification(
-            @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
+            @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
             CredentialSpecification credSpec) {
         log.entry();
 
         try {
+            
+            if(!credentialSpecificationUid.toString().equals(credSpec.getSpecificationUID().toString()))
+                    return log.exit(Response.status(Response.Status.CONFLICT).entity(errCredSpecUid).build());
+            
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
@@ -1007,7 +644,7 @@ public class UserService {
             KeyManager keyManager = instance.keyManager;
 
             boolean r = keyManager.storeCredentialSpecification(
-                    credentialSpecifationUid, credSpec);
+                    credentialSpecificationUid, credSpec);
 
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
@@ -1021,8 +658,25 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /systemParameters/store (PUT)<br>
+     * <br>
+     * <b>Description</b>: Store (and overwrite existing) system parameters at the service. This method returns
+     * true if the system parameters were successfully stored.
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>SystemParameters</tt><br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param systemParameters
+     * @return
+     */
     @PUT()
-    @Path("/storeSystemParameters/")
+    @Path("/systemParameters/store")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeSystemParameters(SystemParameters systemParameters) {
         log.entry();
@@ -1052,8 +706,28 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /issuerParameters/store/{issuerParametersUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Store (and overwrite existing) issuer parameters at the service (using the given
+     * identifier). This method returns
+     * true if the system parameters were successfully stored.
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     *  <li>409 - <em>issuerParametersUid</em> does not match or is invalid.
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuerParameters</tt><br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param issuerParametersUid UID of the IssuerParameters
+     * @param issuerParameters IssuerParameters
+     * @return Response
+     */
     @PUT()
-    @Path("/storeIssuerParameters/{issuerParametersUid}")
+    @Path("/issuerParameters/store/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
@@ -1069,6 +743,9 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
+            
+            if(!(issuerParametersUid.toString().equals(issuerParameters.getParametersUID().toString())))
+                return log.exit(Response.status(Response.Status.CONFLICT).entity(errIssParamsUid).build());
 
             KeyManager keyManager = instance.keyManager;
 
@@ -1122,6 +799,23 @@ public class UserService {
         }
     }
 
+    /**
+     * <b>Path</b>: /extractIssuanceMessage/ (POST)<br>
+     * <br>
+     * <b>Description</b>: This method extracts the IssuanceMessage from an IssuanceMessageAndBoolean and
+     * returns the IssuanceMessage.<br>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type:</b> <tt>IssuanceMessageAndBoolean</tt><br>
+     * <b>Return type:</b> <tt>IssuanceMessage</tt><br>
+     * @param issuanceMessageAndBoolean
+     * @return
+     */
     @POST()
     @Path("/extractIssuanceMessage/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })

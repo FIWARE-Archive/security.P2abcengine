@@ -37,6 +37,15 @@ public class ServicesConfiguration {
     private static Logger logger = LogManager.getLogger();
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
+    
+    private static String issuanceServiceURL = "http://localhost/";
+    
+    private static String userServiceURL = "http://localhost/";
+    
+    private static String restAuthUser = "user";
+    
+    private static String restAuthPassword = "password";
+    
 
     static {
         try {
@@ -54,6 +63,11 @@ public class ServicesConfiguration {
                             .lookup("cfg/Source/authentication"));
 
             String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
+            
+            issuanceServiceURL = (String) envCtx.lookup("cfg/issuanceServiceURL");
+            userServiceURL = (String) envCtx.lookup("cfg/userServiceURL");
+            restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
+            restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
 
             IssuanceConfiguration cfgData = new IssuanceConfiguration(
                     sourceAttributes, cpAttributes, sourceAuthentication,
@@ -65,19 +79,7 @@ public class ServicesConfiguration {
         }
     }
 
-    /**
-     * Magic Cookie.
-     * 
-     * The Magic Cookie is used for service administration such as changing or
-     * reloading the configuration as well as storing or creating
-     * CredentialSpecifications and more.
-     * 
-     * The default value is <b>*magic*</b>. It's <em>HIGHLY</em> recommended to
-     * change it to a secure value and to change it frequently. Please only
-     * communicate over secure channels and secure applications when
-     * transmitting the magic cookie.
-     */
-    private static String magicCookie = "*magic*";
+   
 
     /**
      * URI base The URI base is used as a prefix to URIs for example in the
@@ -85,35 +87,20 @@ public class ServicesConfiguration {
      */
     private static String uriBase = "urn:fiware:privacy:";
 
-    /**
-     * Verifies the correctness of the magic cookie (i.e. if it matches the one
-     * stored in this configuration.)
-     * 
-     * @param magicCookie
-     *            The value to check against
-     * @return true iff the parameter is the same as the stored cookie.
-     */
-    public static synchronized boolean isMagicCookieCorrect(String magicCookie) {
-        return ServicesConfiguration.magicCookie.equals(magicCookie);
+    public static synchronized String getIssuanceServiceURL() {
+        return issuanceServiceURL;
     }
-
-    /**
-     * Sets the magic cookie to the given value.
-     * 
-     * @param magicCookie
-     *            the new value of the magic cookie.
-     */
-    public static synchronized void setMagicCookie(String magicCookie) {
-        ServicesConfiguration.magicCookie = magicCookie;
+    
+    public static synchronized String getUserServiceURL() {
+        return userServiceURL;
     }
-
-    /**
-     * Returns the magic cookie.
-     * 
-     * @return magic cookie
-     */
-    public static synchronized String getMagicCookie() {
-        return magicCookie;
+    
+    public static synchronized String getRestAuthUser() {
+        return restAuthUser;
+    }
+    
+    public static synchronized String getRestAuthPassword() {
+        return restAuthPassword;
     }
 
     /**

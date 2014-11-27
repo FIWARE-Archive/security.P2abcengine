@@ -1,4 +1,4 @@
-package ch.zhaw.ficore.p2abc.services.issuance.xml;
+package ch.zhaw.ficore.p2abc.xml;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
