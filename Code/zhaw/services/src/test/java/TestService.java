@@ -57,8 +57,6 @@ public class TestService extends JerseyTest {
         ic.createSubcontext("java:/comp/env/cfg");
         ic.createSubcontext("java:/comp/env/cfg/Source");
         ic.createSubcontext("java:/comp/env/cfg/ConnectionParameters");
-
-        SQLiteDataSource ds = new SQLiteDataSource();
         
         ConnectionParameters cp = new ConnectionParameters();
         ic.bind("java:/comp/env/cfg/ConnectionParameters/attributes", cp);
@@ -71,19 +69,8 @@ public class TestService extends JerseyTest {
         ic.bind("java:/comp/env/cfg/restAuthUser", "");
         ic.bind("java:/comp/env/cfg/issuanceServiceURL","");
         ic.bind("java:/comp/env/cfg/userServiceURL","");
-    }
-    
-    
-    private static HttpServer createHttpServer() throws IOException, IllegalArgumentException, URISyntaxException {
-        ResourceConfig rc = new PackagesResourceConfig("ch.zhaw.ficore.p2abc.services");
-        return HttpServerFactory.create(new URI("http://localhost:8989/"), rc);
-    }
-    
-    @Before
-    public void makeStorageFile() throws Exception {
-        SQLiteDataSource ds = new SQLiteDataSource();
         
-        InitialContext ic = new InitialContext();
+        SQLiteDataSource ds = new SQLiteDataSource();
         
         storageFile = File.createTempFile("test", "sql");
         
@@ -92,18 +79,8 @@ public class TestService extends JerseyTest {
         ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
     }
 
-    @After
-    public void deleteStorageFile() throws Exception {
-        storageFile.delete();
-    }
-
     @Test
-    public void testUserServiceStatus() throws Exception {
-        //Response r = userService.status();
-        //assertOk(r);
-        
-        //Thread.sleep(60000);
-        
+    public void testUserServiceStatus() throws Exception {        
         RESTHelper.getRequest(getBaseURI() + "user/status");
         
     }
