@@ -230,6 +230,24 @@ public class RESTHelper {
         return fromXML(clazz, response.getEntity(String.class));
     }
     
+    public static Object getRequest(String url)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.get(
+                ClientResponse.class);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("getRequest failed for: " + url
+                    + " got " + response.getStatus());
+
+        return response.getEntity(String.class);
+    }
+    
     public static Object deleteRequest(String url)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
