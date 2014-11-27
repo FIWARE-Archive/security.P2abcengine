@@ -31,8 +31,8 @@ import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
@@ -75,7 +75,11 @@ public class IssuanceService {
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
     private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
-
+    private static final String defaultIPUid = "abc4trust:default-issuance-policy";
+    private static final String sysParamsUid = "abc4trust:system_parameters_uid"; //this is hardcoded within p2abc engine
+    private static final int sysParamsSecurityLevel = 80;
+    private static final String sysParamsCryptoMechanism = "urn:abc4trust:1.0:algorithm:idemix";
+    
     private ObjectFactory of = new ObjectFactory();
 
     private Logger logger;
@@ -83,7 +87,31 @@ public class IssuanceService {
     public IssuanceService() throws ClassNotFoundException, SQLException,
             UnsafeTableNameException {
         logger = LogManager.getLogger();
+        setup();
     }
+    
+    private void setup() {
+        try {
+            //This will load the defaultIssuancePolicy and will also
+            //setup system parameters 80,idemix if non exist.
+            
+            this.initializeHelper(CryptoEngine.IDEMIX);
+    
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            String ipDefault = instance.readTextFile("defaultIssuancePolicy.xml");
+            IssuancePolicy ip = (IssuancePolicy) RESTHelper.fromXML(IssuancePolicy.class, ipDefault);
+            
+            instance.issuanceStorage.addIssuancePolicy(new URI(defaultIPUid), ip);
+            
+            if(!instance.keyManager.hasSystemParameters())
+                this.setupSystemParameters(sysParamsSecurityLevel, new URI(sysParamsCryptoMechanism));
+        }
+        catch(Exception e) {
+            ExceptionDumper.dumpExceptionStr(e, logger);
+        }
+    }
+    
 
     /**
      * <b>Path</b>: /protected/status<br>
@@ -213,9 +241,8 @@ public class IssuanceService {
             if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
+                        .entity(
+                                "Credential specification could not be found!")).build();
             }
 
             credSpec.getAttributeDescriptions().getAttributeDescription()
@@ -229,9 +256,8 @@ public class IssuanceService {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
 
@@ -301,9 +327,8 @@ public class IssuanceService {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
 
@@ -371,6 +396,15 @@ public class IssuanceService {
                             request.credentialSpecificationUid));
             QueryRule qr = instance.issuanceStorage.getQueryRule(new URI(
                     request.credentialSpecificationUid));
+            
+            if(ip == null) {
+                //No specific issuance policy was registered so we'll use a default one.
+                ip = instance.issuanceStorage.getIssuancePolicy(new URI(defaultIPUid));
+                if(ip != null) {
+                    ip.getCredentialTemplate().setCredentialSpecUID(new URI(request.credentialSpecificationUid));
+                    ip.getCredentialTemplate().setIssuerParametersUID(new URI(request.credentialSpecificationUid + ":issuer-params"));
+                }
+            }
 
             if (credSpec == null)
                 return Response.status(Response.Status.NOT_FOUND)
@@ -458,9 +492,8 @@ public class IssuanceService {
             if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
+                        .entity(
+                                "Credential specification could not be found!")).build();
             }
 
             AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
@@ -485,9 +518,8 @@ public class IssuanceService {
             logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
-                            .write()).build());
+                    .entity(
+                            ExceptionDumper.dumpExceptionStr(e, logger))).build();
         }
     }
     
@@ -550,9 +582,8 @@ public class IssuanceService {
             if (credSpec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
-                        .entity(IssuerGUI.errorPage(
-                                "Credential specification could not be found!")
-                                .write()).build());
+                        .entity(
+                                "Credential specification could not be found!")).build();
             }
 
             AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
@@ -720,7 +751,7 @@ public class IssuanceService {
     }
     
     @GET()
-    @Path("/protected/queryRules/")
+    @Path("/protected/queryRule/list")
     public Response queryRules() {
         logger.entry();
         

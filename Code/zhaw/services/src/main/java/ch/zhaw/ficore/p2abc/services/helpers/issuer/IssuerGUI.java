@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,7 +21,7 @@ import com.hp.gagawa.java.elements.Title;
 
 public class IssuerGUI {
 
-    private static String cssURL = "/style.css";
+    private static String cssURL = "/css/style.css";
 
     /**
      * Serializes an object using JAXB to a XML.
@@ -58,12 +59,12 @@ public class IssuerGUI {
         return JAXB.unmarshal(new StringReader(xml), clazz);
     }
 
-    public static Html getHtmlPramble(String title) {
+    public static Html getHtmlPramble(String title, HttpServletRequest req) {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
         html.appendChild(head);
-        head.appendChild(new Link().setHref(cssURL).setRel("stylesheet")
+        head.appendChild(new Link().setHref(req.getContextPath()+cssURL).setRel("stylesheet")
                 .setType("text/css"));
         return html;
     }
@@ -81,8 +82,8 @@ public class IssuerGUI {
         return new Body().appendChild(containerDiv);
     }
 
-    public static Html errorPage(String msg) {
-        Html html = getHtmlPramble("ERROR");
+    public static Html errorPage(String msg, HttpServletRequest req) {
+        Html html = getHtmlPramble("ERROR", req);
         Div mainDiv = new Div().setCSSClass("mainDiv");
         html.appendChild(getBody(mainDiv));
         mainDiv.appendChild(new H2().appendChild(new Text("Error")));

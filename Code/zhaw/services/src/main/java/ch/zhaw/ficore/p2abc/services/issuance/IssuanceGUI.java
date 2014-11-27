@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
@@ -38,7 +39,9 @@ import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
 import com.hp.gagawa.java.elements.Li;
+import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
+import com.hp.gagawa.java.elements.Select;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
@@ -64,7 +67,7 @@ public class IssuanceGUI {
 
     
 
-    private static String issuanceServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/issuance/";
+    private static String issuanceServiceURL = ServicesConfiguration.getIssuanceServiceURL();
     
     private ObjectFactory of = new ObjectFactory();
 
@@ -94,7 +97,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -115,7 +118,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -144,7 +147,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -171,7 +174,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -193,7 +196,32 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/protected/addQueryRule")
+    public Response addQueryRule(@FormParam("cs") String credSpecUid, @FormParam("qr") String query) {
+        logger.entry();
+        
+        try {
+            QueryRule qr = new QueryRule();
+            qr.queryString = query;
+            
+            RESTHelper.putRequest(issuanceServiceURL + "protected/queryRule/store/"
+                    + URLEncoder.encode(credSpecUid, "UTF-8"), 
+                    RESTHelper.toXML(QueryRule.class, qr));
+            
+            return queryRules();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -204,10 +232,10 @@ public class IssuanceGUI {
         logger.entry();
 
         try {
-            QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper.getRequest(issuanceServiceURL + "protected/queryRules", 
+            QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper.getRequest(issuanceServiceURL + "protected/queryRule/list", 
                     QueryRuleCollection.class);
 
-            Html html = IssuerGUI.getHtmlPramble("Query Rules");
+            Html html = IssuerGUI.getHtmlPramble("Query Rules", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Query Rules")));
@@ -245,6 +273,39 @@ public class IssuanceGUI {
                 tbl.appendChild(tr);
             }
             mainDiv.appendChild(tbl);
+            
+            Settings settings = 
+                    (Settings) RESTHelper.getRequest(issuanceServiceURL + "getSettings/", 
+                    Settings.class);
+
+            List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
+            
+            Select s = new Select().setName("cs");
+            for(CredentialSpecification credSpec : credSpecs) {
+                Option o = new Option();
+                o.setValue(credSpec.getSpecificationUID().toString());
+                o.appendChild(new Text(credSpec.getSpecificationUID().toString()));
+                s.appendChild(o);
+            }
+            
+            Form f = new Form("./addQueryRule").setMethod("post");
+            tbl = new Table();
+            tr = new Tr()
+                    .appendChild(
+                            new Td().appendChild(new Label().appendChild(new Text("Credential specification:"))))
+                    .appendChild(
+                            new Td().appendChild(s));
+            tbl.appendChild(tr);
+            tr = new Tr()
+                    .appendChild(
+                            new Td().appendChild(new Label().appendChild(new Text("Query rule:"))))
+                    .appendChild(
+                            new Td().appendChild(new Input().setType("text").setName("qr")));
+            tbl.appendChild(tr);
+            f.appendChild(tbl);
+            f.appendChild(new Input().setType("submit").setValue("Add"));
+            
+            mainDiv.appendChild(f);
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
@@ -252,7 +313,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -285,7 +346,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -297,7 +358,7 @@ public class IssuanceGUI {
 
         try {
             Html html = IssuerGUI
-                    .getHtmlPramble("Obtain credential specification [1]");
+                    .getHtmlPramble("Obtain credential specification [1]", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text(
@@ -331,7 +392,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -346,7 +407,7 @@ public class IssuanceGUI {
                     (Settings) RESTHelper.getRequest(issuanceServiceURL + "getSettings/", 
                     Settings.class);
 
-            Html html = IssuerGUI.getHtmlPramble("Issuer Parameters");
+            Html html = IssuerGUI.getHtmlPramble("Issuer Parameters", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Issuer Parameters")));
@@ -391,7 +452,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -408,7 +469,7 @@ public class IssuanceGUI {
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
-            Html html = IssuerGUI.getHtmlPramble("Profile");
+            Html html = IssuerGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
 
@@ -564,7 +625,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger))
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
                             .write()).build());
         }
     }
@@ -575,7 +636,7 @@ public class IssuanceGUI {
         logger.entry();
 
         try {
-            Html html = UserGUI.getHtmlPramble("Profile");
+            Html html = UserGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(IssuerGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
@@ -608,7 +669,7 @@ public class IssuanceGUI {
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger)).write())
+                            ExceptionDumper.dumpExceptionStr(e, logger), request).write())
                     .build());
         }
     }

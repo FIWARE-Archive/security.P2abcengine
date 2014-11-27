@@ -29,11 +29,13 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
@@ -41,6 +43,7 @@ import javax.xml.bind.JAXBElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
@@ -98,7 +101,7 @@ public class UserServiceGUI {
 
     private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
     
-    private static String userServiceURL = "http://localhost:8888/zhaw-p2abc-webservices/user/";
+    private static String userServiceURL = ServicesConfiguration.getUserServiceURL();
 
     public static synchronized String getIssuerURL(String uiContext) {
         return uiContextToIssuerURL.get(uiContext);
@@ -110,6 +113,8 @@ public class UserServiceGUI {
     }
 
    
+    @Context
+    HttpServletRequest request;
     
 
     @GET()
@@ -118,7 +123,7 @@ public class UserServiceGUI {
         log.entry();
 
         try {
-            Html html = UserGUI.getHtmlPramble("Profile");
+            Html html = UserGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
@@ -148,7 +153,7 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
+                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
                     .build());
         }
     }
@@ -169,7 +174,7 @@ public class UserServiceGUI {
 
             
 
-            Html html = UserGUI.getHtmlPramble("Profile");
+            Html html = UserGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
 
@@ -220,7 +225,7 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
+                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
                     .build());
         }
     }
@@ -239,7 +244,7 @@ public class UserServiceGUI {
 
             List<Credential> credentials = credCol.credentials;
 
-            Html html = UserGUI.getHtmlPramble("Profile");
+            Html html = UserGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
 
@@ -290,7 +295,7 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
+                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
                     .build());
         }
     }
@@ -309,7 +314,7 @@ public class UserServiceGUI {
             text = "You've successfully deleted the credential!";
             cls = "success";
 
-            Html html = UserGUI.getHtmlPramble("Delete Credential");
+            Html html = UserGUI.getHtmlPramble("Delete Credential", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text(
@@ -322,7 +327,7 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
+                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
                     .build());
         }
     }
@@ -334,7 +339,7 @@ public class UserServiceGUI {
         UiIssuanceArguments args = args_.getValue().uia;
         if (args.tokenCandidates.size() == 1
                 && args.tokenCandidates.get(0).credentials.size() == 0) {
-            Html html = UserGUI.getHtmlPramble("Identity Selection");
+            Html html = UserGUI.getHtmlPramble("Identity Selection", request);
             Head head = new Head().appendChild(new Title()
                     .appendChild(new Text("Obtain Credential [2]")));
             html.appendChild(head);
@@ -438,7 +443,7 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log)).write())
+                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
                     .build());
         }
     }
@@ -492,7 +497,7 @@ public class UserServiceGUI {
                     userServiceURL + "issuanceProtocolStep", 
                     RESTHelper.toXML(IssuanceMessage.class, of.createIssuanceMessage(thirdIssuanceMessage)), IssuanceReturn.class);
 
-            Html html = UserGUI.getHtmlPramble("Obtain Credential [3]");
+            Html html = UserGUI.getHtmlPramble("Obtain Credential [3]", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             mainDiv.appendChild(new H2().appendChild(new Text(
                     "Obtain Credential")));
@@ -522,7 +527,7 @@ public class UserServiceGUI {
     @Path("/obtainCredential/")
     public Response obtainCredential() {
         try {
-            Html html = UserGUI.getHtmlPramble("Obtain Credential [1]");
+            Html html = UserGUI.getHtmlPramble("Obtain Credential [1]", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text(

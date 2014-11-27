@@ -24,6 +24,9 @@
 
 package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.security.SecureRandom;
@@ -74,6 +77,25 @@ public class IssuanceHelper extends AbstractHelper {
     public KeyStorage keyStorage;
 
     public IssuanceStorage issuanceStorage;
+    
+    public String readTextFile(String path) {
+        try {
+            ClassLoader cl = IssuanceHelper.class.getClassLoader();
+            File f = new File(cl.getResource(path).getFile());
+            BufferedReader br = new BufferedReader(new FileReader(f));
+            String lines = "";
+            String line = "";
+            while((line = br.readLine()) != null)
+                lines += line + "\n";
+            br.close();
+            System.out.println("*** " + path);
+            System.out.println(lines);
+            return lines;
+        }
+        catch(Exception e) {
+            throw new RuntimeException("readTextFile("+path+") failed!");
+        }
+    }
 
     public static synchronized IssuanceHelper initInstanceForService(
             CryptoEngine cryptoEngine, String systemAndIssuerParamsPrefix,

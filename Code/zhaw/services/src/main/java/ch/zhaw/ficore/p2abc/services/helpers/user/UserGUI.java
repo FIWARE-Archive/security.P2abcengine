@@ -2,6 +2,8 @@ package ch.zhaw.ficore.p2abc.services.helpers.user;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
@@ -32,16 +34,16 @@ import eu.abc4trust.xml.FriendlyDescription;
 
 public class UserGUI {
 
-    private static String cssURL = "/style.css";
+    private static String cssURL = "/css/style.css";
 
     
 
-    public static Html getHtmlPramble(String title) {
+    public static Html getHtmlPramble(String title, HttpServletRequest req) {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
         html.appendChild(head);
-        head.appendChild(new Link().setHref(cssURL).setRel("stylesheet")
+        head.appendChild(new Link().setHref(req.getContextPath()+cssURL).setRel("stylesheet")
                 .setType("text/css"));
         return html;
     }
@@ -61,8 +63,8 @@ public class UserGUI {
         return new Body().appendChild(containerDiv);
     }
 
-    public static Html errorPage(String msg) {
-        Html html = getHtmlPramble("ERROR");
+    public static Html errorPage(String msg, HttpServletRequest req) {
+        Html html = getHtmlPramble("ERROR", req);
         Div mainDiv = new Div().setCSSClass("mainDiv");
         html.appendChild(getBody(mainDiv));
         mainDiv.appendChild(new H2().appendChild(new Text("Error")));

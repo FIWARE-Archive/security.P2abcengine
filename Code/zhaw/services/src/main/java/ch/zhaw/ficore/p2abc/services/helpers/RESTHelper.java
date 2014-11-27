@@ -9,6 +9,8 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
@@ -20,6 +22,11 @@ public class RESTHelper {
     
     private static String authUser = "both";
     private static String authPw = "tomcat";
+    
+    static {
+        authUser = ServicesConfiguration.getRestAuthUser();
+        authPw = ServicesConfiguration.getRestAuthPassword();
+    }
     
     /**
      * Serializes an object using JAXB to a XML.
@@ -164,6 +171,25 @@ public class RESTHelper {
                     + " got " + response.getStatus() + "|" + response.getEntity(String.class));
 
         return fromXML(clazz, response.getEntity(String.class));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public static Object putRequest(String url, String xml)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type("application/xml").put(
+                ClientResponse.class, xml);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("putRequest failed for: " + url
+                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+
+        return response.getEntity(String.class);
     }
     
     public static Object putRequest(String url, MultivaluedMap<String, String> params)
