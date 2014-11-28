@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<Resource
+		name="jdbc/URIBytesStorage"
+		type="javax.sql.DataSource"
+		scope="Unshareable"
+		driverClassName="org.sqlite.JDBC"
+		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"	
+		url="jdbc:sqlite:/tmp/blabla.db"/>
+		
+	<Resource
+		name="cfg/ConnectionParameters/attributes"
+		type="ch.zhaw.ficore.p2abc.configuration.ConnectionParameters"
+		factory="org.apache.naming.factory.BeanFactory"
+		serverName="localhost"
+		serverPort="10389"
+		authenticationMethod="simple"
+		user="uid=admin, ou=system"
+		password="secret"
+		connectionString="jdbc:sqlite:/home/mroman/test.db"
+		driverString="org.sqlite.JDBC"
+		useTls="false"/>
+		
+    <Resource
+		name="cfg/ConnectionParameters/authentication"
+		type="ch.zhaw.ficore.p2abc.configuration.ConnectionParameters"
+		factory="org.apache.naming.factory.BeanFactory"
+		serverName="localhost"
+		serverPort="10389"
+		authenticationMethod="simple"
+		user="uid=admin, ou=system"
+		password="secret"
+		connectionString="jdbc:sqlite:/home/mroman/test.db"
+		driverString="org.sqlite.JDBC"
+		useTls="false"/>
+</Context>

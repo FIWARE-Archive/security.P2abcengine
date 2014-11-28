@@ -251,6 +251,7 @@ public class AbcSmartcardManager implements IdemixSmartcardManager {
         System.out.println("sc uri: " + smartcardUri + "\n credUri: " + credUri);
         BasicSmartcard s = this.getSmartcard(smartcardUri);
         if(s == null) {
+			System.out.println("Smartcard was null!");
             return false;
         }
         Integer pin = this.storage.getPin(smartcardUri);

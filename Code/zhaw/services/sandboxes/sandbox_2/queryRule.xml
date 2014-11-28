@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<abc:query-rule xmlns:abc="http://abc4trust.eu/wp2/abcschemav1.0">
+	<abc:query-string>SELECT nickname, income FROM userdata WHERE nickname = '_UID_'</abc:query-string>
+</abc:query-rule>

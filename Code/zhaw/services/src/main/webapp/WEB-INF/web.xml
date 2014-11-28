@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This web.xml file is not required when using Servlet 3.0 container, 
+     see implementation details http://jersey.java.net/nonav/documentation/latest/jax-rs.html#d4e194 -->
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<security-constraint> 
+   <!-- web resources that are protected -->
+   <web-resource-collection>
+     <web-resource-name>A Protected Page</web-resource-name>
+     <url-pattern>/issuance/protected/*</url-pattern>
+   </web-resource-collection>
+
+   <auth-constraint>
+     <!-- role-name indicates roles that are allowed
+       to access the web resource specified above -->
+     <role-name>p2abc-manager</role-name>
+   </auth-constraint>
+  </security-constraint> 
+
+  <login-config>
+   <auth-method>BASIC</auth-method>
+   <realm-name>Basic Authentication Example</realm-name>
+  </login-config>   
+
+
+	 <servlet>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>ch.zhaw.ficore.p2abc.services</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
+        <url-pattern>/issuance/**</url-pattern>
+    </servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
+        <url-pattern>/user-gui/**</url-pattern>
+    </servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
+        <url-pattern>/user/**</url-pattern>
+    </servlet-mapping>
+	<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/css/style.css</url-pattern>
+</servlet-mapping>
+    <resource-ref>
+      <description>
+        This resource points to the concrete URIBytesStorage that should be
+        used by the service.  These URIBytesStorage-s contain secret keys
+        and other infrequently-updated items needed by the service.  
+      </description>
+    <res-ref-name>jdbc/URIBytesStorage</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  	<env-entry>
+		<description> Use database locking? </description>
+		<env-entry-name>cfg/useDbLocking</env-entry-name>
+		<env-entry-value> true </env-entry-value>
+		<env-entry-type> java.lang.Boolean </env-entry-type>
+	</env-entry>
+    <env-entry>
+		<description> BindQuery </description>
+		<env-entry-name>cfg/bindQuery</env-entry-name>
+		<env-entry-value>SELECT password FROM users WHERE username='_UID_'</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> IssuanceServiceURL </description>
+		<env-entry-name>cfg/issuanceServiceURL</env-entry-name>
+		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/issuance/</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> UserServiceURL </description>
+		<env-entry-name>cfg/userServiceURL</env-entry-name>
+		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/user/</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> RestAuthPassword </description>
+		<env-entry-name>cfg/restAuthPassword</env-entry-name>
+		<env-entry-value>jura</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> RestAuthUser </description>
+		<env-entry-name>cfg/restAuthUser</env-entry-name>
+		<env-entry-value>api</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> AttributeSource </description>
+		<env-entry-name>cfg/Source/attributes</env-entry-name>
+		<env-entry-value> FAKE </env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> AuthenticationSource </description>
+		<env-entry-name>cfg/Source/authentication</env-entry-name>
+		<env-entry-value> FAKE </env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<resource-env-ref>
+		<description>ConnectionParameters factory</description>
+		<resource-env-ref-name>cfg/ConnectionParameters/attributes</resource-env-ref-name>
+		<resource-env-ref-type>ch.zhaw.ficore.p2abc.configuration.ConnectionParameters</resource-env-ref-type>
+	</resource-env-ref>
+    <resource-env-ref>
+		<description>ConnectionParameters factory</description>
+		<resource-env-ref-name>cfg/ConnectionParameters/authentication</resource-env-ref-name>
+		<resource-env-ref-type>ch.zhaw.ficore.p2abc.configuration.ConnectionParameters</resource-env-ref-type>
+	</resource-env-ref>
+</web-app>

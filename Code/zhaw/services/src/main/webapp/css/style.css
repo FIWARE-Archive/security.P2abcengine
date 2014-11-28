@@ -1,0 +1,99 @@
+html {
+	background-color: #EFEFEF;
+	font-family: sans-serif;
+}
+
+div.containerDiv {
+	width: 75%;
+	margin: auto;
+	background-color: #FEFEFE;
+	padding: 2em;
+	border-radius: 2em;
+	border: solid 0.5em #DBDBDB;
+}
+
+div.navDiv {
+	border-bottom: solid 0.5em #DBDBDB;
+	padding: 0.7em;
+	padding-bottom: 1.4em;
+}
+
+div.navDiv a {
+	display: block;
+	float: left;
+	border-radius: 0.7em;
+	background-color: #5555DD;
+	color: #FEFEFE;
+	padding: 0.4em;
+	text-decoration: none;
+	margin-right: 1em;
+}
+
+div.navDiv a:hover {
+	display: block;
+	float: left;
+	border-radius: 0.7em;
+	background-color: #AAAADD;
+	color: #0E0E0E;
+	padding: 0.4em;
+	text-decoration: none;
+	
+}
+
+p.info {
+	border-radius: 1em;
+	background-color: #EFEFCC;
+	padding: 1em;
+}
+
+p.error {
+	border-radius: 1em;
+	background-color: #FFCDCD;
+	padding: 1em;
+}
+
+p.success {
+	border-radius: 1em;
+	background-color: #CDFFCD;
+	padding: 1em;
+}
+
+form, table, ul {
+	border-radius: 1em;
+	background-color: #CCEFEF;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+form table tr td { border-style: none; padding: 0em; }
+form table { padding: 0em; }
+
+input, select {
+	border-radius: 0.7em;
+	padding: 0.2em;
+	border: solid 0.2em #DBDBDB;
+}
+
+input:hover, select:hover {
+	border: solid 0.2em #878787;
+}
+
+ul li { margin-left: 1em; }
+
+div.credDiv form { background-color: inherit; border-radius: 0em; padding: 0em; margin-top: 1em;}
+
+
+tr.heading { font-weight: bold; }
+
+tr td { border-bottom: solid 0.1em black; padding: 0.2em; }
+
+.pad { padding: 0.2em; }
+
+.group { border-radius: 0.5em; border: solid 0.2em #DBDBDB; 
+	padding: 0.5em;
+	margin-bottom: 1em; }
+
+form.nopad input { padding: 0em; }
+form.nopad { padding: 0em; margin: 0.01em; }
+
+div.credDiv form.nopad { margin-top: 0.01em; }
