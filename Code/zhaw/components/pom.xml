@@ -2,15 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ch.zhaw.ficore.p2abc</groupId>
+
+  <name>zhaw-components</name>
+  <description>zhaw-components</description>
 	<artifactId>zhaw-components</artifactId>
 	<packaging>jar</packaging>
-	<version>4.1.2</version>
-	<name>zhaw-components</name>
-	<properties>
-	 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<description>zhaw-components</description>
+
+	<parent>
+    <groupId>ch.zhaw.ficore.p2abc</groupId>
+    <artifactId>privacy-ge-zhaw</artifactId>
+    <version>4.1.2</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  
 	<dependencies>
 		<dependency>
 			<groupId>org.xerial</groupId>
