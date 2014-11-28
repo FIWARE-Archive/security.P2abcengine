@@ -251,7 +251,7 @@ public class TestFlow extends JerseyTest {
             return lines;
         }
         catch(Exception e) {
-            throw new RuntimeException("readTextFile("+path+") failed!");
+            throw new RuntimeException("readTextFile("+path+") failed!", e);
         }
     }
     
