@@ -240,6 +240,7 @@ public class TestFlow extends JerseyTest {
         try {
             ClassLoader cl = TestFlow.class.getClassLoader();
             File f = new File(cl.getResource(path).getFile());
+            System.out.println("=# " + f.getAbsolutePath());
             BufferedReader br = new BufferedReader(new FileReader(f));
             String lines = "";
             String line = "";
@@ -251,6 +252,7 @@ public class TestFlow extends JerseyTest {
             return lines;
         }
         catch(Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("readTextFile("+path+") failed!", e);
         }
     }
