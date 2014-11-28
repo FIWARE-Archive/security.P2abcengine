@@ -75,10 +75,12 @@ public class IssuanceService {
     private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
     private static final String errNoQueryRule = "QueryRule is missing!";
     private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
+    private static final String errCredSpecUid = "The credential specification uid does not match or is invalid!";
     private static final String defaultIPUid = "abc4trust:default-issuance-policy";
     private static final String sysParamsUid = "abc4trust:system_parameters_uid"; //this is hardcoded within p2abc engine
     private static final int sysParamsSecurityLevel = 80;
     private static final String sysParamsCryptoMechanism = "urn:abc4trust:1.0:algorithm:idemix";
+    
     
     private ObjectFactory of = new ObjectFactory();
 
@@ -609,7 +611,7 @@ public class IssuanceService {
     }
     
     /**
-     * <b>Path</b>: /protected/issuerParameters/generate/{credentialSpecificationUid}<br>
+     * <b>Path</b>: /protected/issuerParameters/generate/{credentialSpecificationUid} (POST)<br>
      * <br>
      * <b>Description</b>: Generates issuer parameters for a specified credential specification.
      * The generated issuer parameters will automatically be stored at this issuance service.<br>
@@ -664,7 +666,7 @@ public class IssuanceService {
     }
 
    /**
-    * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid} <br>
+    * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid} (PUT)<br>
     * <br>
     * <b>Description</b>: Stores a query rule and associates it with the specified credential specification. 
     * A query rule is stored at the issuance service with the given credential specification UID which the
@@ -705,7 +707,7 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/queryRule/get/{credentialSpecificationUid} <br>
+     * <b>Path</b>: /protected/queryRule/get/{credentialSpecificationUid} (GET)<br>
      * <br>
      * <b>Description</b>: Retrieves a previously stored query rule. <br>
      * <br>
@@ -715,7 +717,7 @@ public class IssuanceService {
      * </ul>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK</li>
+     *  <li>200 - OK (application/xml)</li>
      *  <li>404 - Query rule could not be found.</li>
      *  <li>400 - ERROR</li>
      * </ul>
@@ -750,6 +752,20 @@ public class IssuanceService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/queryRule/list (GET)<br>
+     * <br>
+     * <b>Description</b>: Lists all query rules stored at this issuance service.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>QueryRuleCollection</tt><br>
+     * @return
+     */
     @GET()
     @Path("/protected/queryRule/list")
     public Response queryRules() {
@@ -779,17 +795,24 @@ public class IssuanceService {
     }
 
     /**
-     * Store IssuancePolicy.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     *            UID of the credSpec
+     * <b>Path</b>: /protected/issuancePolicy/store/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores an issuance policy and associates it with a credential specification.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification to associate the issuance policy with.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuancePolicy</tt><br>
+     * @param credentialSpecificationUid UID of the credential specification.
+     * @param policy IssuancePolicy to store.
      * @return Response
      */
     @PUT()
@@ -815,18 +838,23 @@ public class IssuanceService {
     }
 
     /**
-     * Retrieve an IssuancePolicy
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct. This method will return status code NOT_FOUND if no issuance
-     * policy with the given uid is found.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     * @return IssuancePolicy
+     * <b>Path</b>: /protected/issuancePolicy/get/{credentialSpecificationUid} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retrieve an issuance policy that was previously stored. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification the issuance policy is associated with.</li>
+     * </ul>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <b>Return type</b>: <tt>IssuancePolicy</tt><br>
+     * @param credentialSpecificationUid UID of the credential specification
+     * @return Response
      */
     @GET()
     @Path("/protected/issuancePolicy/get/{credentialSpecificationUid}")
@@ -855,15 +883,20 @@ public class IssuanceService {
     }
 
     /**
-     * This method can be used to test the authentication. It returns a response
-     * with status code OK if the authentication was successful, otherwise it
-     * returns a response with status code FORBIDDEN.
-     * 
-     * This method will return status code FORBIDDEN if authentication failed.
-     * 
+     * <b>Path</b>: /testAuthentication (GET)
+     * <br>
+     * <b>Description</b>: This method can be used to test authentication by sending an authentication request.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>401 - Authentication was not successful.</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>AuthenticationRequest</tt><br>
      * @param authReq
-     *            an AuthenticationRequest
-     * @return response
+     * @return
      */
     @POST()
     @Path("/testAuthentication")
@@ -895,24 +928,28 @@ public class IssuanceService {
     }
 
     /**
-     * This method can be used to obtain the AttributeInfoCollection that may
-     * later be converted into a CredentialSpecification. This method contacts
-     * the identity source to obtain the necessary attributes for <em>name</em>.
-     * <em>name</em> refers to a <em>kind</em> of credential a user can get
-     * issued. For example <em>name</em> may refer to an objectClass in LDAP.
-     * However, the exact behaviour of <em>name</em> depends on the
-     * configuration of this service.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
-     *            the magic cookie
+     * <b>Path</b>: /protected/attributeInfoCollection/{name} (GET)<br>
+     * <br>
+     * <b>Description</b>: This method can be used to obtain information about attributes from the attribute source (i.e.
+     * LDAP, JDBC or something else). This method will return an <tt>AttributeInfoCollection</tt> that can be passed to
+     * {@link #generateCredentialSpecification(AttributeInfoCollection)}. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>name - Name identifies the entity from which to extract/gather attribute information. For LDAP <em>name
+     *  </em> is an object class and for JDBC <em>name</em> is the name of a table in a database. Please be aware that
+     *  <em>name</em> is ALWAYS provider specific. </li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>AtributeInfoCollection</tt><br>
      * @param name
-     *            name (see description of this method above)
-     * @return an AttributeInfoCollection as application/xml.
+     * @return
      */
     @GET()
     @Path("/protected/attributeInfoCollection/{name}")
@@ -939,20 +976,20 @@ public class IssuanceService {
     }
 
     /**
-     * Generates (or creates) the corresponding CredentialSpecification for a
-     * given AttributeInfoCollection. This method assumes that the given
-     * AttributeInfoCollection is sane.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param attrInfoColl
-     *            the AttributeInfoCollection
-     * @return a CredentialSpecification
+     * <b>Path</b>: /protected/credentialSpecification/generate (POST)<br>
+     * <br>
+     * <b>Description</b>: Generate a credential specification based on the supplied <tt>AttributeInfoCollection</tt>.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>AttributeInfoCollection</tt><br>
+     * <b>Return type</b>: <tt>CredentialSpecification</tt><br>
+     * @param attrInfoCol
+     * @return
      */
     @POST()
     @Path("/protected/credentialSpecification/generate")
@@ -1000,20 +1037,26 @@ public class IssuanceService {
     }
 
     /**
-     * Store a CredentialSpecification at the issuer.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
-     *            the magic cookie
-     * @param credentialSpecificationUid
-     *            UID of the CredentialSpecification
+     * <b>Path</b>: /protected/credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Store a credential specification at this service.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>CredentialSpecification</tt><br>
+     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * @param credentialSpecifationUid
      * @param credSpec
-     *            the CredentialSpecification to store
-     * @return Response
+     * @return
      */
     @PUT()
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
@@ -1031,6 +1074,10 @@ public class IssuanceService {
             this.initializeHelper(CryptoEngine.IDEMIX);
 
             IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            if(!credSpec.getSpecificationUID().toString().equals(credentialSpecifationUid.toString())) {
+                return logger.exit(Response.status(Response.Status.CONFLICT).entity(errCredSpecUid).build());
+            }
 
             KeyManager keyManager = instance.keyManager;
 
@@ -1050,19 +1097,25 @@ public class IssuanceService {
     }
 
     /**
-     * Retreive a CredentialSpecification from the issuer.
-     * 
-     * This method is protected by the magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct. This method will return status code NOT_FOUND if no credential
-     * specification with the given uid is found.
-     * 
+     * <b>Path</b>: /protected/credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retrieve a credential specification.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     *  <li>credentialSpecificationUid - UID of the credential specification</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>404 - Credential specification was not found.</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>CredentialSpecification</tt><br>
      * @param magicCookie
-     *            the magic cookie
      * @param credentialSpecificationUid
-     *            UID of the CredentialSpecification to retreive
-     * @return Response (CredentialSpecification)
+     * @return
      */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
@@ -1124,10 +1177,10 @@ public class IssuanceService {
      * @return
      * @throws Exception
      */
-    @POST()
-    @Path("/protected/setupSystemParameters/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response setupSystemParameters(
+    //@POST()
+    //@Path("/protected/setupSystemParameters/")
+    //@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    private Response setupSystemParameters(
             @QueryParam("securityLevel") int securityLevel,
             @QueryParam("cryptoMechanism") URI cryptoMechanism)
             throws Exception {
@@ -1197,6 +1250,10 @@ public class IssuanceService {
     }
 
     /**
+     * <b>Path</b>: /protected/setupIssuerParameters/ (POST) <br>
+     * <br>
+     * <b>Description:</b>
+     * 
      * This method generates a fresh issuance key and the corresponding Issuer
      * parameters. The issuance key is stored in the Issuer’s key store, the
      * Issuer parameters are returned as output of the method. The input to this
@@ -1209,10 +1266,16 @@ public class IssuanceService {
      * Currently, the only supported hash algorithm is SHA-256 with identifier
      * urn:abc4trust:1.0:hashalgorithm:sha-256.
      * 
-     * Protected by magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     *  <li>404 - Credential specification could not be found.</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuerParametersInput</tt><br>
+     * <b>Return type</b>: <tt>IssuerParameters</tt><br>
      * 
      * @return
      * @throws Exception
@@ -1346,16 +1409,11 @@ public class IssuanceService {
      * uid of the stored issuance log entry that contains an issuance token
      * together with the attribute values provided by the issuer to keep track
      * of the issued credentials.
-     * 
-     * Protected by magic cookie.
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
      */
-    @POST()
-    @Path("/protected/initIssuanceProtocol/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response initIssuanceProtocol(
+    //@POST()
+    //@Path("/protected/initIssuanceProtocol/")
+    //@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    private Response initIssuanceProtocol(
             IssuancePolicyAndAttributes issuancePolicyAndAttributes)
             throws Exception {
 
@@ -1419,6 +1477,10 @@ public class IssuanceService {
     }
 
     /**
+     * <b>Path</b>: /issuanceProtocolStep (POST)<br>
+     * <br>
+     * <b>Description</b>:
+     * 
      * This method performs one step in an interactive issuance protocol. On
      * input an incoming issuance message m received from the User, it returns
      * the outgoing issuance message that is to be sent back to the User, a
@@ -1427,7 +1489,16 @@ public class IssuanceService {
      * together with the attribute values provided by the issuer to keep track
      * of the issued credentials. The Context attribute of the outgoing message
      * has the same value as that of the incoming message, allowing the Issuer
-     * to link the different messages of this issuance protocol.
+     * to link the different messages of this issuance protocol.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application/xml)</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
+     * <b>Return type:</b>: <tt>IssuanceMessageAndBoolean</tt><br>
      */
     @POST()
     @Path("/issuanceProtocolStep")

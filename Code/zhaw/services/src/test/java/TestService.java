@@ -1,16 +1,11 @@
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
@@ -18,13 +13,8 @@ import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
 
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.core.ScanningResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
-import com.sun.net.httpserver.HttpServer;
 
 
 public class TestService extends JerseyTest {
