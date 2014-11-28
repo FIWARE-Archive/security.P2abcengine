@@ -15,10 +15,8 @@ public abstract class URIBytesStorage {
      * Put data into storage possibly overwriting an existing entry in the
      * storage.
      * 
-     * @param URI
-     *            uri (key)
-     * @param bytes
-     *            bytes (value)
+     * @param uri the uri (key)
+     * @param bytes the bytes (value)
      */
     public void put(URI uri, byte[] bytes) throws Exception {
         put(uri.toString(), bytes);
@@ -30,10 +28,8 @@ public abstract class URIBytesStorage {
      * Put data into storage if and only if no such entry exists yet in the
      * storage.
      * 
-     * @param URI
-     *            uri (key)
-     * @param bytes
-     *            bytes (value)
+     * @param uri the uri (key)
+     * @param bytes the bytes (value)
      * @return true if data was added, false otherwise
      */
     public boolean putNew(URI uri, byte[] bytes) throws Exception {
@@ -45,9 +41,8 @@ public abstract class URIBytesStorage {
     /**
      * Retreive a value from the Storage.
      * 
-     * @param URI
-     *            uri (key)
-     * @return bytes (value)
+     * @param uri the uri (key)
+     * @return the bytes (value)
      */
     public byte[] get(URI uri) throws Exception {
         return get(uri.toString());
@@ -80,7 +75,9 @@ public abstract class URIBytesStorage {
     }
 
     /**
-     * Return a list of all values (byte[]).
+     * Returns a list of all values.
+     * 
+     * @return list of all values
      * 
      */
     public List<byte[]> values() throws Exception {
@@ -97,8 +94,7 @@ public abstract class URIBytesStorage {
     /**
      * Checks whether an entry with a given key exists in the storage.
      * 
-     * @param URI
-     *            uri (key)
+     * @param uri the uri (key)
      * @return true if exists, false otherwise
      */
     public boolean containsKey(URI uri) throws Exception {
@@ -110,8 +106,7 @@ public abstract class URIBytesStorage {
     /**
      * Deletes an entry with a given key from the storage.
      * 
-     * @param URI
-     *            uri (key)
+     * @param uri the uri (key)
      */
     public void delete(URI uri) throws Exception {
         delete(uri.toString());
@@ -122,7 +117,7 @@ public abstract class URIBytesStorage {
     /**
      * Deletes all entries in the storage.
      * 
-     * @throws Exception
+     * @throws Exception on any error
      */
     public abstract void deleteAll() throws Exception;
 }

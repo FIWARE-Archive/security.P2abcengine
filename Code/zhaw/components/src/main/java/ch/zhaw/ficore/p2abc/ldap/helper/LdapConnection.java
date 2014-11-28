@@ -24,11 +24,10 @@ public class LdapConnection {
     private Logger logger;
 
     /**
-     * Create a Connection using a ConnectionParameters
+     * Creates a Connection using a ConnectionParameters.
      * 
-     * @param cfg
-     *            An ConnectionParameters
-     * @throws NamingException
+     * @param config the connection parameters
+     * @throws NamingException on an LDAP error
      */
     public LdapConnection(ConnectionParameters config) throws NamingException {
         logger = LogManager.getLogger();
@@ -40,19 +39,21 @@ public class LdapConnection {
     }
 
     /**
-     * @return Returns the DirContext
+     * @return Returns the DirContext.
+     * 
+     * @return the directory context
      */
     public DirContext getInitialDirContext() {
         return initialDirContext;
     }
 
     /**
-     * Replace the ConnectionParameters associated with this connection and load
-     * it.
+     * Replaces the ConnectionParameters associated with this connection and
+     * loads it.
      * 
      * @param config
      *            A new ConnectionParameters
-     * @throws NamingException
+     * @throws NamingException on an LDAP error
      */
     public void applyConfig(ConnectionParameters config) throws NamingException {
         this.config = config;
@@ -60,9 +61,9 @@ public class LdapConnection {
     }
 
     /**
-     * Reload the associated ConnectionParameters
+     * Reloads the associated connection parameters.
      * 
-     * @throws NamingException
+     * @throws NamingException on an LDAP error
      */
     private void reloadConfig() throws NamingException {
         if (initialDirContext != null)
@@ -73,7 +74,7 @@ public class LdapConnection {
     /**
      * Return the environment needed to construct a DirContext
      * 
-     * @return Environment as a Hashtable
+     * @return environment as a Hashtable
      */
     private Hashtable<String, String> makeEnvironment() {
         Hashtable<String, String> env = new Hashtable<>();
@@ -108,7 +109,7 @@ public class LdapConnection {
     /**
      * Closes the DirContext
      * 
-     * @throws NamingException
+     * @throws NamingException on an LDAP error
      */
     public void close() throws NamingException {
         initialDirContext.close();
