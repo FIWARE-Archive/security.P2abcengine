@@ -1,6 +1,8 @@
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -12,16 +14,23 @@ import org.sqlite.SQLiteDataSource;
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
 
-public class TestService extends JerseyTest {
+public class TestIssuerQueryRules extends JerseyTest {
+    
+    private static String issuanceServiceURL = "issuance/protected/";
+    private static String issuanceServiceURLUnprot = "issuance/";
 
-    public TestService() throws Exception {
+    public TestIssuerQueryRules() throws Exception {
         super("ch.zhaw.ficore.p2abc.services");
         initJNDI();
+        issuanceServiceURL = getBaseURI() + issuanceServiceURL;
+        issuanceServiceURLUnprot = getBaseURI() + issuanceServiceURLUnprot;
     }
 
     UserService userService;
@@ -77,9 +86,42 @@ public class TestService extends JerseyTest {
     
 
     @Test
-    public void testUserServiceStatus() throws Exception {        
-        RESTHelper.getRequest(getBaseURI() + "user/status");
+    public void testQueryRules() throws Exception {        
+        QueryRule qr = new QueryRule();
+        qr.queryString = "string1";
         
+        RESTHelper.putRequest(issuanceServiceURL+"queryRule/store/urn%3Afoo1", 
+                RESTHelper.toXML(QueryRule.class, qr));
+        
+        qr.queryString = "string2";
+        
+
+        RESTHelper.putRequest(issuanceServiceURL+"queryRule/store/urn%3Afoo2", 
+                RESTHelper.toXML(QueryRule.class, qr));
+        
+        QueryRule qr_ = (QueryRule) RESTHelper.getRequest(issuanceServiceURL+"queryRule/get/urn%3Afoo1", QueryRule.class);
+        assertEquals(qr_.queryString, "string1");
+        
+        qr_ = (QueryRule) RESTHelper.getRequest(issuanceServiceURL+"queryRule/get/urn%3Afoo2", QueryRule.class);
+        assertEquals(qr_.queryString, "string2");
+        
+        QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper.getRequest(issuanceServiceURL+"queryRule/list", QueryRuleCollection.class);
+        assertEquals(qrc.queryRules.size(), qrc.uris.size());
+        assertEquals(qrc.queryRules.size(), 2);
+        
+        for(String s : new String[]{"urn:foo1","urn:foo2"}) {
+            assertEquals(qrc.uris.contains(s), true);
+        }
+      
+        
+        Map<String, String> m = new HashMap<String,String>();
+        m.put("string1","urn:foo1");
+        m.put("string2","urn:foo2");
+        
+        for(int i = 0; i < qrc.queryRules.size(); i++) {
+            QueryRule q = qrc.queryRules.get(i);
+            assertEquals(qrc.uris.get(i), m.get(q.queryString));
+        }
     }
     
     public void assertOk(Response r) {
