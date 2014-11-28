@@ -40,6 +40,13 @@ public class TestService extends JerseyTest {
         System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
         InitialContext ic = new InitialContext();
 
+        try {
+            ic.destroySubcontext("java:");
+        }
+        catch(Exception e) {
+            
+        }
+        
         ic.createSubcontext("java:");
         ic.createSubcontext("java:/comp");
         ic.createSubcontext("java:/comp/env");
@@ -51,7 +58,6 @@ public class TestService extends JerseyTest {
         ConnectionParameters cp = new ConnectionParameters();
         ic.bind("java:/comp/env/cfg/ConnectionParameters/attributes", cp);
         ic.bind("java:/comp/env/cfg/ConnectionParameters/authentication", cp);
-        
         ic.bind("java:/comp/env/cfg/Source/attributes", "FAKE");
         ic.bind("java:/comp/env/cfg/Source/authentication", "FAKE");
         ic.bind("java:/comp/env/cfg/bindQuery", "FAKE");
@@ -68,6 +74,7 @@ public class TestService extends JerseyTest {
         ic.bind("java:/comp/env/jdbc/" + dbName, ds);
         ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
     }
+    
 
     @Test
     public void testUserServiceStatus() throws Exception {        

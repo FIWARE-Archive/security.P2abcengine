@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<abc:issuance-request xmlns:abc="http://abc4trust.eu/wp2/abcschemav1.0">
+	<abc:auth-request>
+		<abc:auth-info-simple>
+			<abc:username>CaroleKing</abc:username>
+			<abc:password>Jazzman</abc:password>
+		</abc:auth-info-simple>
+	</abc:auth-request>
+	<abc:credential-specification-uid>urn:fiware:privacy:test</abc:credential-specification-uid>
+</abc:issuance-request>
