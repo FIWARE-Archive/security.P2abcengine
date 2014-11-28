@@ -5,7 +5,7 @@
 	<groupId>ch.zhaw.ficore.p2abc.services</groupId>
 	<artifactId>zhaw-webservices</artifactId>
 	<packaging>war</packaging>
-	<version>0.1</version>
+	<version>4.1.2</version>
 	<name>zhaw-webservices</name>
 	<description>zhaw-webservices</description>
 	<properties>
