@@ -7,7 +7,7 @@
 
   <groupId>org.fiware</groupId>
   <artifactId>privacy-ge-zhaw</artifactId>
-  <version>1.0</version>
+  <version>4.1.2</version>
   <packaging>pom</packaging>
 
   <modules>
