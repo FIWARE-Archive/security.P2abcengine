@@ -104,7 +104,9 @@ public class ServicesConfiguration {
     }
 
     /**
-     * Returns the URI base
+     * Returns the URI base.
+     * 
+     * @return the URI base
      */
     public static synchronized String getURIBase() {
         return uriBase;

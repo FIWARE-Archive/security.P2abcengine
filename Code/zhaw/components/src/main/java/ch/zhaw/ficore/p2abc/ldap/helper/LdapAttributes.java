@@ -14,12 +14,9 @@ import javax.naming.directory.ModificationItem;
 public class LdapAttributes {
 
     /**
-     * <p>
-     * Replace attributes of an ldap object.
-     * </p>
-     * <p>
+     * Replaces attributes of an ldap object.
+     * 
      * Example:
-     * </p>
      * 
      * <pre>
      * LdapAttributes.replaceAttribute(&quot;cn=munt, dc=example, dc=com&quot;,
@@ -32,7 +29,8 @@ public class LdapAttributes {
      *            Attribute to replace
      * @param con
      *            An LdapConnection
-     * @throws NamingException
+     * @throws NamingException if the initial context can't be retrieved or
+     *            the replacement didn't work
      */
     public static void replaceAttribute(String name, Attribute attribute,
             LdapConnection con) throws NamingException {

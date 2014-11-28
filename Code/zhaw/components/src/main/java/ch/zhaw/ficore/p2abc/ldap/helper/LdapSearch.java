@@ -45,9 +45,9 @@ public class LdapSearch {
     /**
      * Perform a search using a specified filter-Expression
      * 
-     * @param filter
+     * @param filter the filter expression to use
      * @return NamingEnumeration
-     * @throws NamingException
+     * @throws NamingException on an LDAP error
      */
     public NamingEnumeration<SearchResult> search(String filter)
             throws NamingException {
@@ -57,11 +57,11 @@ public class LdapSearch {
     /**
      * Ask for an attribute.
      * 
-     * @param filter
-     * @param attr
-     * @return Object
-     * @throws LdapException
-     * @throws NamingException
+     * @param filter the filter to use
+     * @param attr the attribute to search for
+     * @return Object the object associated with that attribute
+     * @throws LdapException on an LDAP error
+     * @throws NamingException on an LDAP error
      */
     public Object getAttribute(String filter, String attr)
             throws LdapException, NamingException {
@@ -71,10 +71,11 @@ public class LdapSearch {
     /**
      * Returs true if an object matches the filter-Expression.
      * 
-     * @param filter
-     * @return true or false
-     * @throws LdapException
-     * @throws NamingException
+     * @param filter the filter to use
+     * @return true if an object exists that matches the filter expression,
+     *     false otherwise
+     * @throws LdapException on an LDAP error
+     * @throws NamingException on an LDAP error
      */
     public boolean doesExist(String filter) throws LdapException,
             NamingException {
@@ -86,9 +87,9 @@ public class LdapSearch {
      * 
      * @param name
      *            (context)
-     * @param filter
-     * @return
-     * @throws NamingException
+     * @param filter the filter expression to use
+     * @return a number of results
+     * @throws NamingException on an LDAP error
      */
     public NamingEnumeration<SearchResult> search(String name, String filter)
             throws NamingException {
@@ -101,12 +102,12 @@ public class LdapSearch {
      * Ask for an attribute of an object that matches the specified
      * filter-Expression.
      * 
-     * @param name
-     * @param filter
-     * @param attr
-     * @return
-     * @throws LdapException
-     * @throws NamingException
+     * @param name the name of the object
+     * @param filter the filter expression to use
+     * @param attr ate attribute to look for
+     * @return the matched object
+     * @throws LdapException on an LDAP error
+     * @throws NamingException on an LDAP error
      */
     public Object getAttribute(String name, String filter, String attr)
             throws LdapException, NamingException {
@@ -122,11 +123,11 @@ public class LdapSearch {
     /**
      * Returns true if the specified filter-Expression matches something.
      * 
-     * @param name
-     * @param filter
-     * @return
-     * @throws LdapException
-     * @throws NamingException
+     * @param name the name of the object
+     * @param filter the filter expression to use
+     * @return true if the specified object exists, false otherwise
+     * @throws LdapException on an LDAP error
+     * @throws NamingException on an LDAP error
      */
     public boolean doesExist(String name, String filter) throws LdapException,
             NamingException {
