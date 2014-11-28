@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<abc:IssuerParametersInput 
+   xmlns:abc="http://abc4trust.eu/wp2/abcschemav1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation="http://abc4trust.eu/wp2/abcschemav1.0 ../../../../../../../../abc4trust-xml/src/main/resources/xsd/schema.xsd"
+   Version="1.0">
+  <abc:ParametersUID>urn:fiware:privacy:issuance:idemix</abc:ParametersUID>
+  <abc:FriendlyIssuerDescription lang="en">Issuer parameters for integration-test</abc:FriendlyIssuerDescription>
+  <abc:AlgorithmID>urn:abc4trust:1.0:algorithm:idemix</abc:AlgorithmID>
+  <abc:CredentialSpecUID>urn:fiware:privacy:test</abc:CredentialSpecUID>
+  <abc:HashAlgorithm>urn:abc4trust:1.0:hashalgorithm:sha-256</abc:HashAlgorithm>
+  <abc:RevocationParametersUID>urn:fiware:privacy:revocation</abc:RevocationParametersUID>
+</abc:IssuerParametersInput>
+
