@@ -895,8 +895,9 @@ public class IssuanceService {
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>AuthenticationRequest</tt><br>
-     * @param authReq
-     * @return
+     * 
+     * @param authReq the authentication request
+     * @return Response
      */
     @POST()
     @Path("/testAuthentication")
@@ -948,8 +949,9 @@ public class IssuanceService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>AtributeInfoCollection</tt><br>
-     * @param name
-     * @return
+     * 
+     * @param name Name
+     * @return Response
      */
     @GET()
     @Path("/protected/attributeInfoCollection/{name}")
@@ -988,8 +990,9 @@ public class IssuanceService {
      * <br>
      * <b>Input type</b>: <tt>AttributeInfoCollection</tt><br>
      * <b>Return type</b>: <tt>CredentialSpecification</tt><br>
-     * @param attrInfoCol
-     * @return
+     * 
+     * @param attrInfoCol the attribute info collection
+     * @return Response
      */
     @POST()
     @Path("/protected/credentialSpecification/generate")
@@ -1054,9 +1057,10 @@ public class IssuanceService {
      * <br>
      * <b>Input type</b>: <tt>CredentialSpecification</tt><br>
      * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
-     * @param credentialSpecifationUid
-     * @param credSpec
-     * @return
+     * 
+     * @param credentialSpecifationUid UID of the credential specification
+     * @param credSpec the credential specification
+     * @return Response
      */
     @PUT()
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
@@ -1113,9 +1117,9 @@ public class IssuanceService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>CredentialSpecification</tt><br>
-     * @param magicCookie
-     * @param credentialSpecificationUid
-     * @return
+     * 
+     * @param credentialSpecificationUid UID of the credential specification
+     * @return Response
      */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
@@ -1150,6 +1154,9 @@ public class IssuanceService {
     }
 
     /**
+     * <b>Path</b>: /protected/setupSystemParameters/ (POST)<br>
+     * <b>Description</b>:
+     * 
      * This method generates a fresh set of system parameters for the given
      * security level, expressed as the bitlength of a symmetric key with
      * comparable security, and cryptographic mechanism. Issuers can generate
@@ -1161,26 +1168,26 @@ public class IssuanceService {
      * supported.
      * 
      * Currently, the supported mechanism URIs are
-     * urn:abc4trust:1.0:algorithm:idemix for Identity Mixer and
-     * urn:abc4trust:1.0:algorithm:uprove for U-Prove.
+     * urn:abc4trust:1.0:algorithm:idemix for Identity Mixer
      * 
-     * This method will overwrite any existing system parameters.
+     * This method will overwrite any existing system parameters.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK</li>
+     *  <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>SystemParameters<tt><br>
      * 
-     * Protected by magic cookie
-     * 
-     * This method will return status code FORBIDDEN if the magic cookie is not
-     * correct.
-     * 
-     * @param magicCookie
      * @param securityLevel
      * @param cryptoMechanism
-     * @return
-     * @throws Exception
+     * @return Response
      */
-    //@POST()
-    //@Path("/protected/setupSystemParameters/")
-    //@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    private Response setupSystemParameters(
+    @POST()
+    @Path("/protected/setupSystemParameters/")
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    public Response setupSystemParameters(
             @QueryParam("securityLevel") int securityLevel,
             @QueryParam("cryptoMechanism") URI cryptoMechanism)
             throws Exception {
@@ -1277,8 +1284,7 @@ public class IssuanceService {
      * <b>Input type</b>: <tt>IssuerParametersInput</tt><br>
      * <b>Return type</b>: <tt>IssuerParameters</tt><br>
      * 
-     * @return
-     * @throws Exception
+     * @return Response
      */
     @POST()
     @Path("/protected/setupIssuerParameters/")
@@ -1555,5 +1561,4 @@ public class IssuanceService {
         throw new RuntimeException("We only support idemix. Sorry :(");
     }
 
-    /* END SECTION */
 }
