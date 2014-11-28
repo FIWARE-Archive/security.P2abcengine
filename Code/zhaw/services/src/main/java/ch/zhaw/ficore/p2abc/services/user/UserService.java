@@ -186,9 +186,6 @@ public class UserService {
      * 
      * @param p PresentationPolicyAlternatives
      * @return Response
-     * @throws CannotSatisfyPolicyException
-     * @throws CredentialManagerException
-     * @throws KeyManagerException
      */
     @POST()
     @Path("/createPresentationToken/")
@@ -275,7 +272,7 @@ public class UserService {
      *  <li>400 - ERROR</li>
      * </ul>
      * @param url URL to download settings from.
-     * @return
+     * @return Response
      */
     @GET()
     @Path("/loadSettings/")
@@ -481,10 +478,6 @@ public class UserService {
      * 
      * @param jm IssuanceMessage
      * @return Response
-     * @throws CannotSatisfyPolicyException
-     * @throws CryptoEngineException
-     * @throws KeyManagerException
-     * @throws CredentialManagerException
      */
     @POST()
     @Path("/issuanceProtocolStep/")
@@ -527,8 +520,8 @@ public class UserService {
      * <br>
      * <b>Input type</b>: <tt>UiIssuanceReturn</tt><br>
      * <b>Return type</b>: <tt>IssuanceMessage</tt><br>
-     * @param uir
-     * @return
+     * @param uir UiIssuanceReturn
+     * @return Response
      */
     @POST()
     @Path("/issuanceProtocolStepUi/")
@@ -672,8 +665,8 @@ public class UserService {
      * <br>
      * <b>Input type</b>: <tt>SystemParameters</tt><br>
      * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
-     * @param systemParameters
-     * @return
+     * @param systemParameters SystemParameters
+     * @return Response
      */
     @PUT()
     @Path("/systemParameters/store")
@@ -813,8 +806,8 @@ public class UserService {
      * <br>
      * <b>Input type:</b> <tt>IssuanceMessageAndBoolean</tt><br>
      * <b>Return type:</b> <tt>IssuanceMessage</tt><br>
-     * @param issuanceMessageAndBoolean
-     * @return
+     * @param issuanceMessageAndBoolean IssuanceMessageAndBoolean
+     * @return Response
      */
     @POST()
     @Path("/extractIssuanceMessage/")

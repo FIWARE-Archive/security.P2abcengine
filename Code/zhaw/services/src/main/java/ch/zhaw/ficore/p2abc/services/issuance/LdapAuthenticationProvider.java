@@ -28,7 +28,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
     /**
      * Constructor
      * 
-     * @throws NamingException
+     * @param configuration Configuration (Issuance)
      */
     public LdapAuthenticationProvider(IssuanceConfiguration configuration) {
         super(configuration);

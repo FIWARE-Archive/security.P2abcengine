@@ -401,7 +401,7 @@ public class UserServiceGUI {
      *            URL of the issuance service
      * @param credSpecUid
      *            UID of the CredentialSpecification of the Credential to obtain
-     * @return
+     * @return Response
      */
     @POST
     @Path("/obtainCredential2")
@@ -459,7 +459,7 @@ public class UserServiceGUI {
      *            Chosen Pseudonymlist
      * @param uiContext
      *            Context identifier
-     * @return
+     * @return Response
      */ 
     @POST
     @Path("/obtainCredential3")
@@ -521,7 +521,7 @@ public class UserServiceGUI {
      * issuer. This method will display a webpage asking for the required data
      * and will direct the User to obtainCredential2
      * 
-     * @return
+     * @return Response
      */
     @GET
     @Path("/obtainCredential/")

@@ -69,6 +69,7 @@ public abstract class AuthenticationProvider {
      * 
      * @throws IllegalStateException
      *             if called before or after an unsuccessful authenticate.
+     * @return UserID
      */
     public abstract String getUserID() throws IllegalStateException;
 }

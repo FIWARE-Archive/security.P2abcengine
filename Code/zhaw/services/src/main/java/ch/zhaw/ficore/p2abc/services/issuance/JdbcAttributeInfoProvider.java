@@ -26,6 +26,8 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 
     /**
      * Constructor
+     * 
+     * @param configuration Configuration (Issuance)
      */
     public JdbcAttributeInfoProvider(IssuanceConfiguration configuration) {
         super(configuration);

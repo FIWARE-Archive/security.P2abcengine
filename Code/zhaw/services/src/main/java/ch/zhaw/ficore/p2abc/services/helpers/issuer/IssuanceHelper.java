@@ -338,8 +338,8 @@ public class IssuanceHelper extends AbstractHelper {
      * 
      * @param issuanceMessage
      *            IssuanceMessager as String
-     * @return
-     * @throws Exception
+     * @return IssuanceMessageAndBoolean
+     * @throws Exception when something went wrong.
      */
     public IssuanceMessageAndBoolean issueStep(IssuanceMessage issuanceMessage)
             throws Exception {
@@ -366,8 +366,9 @@ public class IssuanceHelper extends AbstractHelper {
      * 
      * @param issuanceMessage
      *            IssuanceMessager as String
-     * @return
-     * @throws Exception
+     * @param cryptoEngine crypto engin to use.
+     * @return IssuanceMessageAndBoolean
+     * @throws Exception when something went wrong.
      */
     public IssuanceMessageAndBoolean issueStep(CryptoEngine cryptoEngine,
             IssuanceMessage issuanceMessage) throws Exception {

@@ -36,7 +36,7 @@ public class RESTHelper {
      * @param obj
      *            the object
      * @return XML as string
-     * @throws JAXBException
+     * @throws JAXBException when serialization fails.
      */
     @SuppressWarnings("rawtypes")
     public static String toXML(Class clazz, Object obj) throws JAXBException {
@@ -57,7 +57,7 @@ public class RESTHelper {
      * @param xml
      *            the input data
      * @return the object
-     * @throws JAXBException
+     * @throws JAXBException when deseralization fails.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {
@@ -75,9 +75,9 @@ public class RESTHelper {
      *            class of the object to be returned (needed for
      *            deserialization)
      * @return the object
-     * @throws ClientHandlerException
-     * @throws UniformInterfaceException
-     * @throws JAXBException
+     * @throws ClientHandlerException When a connection error occurs.
+     * @throws UniformInterfaceException When something else went wrong.
+     * @throws JAXBException When either serialization or deserialization fails.
      */
     @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, String xml, Class clazz)

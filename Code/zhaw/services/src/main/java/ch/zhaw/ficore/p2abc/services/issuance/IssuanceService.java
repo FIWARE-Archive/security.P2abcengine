@@ -278,7 +278,7 @@ public class IssuanceService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>Settings</tt><br>
-     * @return
+     * @return Response
      */
     @GET()
     @Path("/getSettings/")
@@ -460,10 +460,10 @@ public class IssuanceService {
      *  <li>404 - Credential specification could not be found.</li>
      *  <li>400 - ERROR</li>
      * </ul>
-     * @param index
-     * @param credSpecUid
-     * @param language
-     * @return
+     * @param index Index of the attribute.
+     * @param credSpecUid UID of the credential specification.
+     * @param language language identifier of the friendly description.
+     * @return Response
      */
     @DELETE()
     @Path("/protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid}")
@@ -548,11 +548,11 @@ public class IssuanceService {
      *  <li>404 - Credential specification could not be found.</li>
      *  <li>400 - ERROR</li>
      * </ul>
-     * @param index
-     * @param credSpecUid
-     * @param language
-     * @param value
-     * @return
+     * @param index Index of the attribute.
+     * @param credSpecUid UID of the credential specification.
+     * @param language language identifier of the friendly description.
+     * @param value value of the friendly description.
+     * @return Response
      */
     @PUT()
     @Path("/protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid}")
@@ -626,8 +626,8 @@ public class IssuanceService {
      *  <li>200 -OK</li>
      *  <li>400 - ERROR</li>
      * </ul>
-     * @param credSpecUid
-     * @return
+     * @param credSpecUid UID of the credential specification
+     * @return Response
      */
     @POST()
     @Path("/protected/issuerParameters/generate/{credentialSpecificationUid}")
@@ -764,7 +764,8 @@ public class IssuanceService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>QueryRuleCollection</tt><br>
-     * @return
+     * 
+     * @return Response
      */
     @GET()
     @Path("/protected/queryRule/list")
@@ -1124,7 +1125,6 @@ public class IssuanceService {
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
     public Response getCredentialSpecification(
-            @PathParam("magicCookie") String magicCookie,
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
         logger.entry();
 
@@ -1178,10 +1178,10 @@ public class IssuanceService {
      *  <li>400 - ERROR</li>
      * </ul>
      * <br>
-     * <b>Return type</b>: <tt>SystemParameters<tt><br>
+     * <b>Return type</b>: <tt>SystemParameters</tt><br>
      * 
-     * @param securityLevel
-     * @param cryptoMechanism
+     * @param securityLevel Security level
+     * @param cryptoMechanism Crypto mechanism (idemix)
      * @return Response
      */
     @POST()
@@ -1189,8 +1189,7 @@ public class IssuanceService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response setupSystemParameters(
             @QueryParam("securityLevel") int securityLevel,
-            @QueryParam("cryptoMechanism") URI cryptoMechanism)
-            throws Exception {
+            @QueryParam("cryptoMechanism") URI cryptoMechanism) {
 
         logger.entry();
 
@@ -1284,13 +1283,14 @@ public class IssuanceService {
      * <b>Input type</b>: <tt>IssuerParametersInput</tt><br>
      * <b>Return type</b>: <tt>IssuerParameters</tt><br>
      * 
+     * @param issuerParametersInput Input for issuer parameters setup.
      * @return Response
      */
     @POST()
     @Path("/protected/setupIssuerParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response setupIssuerParameters(
-            IssuerParametersInput issuerParametersInput) throws Exception {
+            IssuerParametersInput issuerParametersInput) {
 
         logger.entry();
 
@@ -1505,6 +1505,9 @@ public class IssuanceService {
      * <br>
      * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
      * <b>Return type:</b>: <tt>IssuanceMessageAndBoolean</tt><br>
+     * 
+     * @param issuanceMessage an IssuanceMessage.
+     * @return Response
      */
     @POST()
     @Path("/issuanceProtocolStep")

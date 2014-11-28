@@ -31,7 +31,7 @@ public class IssuerGUI {
      * @param obj
      *            the object
      * @return XML as string
-     * @throws JAXBException
+     * @throws JAXBException when serialization fails.
      */
     @SuppressWarnings("rawtypes")
     public static String toXML(Class clazz, Object obj) throws JAXBException {
@@ -52,7 +52,7 @@ public class IssuerGUI {
      * @param xml
      *            the input data
      * @return the object
-     * @throws JAXBException
+     * @throws JAXBException when deserialization fails
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {

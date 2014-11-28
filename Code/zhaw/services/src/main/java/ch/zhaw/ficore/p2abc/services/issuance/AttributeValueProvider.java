@@ -74,6 +74,8 @@ public abstract class AttributeValueProvider {
      *            UserID
      * @param credSpec
      *            CredentialSpecification to obtain attributes for.
+     * @return list of attributes.
+     * @throws Exception when something went wrong.
      */
     public abstract List<eu.abc4trust.xml.Attribute> getAttributes(
             String query, String uid, CredentialSpecification credSpec)

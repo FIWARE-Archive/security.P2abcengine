@@ -21,6 +21,7 @@ public class StorageModuleFactory {
     /**
      * Factory method. Returns an array of Modules.
      * 
+     * @param type Type of the service.
      * @return Array of Modules that shall be used to overwrite existing guice
      *         bindings.
      */
