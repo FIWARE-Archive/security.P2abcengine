@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -6,17 +7,27 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
+import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
+import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -27,18 +38,17 @@ import com.sun.jersey.test.framework.TestConstants;
 
 public class TestFlow extends JerseyTest {
 
-    private static String userServiceURL = "user/";
-    private static String verificationServiceURL = "verification/protected/";
-    private static String verificationServiceURLUnprot = "verification/"; 
-    private static String issuanceServiceURL = "issuance/protected/";
-    private static String issuanceServiceURLUnprot = "issuance/";
+    private String userServiceURL = "user/";
+    private String verificationServiceURL = "verification/protected/";
+    private String verificationServiceURLUnprot = "verification/"; 
+    private String issuanceServiceURL = "issuance/protected/";
+    private String issuanceServiceURLUnprot = "issuance/";
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
 
     public TestFlow() throws Exception {
         super("ch.zhaw.ficore.p2abc.services");
-        initJNDI();
         userServiceURL = getBaseURI() + userServiceURL;
         verificationServiceURL = getBaseURI() + verificationServiceURL;
         verificationServiceURLUnprot = getBaseURI() + verificationServiceURLUnprot;
@@ -53,7 +63,9 @@ public class TestFlow extends JerseyTest {
     File storageFile;
     String dbName = "URIBytesStorage";
     
+    @Before
     public void initJNDI() throws Exception {
+        System.out.println("init [TestFlow]");
      // Create initial context
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
@@ -64,7 +76,6 @@ public class TestFlow extends JerseyTest {
             ic.destroySubcontext("java:");
         }
         catch(Exception e) {
-            
         }
 
         ic.createSubcontext("java:");
@@ -92,9 +103,19 @@ public class TestFlow extends JerseyTest {
         storageFile = File.createTempFile("test", "sql");
         
         ds.setUrl("jdbc:sqlite:" + storageFile.getPath());
-        ic.bind("java:/comp/env/jdbc/" + dbName, ds);
+        System.out.println(ds.getUrl());
+        ic.rebind("java:/comp/env/jdbc/" + dbName, ds);
         ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
     }
+    
+    @After
+    public void cleanup() throws Exception {
+        System.out.println("cleanup [TestFlow] " + storageFile.getAbsolutePath());
+        InitialContext ic = new InitialContext();
+        ic.destroySubcontext("java:");
+        storageFile.delete();
+    }
+    
 
     /**
      * Performs the whole more or less adopted from the ancient tutorial.
@@ -239,7 +260,7 @@ public class TestFlow extends JerseyTest {
         System.out.println(presentationTokenDescription);
     }
     
-    public static String readTextFile(String path) {
+    public String readTextFile(String path) {
         try {
             InputStream is = TestFlow.class.getResourceAsStream(path);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -258,24 +279,24 @@ public class TestFlow extends JerseyTest {
         }
     }
     
-    public static String getContextString(String input) {
+    public String getContextString(String input) {
         Pattern pattern = Pattern.compile("<uiContext>(.*)</uiContext>");
         Matcher m = pattern.matcher(input);
         m.find();
         return m.group(1);
     }
     
-    public static String replaceContextString(String input, String contextString) {
+    public String replaceContextString(String input, String contextString) {
         return input.replaceAll("REPLACE-THIS-CONTEXT", contextString);
     }
     
-    public static Client getClient() {
+    public Client getClient() {
         Client c = Client.create();
         c.addFilter(new HTTPBasicAuthFilter("api", "jura"));
         return c;
     }
     
-    public static String testVerifyTokenAgainstPolicy(String ppapt) {
+    public String testVerifyTokenAgainstPolicy(String ppapt) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -288,7 +309,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testCreatePresentationTokenUi(String pr) {
+    public String testCreatePresentationTokenUi(String pr) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -301,7 +322,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testCreatePresentationToken(String ppa) {
+    public String testCreatePresentationToken(String ppa) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -314,7 +335,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testCreatePresentationPolicy(String ppa) {
+    public String testCreatePresentationPolicy(String ppa) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -327,7 +348,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testIssuanceStepUser2(String im) {
+    public String testIssuanceStepUser2(String im) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -340,7 +361,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testIssuanceStepIssuer1(String im) {
+    public String testIssuanceStepIssuer1(String im) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -353,7 +374,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testIssuanceStepUserUi1(String uir) {
+    public String testIssuanceStepUserUi1(String uir) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -366,7 +387,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testIssuanceStepUser1(String im) {
+    public String testIssuanceStepUser1(String im) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -379,7 +400,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testExtractIssuanceMessage(String imab) {
+    public String testExtractIssuanceMessage(String imab) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -392,7 +413,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testIssuanceRequest(String ir) {
+    public String testIssuanceRequest(String ir) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -405,7 +426,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static void testStoreIssParamsAtUser(String p) {
+    public void testStoreIssParamsAtUser(String p) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -417,7 +438,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static void testStoreIssParamsAtVerifier(String p) {
+    public void testStoreIssParamsAtVerifier(String p) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -429,7 +450,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static String testSetupIssuerParametersIssuer(String input) {
+    public String testSetupIssuerParametersIssuer(String input) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -443,7 +464,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static void testStoreSysParamsAtUser(String sp) {
+    public void testStoreSysParamsAtUser(String sp) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -455,7 +476,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static void testStoreSysParamsAtVerifier(String sp) {
+    public void testStoreSysParamsAtVerifier(String sp) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -467,7 +488,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static void testStoreCredSpecAtUser(String credSpec) {
+    public void testStoreCredSpecAtUser(String credSpec) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -479,7 +500,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static void testStoreCredSpecAtVerifier(String credSpec) {
+    public void testStoreCredSpecAtVerifier(String credSpec) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -491,7 +512,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static String testSetupSystemParametersIssuer() {
+    public String testSetupSystemParametersIssuer() {
         String uri = "setupSystemParameters/?securityLevel=80&cryptoMechanism=urn:abc4trust:1.0:algorithm:idemix";
         
         Client client = getClient(); 
@@ -507,7 +528,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testGetIssuancePolicyFromIssuer() {
+    public String testGetIssuancePolicyFromIssuer() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -520,7 +541,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static void testStoreIssuancePolicyAtIssuer(String ip) {
+    public void testStoreIssuancePolicyAtIssuer(String ip) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -532,7 +553,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static String testGetQueryRuleFromIssuer() {
+    public String testGetQueryRuleFromIssuer() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -545,7 +566,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static void testStoreQueryRuleAtIssuer(String queryRule) {
+    public void testStoreQueryRuleAtIssuer(String queryRule) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -557,7 +578,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static String testGetCredSpecFromIssuer() {
+    public String testGetCredSpecFromIssuer() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -570,7 +591,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static void testStoreCredSpecAtIssuer(String credSpec) {
+    public void testStoreCredSpecAtIssuer(String credSpec) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -582,7 +603,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static String testAuthentication(String authRequest) {
+    public String testAuthentication(String authRequest) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -596,7 +617,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testGenCredSpec(String attributeInfoCollection) {
+    public String testGenCredSpec(String attributeInfoCollection) {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -611,7 +632,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
     
-    public static String testAttributeInfoCollection() {
+    public String testAttributeInfoCollection() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -624,7 +645,7 @@ public class TestFlow extends JerseyTest {
         return response.getEntity(String.class);
     }
 
-    public static void testUserStatus() {
+    public void testUserStatus() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -635,7 +656,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);
     }
     
-    public static void testIssuanceStatus() {
+    public void testIssuanceStatus() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -647,7 +668,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response);       
     }
     
-    public static void testVerificationStatus() {
+    public void testVerificationStatus() {
         Client client = getClient(); 
 
         WebResource webResource = client
@@ -658,7 +679,7 @@ public class TestFlow extends JerseyTest {
         assertOk(response); 
     }
     
-    public static void assertOk(ClientResponse response) {
+    public void assertOk(ClientResponse response) {
         if(response.getStatus() != 200) {
             System.out.println("-- NOT OK --");
             System.out.println(response.getStatus());
