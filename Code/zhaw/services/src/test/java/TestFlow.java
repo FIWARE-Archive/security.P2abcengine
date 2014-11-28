@@ -3,6 +3,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -238,10 +241,8 @@ public class TestFlow extends JerseyTest {
     
     public static String readTextFile(String path) {
         try {
-            ClassLoader cl = TestFlow.class.getClassLoader();
-            File f = new File(cl.getResource(path).getFile());
-            System.out.println("=# " + f.getAbsolutePath());
-            BufferedReader br = new BufferedReader(new FileReader(f));
+            InputStream is = TestFlow.class.getResourceAsStream(path);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String lines = "";
             String line = "";
             while((line = br.readLine()) != null)
