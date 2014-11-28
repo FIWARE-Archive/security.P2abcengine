@@ -17,6 +17,7 @@ public abstract class URIBytesStorage {
      * 
      * @param uri the uri (key)
      * @param bytes the bytes (value)
+     * @throws Exception on any error
      */
     public void put(URI uri, byte[] bytes) throws Exception {
         put(uri.toString(), bytes);
@@ -31,6 +32,7 @@ public abstract class URIBytesStorage {
      * @param uri the uri (key)
      * @param bytes the bytes (value)
      * @return true if data was added, false otherwise
+     * @throws Exception on any error
      */
     public boolean putNew(URI uri, byte[] bytes) throws Exception {
         return putNew(uri.toString(), bytes);
@@ -43,6 +45,7 @@ public abstract class URIBytesStorage {
      * 
      * @param uri the uri (key)
      * @return the bytes (value)
+     * @throws Exception on any error
      */
     public byte[] get(URI uri) throws Exception {
         return get(uri.toString());
@@ -55,6 +58,7 @@ public abstract class URIBytesStorage {
      * using raw strings as keys.
      * 
      * @return List of URIs.
+     * @throws Exception on any error
      */
     public List<URI> keys() throws Exception {
         List<URI> uris = new ArrayList<URI>();
@@ -78,6 +82,7 @@ public abstract class URIBytesStorage {
      * Returns a list of all values.
      * 
      * @return list of all values
+     * @throws Exception on any error
      * 
      */
     public List<byte[]> values() throws Exception {
@@ -96,6 +101,7 @@ public abstract class URIBytesStorage {
      * 
      * @param uri the uri (key)
      * @return true if exists, false otherwise
+     * @throws Exception on any error
      */
     public boolean containsKey(URI uri) throws Exception {
         return containsKey(uri.toString());
@@ -107,6 +113,7 @@ public abstract class URIBytesStorage {
      * Deletes an entry with a given key from the storage.
      * 
      * @param uri the uri (key)
+     * @throws Exception on any error
      */
     public void delete(URI uri) throws Exception {
         delete(uri.toString());
@@ -117,6 +124,7 @@ public abstract class URIBytesStorage {
     /**
      * Deletes all entries in the storage.
      * 
+     * @throws Exception on any error
      * @throws Exception on any error
      */
     public abstract void deleteAll() throws Exception;
