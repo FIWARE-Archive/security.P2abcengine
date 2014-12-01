@@ -18,8 +18,10 @@ public class LdapStatic {
      * Init LdapStatic with a LdapConnectionConfig. This also creates
      * LdapConnection
      * 
-     * @param config an LdapConnectionConfig-Object
-     * @throws NamingException on an LDAP error
+     * @param config
+     *            an LdapConnectionConfig-Object
+     * @throws NamingException
+     *             on an LDAP error
      */
     public static void init(ConnectionParameters config) throws NamingException {
         // LdapStatic.config = config;

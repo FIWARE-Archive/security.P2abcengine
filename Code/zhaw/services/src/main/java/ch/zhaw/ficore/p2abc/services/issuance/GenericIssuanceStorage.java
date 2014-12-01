@@ -71,7 +71,6 @@ public class GenericIssuanceStorage implements IssuanceStorage {
         }
     }
 
- 
     public List<URI> listQueryRules() throws Exception {
         return queryRuleStorage.keys();
     }

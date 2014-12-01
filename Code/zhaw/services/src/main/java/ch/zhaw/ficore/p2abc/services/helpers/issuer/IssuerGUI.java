@@ -31,7 +31,8 @@ public class IssuerGUI {
      * @param obj
      *            the object
      * @return XML as string
-     * @throws JAXBException when serialization fails.
+     * @throws JAXBException
+     *             when serialization fails.
      */
     @SuppressWarnings("rawtypes")
     public static String toXML(Class clazz, Object obj) throws JAXBException {
@@ -52,7 +53,8 @@ public class IssuerGUI {
      * @param xml
      *            the input data
      * @return the object
-     * @throws JAXBException when deserialization fails
+     * @throws JAXBException
+     *             when deserialization fails
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {
@@ -64,8 +66,8 @@ public class IssuerGUI {
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
         html.appendChild(head);
-        head.appendChild(new Link().setHref(req.getContextPath()+cssURL).setRel("stylesheet")
-                .setType("text/css"));
+        head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
+                .setRel("stylesheet").setType("text/css"));
         return html;
     }
 
@@ -74,8 +76,8 @@ public class IssuerGUI {
         Div navDiv = new Div().setCSSClass("navDiv");
         containerDiv.appendChild(navDiv);
         containerDiv.appendChild(mainDiv);
-        navDiv.appendChild(new A().setHref("./obtainCredentialSpecification").appendChild(
-                new Text("Obtain Credential Specification")));
+        navDiv.appendChild(new A().setHref("./obtainCredentialSpecification")
+                .appendChild(new Text("Obtain Credential Specification")));
         navDiv.appendChild(new A().setHref("./profile").appendChild(
                 new Text("Profile")));
         navDiv.appendChild(new Div().setStyle("clear: both"));

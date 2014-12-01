@@ -70,9 +70,9 @@ public class UserHelper extends AbstractHelper {
         instance.checkIfSystemParametersAreLoaded();
     }
 
-    private static synchronized void initializeInstanceField(CryptoEngine cryptoEngine,
-            String fileStoragePrefix, Module... modules)
-            throws URISyntaxException {
+    private static synchronized void initializeInstanceField(
+            CryptoEngine cryptoEngine, String fileStoragePrefix,
+            Module... modules) throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");

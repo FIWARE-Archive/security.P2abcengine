@@ -26,7 +26,8 @@ public class QueryHelper {
     /**
      * Sanitizes input for usage in LDAP-Queries
      * 
-     * @param input Input string
+     * @param input
+     *            Input string
      * @return sanitized input
      */
     public static String ldapSanitize(String input) {
@@ -37,7 +38,8 @@ public class QueryHelper {
     /**
      * Sanitizes input for usage in SQL-Queries
      * 
-     * @param input Input string
+     * @param input
+     *            Input string
      * @return sanitized input
      */
     public static String sqlSanitize(String input) {

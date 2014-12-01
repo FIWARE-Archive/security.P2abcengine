@@ -37,15 +37,14 @@ public class ServicesConfiguration {
     private static Logger logger = LogManager.getLogger();
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
-    
+
     private static String issuanceServiceURL = "http://localhost/";
-    
+
     private static String userServiceURL = "http://localhost/";
-    
+
     private static String restAuthUser = "user";
-    
+
     private static String restAuthPassword = "password";
-    
 
     static {
         try {
@@ -63,8 +62,9 @@ public class ServicesConfiguration {
                             .lookup("cfg/Source/authentication"));
 
             String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
-            
-            issuanceServiceURL = (String) envCtx.lookup("cfg/issuanceServiceURL");
+
+            issuanceServiceURL = (String) envCtx
+                    .lookup("cfg/issuanceServiceURL");
             userServiceURL = (String) envCtx.lookup("cfg/userServiceURL");
             restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
             restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
@@ -79,8 +79,6 @@ public class ServicesConfiguration {
         }
     }
 
-   
-
     /**
      * URI base The URI base is used as a prefix to URIs for example in the
      * generation of CredentialSpecifications.
@@ -90,15 +88,15 @@ public class ServicesConfiguration {
     public static synchronized String getIssuanceServiceURL() {
         return issuanceServiceURL;
     }
-    
+
     public static synchronized String getUserServiceURL() {
         return userServiceURL;
     }
-    
+
     public static synchronized String getRestAuthUser() {
         return restAuthUser;
     }
-    
+
     public static synchronized String getRestAuthPassword() {
         return restAuthPassword;
     }

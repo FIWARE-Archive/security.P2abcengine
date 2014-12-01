@@ -37,15 +37,13 @@ public class UserGUI {
 
     private static String cssURL = "/css/style.css";
 
-    
-
     public static Html getHtmlPramble(String title, HttpServletRequest req) {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
         html.appendChild(head);
-        head.appendChild(new Link().setHref(req.getContextPath()+cssURL).setRel("stylesheet")
-                .setType("text/css"));
+        head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
+                .setRel("stylesheet").setType("text/css"));
         return html;
     }
 
@@ -148,7 +146,7 @@ public class UserGUI {
 
                 f.appendChild(new Input().setType("submit").setValue(
                         "Continue using this candidate."));
-                
+
                 enclosing.appendChild(f);
             }
         }
@@ -167,18 +165,18 @@ public class UserGUI {
                 }
             }
         }
-        
+
         enclosing.appendChild(ul);
-        
+
         ul = new Ul();
-        
-        p = new P().appendChild(new B().appendChild(new Text(
-                "Revealed facts")));
+
+        p = new P()
+                .appendChild(new B().appendChild(new Text("Revealed facts")));
         enclosing.appendChild(p);
-        
-        for(TokenCandidate tc : tcs) {
+
+        for (TokenCandidate tc : tcs) {
             List<RevealedFact> facts = tc.revealedFacts;
-            for(RevealedFact fact : facts) {
+            for (RevealedFact fact : facts) {
                 for (FriendlyDescription desc : fact.descriptions) {
                     ul.appendChild(new Li().appendChild(new Text(desc
                             .getValue())));
@@ -187,7 +185,7 @@ public class UserGUI {
         }
 
         enclosing.appendChild(ul);
-        
+
         return enclosing;
     }
 }

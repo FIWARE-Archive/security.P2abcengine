@@ -30,7 +30,8 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
     /**
      * Constructor
      * 
-     * @param configuration Configuration (Issuance)
+     * @param configuration
+     *            Configuration (Issuance)
      */
     public JdbcAuthenticationProvider(IssuanceConfiguration configuration) {
         super(configuration);

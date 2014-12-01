@@ -77,7 +77,7 @@ public class IssuanceHelper extends AbstractHelper {
     public KeyStorage keyStorage;
 
     public IssuanceStorage issuanceStorage;
-    
+
     public String readTextFile(String path) {
         try {
             ClassLoader cl = IssuanceHelper.class.getClassLoader();
@@ -85,15 +85,14 @@ public class IssuanceHelper extends AbstractHelper {
             BufferedReader br = new BufferedReader(new FileReader(f));
             String lines = "";
             String line = "";
-            while((line = br.readLine()) != null)
+            while ((line = br.readLine()) != null)
                 lines += line + "\n";
             br.close();
             System.out.println("*** " + path);
             System.out.println(lines);
             return lines;
-        }
-        catch(Exception e) {
-            throw new RuntimeException("readTextFile("+path+") failed!");
+        } catch (Exception e) {
+            throw new RuntimeException("readTextFile(" + path + ") failed!");
         }
     }
 
@@ -339,7 +338,8 @@ public class IssuanceHelper extends AbstractHelper {
      * @param issuanceMessage
      *            IssuanceMessager as String
      * @return IssuanceMessageAndBoolean
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public IssuanceMessageAndBoolean issueStep(IssuanceMessage issuanceMessage)
             throws Exception {
@@ -366,9 +366,11 @@ public class IssuanceHelper extends AbstractHelper {
      * 
      * @param issuanceMessage
      *            IssuanceMessager as String
-     * @param cryptoEngine crypto engin to use.
+     * @param cryptoEngine
+     *            crypto engin to use.
      * @return IssuanceMessageAndBoolean
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public IssuanceMessageAndBoolean issueStep(CryptoEngine cryptoEngine,
             IssuanceMessage issuanceMessage) throws Exception {

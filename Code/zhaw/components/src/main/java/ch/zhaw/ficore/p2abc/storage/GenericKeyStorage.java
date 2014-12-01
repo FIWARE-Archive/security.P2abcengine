@@ -48,7 +48,7 @@ public class GenericKeyStorage implements KeyStorage {
             throw new IOException(e);
         }
     }
-    
+
     public void delete(URI uri) throws IOException {
         try {
             storage.delete(uri);

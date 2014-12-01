@@ -26,7 +26,8 @@ public class GenericVerificationStorage implements VerificationStorage {
         this.redirectURIStorage = redirectURIStorage;
     }
 
-    public void addPresentationPolicy(URI uri, PresentationPolicyAlternatives ppa) throws IOException {
+    public void addPresentationPolicy(URI uri,
+            PresentationPolicyAlternatives ppa) throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(ppa);
             presentationPolicyStorage.put(uri, data);
@@ -34,7 +35,7 @@ public class GenericVerificationStorage implements VerificationStorage {
             throw new IOException(e);
         }
     }
-    
+
     public void addRedirectURI(URI key, URI value) throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(value);
@@ -44,18 +45,20 @@ public class GenericVerificationStorage implements VerificationStorage {
         }
     }
 
-    public PresentationPolicyAlternatives getPresentationPolicy(URI uri) throws IOException {
+    public PresentationPolicyAlternatives getPresentationPolicy(URI uri)
+            throws IOException {
         try {
             if (!presentationPolicyStorage.containsKey(uri))
                 return null;
 
             byte[] data = presentationPolicyStorage.get(uri);
-            return (PresentationPolicyAlternatives) SerializationUtils.deserialize(data);
+            return (PresentationPolicyAlternatives) SerializationUtils
+                    .deserialize(data);
         } catch (Exception e) {
             throw new IOException(e);
         }
     }
-    
+
     public URI getRedirectURI(URI key) throws IOException {
         try {
             if (!presentationPolicyStorage.containsKey(key))

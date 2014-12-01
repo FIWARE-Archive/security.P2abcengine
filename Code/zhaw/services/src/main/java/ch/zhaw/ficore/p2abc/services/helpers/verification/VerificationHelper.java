@@ -109,7 +109,6 @@ public class VerificationHelper extends AbstractHelper {
     private Random random;
     public VerificationStorage verificationStorage;
 
-
     /**
      * holds map resources by filename (without path) and the bytes of resource
      */
@@ -144,10 +143,10 @@ public class VerificationHelper extends AbstractHelper {
 
             this.engine = new SynchronizedVerifierAbcEngineImpl(e);
             this.keyManager = injector.getInstance(KeyManager.class);
-            this.verificationStorage = injector.getInstance(VerificationStorage.class);
+            this.verificationStorage = injector
+                    .getInstance(VerificationStorage.class);
 
             this.random = injector.getInstance(Random.class);
-
 
             if ((cryptoEngine == CryptoEngine.UPROVE)
                     || (cryptoEngine == CryptoEngine.BRIDGED)) {
@@ -164,11 +163,15 @@ public class VerificationHelper extends AbstractHelper {
     /**
      * Adds extra policy resorces to VerificationHelper
      * 
-     * @param presentationPolicyAlternatives PresentationPolicyAlternatives
-     * @param applicationData application data
-     * @param revInfoUIDs Map of revocation info uids
+     * @param presentationPolicyAlternatives
+     *            PresentationPolicyAlternatives
+     * @param applicationData
+     *            application data
+     * @param revInfoUIDs
+     *            Map of revocation info uids
      * @return PresentationPolicyAlternatives
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
             PresentationPolicyAlternatives presentationPolicyAlternatives,
@@ -187,10 +190,12 @@ public class VerificationHelper extends AbstractHelper {
      *            name of policy resource (without path)
      * @param applicationData
      *            if present - will be inserted on all presentation policies
-     * @param nonce Nonce
+     * @param nonce
+     *            Nonce
      * @return PresentationPolicyAlternatives - patched with applicationData -
      *         marshaled to String
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public String createPresentationPolicy_String(String policyName,
             byte[] nonce, String applicationData) throws Exception {
@@ -226,9 +231,11 @@ public class VerificationHelper extends AbstractHelper {
      * @param revInfoUIDs
      *            if present - will try to fetch revocation information based on
      *            the uids.
-     * @param nonce Nonce
+     * @param nonce
+     *            Nonce
      * @return PresentationPolicyAlternatives - patched with applicationData
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
             String policyName, byte[] nonce, String applicationData,
@@ -455,7 +462,8 @@ public class VerificationHelper extends AbstractHelper {
      * @param orig
      *            XML as string
      * @return patched XML as JaxB
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     private PresentationToken getPatchedPresetationToken(String orig)
             throws Exception {
@@ -483,10 +491,13 @@ public class VerificationHelper extends AbstractHelper {
      * @param applicationData
      *            if present - will be inserted on all presentation policies -
      *            must match application data supplied when creating Policy
-     * @param presentationToken PresentationToken
-     * @param nonce Nonce
+     * @param presentationToken
+     *            PresentationToken
+     * @param nonce
+     *            Nonce
      * @return true or false
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     public boolean verifyToken(String policyName, byte[] nonce,
             String applicationData, PresentationToken presentationToken)
@@ -533,9 +544,11 @@ public class VerificationHelper extends AbstractHelper {
     /**
      * @param ppa
      *            PresentationPolicyAlternatives
-     * @param presentationToken PresentationToken
+     * @param presentationToken
+     *            PresentationToken
      * @return true or false
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     public boolean verifyToken(PresentationPolicyAlternatives ppa,
             PresentationToken presentationToken) throws Exception {

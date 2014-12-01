@@ -85,7 +85,6 @@ public class UserService {
 
     private final String fileStoragePrefix = ""; // no prefix -- munt
 
-    
     private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
     private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
 
@@ -96,8 +95,9 @@ public class UserService {
      * <br>
      * <b>Response status:</b>
      * <ul>
-     *  <li>200 - OK</li>
+     * <li>200 - OK</li>
      * </ul>
+     * 
      * @return Response
      */
     @GET()
@@ -109,22 +109,22 @@ public class UserService {
     /**
      * <b>Path:</b> /canBeSatisfied/ (POST)<br>
      * <br>
-     * <b>Description</b>: 
-     * This method, on input of a presentation policy decides whether the
-     * credentials in the User’s credential store could be used to produce a
-     * valid presentation token satisfying the policy. If so, this method
-     * returns true, otherwise, it returns false. <br>
+     * <b>Description</b>: This method, on input of a presentation policy
+     * decides whether the credentials in the User’s credential store could be
+     * used to produce a valid presentation token satisfying the policy. If so,
+     * this method returns true, otherwise, it returns false. <br>
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type:</b> <tt>PresentationPolicyAlternatives</tt><br>
      * <b>Return type:</b> <tt>ABCEBoolean</tt><br>
      * 
-     * @param p PresentationPolicyAlternatives
+     * @param p
+     *            PresentationPolicyAlternatives
      * @return Response
      */
     @POST()
@@ -153,16 +153,15 @@ public class UserService {
     /**
      * <b>Path</b>: /createPresentationToken/ (POST)<br>
      * <br>
-     * <b>Description</b>:
-     * This method, on input a presentation policy alternatives, returns an
-     * argument to be passed to the UI for choosing how to satisfy the policy,
-     * or returns an error if the policy cannot be satisfied (if the
-     * canBeSatisfied method would have returned false). For returning such an
-     * argument, this method will investigate whether the User has the necessary
-     * credentials and/or established pseudonyms to create one or more (e.g., by
-     * satisfying different alternatives in the policy, or by using different
-     * sets of credentials to satisfy one alternative) presentation tokens that
-     * satisfiy the policy.
+     * <b>Description</b>: This method, on input a presentation policy
+     * alternatives, returns an argument to be passed to the UI for choosing how
+     * to satisfy the policy, or returns an error if the policy cannot be
+     * satisfied (if the canBeSatisfied method would have returned false). For
+     * returning such an argument, this method will investigate whether the User
+     * has the necessary credentials and/or established pseudonyms to create one
+     * or more (e.g., by satisfying different alternatives in the policy, or by
+     * using different sets of credentials to satisfy one alternative)
+     * presentation tokens that satisfiy the policy.
      * 
      * The return value of this method should be passed to the User Interface
      * (or to some other component that is capable of rendering a
@@ -173,14 +172,15 @@ public class UserService {
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: PresentationPolicyAlternatives<br>
      * <b>Return type</b>: UiPresentationArguments<br>
      * 
-     * @param p PresentationPolicyAlternatives
+     * @param p
+     *            PresentationPolicyAlternatives
      * @return Response
      */
     @POST()
@@ -210,18 +210,21 @@ public class UserService {
     /**
      * <b>Path</b>: /createPresentationTokenUi/ (POST)<br>
      * <br>
-     * <b>Description</b>: Performs the next step to complete creation of presentation tokens. This method should
-     * be called when the user interface is done with its selection. <br>
+     * <b>Description</b>: Performs the next step to complete creation of
+     * presentation tokens. This method should be called when the user interface
+     * is done with its selection. <br>
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
-     * </ul> 
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
+     * </ul>
      * <br>
      * <b>Input type:</b> <tt>UiPresentationReturn</tt><br>
      * <b>Return type:</b> <tt>PresentationToken</tt><br>
-     * @param upr UiPresentationReturn
+     * 
+     * @param upr
+     *            UiPresentationReturn
      * @return Response
      */
     @POST()
@@ -247,57 +250,65 @@ public class UserService {
         }
     }
 
-    
     /**
      * <b>Path</b>: /loadSettings/ (GET)<br>
      * <br>
-     * <b>Description</b>: Download and load settings from an issuer or any settings provider. This method
-     * will cause the user service to make a <tt>GET</tt> request to the specified <tt>url</tt> and download
-     * the contents which must be valid <tt>Settings</tt>. DO NOT use this method with untrusted URLs or
-     * issuers (or any other settings providers) with DIFFERENT system parameters as this method will overwrite
-     * existing system parameters. See also {@link #getSettings()}. <br>
+     * <b>Description</b>: Download and load settings from an issuer or any
+     * settings provider. This method will cause the user service to make a
+     * <tt>GET</tt> request to the specified <tt>url</tt> and download the
+     * contents which must be valid <tt>Settings</tt>. DO NOT use this method
+     * with untrusted URLs or issuers (or any other settings providers) with
+     * DIFFERENT system parameters as this method will overwrite existing system
+     * parameters. See also {@link #getSettings()}. <br>
      * <br>
-     * <b>Query parameters</b>: 
+     * <b>Query parameters</b>:
      * <ul>
-     *  <li>url - a valid URL (String)</li>
+     * <li>url - a valid URL (String)</li>
      * </ul>
      * <br>
-     * <b>Response Status</b>: 
+     * <b>Response Status</b>:
      * <ul>
-     *  <li>200 - OK </li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK</li>
+     * <li>400 - ERROR</li>
      * </ul>
-     * @param url URL to download settings from.
+     * 
+     * @param url
+     *            URL to download settings from.
      * @return Response
      */
     @GET()
     @Path("/loadSettings/")
     public Response loadSettings(@QueryParam("url") String url) {
         log.entry();
-        
+
         try {
-            Settings settings = (Settings) RESTHelper.getRequest(url, Settings.class);
-            
-            for(IssuerParameters ip : settings.issuerParametersList) {
-                Response r = this.storeIssuerParameters(ip.getParametersUID(), ip);
-                if(r.getStatus() != 200)
-                    throw new RuntimeException("Could not load issuer parameters!");
+            Settings settings = (Settings) RESTHelper.getRequest(url,
+                    Settings.class);
+
+            for (IssuerParameters ip : settings.issuerParametersList) {
+                Response r = this.storeIssuerParameters(ip.getParametersUID(),
+                        ip);
+                if (r.getStatus() != 200)
+                    throw new RuntimeException(
+                            "Could not load issuer parameters!");
             }
-            
-            for(CredentialSpecification cs : settings.credentialSpecifications) {
-                Response r = this.storeCredentialSpecification(cs.getSpecificationUID(), cs);
-                if(r.getStatus() != 200)
-                    throw new RuntimeException("Could not load credential specification!");
+
+            for (CredentialSpecification cs : settings.credentialSpecifications) {
+                Response r = this.storeCredentialSpecification(
+                        cs.getSpecificationUID(), cs);
+                if (r.getStatus() != 200)
+                    throw new RuntimeException(
+                            "Could not load credential specification!");
             }
-            
+
             Response r = this.storeSystemParameters(settings.systemParameters);
-            log.info(settings.systemParameters + "|" + settings.systemParameters.toString());
-            if(r.getStatus() != 200)
+            log.info(settings.systemParameters + "|"
+                    + settings.systemParameters.toString());
+            if (r.getStatus() != 200)
                 throw new RuntimeException("Could not load system parameters!");
-            
+
             return log.exit(Response.ok().build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
@@ -306,22 +317,25 @@ public class UserService {
     /**
      * <b>Path</b>: /getSettings/ (GET)<br>
      * <br>
-     * <b>Description</b>: Returns the settings of the user service as obtained from an issuance service. 
-     * Settings includes issuer parameters, credential specifications and the system parameters.
-     * This method may thus be used to retrieve all credential specifications stored at the user service
-     * and their corresponding issuer parameters. The return type of this method is <tt>Settings</tt>.<br>
+     * <b>Description</b>: Returns the settings of the user service as obtained
+     * from an issuance service. Settings includes issuer parameters, credential
+     * specifications and the system parameters. This method may thus be used to
+     * retrieve all credential specifications stored at the user service and
+     * their corresponding issuer parameters. The return type of this method is
+     * <tt>Settings</tt>.<br>
      * <br>
-     * The user service is capable of downloading settings from an issuer (or from 
-     * anything that provides settings). To download settings use <tt>/loadSetting?url=...</tt>
-     * ({@link #loadSettings(String)}). <br>
+     * The user service is capable of downloading settings from an issuer (or
+     * from anything that provides settings). To download settings use
+     * <tt>/loadSetting?url=...</tt> ({@link #loadSettings(String)}). <br>
      * <br>
-     * <b>Response Status</b>: 
+     * <b>Response Status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type:</b> <tt>Settings</tt> <br>
+     * 
      * @return Response
      */
     @GET()
@@ -333,9 +347,9 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             Settings settings = new Settings();
-            
+
             List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
 
             for (URI uri : instance.keyStorage.listUris()) {
@@ -343,15 +357,15 @@ public class UserService {
                         .getValue(uri));
                 if (obj instanceof IssuerParameters) {
                     IssuerParameters ip = (IssuerParameters) obj;
-                    
+
                     SystemParameters serializeSp = (ip.getSystemParameters());
 
                     ip.setSystemParameters(serializeSp);
-                    
+
                     issuerParams.add(ip);
                 }
             }
-            
+
             List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
 
             for (URI uri : instance.keyStorage.listUris()) {
@@ -361,18 +375,18 @@ public class UserService {
                     credSpecs.add((CredentialSpecification) obj);
                 }
             }
-            
+
             settings.credentialSpecifications = credSpecs;
             settings.issuerParametersList = issuerParams;
-            settings.systemParameters = /*SystemParametersUtil.serialize*/(instance.keyManager.getSystemParameters());
-            
-            return log.exit(Response.ok(settings, MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+            settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
+                    .getSystemParameters());
+
+            return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
+                    .build());
+        } catch (Exception e) {
             log.catching(e);
-            return log.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(
+            return log.exit(
+                    Response.status(Response.Status.BAD_REQUEST).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
@@ -380,15 +394,17 @@ public class UserService {
     /**
      * <b>Path</b>: /credential/list (GET)<br>
      * <br>
-     * <b>Description</b>: Returns all obtained credentials as a <tt>CredentialCollection</tt>.<br>
+     * <b>Description</b>: Returns all obtained credentials as a
+     * <tt>CredentialCollection</tt>.<br>
      * <br>
-     * <b>Response Status</b>: 
+     * <b>Response Status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>CredentialCollection</tt><br>
+     * 
      * @return Response
      */
     @GET()
@@ -405,7 +421,7 @@ public class UserService {
             List<URI> credentialUids;
 
             credentialUids = instance.credentialManager.listCredentials();
-            
+
             List<eu.abc4trust.xml.Credential> credentials = new ArrayList<eu.abc4trust.xml.Credential>();
 
             for (URI uri : credentialUids) {
@@ -413,37 +429,33 @@ public class UserService {
                         .getCredential(uri);
                 credentials.add(cred);
             }
-            
+
             CredentialCollection credCol = new CredentialCollection();
             credCol.credentials = credentials;
 
-            return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML).build());
+            return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML)
+                    .build());
         } catch (Exception e) {
             log.catching(e);
-            return log.exit(Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(
-                            ExceptionDumper.dumpExceptionStr(e, log)))
-                    .build();
+            return log.exit(
+                    Response.status(Response.Status.BAD_REQUEST).entity(
+                            ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
-
-    
 
     /**
      * <b>Path</b>: /issuanceProtocolStep/ (POST)<br>
      * <br>
-     * <b>Description</b>:
-     * This method performs one step in an interactive issuance protocol. On
-     * input an incoming issuance message im obtained from the Issuer, it either
-     * returns the outgoing issuance message that is to be sent back to the
-     * Issuer, an object that must be sent to the User Interface (UI) to allow
-     * the user to decide how to satisfy a policy (or confirm the only choice),
-     * or returns a description of the newly issued credential at successful
-     * completion of the protocol. In the first case, the Context attribute of
-     * the outgoing message has the same value as that of the incoming message,
-     * allowing the Issuer to link the different messages of this issuance
-     * protocol.
+     * <b>Description</b>: This method performs one step in an interactive
+     * issuance protocol. On input an incoming issuance message im obtained from
+     * the Issuer, it either returns the outgoing issuance message that is to be
+     * sent back to the Issuer, an object that must be sent to the User
+     * Interface (UI) to allow the user to decide how to satisfy a policy (or
+     * confirm the only choice), or returns a description of the newly issued
+     * credential at successful completion of the protocol. In the first case,
+     * the Context attribute of the outgoing message has the same value as that
+     * of the incoming message, allowing the Issuer to link the different
+     * messages of this issuance protocol.
      * 
      * If this is the first time this method is called for a given context, the
      * method expects the issuance message to contain an issuance policy, and
@@ -465,14 +477,15 @@ public class UserService {
      * <br>
      * <b>Response status:</b>
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
      * <b>Return type</b>: <tt>IssuanceReturn</tt><br>
      * 
-     * @param jm IssuanceMessage
+     * @param jm
+     *            IssuanceMessage
      * @return Response
      */
     @POST()
@@ -501,22 +514,23 @@ public class UserService {
         }
     }
 
-    
     /**
      * <b>Path</b>: /issuanceProtocolStepUi/ (POST)<br>
      * <br>
-     * <b>Description</b>: This method performs the next step in the issuance protocol after the UI is done with its
-     * selection. <br>
+     * <b>Description</b>: This method performs the next step in the issuance
+     * protocol after the UI is done with its selection. <br>
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>UiIssuanceReturn</tt><br>
      * <b>Return type</b>: <tt>IssuanceMessage</tt><br>
-     * @param uir UiIssuanceReturn
+     * 
+     * @param uir
+     *            UiIssuanceReturn
      * @return Response
      */
     @POST()
@@ -542,28 +556,29 @@ public class UserService {
         }
     }
 
-
     /**
      * <b>Path</b>: /credential/delete/{credentialUid} (DELETE)<br>
      * <br>
-     * <b>Description</b>:
-     * This method deletes the credential with the given identifier from the
-     * credential store. If deleting is not possible (e.g. if the referred
-     * credential does not exist) the method returns false, and true otherwise.<br>
+     * <b>Description</b>: This method deletes the credential with the given
+     * identifier from the credential store. If deleting is not possible (e.g.
+     * if the referred credential does not exist) the method returns false, and
+     * true otherwise.<br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
-     *  <li>credentialUid - UID of the Credential</li>
+     * <li>credentialUid - UID of the Credential</li>
      * </ul>
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
-     * @param credentialUid - UID of the credential
+     * 
+     * @param credentialUid
+     *            - UID of the credential
      * @return Response
      */
     @DELETE()
@@ -594,23 +609,29 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
+     * <b>Path</b>: /credentialSpecification/store/{credentialSpecificationUid}
+     * (PUT)<br>
      * <br>
-     * <b>Description</b>: Stores a credential specification under the given UID. <br>
+     * <b>Description</b>: Stores a credential specification under the given
+     * UID. <br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
-     *  <li>credentialSpecificationUid - UID of the credential specification
+     * <li>credentialSpecificationUid - UID of the credential specification
      * </ul>
      * <br>
      * <b>Response status</b>:
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
-     *  <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual UID or is invalid.</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
+     * <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual
+     * UID or is invalid.</li>
      * </ul>
-     * @param credentialSpecificationUid UID of the credential specification.
-     * @param credSpec The credential specification.
+     * 
+     * @param credentialSpecificationUid
+     *            UID of the credential specification.
+     * @param credSpec
+     *            The credential specification.
      * @return Response
      */
     @PUT()
@@ -622,10 +643,12 @@ public class UserService {
         log.entry();
 
         try {
-            
-            if(!credentialSpecificationUid.toString().equals(credSpec.getSpecificationUID().toString()))
-                    return log.exit(Response.status(Response.Status.CONFLICT).entity(errCredSpecUid).build());
-            
+
+            if (!credentialSpecificationUid.toString().equals(
+                    credSpec.getSpecificationUID().toString()))
+                return log.exit(Response.status(Response.Status.CONFLICT)
+                        .entity(errCredSpecUid).build());
+
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
@@ -650,18 +673,20 @@ public class UserService {
     /**
      * <b>Path</b>: /systemParameters/store (PUT)<br>
      * <br>
-     * <b>Description</b>: Store (and overwrite existing) system parameters at the service. This method returns
-     * true if the system parameters were successfully stored.
-     * <br>
+     * <b>Description</b>: Store (and overwrite existing) system parameters at
+     * the service. This method returns true if the system parameters were
+     * successfully stored. <br>
      * <b>Response status:</b>
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>SystemParameters</tt><br>
      * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
-     * @param systemParameters SystemParameters
+     * 
+     * @param systemParameters
+     *            SystemParameters
      * @return Response
      */
     @PUT()
@@ -698,21 +723,23 @@ public class UserService {
     /**
      * <b>Path</b>: /issuerParameters/store/{issuerParametersUid} (PUT)<br>
      * <br>
-     * <b>Description</b>: Store (and overwrite existing) issuer parameters at the service (using the given
-     * identifier). This method returns
-     * true if the system parameters were successfully stored.
-     * <br>
+     * <b>Description</b>: Store (and overwrite existing) issuer parameters at
+     * the service (using the given identifier). This method returns true if the
+     * system parameters were successfully stored. <br>
      * <b>Response status:</b>
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
-     *  <li>409 - <em>issuerParametersUid</em> does not match or is invalid.
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
+     * <li>409 - <em>issuerParametersUid</em> does not match or is invalid.
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>IssuerParameters</tt><br>
      * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
-     * @param issuerParametersUid UID of the IssuerParameters
-     * @param issuerParameters IssuerParameters
+     * 
+     * @param issuerParametersUid
+     *            UID of the IssuerParameters
+     * @param issuerParameters
+     *            IssuerParameters
      * @return Response
      */
     @PUT()
@@ -732,9 +759,11 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
-            if(!(issuerParametersUid.toString().equals(issuerParameters.getParametersUID().toString())))
-                return log.exit(Response.status(Response.Status.CONFLICT).entity(errIssParamsUid).build());
+
+            if (!(issuerParametersUid.toString().equals(issuerParameters
+                    .getParametersUID().toString())))
+                return log.exit(Response.status(Response.Status.CONFLICT)
+                        .entity(errIssParamsUid).build());
 
             KeyManager keyManager = instance.keyManager;
 
@@ -791,18 +820,20 @@ public class UserService {
     /**
      * <b>Path</b>: /extractIssuanceMessage/ (POST)<br>
      * <br>
-     * <b>Description</b>: This method extracts the IssuanceMessage from an IssuanceMessageAndBoolean and
-     * returns the IssuanceMessage.<br>
+     * <b>Description</b>: This method extracts the IssuanceMessage from an
+     * IssuanceMessageAndBoolean and returns the IssuanceMessage.<br>
      * <br>
      * <b>Response status:</b>
      * <ul>
-     *  <li>200 - OK (application/xml)</li>
-     *  <li>400 - ERROR</li>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type:</b> <tt>IssuanceMessageAndBoolean</tt><br>
      * <b>Return type:</b> <tt>IssuanceMessage</tt><br>
-     * @param issuanceMessageAndBoolean IssuanceMessageAndBoolean
+     * 
+     * @param issuanceMessageAndBoolean
+     *            IssuanceMessageAndBoolean
      * @return Response
      */
     @POST()

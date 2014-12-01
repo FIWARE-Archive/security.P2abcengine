@@ -15,7 +15,8 @@ public class FakeAuthenticationProvider extends AuthenticationProvider {
     /**
      * Constructor
      * 
-     * @param configuration Configuration (Issuance)
+     * @param configuration
+     *            Configuration (Issuance)
      */
     public FakeAuthenticationProvider(IssuanceConfiguration configuration) {
         super(configuration);

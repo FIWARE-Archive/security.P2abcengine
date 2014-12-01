@@ -79,20 +79,20 @@ public class SqliteStorageModule extends AbstractModule {
                                     + "queryRuleStorage"));
             this.bind(IssuanceStorage.class).to(GenericIssuanceStorage.class)
                     .in(Singleton.class);
-            
-            
+
             this.bind(URIBytesStorage.class)
                     .annotatedWith(Names.named("presentationPolicyStorage"))
                     .toInstance(
-                            new JdbcURIBytesStorage(dbName, name + "_" + "presentationPolicyStorage"));
+                            new JdbcURIBytesStorage(dbName, name + "_"
+                                    + "presentationPolicyStorage"));
             this.bind(URIBytesStorage.class)
                     .annotatedWith(Names.named("redirectURIStorage"))
                     .toInstance(
-                            new JdbcURIBytesStorage(dbName, name + "_" + "redirectURIStorage"));
-            this.bind(VerificationStorage.class).to(GenericVerificationStorage.class)
-                    .in(Singleton.class);
+                            new JdbcURIBytesStorage(dbName, name + "_"
+                                    + "redirectURIStorage"));
+            this.bind(VerificationStorage.class)
+                    .to(GenericVerificationStorage.class).in(Singleton.class);
 
-            
             this.bind(URIBytesStorage.class)
                     .annotatedWith(Names.named("tokensStorageIssuer"))
                     .toInstance(

@@ -174,11 +174,9 @@ public class VerificationService {
     @PUT()
     @Path("/protected/storeSystemParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response storeSystemParameters(
-            SystemParameters systemParameters) {
+    public Response storeSystemParameters(SystemParameters systemParameters) {
 
         log.entry();
-
 
         try {
             VerificationHelper verificationHelper = VerificationHelper
@@ -272,7 +270,6 @@ public class VerificationService {
             CredentialSpecification credSpec) {
         log.entry();
 
-
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
@@ -293,46 +290,47 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     @PUT()
     @Path("/protected/presentationPolicy/store/{policyUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response storePresentationPolicy(@PathParam("policyUid") String policyUid, 
+    public Response storePresentationPolicy(
+            @PathParam("policyUid") String policyUid,
             PresentationPolicyAlternatives ppa) {
-        
+
         log.entry();
-        
+
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
-            
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(policyUid), ppa);
-            
+
+            verificationHelper.verificationStorage.addPresentationPolicy(
+                    new URI(policyUid), ppa);
+
             return log.exit(Response.ok("OK").build());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     @PUT()
     @Path("/protected/redirectURI/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response storeRedirectURI(@PathParam("resource") String resourceUri, 
+    public Response storeRedirectURI(@PathParam("resource") String resourceUri,
             String redirectUri) {
-        
+
         log.entry();
-        
+
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
-            
-            verificationHelper.verificationStorage.addRedirectURI(new URI(resourceUri), new URI(redirectUri));
-            
+
+            verificationHelper.verificationStorage.addRedirectURI(new URI(
+                    resourceUri), new URI(redirectUri));
+
             return log.exit(Response.ok("OK").build());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
@@ -342,71 +340,81 @@ public class VerificationService {
     @Path("/requestResource/{resource}")
     public Response requestResource(@PathParam("resource") String resource) {
         log.entry();
-        
+
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
-            
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
-            return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa)).build());
-        }
-        catch (Exception e) {
+
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
+                    .getPresentationPolicy(new URI(resource));
+            return log.exit(Response.ok(
+                    of.createPresentationPolicyAlternatives(ppa)).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     @POST()
     @Path("/requestResource2/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response requestResource2(@PathParam("resource") String resource,
             PresentationToken pt) {
-        
+
         log.entry();
-        
+
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
-            
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
-            
-            PresentationPolicyAlternativesAndPresentationToken ppat = of.createPresentationPolicyAlternativesAndPresentationToken();
+
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
+                    .getPresentationPolicy(new URI(resource));
+
+            PresentationPolicyAlternativesAndPresentationToken ppat = of
+                    .createPresentationPolicyAlternativesAndPresentationToken();
             ppat.setPresentationPolicyAlternatives(ppa);
             ppat.setPresentationToken(pt);
-            
-            Response r = this.verifyTokenAgainstPolicy(of.createPresentationPolicyAlternativesAndPresentationToken(ppat), "false");
-            if(r.getStatus() != 200)
-                return log.exit(Response.status(Response.Status.FORBIDDEN).entity("NOT OK").build());
-            
-            URI redirect = verificationHelper.verificationStorage.getRedirectURI(new URI(resource));
+
+            Response r = this
+                    .verifyTokenAgainstPolicy(
+                            of.createPresentationPolicyAlternativesAndPresentationToken(ppat),
+                            "false");
+            if (r.getStatus() != 200)
+                return log.exit(Response.status(Response.Status.FORBIDDEN)
+                        .entity("NOT OK").build());
+
+            URI redirect = verificationHelper.verificationStorage
+                    .getRedirectURI(new URI(resource));
             String token = generateAccessToken();
-            
+
             accessTokens.put(token, resource);
-            
-            return log.exit(Response.ok(redirect.toString()+"?accesstoken=" + URLEncoder.encode(token, "UTF-8")).build());
-        }
-        catch (Exception e) {
+
+            return log.exit(Response.ok(
+                    redirect.toString() + "?accesstoken="
+                            + URLEncoder.encode(token, "UTF-8")).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     @GET()
     @Path("/verifyAccessToken/")
-    public Response verifyAccessToken(@QueryParam("accesstoken") String accessToken) {
-        if(!accessTokens.containsKey(accessToken))
+    public Response verifyAccessToken(
+            @QueryParam("accesstoken") String accessToken) {
+        if (!accessTokens.containsKey(accessToken))
             return Response.status(Response.Status.FORBIDDEN).build();
         else {
             accessTokens.remove(accessToken);
             return Response.ok(accessTokens.get(accessToken)).build();
         }
     }
-    
+
     private String generateAccessToken() {
         Random rand = new SecureRandom();
         String prefix = "" + rand.nextInt() + "-";
         byte[] bytes = new byte[16];
         rand.nextBytes(bytes);
-        return prefix+DigestUtils.sha1Hex(bytes);
+        return prefix + DigestUtils.sha1Hex(bytes);
     }
 }

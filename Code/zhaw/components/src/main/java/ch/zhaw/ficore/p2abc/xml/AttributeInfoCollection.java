@@ -7,14 +7,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "attribute-info-collection", namespace="http://abc4trust.eu/wp2/abcschemav1.0")
+@XmlRootElement(name = "attribute-info-collection", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
 public class AttributeInfoCollection {
 
-    @XmlElement(name = "name", required = true, namespace="http://abc4trust.eu/wp2/abcschemav1.0")
+    @XmlElement(name = "name", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     public String name;
 
-    @XmlElementWrapper(name = "attributes", required = true, namespace="http://abc4trust.eu/wp2/abcschemav1.0")
-    @XmlElement(name = "attribute", namespace="http://abc4trust.eu/wp2/abcschemav1.0")
+    @XmlElementWrapper(name = "attributes", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @XmlElement(name = "attribute", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     public List<AttributeInformation> attributes = new ArrayList<AttributeInformation>();
 
     public AttributeInfoCollection() {

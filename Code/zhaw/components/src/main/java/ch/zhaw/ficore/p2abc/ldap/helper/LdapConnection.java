@@ -26,8 +26,10 @@ public class LdapConnection {
     /**
      * Creates a Connection using a ConnectionParameters.
      * 
-     * @param config the connection parameters
-     * @throws NamingException on an LDAP error
+     * @param config
+     *            the connection parameters
+     * @throws NamingException
+     *             on an LDAP error
      */
     public LdapConnection(ConnectionParameters config) throws NamingException {
         logger = LogManager.getLogger();
@@ -53,7 +55,8 @@ public class LdapConnection {
      * 
      * @param config
      *            A new ConnectionParameters
-     * @throws NamingException on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public void applyConfig(ConnectionParameters config) throws NamingException {
         this.config = config;
@@ -63,7 +66,8 @@ public class LdapConnection {
     /**
      * Reloads the associated connection parameters.
      * 
-     * @throws NamingException on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     private void reloadConfig() throws NamingException {
         if (initialDirContext != null)
@@ -109,7 +113,8 @@ public class LdapConnection {
     /**
      * Closes the DirContext
      * 
-     * @throws NamingException on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public void close() throws NamingException {
         initialDirContext.close();
