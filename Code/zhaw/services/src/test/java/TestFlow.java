@@ -50,7 +50,7 @@ public class TestFlow extends JerseyTest {
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
 
     public TestFlow() throws Exception {
-        super("ch.zhaw.ficore.p2abc.services");
+        super("ch.zhaw.ficore.p2abc");
         userServiceURL = getBaseURI() + userServiceURL;
         verificationServiceURL = getBaseURI() + verificationServiceURL;
         verificationServiceURLUnprot = getBaseURI() + verificationServiceURLUnprot;
@@ -273,7 +273,7 @@ public class TestFlow extends JerseyTest {
         System.out.println("***********");
         
         testStorePresentationPolicyAlternatives(presentationPolicyAlternatives);
-        testStoreRedirectURI("http://mroman.ch");
+        testStoreRedirectURI("http://localhost:9998/demo-resource/page");
         String presentationPolicyAlternatives_ = testRequestResource();
         
         String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
@@ -289,8 +289,8 @@ public class TestFlow extends JerseyTest {
         System.out.println("**#*#*#*#*#**#*#");
         System.out.println(presentationTokenDescription_);
         
-        while(true)
-            Thread.sleep(10000);
+        //while(true)
+        //    Thread.sleep(10000);
     }
     
     public String readTextFile(String path) {

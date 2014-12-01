@@ -72,6 +72,7 @@ public class VerificationService {
 
     private final Logger log = LogManager.getLogger();
     private final static String errMagicCookie = "Magic cookie is not correct!";
+    private static Map<String, String> accessTokens = new HashMap<String, String>();
 
     ObjectFactory of = new ObjectFactory();
 
@@ -339,14 +340,14 @@ public class VerificationService {
 
     @GET()
     @Path("/requestResource/{resource}")
-    public Response requestResource(@PathParam("resource") String uri) {
+    public Response requestResource(@PathParam("resource") String resource) {
         log.entry();
         
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(uri));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
             return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa)).build());
         }
         catch (Exception e) {
@@ -358,7 +359,7 @@ public class VerificationService {
     @POST()
     @Path("/requestResource2/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response requestResource2(@PathParam("resource") String uri,
+    public Response requestResource2(@PathParam("resource") String resource,
             PresentationToken pt) {
         
         log.entry();
@@ -367,7 +368,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(uri));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
             
             PresentationPolicyAlternativesAndPresentationToken ppat = of.createPresentationPolicyAlternativesAndPresentationToken();
             ppat.setPresentationPolicyAlternatives(ppa);
@@ -377,14 +378,26 @@ public class VerificationService {
             if(r.getStatus() != 200)
                 return log.exit(Response.status(Response.Status.FORBIDDEN).entity("NOT OK").build());
             
-            URI redirect = verificationHelper.verificationStorage.getRedirectURI(new URI(uri));
+            URI redirect = verificationHelper.verificationStorage.getRedirectURI(new URI(resource));
             String token = generateAccessToken();
+            
+            accessTokens.put(token, resource);
+            
             return log.exit(Response.ok(redirect.toString()+"?accesstoken=" + URLEncoder.encode(token, "UTF-8")).build());
         }
         catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
+    }
+    
+    @GET()
+    @Path("/verifyAccessToken/")
+    public Response verifyAccessToken(@QueryParam("accesstoken") String accessToken) {
+        if(!accessTokens.containsKey(accessToken))
+            return Response.status(Response.Status.FORBIDDEN).build();
+        else
+            return Response.ok(accessTokens.get(accessToken)).build();
     }
     
     private String generateAccessToken() {
