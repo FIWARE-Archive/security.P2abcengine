@@ -108,7 +108,7 @@ public class IssuanceGUI {
         logger.entry();
         
         try {
-            RESTHelper.postRequest(issuanceServiceURL + "protected/credentialSpecification/delete/"
+            RESTHelper.deleteRequest(issuanceServiceURL + "protected/credentialSpecification/delete/"
                     + URLEncoder.encode(credSpecUid,"UTF-8"));
             
             return credentialSpecifications();
