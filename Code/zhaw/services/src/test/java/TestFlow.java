@@ -59,6 +59,7 @@ public class TestFlow extends JerseyTest {
     }
 
     private static String getBaseURI() {
+        //return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
         return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
     
@@ -206,91 +207,92 @@ public class TestFlow extends JerseyTest {
          * Now the actual issuance protocol can take place. 
          */
         
-        String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("issuanceRequest.xml"));
-        
-        /* Extract issuance message */
-        String firstIssuanceMessage = testExtractIssuanceMessage(issuanceMessageAndBoolean);
-        System.out.println("--- firstIssuanceMessage");
-        System.out.println(firstIssuanceMessage);
-        
-        /* Issuance steps in the protocol */
-        String issuanceReturn = testIssuanceStepUser1(firstIssuanceMessage);
-        String contextString = getContextString(issuanceReturn);
-        System.out.println("--- issuanceReturn");
-        System.out.println(issuanceReturn);
-        System.out.println(contextString);
-        
-        String uiIssuanceReturn = readTextFile("uiIssuanceReturn.xml");
-        uiIssuanceReturn = replaceContextString(uiIssuanceReturn, contextString);
-        System.out.println("--- uiIssuanceReturn");
-        System.out.println(uiIssuanceReturn);
-        
-        String secondIssuanceMessage = testIssuanceStepUserUi1(uiIssuanceReturn);
-        System.out.println("--- secondIssuanceMessage");
-        System.out.println(secondIssuanceMessage);
-        
-        
-        String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer1(secondIssuanceMessage);
-        String thirdIssuanceMessage = testExtractIssuanceMessage(thirdIssuanceMessageAndBoolean);
-        
-        @SuppressWarnings("unused")
-        String fourthIssuanceMessageAndBoolean = testIssuanceStepUser2(thirdIssuanceMessage);
-
-        /* Verification stuff */
-        String presentationPolicyAlternatives = testCreatePresentationPolicy(
-                readTextFile("presentationPolicyAlternatives.xml"));
-        
-        String presentationReturn = testCreatePresentationToken(presentationPolicyAlternatives);
-        contextString = getContextString(presentationReturn);
-        System.out.println(contextString);
-        
-        String uiPresentationReturn = readTextFile("uiPresentationReturn.xml");
-        uiPresentationReturn = replaceContextString(uiPresentationReturn, contextString);
-
-        String presentationToken = testCreatePresentationTokenUi(uiPresentationReturn);
-        
-        String rPresentationToken = presentationToken.replaceAll("<\\?xml(.*)\\?>", "");
-        String rPresentationPolicyAlternatives = presentationPolicyAlternatives.replaceAll("<\\?xml(.*)\\?>", "");
-        String ppapt = "";
-        ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-        ppapt += "<PresentationPolicyAlternativesAndPresentationToken xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\" Version=\"1.0\">";
-        ppapt += rPresentationPolicyAlternatives;
-        ppapt += rPresentationToken;
-        ppapt += "</PresentationPolicyAlternativesAndPresentationToken>";
-        
-        
-        
-        String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
-        System.out.println(presentationTokenDescription);
-        
-        
-        
-        /* Verification stuff 2 */
-        System.out.println("***********");
-        System.out.println("***********");
-        System.out.println("***********");
-        System.out.println("***********");
-        System.out.println("***********");
-        
-        testStorePresentationPolicyAlternatives(presentationPolicyAlternatives);
-        testStoreRedirectURI("http://localhost:9998/demo-resource/page");
-        String presentationPolicyAlternatives_ = testRequestResource();
-        
-        String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
-        String contextString_ = getContextString(presentationReturn_);
-        System.out.println(contextString_);
-        
-        String uiPresentationReturn_ = readTextFile("uiPresentationReturn.xml");
-        uiPresentationReturn_ = replaceContextString(uiPresentationReturn_, contextString_);
-
-        String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
-        
-        String presentationTokenDescription_ = testRequestResource2(presentationToken_);
-        System.out.println("**#*#*#*#*#**#*#");
-        System.out.println(presentationTokenDescription_);
-        
-        //while(true)
-        //    Thread.sleep(10000);
+        for(int i = 0; i < 1; i++) {
+            String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("issuanceRequest.xml"));
+            
+            /* Extract issuance message */
+            String firstIssuanceMessage = testExtractIssuanceMessage(issuanceMessageAndBoolean);
+            System.out.println("--- firstIssuanceMessage");
+            System.out.println(firstIssuanceMessage);
+            
+            /* Issuance steps in the protocol */
+            String issuanceReturn = testIssuanceStepUser1(firstIssuanceMessage);
+            String contextString = getContextString(issuanceReturn);
+            System.out.println("--- issuanceReturn");
+            System.out.println(issuanceReturn);
+            System.out.println(contextString);
+            
+            String uiIssuanceReturn = readTextFile("uiIssuanceReturn.xml");
+            uiIssuanceReturn = replaceContextString(uiIssuanceReturn, contextString);
+            System.out.println("--- uiIssuanceReturn");
+            System.out.println(uiIssuanceReturn);
+            
+            String secondIssuanceMessage = testIssuanceStepUserUi1(uiIssuanceReturn);
+            System.out.println("--- secondIssuanceMessage");
+            System.out.println(secondIssuanceMessage);
+            
+            
+            String thirdIssuanceMessageAndBoolean = testIssuanceStepIssuer1(secondIssuanceMessage);
+            String thirdIssuanceMessage = testExtractIssuanceMessage(thirdIssuanceMessageAndBoolean);
+            
+            @SuppressWarnings("unused")
+            String fourthIssuanceMessageAndBoolean = testIssuanceStepUser2(thirdIssuanceMessage);
+    
+            /* Verification stuff */
+            String presentationPolicyAlternatives = testCreatePresentationPolicy(
+                    readTextFile("presentationPolicyAlternatives.xml"));
+            
+            String presentationReturn = testCreatePresentationToken(presentationPolicyAlternatives);
+            contextString = getContextString(presentationReturn);
+            System.out.println(contextString);
+            
+            String uiPresentationReturn = readTextFile("uiPresentationReturn.xml");
+            uiPresentationReturn = replaceContextString(uiPresentationReturn, contextString);
+    
+            String presentationToken = testCreatePresentationTokenUi(uiPresentationReturn);
+            
+            String rPresentationToken = presentationToken.replaceAll("<\\?xml(.*)\\?>", "");
+            String rPresentationPolicyAlternatives = presentationPolicyAlternatives.replaceAll("<\\?xml(.*)\\?>", "");
+            String ppapt = "";
+            ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+            ppapt += "<PresentationPolicyAlternativesAndPresentationToken xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\" Version=\"1.0\">";
+            ppapt += rPresentationPolicyAlternatives;
+            ppapt += rPresentationToken;
+            ppapt += "</PresentationPolicyAlternativesAndPresentationToken>";
+            
+            
+            
+            String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
+            System.out.println(presentationTokenDescription);
+            
+            
+            
+            /* Verification stuff 2 */
+            System.out.println("***********");
+            System.out.println("***********");
+            System.out.println("***********");
+            System.out.println("***********");
+            System.out.println("***********");
+            
+            testStorePresentationPolicyAlternatives(presentationPolicyAlternatives);
+            testStoreRedirectURI("http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/demo-resource/page");
+            String presentationPolicyAlternatives_ = testRequestResource();
+            
+            String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
+            String contextString_ = getContextString(presentationReturn_);
+            System.out.println(contextString_);
+            
+            String uiPresentationReturn_ = readTextFile("uiPresentationReturn.xml");
+            uiPresentationReturn_ = replaceContextString(uiPresentationReturn_, contextString_);
+    
+            String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
+            
+            String presentationTokenDescription_ = testRequestResource2(presentationToken_);
+            System.out.println("**#*#*#*#*#**#*#");
+            System.out.println(presentationTokenDescription_);
+            
+            System.gc();
+        }
     }
     
     public String readTextFile(String path) {

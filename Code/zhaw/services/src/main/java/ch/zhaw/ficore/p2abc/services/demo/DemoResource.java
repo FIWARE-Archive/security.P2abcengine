@@ -1,4 +1,4 @@
-package ch.zhaw.ficore.p2abc.demo;
+package ch.zhaw.ficore.p2abc.services.demo;
 
 import java.net.URLEncoder;
 
@@ -16,7 +16,7 @@ public class DemoResource {
     @Path("/page/")
     public Response resource(@QueryParam("accesstoken") String accessToken) throws Exception {
         try {
-            String result = (String) RESTHelper.getRequest("http://localhost:9998/verification/verifyAccessToken?accesstoken=" +
+            String result = (String) RESTHelper.getRequest("http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/verification/verifyAccessToken?accesstoken=" +
                     URLEncoder.encode(accessToken, "UTF-8"));
             
             
