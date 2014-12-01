@@ -396,8 +396,10 @@ public class VerificationService {
     public Response verifyAccessToken(@QueryParam("accesstoken") String accessToken) {
         if(!accessTokens.containsKey(accessToken))
             return Response.status(Response.Status.FORBIDDEN).build();
-        else
+        else {
+            accessTokens.remove(accessToken);
             return Response.ok(accessTokens.get(accessToken)).build();
+        }
     }
     
     private String generateAccessToken() {

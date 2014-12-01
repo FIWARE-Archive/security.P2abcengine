@@ -722,16 +722,10 @@ public class UserServiceGUI {
     public Response presentationArguments(
             JAXBElement<UiPresentationArguments> args_) {
         UiPresentationArguments args = args_.getValue();
-        Html html = new Html();
-        Head head = new Head();
-        head.appendChild(new Title()
-                .appendChild(new Text("Candidate Selection")));
-
-        html.appendChild(head);
-
+        Html html = UserGUI.getHtmlPramble("Candidate selection", request);
         Div mainDiv = new Div();
+        html.appendChild(UserGUI.getBody(mainDiv));
 
-        html.appendChild(new Body().appendChild(mainDiv));
 
         for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
 
