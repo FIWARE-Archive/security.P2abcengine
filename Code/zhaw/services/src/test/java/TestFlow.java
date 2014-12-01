@@ -98,7 +98,7 @@ public class TestFlow extends JerseyTest {
         ic.bind("java:/comp/env/cfg/restAuthPassword","");
         ic.bind("java:/comp/env/cfg/restAuthUser", "");
         ic.bind("java:/comp/env/cfg/issuanceServiceURL","");
-        ic.bind("java:/comp/env/cfg/userServiceURL","");
+        ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI()+"user/");
         
         SQLiteDataSource ds = new SQLiteDataSource();
         
@@ -140,9 +140,10 @@ public class TestFlow extends JerseyTest {
      * obtain a Credential from the Issuance service and verifies the obtained Credential against a
      * PresentationPolicy at the Verification service. 
      * @throws UnsupportedEncodingException 
+     * @throws InterruptedException 
      */
     @Test
-    public void flowTest() throws UnsupportedEncodingException {
+    public void flowTest() throws UnsupportedEncodingException, InterruptedException {
         System.out.println("hi there");
 
         /* Test if all three services are running by calling /status/
@@ -287,6 +288,9 @@ public class TestFlow extends JerseyTest {
         String presentationTokenDescription_ = testRequestResource2(presentationToken_);
         System.out.println("**#*#*#*#*#**#*#");
         System.out.println(presentationTokenDescription_);
+        
+        while(true)
+            Thread.sleep(10000);
     }
     
     public String readTextFile(String path) {

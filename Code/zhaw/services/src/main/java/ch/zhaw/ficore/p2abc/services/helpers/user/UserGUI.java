@@ -29,6 +29,7 @@ import com.hp.gagawa.java.elements.Ul;
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
 import eu.abc4trust.returnTypes.ui.PseudonymListCandidate;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
+import eu.abc4trust.returnTypes.ui.RevealedFact;
 import eu.abc4trust.returnTypes.ui.TokenCandidate;
 import eu.abc4trust.xml.FriendlyDescription;
 
@@ -86,7 +87,7 @@ public class UserGUI {
      * @return Div (HTML)
      */
     public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext) {
+            int policyId, String uiContext, String backURL) {
         Div enclosing = new Div();
         enclosing.appendChild(new P().appendChild(new Text(Integer.toString(tcs
                 .size()))));
@@ -105,7 +106,7 @@ public class UserGUI {
             div.appendChild(tbl);
 
             for (CredentialInUi c : tc.credentials) {
-                Form f = new Form("post");
+                Form f = new Form(backURL).setMethod("post");
 
                 row = new Tr();
                 td = new Td();
@@ -147,6 +148,8 @@ public class UserGUI {
 
                 f.appendChild(new Input().setType("submit").setValue(
                         "Continue using this candidate."));
+                
+                enclosing.appendChild(f);
             }
         }
         P p = new P().appendChild(new B().appendChild(new Text(
@@ -164,8 +167,27 @@ public class UserGUI {
                 }
             }
         }
+        
+        enclosing.appendChild(ul);
+        
+        ul = new Ul();
+        
+        p = new P().appendChild(new B().appendChild(new Text(
+                "Revealed facts")));
+        enclosing.appendChild(p);
+        
+        for(TokenCandidate tc : tcs) {
+            List<RevealedFact> facts = tc.revealedFacts;
+            for(RevealedFact fact : facts) {
+                for (FriendlyDescription desc : fact.descriptions) {
+                    ul.appendChild(new Li().appendChild(new Text(desc
+                            .getValue())));
+                }
+            }
+        }
 
         enclosing.appendChild(ul);
+        
         return enclosing;
     }
 }
