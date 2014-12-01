@@ -196,7 +196,19 @@ public class UserServiceGUI {
                     getURL(uiContext) + "/requestResource2/" + URLEncoder.encode(getResource(uiContext),"UTF-8"),
                     RESTHelper.toXML(PresentationToken.class, of.createPresentationToken(pt)));
             
-            return log.exit(Response.ok(redirectURI).build());
+            Html html = UserGUI.getHtmlPramble("Request Resource [3]", request);
+            Div mainDiv = new Div();
+            html.appendChild(UserGUI.getBody(mainDiv));
+            
+            P p = new P().setCSSClass("info").appendChild(new Text("You have successfully verified your credential " +
+            		"at the verifier. Please follow the link below to access the resource you requested."));
+            
+            mainDiv.appendChild(p);
+            
+            A a = new A().setHref(redirectURI).appendChild(new Text(redirectURI));
+            mainDiv.appendChild(a);
+            
+            return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
             log.catching(e);

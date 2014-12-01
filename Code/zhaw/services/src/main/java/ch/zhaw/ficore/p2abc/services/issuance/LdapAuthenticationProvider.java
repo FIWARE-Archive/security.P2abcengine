@@ -1,7 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 import javax.naming.directory.SearchResult;
 
 import org.apache.logging.log4j.LogManager;

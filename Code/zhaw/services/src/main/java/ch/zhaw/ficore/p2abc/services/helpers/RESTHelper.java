@@ -191,7 +191,6 @@ public class RESTHelper {
         return fromXML(clazz, response.getEntity(String.class));
     }
     
-    @SuppressWarnings("rawtypes")
     public static Object putRequest(String url, String xml)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {

@@ -1,16 +1,10 @@
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,18 +12,11 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
-import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.services.user.UserService;
-import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
-import ch.zhaw.ficore.p2abc.xml.QueryRule;
-import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
