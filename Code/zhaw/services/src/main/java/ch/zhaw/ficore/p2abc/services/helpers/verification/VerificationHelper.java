@@ -33,6 +33,8 @@ import java.util.Random;
 
 import javax.xml.bind.JAXBElement;
 
+import ch.zhaw.ficore.p2abc.services.verification.VerificationStorage;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -105,6 +107,7 @@ public class VerificationHelper extends AbstractHelper {
 
     public VerifierAbcEngine engine;
     private Random random;
+    public VerificationStorage verificationStorage;
 
 
     /**
@@ -141,6 +144,7 @@ public class VerificationHelper extends AbstractHelper {
 
             this.engine = new SynchronizedVerifierAbcEngineImpl(e);
             this.keyManager = injector.getInstance(KeyManager.class);
+            this.verificationStorage = injector.getInstance(VerificationStorage.class);
 
             this.random = injector.getInstance(Random.class);
 

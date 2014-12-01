@@ -23,8 +23,11 @@
 package ch.zhaw.ficore.p2abc.services.verification;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -38,6 +41,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -288,5 +292,106 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
+    
+    @PUT()
+    @Path("/protected/presentationPolicy/store/{policyUid}")
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    public Response storePresentationPolicy(@PathParam("policyUid") String policyUid, 
+            PresentationPolicyAlternatives ppa) {
+        
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(policyUid), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @PUT()
+    @Path("/protected/redirectURI/store/{resource}")
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    public Response storeRedirectURI(@PathParam("resource") String resourceUri, 
+            String redirectUri) {
+        
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            verificationHelper.verificationStorage.addRedirectURI(new URI(resourceUri), new URI(redirectUri));
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
 
+    @GET()
+    @Path("/requestResource/{resource}")
+    public Response requestResource(@PathParam("resource") String uri) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(uri));
+            return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa)).build());
+        }
+        catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
+    @Path("/requestResource2/{resource}")
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    public Response requestResource2(@PathParam("resource") String uri,
+            PresentationToken pt) {
+        
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(uri));
+            
+            PresentationPolicyAlternativesAndPresentationToken ppat = of.createPresentationPolicyAlternativesAndPresentationToken();
+            ppat.setPresentationPolicyAlternatives(ppa);
+            ppat.setPresentationToken(pt);
+            
+            Response r = this.verifyTokenAgainstPolicy(of.createPresentationPolicyAlternativesAndPresentationToken(ppat), "false");
+            if(r.getStatus() != 200)
+                return log.exit(Response.status(Response.Status.FORBIDDEN).entity("NOT OK").build());
+            
+            URI redirect = verificationHelper.verificationStorage.getRedirectURI(new URI(uri));
+            String token = generateAccessToken();
+            return log.exit(Response.ok(redirect.toString()+"?accesstoken=" + URLEncoder.encode(token, "UTF-8")).build());
+        }
+        catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    private String generateAccessToken() {
+        Random rand = new SecureRandom();
+        String prefix = "" + rand.nextInt() + "-";
+        byte[] bytes = new byte[16];
+        rand.nextBytes(bytes);
+        return prefix+DigestUtils.sha1Hex(bytes);
+    }
 }

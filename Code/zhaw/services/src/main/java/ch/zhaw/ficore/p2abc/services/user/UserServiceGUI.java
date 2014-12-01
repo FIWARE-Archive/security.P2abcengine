@@ -158,7 +158,11 @@ public class UserServiceGUI {
         }
     }
     
-    
+    /*@GET()
+    @Path("/requestResource/")
+    public Response requestResource() {
+        
+    }*/
 
     @GET()
     @Path("/credentialSpecifications/")

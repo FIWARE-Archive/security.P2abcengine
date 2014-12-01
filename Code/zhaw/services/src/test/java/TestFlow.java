@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -137,9 +139,10 @@ public class TestFlow extends JerseyTest {
      * that if the final Verification process succeeds, the test was successful. In other words: This test will
      * obtain a Credential from the Issuance service and verifies the obtained Credential against a
      * PresentationPolicy at the Verification service. 
+     * @throws UnsupportedEncodingException 
      */
     @Test
-    public void flowTest() {
+    public void flowTest() throws UnsupportedEncodingException {
         System.out.println("hi there");
 
         /* Test if all three services are running by calling /status/
@@ -258,6 +261,32 @@ public class TestFlow extends JerseyTest {
         
         String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
         System.out.println(presentationTokenDescription);
+        
+        
+        
+        /* Verification stuff 2 */
+        System.out.println("***********");
+        System.out.println("***********");
+        System.out.println("***********");
+        System.out.println("***********");
+        System.out.println("***********");
+        
+        testStorePresentationPolicyAlternatives(presentationPolicyAlternatives);
+        testStoreRedirectURI("http://mroman.ch");
+        String presentationPolicyAlternatives_ = testRequestResource();
+        
+        String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
+        String contextString_ = getContextString(presentationReturn_);
+        System.out.println(contextString_);
+        
+        String uiPresentationReturn_ = readTextFile("uiPresentationReturn.xml");
+        uiPresentationReturn_ = replaceContextString(uiPresentationReturn_, contextString_);
+
+        String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
+        
+        String presentationTokenDescription_ = testRequestResource2(presentationToken_);
+        System.out.println("**#*#*#*#*#**#*#");
+        System.out.println(presentationTokenDescription_);
     }
     
     public String readTextFile(String path) {
@@ -294,6 +323,58 @@ public class TestFlow extends JerseyTest {
         Client c = Client.create();
         c.addFilter(new HTTPBasicAuthFilter("api", "jura"));
         return c;
+    }
+    
+    public String testRequestResource2(String pt) {
+        Client client = getClient(); 
+
+        WebResource webResource = client
+                .resource(verificationServiceURLUnprot + "requestResource2/resource");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .post(ClientResponse.class, pt);
+        assertOk(response);
+        
+        return response.getEntity(String.class);
+    }
+    
+    public String testRequestResource() {
+        Client client = getClient(); 
+
+        WebResource webResource = client
+                .resource(verificationServiceURLUnprot + "requestResource/resource");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .get(ClientResponse.class);
+        assertOk(response);
+        
+        return response.getEntity(String.class);
+    }
+    
+    public void testStorePresentationPolicyAlternatives(String ppa) {
+        Client client = getClient(); 
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "presentationPolicy/store/resource");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, ppa);
+        assertOk(response);
+    }
+    
+    public void testStoreRedirectURI(String uri) throws UnsupportedEncodingException {
+        Client client = getClient(); 
+
+        WebResource webResource = client
+                .resource(verificationServiceURL + "redirectURI/store/resource");
+
+        
+        ClientResponse response = webResource.type("application/xml")
+                        .put(ClientResponse.class, uri);
+        assertOk(response);
     }
     
     public String testVerifyTokenAgainstPolicy(String ppapt) {
