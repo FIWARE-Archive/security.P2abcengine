@@ -47,7 +47,6 @@ import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationGUI;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
@@ -158,9 +157,9 @@ public class VerificationServiceGUI {
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
-            Html html = UserGUI.getHtmlPramble("Profile", request);
+            Html html = VerificationGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
-            html.appendChild(UserGUI.getBody(mainDiv));
+            html.appendChild(VerificationGUI.getBody(mainDiv));
 
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
             mainDiv.appendChild(new H3().appendChild(new Text(
@@ -208,7 +207,7 @@ public class VerificationServiceGUI {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(UserGUI.errorPage(
+                    .entity(VerificationGUI.errorPage(
                             ExceptionDumper.dumpExceptionStr(e, log), request)
                             .write()).build());
         }
