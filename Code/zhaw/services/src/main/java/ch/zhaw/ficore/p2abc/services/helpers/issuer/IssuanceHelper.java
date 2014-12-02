@@ -156,6 +156,7 @@ public class IssuanceHelper extends AbstractHelper {
         return instance;
     }
 
+
     private IssuerAbcEngine singleEngine = null;
     private IssuerAbcEngine uproveEngine = null;
     private IssuerAbcEngine idemixEngine = null;

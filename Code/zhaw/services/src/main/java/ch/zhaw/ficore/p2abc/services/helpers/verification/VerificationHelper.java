@@ -104,7 +104,7 @@ public class VerificationHelper extends AbstractHelper {
         }
         return instance;
     }
-
+    
     public VerifierAbcEngine engine;
     private Random random;
     public VerificationStorage verificationStorage;

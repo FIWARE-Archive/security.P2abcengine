@@ -49,6 +49,10 @@ public class ServicesConfiguration {
     private static String restAuthPassword = "password";
 
     static {
+        staticInit();
+    }
+    
+    public static synchronized void staticInit() {
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:/comp/env");
@@ -71,6 +75,9 @@ public class ServicesConfiguration {
             verificationServiceURL = (String) envCtx.lookup("cfg/verificationServiceURL");
             restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
             restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
+            
+            System.out.println("restAuthUser :=" + restAuthUser);
+            logger.info("restAuthUser := " + restAuthUser);
 
             IssuanceConfiguration cfgData = new IssuanceConfiguration(
                     sourceAttributes, cpAttributes, sourceAuthentication,

@@ -17,6 +17,8 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -57,6 +59,7 @@ public class TestFlow extends JerseyTest {
     @Before
     public void initJNDI() throws Exception {
         System.out.println("init [TestFlow]");
+        this.setUp();
         // Create initial context
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
@@ -84,7 +87,7 @@ public class TestFlow extends JerseyTest {
         ic.bind("java:/comp/env/cfg/Source/authentication", "FAKE");
         ic.bind("java:/comp/env/cfg/bindQuery", "FAKE");
         ic.bind("java:/comp/env/cfg/restAuthPassword", "");
-        ic.bind("java:/comp/env/cfg/restAuthUser", "");
+        ic.bind("java:/comp/env/cfg/restAuthUser", "flow");
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
         ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI() + "user/");
         ic.bind("java:/comp/env/cfg/verificationServiceURL", getBaseURI() + "verification/");
@@ -97,15 +100,15 @@ public class TestFlow extends JerseyTest {
         System.out.println(ds.getUrl());
         ic.rebind("java:/comp/env/jdbc/" + dbName, ds);
         ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
+        
+        ic.close();
+        
+        ServicesConfiguration.staticInit();
+        URIBytesStorage.clearEverything();
     }
 
     @After
     public void cleanup() throws Exception {
-        System.out.println("cleanup [TestFlow] "
-                + storageFile.getAbsolutePath());
-        InitialContext ic = new InitialContext();
-        ic.destroySubcontext("java:");
-        storageFile.delete();
     }
 
     /**

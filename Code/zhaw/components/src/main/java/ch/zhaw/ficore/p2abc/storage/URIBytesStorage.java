@@ -11,6 +11,19 @@ import java.util.List;
  * @author mroman
  */
 public abstract class URIBytesStorage {
+    
+    
+    private static List<URIBytesStorage> instances = new ArrayList<URIBytesStorage>();
+    
+    public URIBytesStorage() {
+        instances.add(this);
+    }
+    
+    public static void clearEverything() throws Exception {
+        for(URIBytesStorage instance : instances)
+            instance.deleteAll();
+    }
+    
     /**
      * Put data into storage possibly overwriting an existing entry in the
      * storage.

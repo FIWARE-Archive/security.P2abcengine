@@ -12,11 +12,14 @@ import javax.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
@@ -45,8 +48,9 @@ public class TestIssuerAPI extends JerseyTest {
     String dbName = "URIBytesStorage";
 
     @Before
-    public void initJNDI() throws Exception {
+    public void initJNDI() throws Exception {        
         System.out.println("init [TestIssuerAPI]");
+        this.setUp();
         // Create initial context
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
@@ -73,9 +77,10 @@ public class TestIssuerAPI extends JerseyTest {
         ic.bind("java:/comp/env/cfg/Source/authentication", "FAKE");
         ic.bind("java:/comp/env/cfg/bindQuery", "FAKE");
         ic.bind("java:/comp/env/cfg/restAuthPassword", "");
-        ic.bind("java:/comp/env/cfg/restAuthUser", "");
+        ic.bind("java:/comp/env/cfg/restAuthUser", "issuerapi");
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
         ic.bind("java:/comp/env/cfg/userServiceURL", "");
+        ic.bind("java:/comp/env/cfg/verificationServiceURL", "");
 
         SQLiteDataSource ds = new SQLiteDataSource();
 
@@ -85,19 +90,19 @@ public class TestIssuerAPI extends JerseyTest {
         System.out.println(ds.getUrl());
         ic.rebind("java:/comp/env/jdbc/" + dbName, ds);
         ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
+        
+        ic.close();
+        
+        ServicesConfiguration.staticInit();
+        URIBytesStorage.clearEverything();
     }
 
     @After
     public void cleanup() throws Exception {
-        System.out.println("cleanup [TestIssuerAPI] "
-                + storageFile.getAbsolutePath());
-        InitialContext ic = new InitialContext();
-        ic.destroySubcontext("java:");
-        storageFile.delete();
-        this.tearDown();
     }
+    
 
-    @Ignore
+    @Test
     public void testQueryRules() throws Exception {
         QueryRule qr = new QueryRule();
         qr.queryString = "string1";
@@ -140,7 +145,7 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
 
-    @Ignore
+    @Test
     public void testGenCredSpecAndGenIssuerParameters() throws Exception {
         AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
                 .getRequest(
