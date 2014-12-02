@@ -90,6 +90,12 @@
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
+		<description> VerificationServiceURL </description>
+		<env-entry-name>cfg/verificationServiceURL</env-entry-name>
+		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/verification/</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
 		<description> RestAuthPassword </description>
 		<env-entry-name>cfg/restAuthPassword</env-entry-name>
 		<env-entry-value>jura</env-entry-value>

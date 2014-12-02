@@ -87,6 +87,7 @@ public class TestFlow extends JerseyTest {
         ic.bind("java:/comp/env/cfg/restAuthUser", "");
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
         ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI() + "user/");
+        ic.bind("java:/comp/env/cfg/verificationServiceURL", getBaseURI() + "verification/");
 
         SQLiteDataSource ds = new SQLiteDataSource();
 
