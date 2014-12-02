@@ -421,7 +421,7 @@ public class VerificationService {
      * contents which must be valid <tt>Settings</tt>. DO NOT use this method
      * with untrusted URLs or issuers (or any other settings providers) with
      * DIFFERENT system parameters as this method will overwrite existing system
-     * parameters. See also {@link #getSettings()}. <br>
+     * parameters. <br>
      * <br>
      * <b>Query parameters</b>:
      * <ul>
