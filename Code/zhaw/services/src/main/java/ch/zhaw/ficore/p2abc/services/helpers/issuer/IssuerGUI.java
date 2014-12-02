@@ -1,12 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
@@ -23,43 +17,6 @@ public class IssuerGUI {
 
     private static String cssURL = "/css/style.css";
 
-    /**
-     * Serializes an object using JAXB to a XML.
-     * 
-     * @param clazz
-     *            Class of the object
-     * @param obj
-     *            the object
-     * @return XML as string
-     * @throws JAXBException
-     *             when serialization fails.
-     */
-    @SuppressWarnings("rawtypes")
-    public static String toXML(Class clazz, Object obj) throws JAXBException {
-        JAXBContext context = JAXBContext.newInstance(clazz);
-        javax.xml.bind.Marshaller m = context.createMarshaller();
-        m.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT,
-                Boolean.FALSE);
-        StringWriter w = new StringWriter();
-        m.marshal(obj, w);
-        return w.toString();
-    }
-
-    /**
-     * Deserializes XML to an object.
-     * 
-     * @param clazz
-     *            Class of the object
-     * @param xml
-     *            the input data
-     * @return the object
-     * @throws JAXBException
-     *             when deserialization fails
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static Object fromXML(Class clazz, String xml) throws JAXBException {
-        return JAXB.unmarshal(new StringReader(xml), clazz);
-    }
 
     public static Html getHtmlPramble(String title, HttpServletRequest req) {
         Html html = new Html();
