@@ -654,7 +654,11 @@ public class UserServiceGUI {
             return Response.ok(html.write()).build();
         } catch (Exception e) {
             log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
 
     }
@@ -734,7 +738,11 @@ public class UserServiceGUI {
             return Response.ok(html.write()).build();
         } catch (Exception e) {
             log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
 
@@ -758,6 +766,66 @@ public class UserServiceGUI {
         }
 
         return Response.ok(html.write()).build();
+    }
+    
+    @POST()
+    @Path("/loadSettings2")
+    public Response loadSettings2(@FormParam("url") String url) {
+        log.entry();
+        
+        try {
+            RESTHelper.getRequest(userServiceURL + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            
+            Html html = UserGUI.getHtmlPramble("Load Settings", request);
+            Div mainDiv = new Div();
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Load Settings")));
+            P p = new P().setCSSClass("success");
+            p.appendChild(new Text("You've successfully downloaded the settings."));
+            mainDiv.appendChild(p);
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/loadSettings")
+    public Response loadSettings() {
+        log.entry();
+        
+        try {
+            Html html = UserGUI.getHtmlPramble("Load Settings", request);
+            Div mainDiv = new Div();
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Load Settings")));
+            P p = new P().setCSSClass("info");
+            p.appendChild(new Text("Download settings from a settings provider or issuer. Please be careful to only" +
+            		" download settings from trusted sources as this will overwrite certain critical settings."));
+            mainDiv.appendChild(p);
+            Form f = new Form("./loadSettings2").setMethod("post");
+            Table tbl = new Table();
+            tbl.appendChild(new Tr().appendChild(new Td().appendChild(new Label().appendChild(new Text("Settings provider URL:"))))
+                    .appendChild(new Td().appendChild(new Input().setType("text").setName("url"))));
+            f.appendChild(tbl);
+            f.appendChild(new Input().setType("Submit").setValue("Download settings"));
+            mainDiv.appendChild(f);
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
     }
 
 }

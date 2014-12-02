@@ -49,7 +49,9 @@ import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
@@ -407,6 +409,70 @@ public class VerificationService {
         else {
             accessTokens.remove(accessToken);
             return Response.ok(accessTokens.get(accessToken)).build();
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /loadSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Download and load settings from an issuer or any
+     * settings provider. This method will cause the user service to make a
+     * <tt>GET</tt> request to the specified <tt>url</tt> and download the
+     * contents which must be valid <tt>Settings</tt>. DO NOT use this method
+     * with untrusted URLs or issuers (or any other settings providers) with
+     * DIFFERENT system parameters as this method will overwrite existing system
+     * parameters. See also {@link #getSettings()}. <br>
+     * <br>
+     * <b>Query parameters</b>:
+     * <ul>
+     * <li>url - a valid URL (String)</li>
+     * </ul>
+     * <br>
+     * <b>Response Status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * 
+     * @param url
+     *            URL to download settings from.
+     * @return Response
+     */
+    @GET()
+    @Path("/loadSettings/")
+    public Response loadSettings(@QueryParam("url") String url) {
+        log.entry();
+
+        try {
+            Settings settings = (Settings) RESTHelper.getRequest(url,
+                    Settings.class);
+
+            for (IssuerParameters ip : settings.issuerParametersList) {
+                Response r = this.storeIssuerParameters(ip.getParametersUID(),
+                        ip);
+                if (r.getStatus() != 200)
+                    throw new RuntimeException(
+                            "Could not load issuer parameters!");
+            }
+
+            for (CredentialSpecification cs : settings.credentialSpecifications) {
+                Response r = this.storeCredentialSpecification(
+                        cs.getSpecificationUID(), cs);
+                if (r.getStatus() != 200)
+                    throw new RuntimeException(
+                            "Could not load credential specification!");
+            }
+
+            Response r = this.storeSystemParameters(settings.systemParameters);
+            log.info(settings.systemParameters + "|"
+                    + settings.systemParameters.toString());
+            if (r.getStatus() != 200)
+                throw new RuntimeException("Could not load system parameters!");
+
+            return log.exit(Response.ok().build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
