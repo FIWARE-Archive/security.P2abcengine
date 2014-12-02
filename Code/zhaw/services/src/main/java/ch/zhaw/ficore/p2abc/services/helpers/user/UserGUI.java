@@ -54,8 +54,8 @@ public class UserGUI {
         containerDiv.appendChild(mainDiv);
         navDiv.appendChild(new A().setHref("./obtainCredential").appendChild(
                 new Text("Obtain Credential")));
-        navDiv.appendChild(new A().setHref("./requestRessource").appendChild(
-                new Text("Request Ressource")));
+        navDiv.appendChild(new A().setHref("./requestResource").appendChild(
+                new Text("Request Resource")));
         navDiv.appendChild(new A().setHref("./profile").appendChild(
                 new Text("Profile")));
         navDiv.appendChild(new A().setHref("./loadSettings").appendChild(
