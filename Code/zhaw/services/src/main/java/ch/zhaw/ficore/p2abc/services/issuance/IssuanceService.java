@@ -1469,8 +1469,6 @@ public class IssuanceService {
                     .getRevocationParametersUID();
             List<FriendlyDescription> friendlyDescriptions = issuerParametersInput
                     .getFriendlyIssuerDescription();
-            System.out.println("FriendlyIssuerDescription: "
-                    + friendlyDescriptions.size());
             IssuerParameters issuerParameters = instance.setupIssuerParameters(
                     cryptoEngine, credspec, systemParameters,
                     issuerParametersUid, hash, revocationParametersUid,
@@ -1480,7 +1478,7 @@ public class IssuanceService {
 
             List<Object> objs = systemParameters.getAny();
             for (Object obj : objs)
-                System.out.println(obj + "-" + obj.getClass());
+                logger.info(obj + "-" + obj.getClass());
 
             SystemParameters serializeSp = SystemParametersUtil
                     .serialize(systemParameters);
@@ -1518,7 +1516,7 @@ public class IssuanceService {
                 logger.info("IssuanceHelper is initialized");
             }
         } catch (Exception e) {
-            System.out.println("Create Domain FAILED " + e);
+            logger.warn("Create Domain FAILED " + e);
             e.printStackTrace();
         }
     }

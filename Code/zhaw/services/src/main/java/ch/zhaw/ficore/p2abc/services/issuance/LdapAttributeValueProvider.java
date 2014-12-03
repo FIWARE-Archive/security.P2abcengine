@@ -52,8 +52,6 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
                     .createIssuancePolicyAndAttributes();
             List<eu.abc4trust.xml.Attribute> attributes = ipa.getAttribute();
             for (AttributeDescription attrDesc : descriptions) {
-                System.out.println("attrDesc.getType().toString() = "
-                        + attrDesc.getType().toString());
 
                 Object value = srch.getAttribute("", query, attrDesc.getType()
                         .toString());

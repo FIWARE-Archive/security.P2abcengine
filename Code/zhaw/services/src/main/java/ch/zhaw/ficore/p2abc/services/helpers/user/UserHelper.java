@@ -61,7 +61,7 @@ public class UserHelper extends AbstractHelper {
 
         initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
-        System.out.println("UserHelper.initInstance : DONE");
+        logger.info("UserHelper.initInstance : DONE");
 
         return instance;
     }
@@ -77,7 +77,7 @@ public class UserHelper extends AbstractHelper {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
         }
-        System.out.println("UserHelper.initInstance");
+        logger.info("UserHelper.initInstance");
         instance = new UserHelper(cryptoEngine, fileStoragePrefix, modules);
     }
 
@@ -87,8 +87,6 @@ public class UserHelper extends AbstractHelper {
 
     public static synchronized UserHelper getInstance() {
         if (instance == null) {
-            System.out
-                    .println("initInstance not called before using UserHelper!");
             throw new IllegalStateException(
                     "initInstance not called before using UserHelper!");
         }

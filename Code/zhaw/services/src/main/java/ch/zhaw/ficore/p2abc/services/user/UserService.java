@@ -809,10 +809,10 @@ public class UserService {
             UserHelper instance = UserHelper.getInstance();
             Set<URI> keySet = instance.cardStorage.getSmartcards().keySet();
             for (URI uri : keySet) {
-                System.out.println("Smartcards: " + uri);
+                log.info("Smartcards: " + uri);
             }
         } catch (Exception ex) {
-            System.out.println("Create UserHelper FAILED " + ex);
+            log.info("Create UserHelper FAILED " + ex);
             ex.printStackTrace();
         }
     }
