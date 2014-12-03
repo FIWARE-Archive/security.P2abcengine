@@ -12,7 +12,7 @@ cd ../services
 
 echo "Building Services (profile)"
 mvn clean
-mvn -P ldap-ui-service install
+mvn -P ldap-ui-service install -DskipTests
 ~/web/web1/bin/shutdown.sh
 rm -rf ~/web/web1/webapps/zhaw-p2abc-webservices
 rm -f ~/web/web1/webapps/*.war
