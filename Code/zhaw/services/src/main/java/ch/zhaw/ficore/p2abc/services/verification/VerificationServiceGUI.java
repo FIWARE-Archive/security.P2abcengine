@@ -112,7 +112,7 @@ public class VerificationServiceGUI {
     private static String verificationServiceURL = ServicesConfiguration.getVerificationServiceURL();
     
     @GET()
-    @Path("/profile/")
+    @Path("/protected/profile/")
     public Response profile() {
         log.entry();
 
@@ -134,6 +134,9 @@ public class VerificationServiceGUI {
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./credentialSpecifications").appendChild(
                     new Text("Manage credential specifications"))));
+            ul.appendChild(new Li().appendChild(new A().setHref(
+                    "./issuerParameters").appendChild(
+                    new Text("Manage issuer parameters"))));
 
             mainDiv.appendChild(ul);
 
