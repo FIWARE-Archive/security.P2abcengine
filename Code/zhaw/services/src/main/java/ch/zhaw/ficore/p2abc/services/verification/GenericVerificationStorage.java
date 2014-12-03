@@ -2,6 +2,8 @@ package ch.zhaw.ficore.p2abc.services.verification;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -41,6 +43,28 @@ public class GenericVerificationStorage implements VerificationStorage {
             byte[] data = SerializationUtils.serialize(value);
             redirectURIStorage.put(key, data);
         } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+    
+    public List<PresentationPolicyAlternatives> listPresentationPolicies() throws IOException {
+        try {
+            List<PresentationPolicyAlternatives> ppas = new ArrayList<PresentationPolicyAlternatives>();
+            for(URI uri : presentationPolicyStorage.keys()) {
+                ppas.add(getPresentationPolicy(uri));
+            }
+            return ppas;
+        }
+        catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+    
+    public List<URI> listPresentationPoliciesURIS() throws IOException {
+        try {
+            return presentationPolicyStorage.keys();
+        }
+        catch (Exception e) {
             throw new IOException(e);
         }
     }

@@ -58,6 +58,7 @@ import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.xml.Settings;
+import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
@@ -398,6 +399,29 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @GET()
+    @Path("/protected/presentationPolicy/list")
+    public Response presentationPolicies() {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternativesCollection ppac = new PresentationPolicyAlternativesCollection();
+            ppac.presentationPolicyAlternatives = verificationHelper.verificationStorage.listPresentationPolicies();
+            List<String> uris = new ArrayList<String>();
+            for(URI uri : verificationHelper.verificationStorage.listPresentationPoliciesURIS())
+                uris.add(uri.toString());
+            ppac.uris = uris;
+            return log.exit(Response.ok(ppac, MediaType.APPLICATION_XML).build());
+        }
+        catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }

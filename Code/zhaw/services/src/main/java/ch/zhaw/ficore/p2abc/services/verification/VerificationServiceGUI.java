@@ -53,6 +53,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
 import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
+import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
@@ -337,6 +338,40 @@ public class VerificationServiceGUI {
                     .setValue(credSpec.getSpecificationUID().toString())
                     .setName("cs"));
             mainDiv.appendChild(f);
+            
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/protected/presentationPolicies")
+    public Response presentationPolicies() {
+        log.entry();
+        
+        try {
+            PresentationPolicyAlternativesCollection ppac = 
+                    (PresentationPolicyAlternativesCollection) RESTHelper.getRequest(verificationServiceURL + "protected/presentationPolicy/list",
+                    PresentationPolicyAlternativesCollection.class);
+            
+            Html html = VerificationGUI.getHtmlPramble("Presentation Policies", request);
+            Div mainDiv = new Div();
+            html.appendChild(VerificationGUI.getBody(mainDiv));
+            
+            Ul ul = new Ul();
+            
+            for(String ppaUri : ppac.uris) {
+                ul.appendChild(new Li().appendChild(new Text(ppaUri.toString())));
+            }
+            
+            mainDiv.appendChild(ul);
             
             return log.exit(Response.ok(html.write()).build());
         }
