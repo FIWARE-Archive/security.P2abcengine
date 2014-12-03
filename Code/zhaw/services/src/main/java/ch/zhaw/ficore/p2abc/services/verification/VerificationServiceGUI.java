@@ -35,6 +35,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,6 +55,7 @@ import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
+import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
@@ -62,6 +64,7 @@ import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.H3;
 import com.hp.gagawa.java.elements.H4;
+import com.hp.gagawa.java.elements.H5;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
@@ -90,6 +93,7 @@ import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.Credential;
 import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
 import eu.abc4trust.xml.ObjectFactory;
@@ -125,9 +129,6 @@ public class VerificationServiceGUI {
             p.appendChild(new Text(text));
 
             Ul ul = new Ul();
-            ul.appendChild(new Li().appendChild(new A()
-                    .setHref("./credentials").appendChild(
-                            new Text("Manage credentials"))));
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./credentialSpecifications").appendChild(
                     new Text("Manage credential specifications"))));
@@ -137,6 +138,94 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/credentialSpecification/")
+    public Response credentialSpecification(@QueryParam("cs") String credSpecUid) {
+        log.entry();
+        
+        try {
+            Html html = VerificationGUI.getHtmlPramble("Credential Specification", request);
+            Div mainDiv = new Div();
+            html.appendChild(VerificationGUI.getBody(mainDiv));
+            Div credDiv = new Div().setCSSClass("credDiv");
+            mainDiv.appendChild(credDiv);
+            
+            CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
+                    verificationServiceURL + "protected/credentialSpecification/get/"
+                    + URLEncoder.encode(credSpecUid, "UTF-8"), CredentialSpecification.class);
+    
+            AttributeDescriptions attribDescs = credSpec
+                    .getAttributeDescriptions();
+            List<AttributeDescription> attrDescs = attribDescs
+                    .getAttributeDescription();
+            credDiv.appendChild(new H2().appendChild(new Text(credSpec
+                    .getSpecificationUID().toString())));
+    
+            for (AttributeDescription attrDesc : attrDescs) {
+                String name = attrDesc.getType().toString();
+                String encoding = attrDesc.getEncoding().toString();
+                String type = attrDesc.getDataType().toString();
+    
+                credDiv.appendChild(new H3().appendChild(new Text(name)));
+                Div topGroup = new Div().setCSSClass("group");
+                Div group = new Div().setCSSClass("group");
+                Table tbl = new Table();
+                group.appendChild(tbl);
+                Tr tr = null;
+                tr = new Tr()
+                        .setCSSClass("heading")
+                        .appendChild(
+                                new Td().appendChild(new Text("DataType")))
+                        .appendChild(
+                                new Td().appendChild(new Text("Encoding")));
+                tbl.appendChild(tr);
+    
+                credDiv.appendChild(topGroup);
+                topGroup.appendChild(group);
+                group = new Div().setCSSClass("group");
+    
+                Table fdTbl = new Table();
+                tr = new Tr()
+                        .setCSSClass("heading")
+                        .appendChild(
+                                new Td().appendChild(new Text("Language")))
+                        .appendChild(
+                                new Td().appendChild(new Text("Value")));
+                fdTbl.appendChild(tr);
+    
+                for (FriendlyDescription fd : attrDesc
+                        .getFriendlyAttributeName()) {
+                    tr = new Tr()
+                            .appendChild(
+                                    new Td().appendChild(new Text(fd
+                                            .getLang())))
+                            .appendChild(
+                                    new Td().appendChild(new Text(fd
+                                            .getValue())));
+                    fdTbl.appendChild(tr);
+                }
+    
+                tr = new Tr().appendChild(
+                        new Td().appendChild(new Text(type))).appendChild(
+                        new Td().appendChild(new Text(encoding)));
+                tbl.appendChild(tr);
+                group.appendChild(fdTbl);
+                
+                topGroup.appendChild(group);
+            }  
+            
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -164,42 +253,29 @@ public class VerificationServiceGUI {
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
             mainDiv.appendChild(new H3().appendChild(new Text(
                     "Credential Specifications")));
+            
+            Ul ul = new Ul();
 
             for (CredentialSpecification credSpec : credSpecs) {
+                
+                List<FriendlyDescription> friendlies = credSpec.getFriendlyCredentialName();
 
-                Div credDiv = new Div().setCSSClass("credDiv");
-                mainDiv.appendChild(credDiv);
-
-                AttributeDescriptions attribDescs = credSpec
-                        .getAttributeDescriptions();
-                List<AttributeDescription> attrDescs = attribDescs
-                        .getAttributeDescription();
-
-                Table tbl = new Table();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                        .getSpecificationUID().toString())));
-                credDiv.appendChild(tbl);
-                Tr tr = null;
-                tr = new Tr()
-                        .setCSSClass("heading")
-                        .appendChild(new Td().appendChild(new Text("Name")))
-                        .appendChild(new Td().appendChild(new Text("Type")))
-                        .appendChild(new Td().appendChild(new Text("Encoding")));
-                tbl.appendChild(tr);
-
-                for (AttributeDescription attrDesc : attrDescs) {
-                    String name = attrDesc.getFriendlyAttributeName().get(0)
-                            .getValue();
-                    String encoding = attrDesc.getEncoding().toString();
-                    String type = attrDesc.getDataType().toString();
-                    tr = new Tr()
-                            .appendChild(new Td().appendChild(new Text(name)))
-                            .appendChild(new Td().appendChild(new Text(type)))
-                            .appendChild(
-                                    new Td().appendChild(new Text(encoding)));
-                    tbl.appendChild(tr);
-                }
+                String friendlyDesc = "n/a";
+                if(friendlies.size() > 0)
+                    friendlyDesc = friendlies.get(0).getValue();
+                
+                String href = "./credentialSpecification?cs=" + URLEncoder.encode(
+                        credSpec.getSpecificationUID().toString(),
+                        "UTF-8");
+                Li li = new Li().appendChild(
+                        new A().setHref(href).appendChild(new B().appendChild(new Text(credSpec.getSpecificationUID().toString()))));
+                li.appendChild(new Text(" - " + friendlyDesc));
+                
+                ul.appendChild(li);
+              
             }
+            
+            mainDiv.appendChild(ul);
 
             return log.exit(Response.ok(html.write()).build());
 

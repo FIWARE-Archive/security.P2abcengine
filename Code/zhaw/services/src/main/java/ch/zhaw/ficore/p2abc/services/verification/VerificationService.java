@@ -296,6 +296,27 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
+    
+    @GET()
+    @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
+    public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            KeyManager keyManager = verificationHelper.keyManager;
+            
+            CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credSpecUid));
+            
+            return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
 
     @PUT()
     @Path("/protected/presentationPolicy/store/{policyUid}")
