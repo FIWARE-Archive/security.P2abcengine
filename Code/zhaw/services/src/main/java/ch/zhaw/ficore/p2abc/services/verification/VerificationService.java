@@ -350,6 +350,35 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
+    
+    @DELETE()
+    @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
+    public Response deleteCredentialSpecification(
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        log.entry();
+
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            KeyStorage keyStorage = verificationHelper.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(credSpecUid));
+            } else {
+                return log.exit(
+                        Response.status(Response.Status.BAD_REQUEST).entity(
+                                errNotImplemented)).build();
+            }
+
+            return log.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
 
     @PUT()
     @Path("/protected/presentationPolicy/store/{policyUid}")

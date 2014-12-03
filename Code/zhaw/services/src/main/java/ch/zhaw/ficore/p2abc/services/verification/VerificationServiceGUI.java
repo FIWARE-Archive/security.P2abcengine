@@ -173,6 +173,27 @@ public class VerificationServiceGUI {
         }
     }
     
+    @POST()
+    @Path("/protected/deleteCredentialSpecification") 
+    public Response deleteCredentialSpecification(
+            @FormParam("cs") String credSpecUid) {
+        log.entry();
+        
+        try {
+            RESTHelper.deleteRequest(verificationServiceURL + "protected/credentialSpecification/delete/"
+                    + URLEncoder.encode(credSpecUid, "UTF-8"));
+            return credentialSpecifications();
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
     @GET()
     @Path("/protected/issuerParameters/")
     public Response issuerParameters() {
@@ -307,6 +328,15 @@ public class VerificationServiceGUI {
                 
                 topGroup.appendChild(group);
             }  
+            
+            Form f = new Form("./deleteCredentialSpecification")
+                .setMethod("post").setCSSClass("raw");
+                f.appendChild(new Input().setType("submit").setValue(
+                        "Delete credential specification"));
+            f.appendChild(new Input().setType("hidden")
+                    .setValue(credSpec.getSpecificationUID().toString())
+                    .setName("cs"));
+            mainDiv.appendChild(f);
             
             return log.exit(Response.ok(html.write()).build());
         }
