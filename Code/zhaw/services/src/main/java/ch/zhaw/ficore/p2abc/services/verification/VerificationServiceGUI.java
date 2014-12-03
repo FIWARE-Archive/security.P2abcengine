@@ -233,7 +233,7 @@ public class VerificationServiceGUI {
     }
     
     @GET()
-    @Path("/credentialSpecification/")
+    @Path("/protected/credentialSpecification/")
     public Response credentialSpecification(@QueryParam("cs") String credSpecUid) {
         log.entry();
         
@@ -321,7 +321,7 @@ public class VerificationServiceGUI {
     }
     
     @GET()
-    @Path("/credentialSpecifications/")
+    @Path("/protected/credentialSpecifications/")
     public Response credentialSpecifications() {
         log.entry();
 
