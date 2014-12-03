@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
+import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationGUI;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
@@ -96,6 +97,7 @@ import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
+import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
@@ -144,6 +146,65 @@ public class VerificationServiceGUI {
                     .entity(VerificationGUI.errorPage(
                             ExceptionDumper.dumpExceptionStr(e, log), request)
                             .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/protected/issuerParameters/")
+    public Response issuerParameters() {
+        log.entry();
+
+        try {
+            Settings settings = (Settings) RESTHelper.getRequest(
+                    verificationServiceURL + "getSettings/", Settings.class);
+
+            Html html = VerificationGUI.getHtmlPramble("Issuer Parameters", request);
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(VerificationGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text(
+                    "Issuer Parameters")));
+
+            List<IssuerParameters> issuerParams = settings.issuerParametersList;
+
+            Table tbl = new Table();
+            Tr tr = null;
+
+            tr = new Tr()
+                    .appendChild(
+                            new Td().appendChild(new Text(
+                                    "Issuer Parameters Uid")))
+                    .appendChild(
+                            new Td().appendChild(new Text(
+                                    "Credential Specification Uid")))
+                    .appendChild(new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
+
+            for (IssuerParameters ip : issuerParams) {
+                String cs = ip.getCredentialSpecUID().toString();
+                String is = ip.getParametersUID().toString();
+
+                Form f = new Form("./deleteIssuerParameters").setMethod("post")
+                        .setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("is")
+                        .setValue(is));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+
+                tr = new Tr().appendChild(new Td().appendChild(new Text(is)))
+                        .appendChild(new Td().appendChild(new Text(cs)))
+                        .appendChild(new Td().appendChild(f));
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
         }
     }
     
