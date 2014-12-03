@@ -149,6 +149,27 @@ public class VerificationServiceGUI {
         }
     }
     
+    @POST()
+    @Path("/protected/deleteIssuerParameters") 
+    public Response deleteIssuerParameters(
+            @FormParam("is") String issuerParamsUid) {
+        log.entry();
+        
+        try {
+            RESTHelper.deleteRequest(verificationServiceURL + "protected/issuerParameters/delete/"
+                    + URLEncoder.encode(issuerParamsUid, "UTF-8"));
+            return issuerParameters();
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
     @GET()
     @Path("/protected/issuerParameters/")
     public Response issuerParameters() {

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -55,11 +56,13 @@ import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
+import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
@@ -79,6 +82,7 @@ public class VerificationService {
     private final Logger log = LogManager.getLogger();
     private final static String errMagicCookie = "Magic cookie is not correct!";
     private static Map<String, String> accessTokens = new HashMap<String, String>();
+    private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -197,6 +201,35 @@ public class VerificationService {
             return log.exit(Response.ok(
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @DELETE()
+    @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
+    public Response deleteIssuerParameters(
+            @PathParam("issuerParametersUid") String issuerParametersUid) {
+        log.entry();
+
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            KeyStorage keyStorage = verificationHelper.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(issuerParametersUid));
+            } else {
+                return log.exit(
+                        Response.status(Response.Status.BAD_REQUEST).entity(
+                                errNotImplemented)).build();
+            }
+
+            return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
