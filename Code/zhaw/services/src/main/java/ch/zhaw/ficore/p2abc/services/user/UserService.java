@@ -788,6 +788,24 @@ public class UserService {
         }
     }
     
+    /**
+     * <b>Path</b>: /issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes issuer parameters.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>issuerParamateresUid - UID of the issuer parameters to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * @param issuerParametersUid
+     * @return
+     */
     @DELETE()
     @Path("/issuerParameters/delete/{issuerParametersUid}")
     public Response deleteIssuerParameters(
