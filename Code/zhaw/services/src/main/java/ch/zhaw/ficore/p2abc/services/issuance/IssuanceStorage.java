@@ -60,7 +60,7 @@ public interface IssuanceStorage {
      * Deletes a QueryRule
      * 
      * @param credSpecUid
-     *              Uid of the CredentialSpecification
+     *              UID of the CredentialSpecification
      * @throws Exception when something went wrong.
      */
     public void deleteQueryRule(URI credSpecUid) throws Exception;
