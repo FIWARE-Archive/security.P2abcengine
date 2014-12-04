@@ -353,7 +353,7 @@ public class VerificationServiceGUI {
     }
     
     @GET()
-    @Path("/loadSettings")
+    @Path("/protected/loadSettings")
     public Response loadSettings() {
         log.entry();
         
@@ -386,12 +386,12 @@ public class VerificationServiceGUI {
     }
     
     @POST()
-    @Path("/loadSettings2")
+    @Path("/protected/loadSettings2")
     public Response loadSettings2(@FormParam("url") String url) {
         log.entry();
         
         try {
-            RESTHelper.getRequest(verificationServiceURL + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            RESTHelper.getRequest(verificationServiceURL + "protected/loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
             
             Html html = VerificationGUI.getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -285,12 +286,13 @@ public class TestFlow extends JerseyTest {
             String presentationTokenDescription_ = testRequestResource2(presentationToken_);
             System.out.println("**#*#*#*#*#**#*#");
             System.out.println(presentationTokenDescription_);
+            
+            testLoadSettingsVerification();
+            testLoadSettingsUser();
 
             System.gc();
         }
 
-        //while (true)
-        //    Thread.sleep(10000);
     }
 
     public String readTextFile(String path) {
@@ -326,6 +328,28 @@ public class TestFlow extends JerseyTest {
         Client c = Client.create();
         c.addFilter(new HTTPBasicAuthFilter("api", "jura"));
         return c;
+    }
+    
+    public void testLoadSettingsVerification() throws UnsupportedEncodingException {
+        Client client = getClient();
+
+        WebResource webResource = client.resource(verificationServiceURL
+                + "loadSettings?url=" + URLEncoder.encode(issuanceServiceURLUnprot+"getSettings", "UTF-8"));
+
+        ClientResponse response = webResource.type("application/xml").get(
+                ClientResponse.class);
+        assertOk(response);
+    }
+    
+    public void testLoadSettingsUser() throws UnsupportedEncodingException {
+        Client client = getClient();
+
+        WebResource webResource = client.resource(verificationServiceURL
+                + "loadSettings?url=" + URLEncoder.encode(issuanceServiceURLUnprot+"getSettings", "UTF-8"));
+
+        ClientResponse response = webResource.type("application/xml").get(
+                ClientResponse.class);
+        assertOk(response);
     }
 
     public String testRequestResource2(String pt) {

@@ -522,7 +522,7 @@ public class VerificationService {
     }
     
     /**
-     * <b>Path</b>: /loadSettings/ (GET)<br>
+     * <b>Path</b>: /protected/loadSettings/ (GET)<br>
      * <br>
      * <b>Description</b>: Download and load settings from an issuer or any
      * settings provider. This method will cause the user service to make a
@@ -548,7 +548,7 @@ public class VerificationService {
      * @return Response
      */
     @GET()
-    @Path("/loadSettings/")
+    @Path("/protected/loadSettings/")
     public Response loadSettings(@QueryParam("url") String url) {
         log.entry();
 
