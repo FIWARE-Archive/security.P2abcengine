@@ -317,7 +317,7 @@ public class UserService {
     /**
      * <b>Path</b>: /getSettings/ (GET)<br>
      * <br>
-     * <b>Description</b>: Returns the settings of the user service as obtained
+     * <b>Description</b>: Returns the settings of the service as obtained
      * from an issuance service. Settings includes issuer parameters, credential
      * specifications and the system parameters. This method may thus be used to
      * retrieve all credential specifications stored at the user service and

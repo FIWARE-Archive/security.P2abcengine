@@ -129,7 +129,7 @@ public class IssuanceHelper extends AbstractHelper {
                         + cryptoEngine + " : " + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
         this.fileStoragePrefix = fileStoragePrefix;
-        UProveUtils uproveUtils = new UProveUtils();
+        UProveUtils uproveUtils = null;
         this.setupSingleEngineForService(cryptoEngine, uproveUtils,
                 revocationAuthorityParametersResourcesList, modules);
 
@@ -155,6 +155,7 @@ public class IssuanceHelper extends AbstractHelper {
         }
         return instance;
     }
+
 
     private IssuerAbcEngine singleEngine = null;
     private IssuerAbcEngine uproveEngine = null;
@@ -304,25 +305,7 @@ public class IssuanceHelper extends AbstractHelper {
                     hash, issuerParamsUid, revocationParamsUid,
                     friendlyDescriptions);
             break;
-        case UPROVE:
-            engine = this.uproveEngine;
-            if (this.uproveEngine == null) {
-                engine = this.singleEngine;
-            }
-            akeyManager = this.uproveKeyManager;
-            if (this.idemixEngine == null) {
-                engine = this.singleEngine;
-            }
-            if (this.uproveKeyManager == null) {
-                akeyManager = this.keyManager;
-            }
-            issuerParameters = this.setupAndStoreIssuerParameters(cryptoEngine,
-                    engine, akeyManager, this.credentialManager,
-                    systemAndIssuerParamsPrefix, systemParameters, credSpec,
-                    hash, issuerParamsUid, revocationParamsUid,
-                    friendlyDescriptions);
-
-            break;
+        
         default:
             throw new IllegalStateException("The crypto engine: "
                     + cryptoEngine
@@ -392,8 +375,7 @@ public class IssuanceHelper extends AbstractHelper {
         } else {
             if (cryptoEngine == CryptoEngine.IDEMIX) {
                 useEngine = this.idemixEngine;
-            } else if (cryptoEngine == CryptoEngine.UPROVE) {
-                useEngine = this.uproveEngine;
+           
             } else {
                 throw new IllegalStateException(
                         "IssuanceHelper.issueStep : idemix/uprove engine not initialized...");
@@ -475,15 +457,6 @@ public class IssuanceHelper extends AbstractHelper {
             }
             issuanceMessageAndBoolean = this.initIssuanceProtocol(engine,
                     attributes, issuancePolicy, issuerPolicyParametersUid);
-            break;
-        case UPROVE:
-            engine = this.idemixEngine;
-            if (this.idemixEngine == null) {
-                engine = this.singleEngine;
-            }
-            issuanceMessageAndBoolean = this.initIssuanceProtocol(engine,
-                    attributes, issuancePolicy, issuerPolicyParametersUid);
-
             break;
         default:
             throw new IllegalStateException("The crypto engine: "

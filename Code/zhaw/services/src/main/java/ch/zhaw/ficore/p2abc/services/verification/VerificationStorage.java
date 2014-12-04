@@ -1,6 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.verification;
 
 import java.net.URI;
+import java.util.List;
 
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
@@ -11,6 +12,10 @@ public interface VerificationStorage {
 
     public PresentationPolicyAlternatives getPresentationPolicy(URI uri)
             throws Exception;
+    
+    public List<PresentationPolicyAlternatives> listPresentationPolicies() throws Exception;
+    
+    public List<URI> listPresentationPoliciesURIS() throws Exception;
 
     public void addRedirectURI(URI key, URI value) throws Exception;
 

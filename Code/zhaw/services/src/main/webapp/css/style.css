@@ -81,6 +81,7 @@ input:hover, select:hover {
 ul li { margin-left: 1em; }
 
 div.credDiv form { background-color: inherit; border-radius: 0em; padding: 0em; margin-top: 1em;}
+form.raw { background-color: inherit; border-radiues: 0em; padding: 0em; margin-top: 1em;}
 
 
 tr.heading { font-weight: bold; }

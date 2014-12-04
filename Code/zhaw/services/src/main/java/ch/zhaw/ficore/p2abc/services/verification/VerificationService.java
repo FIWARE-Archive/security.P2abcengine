@@ -25,11 +25,14 @@ package ch.zhaw.ficore.p2abc.services.verification;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -42,6 +45,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,12 +54,16 @@ import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
+import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
+import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.xml.Settings;
+import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
@@ -75,6 +83,7 @@ public class VerificationService {
     private final Logger log = LogManager.getLogger();
     private final static String errMagicCookie = "Magic cookie is not correct!";
     private static Map<String, String> accessTokens = new HashMap<String, String>();
+    private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -198,6 +207,35 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
+    
+    @DELETE()
+    @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
+    public Response deleteIssuerParameters(
+            @PathParam("issuerParametersUid") String issuerParametersUid) {
+        log.entry();
+
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            KeyStorage keyStorage = verificationHelper.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(issuerParametersUid));
+            } else {
+                return log.exit(
+                        Response.status(Response.Status.BAD_REQUEST).entity(
+                                errNotImplemented)).build();
+            }
+
+            return log.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
 
     @PUT()
     @Path("/protected/storeIssuerParameters/{issuerParametersUid}")
@@ -292,6 +330,56 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
+    
+    @GET()
+    @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
+    public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            KeyManager keyManager = verificationHelper.keyManager;
+            
+            CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credSpecUid));
+            
+            return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @DELETE()
+    @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
+    public Response deleteCredentialSpecification(
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        log.entry();
+
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            KeyStorage keyStorage = verificationHelper.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(credSpecUid));
+            } else {
+                return log.exit(
+                        Response.status(Response.Status.BAD_REQUEST).entity(
+                                errNotImplemented)).build();
+            }
+
+            return log.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
 
     @PUT()
     @Path("/protected/presentationPolicy/store/{policyUid}")
@@ -311,6 +399,29 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @GET()
+    @Path("/protected/presentationPolicy/list")
+    public Response presentationPolicies() {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternativesCollection ppac = new PresentationPolicyAlternativesCollection();
+            ppac.presentationPolicyAlternatives = verificationHelper.verificationStorage.listPresentationPolicies();
+            List<String> uris = new ArrayList<String>();
+            for(URI uri : verificationHelper.verificationStorage.listPresentationPoliciesURIS())
+                uris.add(uri.toString());
+            ppac.uris = uris;
+            return log.exit(Response.ok(ppac, MediaType.APPLICATION_XML).build());
+        }
+        catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
@@ -421,7 +532,7 @@ public class VerificationService {
      * contents which must be valid <tt>Settings</tt>. DO NOT use this method
      * with untrusted URLs or issuers (or any other settings providers) with
      * DIFFERENT system parameters as this method will overwrite existing system
-     * parameters. <br>
+     * parameters. (see {@link #getSettings()}) <br>
      * <br>
      * <b>Query parameters</b>:
      * <ul>
@@ -473,6 +584,81 @@ public class VerificationService {
         } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /getSettings/ (GET)<br>
+     * <br>
+     * <b>Description</b>: Returns the settings of the service as obtained
+     * from an issuance service. Settings includes issuer parameters, credential
+     * specifications and the system parameters. This method may thus be used to
+     * retrieve all credential specifications stored at the user service and
+     * their corresponding issuer parameters. The return type of this method is
+     * <tt>Settings</tt>.<br>
+     * <br>
+     * The user service is capable of downloading settings from an issuer (or
+     * from anything that provides settings). To download settings use
+     * <tt>/loadSetting?url=...</tt> ({@link #loadSettings(String)}). <br>
+     * <br>
+     * <b>Response Status</b>:
+     * <ul>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type:</b> <tt>Settings</tt> <br>
+     * 
+     * @return Response
+     */
+    @GET()
+    @Path("/getSettings/")
+    public Response getSettings() {
+        log.entry();
+
+        try {
+            VerificationHelper instance = VerificationHelper.getInstance();
+
+            Settings settings = new Settings();
+
+            List<IssuerParameters> issuerParams = new ArrayList<IssuerParameters>();
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof IssuerParameters) {
+                    IssuerParameters ip = (IssuerParameters) obj;
+
+                    SystemParameters serializeSp = (ip.getSystemParameters());
+
+                    ip.setSystemParameters(serializeSp);
+
+                    issuerParams.add(ip);
+                }
+            }
+
+            List<CredentialSpecification> credSpecs = new ArrayList<CredentialSpecification>();
+
+            for (URI uri : instance.keyStorage.listUris()) {
+                Object obj = SerializationUtils.deserialize(instance.keyStorage
+                        .getValue(uri));
+                if (obj instanceof CredentialSpecification) {
+                    credSpecs.add((CredentialSpecification) obj);
+                }
+            }
+
+            settings.credentialSpecifications = credSpecs;
+            settings.issuerParametersList = issuerParams;
+            settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
+                    .getSystemParameters());
+
+            return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
+                    .build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(
+                    Response.status(Response.Status.BAD_REQUEST).entity(
+                            ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
 

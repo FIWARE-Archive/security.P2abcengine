@@ -47,6 +47,7 @@ import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
 import eu.abc4trust.xml.ApplicationData;
 import eu.abc4trust.xml.CredentialInPolicy;
@@ -104,10 +105,11 @@ public class VerificationHelper extends AbstractHelper {
         }
         return instance;
     }
-
+    
     public VerifierAbcEngine engine;
     private Random random;
     public VerificationStorage verificationStorage;
+    public KeyStorage keyStorage;
 
     /**
      * holds map resources by filename (without path) and the bytes of resource
@@ -143,6 +145,7 @@ public class VerificationHelper extends AbstractHelper {
 
             this.engine = new SynchronizedVerifierAbcEngineImpl(e);
             this.keyManager = injector.getInstance(KeyManager.class);
+            this.keyStorage = injector.getInstance(KeyStorage.class);
             this.verificationStorage = injector
                     .getInstance(VerificationStorage.class);
 
