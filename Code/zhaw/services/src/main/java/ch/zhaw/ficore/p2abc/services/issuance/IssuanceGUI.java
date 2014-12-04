@@ -22,7 +22,6 @@ import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
-import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationGUI;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;

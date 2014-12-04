@@ -158,11 +158,9 @@ public class IssuanceHelper extends AbstractHelper {
 
 
     private IssuerAbcEngine singleEngine = null;
-    private IssuerAbcEngine uproveEngine = null;
     private IssuerAbcEngine idemixEngine = null;
 
     private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
-    private KeyManager uproveKeyManager;
     private KeyManager idemixKeyManager;
 
     private final String fileStoragePrefix;

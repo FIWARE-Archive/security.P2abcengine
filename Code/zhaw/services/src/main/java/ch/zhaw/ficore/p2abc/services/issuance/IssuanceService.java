@@ -33,7 +33,6 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
