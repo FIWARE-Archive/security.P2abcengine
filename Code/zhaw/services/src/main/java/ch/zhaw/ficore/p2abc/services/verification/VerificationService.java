@@ -380,10 +380,10 @@ public class VerificationService {
     }
 
     @PUT()
-    @Path("/protected/presentationPolicy/store/{policyUid}")
+    @Path("/protected/presentationPolicy/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storePresentationPolicy(
-            @PathParam("policyUid") String policyUid,
+            @PathParam("resource") String resource,
             PresentationPolicyAlternatives ppa) {
 
         log.entry();
@@ -393,10 +393,28 @@ public class VerificationService {
                     .getInstance();
 
             verificationHelper.verificationStorage.addPresentationPolicy(
-                    new URI(policyUid), ppa);
+                    new URI(resource), ppa);
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @GET()
+    @Path("/protected/presentationPolicy/get/{resource}")
+    public Response getPresentationPolicy(@PathParam("resource") String resource) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa), MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }

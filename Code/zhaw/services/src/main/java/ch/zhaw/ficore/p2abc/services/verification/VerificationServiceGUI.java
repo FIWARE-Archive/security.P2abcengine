@@ -63,12 +63,18 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.org.apache.bcel.internal.classfile.ConstantValue;
+import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
+import eu.abc4trust.xml.AttributePredicate;
+import eu.abc4trust.xml.AttributePredicate.Attribute;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuerParameters;
+import eu.abc4trust.xml.PresentationPolicy;
+import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 @Path("/verification-gui")
 public class VerificationServiceGUI {
@@ -212,6 +218,62 @@ public class VerificationServiceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/protected/presentationPolicy")
+    public Response presentationPolicy(@QueryParam("resource") String resource) {
+        log.entry();
+        
+        try {
+            Html html = VerificationGUI.getHtmlPramble("Presentation Policy", request);
+            Div mainDiv = new Div();
+            html.appendChild(VerificationGUI.getBody(mainDiv));
+            
+            PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper.getRequest(
+                    verificationServiceURL + "protected/presentationPolicy/get/"
+                    + URLEncoder.encode(resource, "UTF-8"), PresentationPolicyAlternatives.class);
+            
+            mainDiv.appendChild(new H2().appendChild(new Text("Alternatives")));
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                Div ppDiv = new Div();
+                mainDiv.appendChild(ppDiv);
+                ppDiv.appendChild(new H3().appendChild(new Text(pp.getPolicyUID().toString())));
+                
+                Ul ul = new Ul();
+                ppDiv.appendChild(ul);
+                
+                for(AttributePredicate ap : pp.getAttributePredicate()) {
+                    List<Object> objs = ap.getAttributeOrConstantValue();
+                    String s = "";
+                    for(Object obj : objs) {
+                        if(obj instanceof ConstantValue) {
+                            ConstantValue cv = (ConstantValue)obj;
+                            s += cv.toString()+",";
+                        } else if(obj instanceof Attribute) {
+                            s += ((Attribute)obj).getAttributeType().toString() + ";";
+                        } else {
+                            ElementNSImpl i = (ElementNSImpl)obj;
+                            s += i.getTextContent() + ";";
+                        }
+                    }
+                    ul.appendChild(new Li().appendChild(
+                            new B().appendChild(new Text(ap.getFunction().toString())))
+                            .appendChild(new Text(" - " + s)));
+                }
+            }
+            
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
