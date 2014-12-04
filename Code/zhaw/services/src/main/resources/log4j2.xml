@@ -7,7 +7,7 @@ status="WARN">
     </Console>
 </Appenders>
 <Loggers>
-    <Root level="trace">
+    <Root level="INFO">
         <AppenderRef ref="Console"/>
     </Root>
 </Loggers>
