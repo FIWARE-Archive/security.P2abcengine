@@ -143,6 +143,15 @@ public class TestIssuerAPI extends JerseyTest {
             QueryRule q = qrc.queryRules.get(i);
             assertEquals(qrc.uris.get(i), m.get(q.queryString));
         }
+        
+        RESTHelper.deleteRequest(issuanceServiceURL+"queryRule/delete/urn:foo1");
+        RESTHelper.deleteRequest(issuanceServiceURL+"queryRule/delete/urn:foo2");
+        
+        qrc = (QueryRuleCollection) RESTHelper.getRequest(
+                issuanceServiceURL + "queryRule/list",
+                QueryRuleCollection.class);
+        assertEquals(qrc.queryRules.size(), qrc.uris.size());
+        assertEquals(0, qrc.queryRules.size());
     }
 
     @Test

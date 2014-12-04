@@ -1030,6 +1030,44 @@ public class IssuanceService {
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
+    
+    /**
+     * <b>Path</b>: /protected/queryRule/delete/{credentialSpecificationUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes a query rule.<br>
+     * <br>
+     * <b>Path parameters:</b>
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification the query rule is associated with.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * @param credSpecUid
+     * @return
+     */
+    @DELETE()
+    @Path("/protected/queryRule/delete/{credentialSpecificationUid}")
+    public Response deleteQueryRule(
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            instance.issuanceStorage.deleteQueryRule(new URI(credSpecUid));
+            
+            return logger.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger)); 
+        }
+    }
 
     /**
      * <b>Path</b>: /protected/queryRule/get/{credentialSpecificationUid} (GET)<br>
