@@ -24,22 +24,17 @@
 
 package ch.zhaw.ficore.p2abc.services.verification;
 
-import java.net.URI;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,61 +42,32 @@ import org.apache.logging.log4j.Logger;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuerGUI;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationGUI;
-import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
-import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
-import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
-import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.B;
-import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
-import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.H3;
-import com.hp.gagawa.java.elements.H4;
-import com.hp.gagawa.java.elements.H5;
-import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
-import com.hp.gagawa.java.elements.Label;
 import com.hp.gagawa.java.elements.Li;
-import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
-import com.hp.gagawa.java.elements.Select;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
-import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 
-import eu.abc4trust.returnTypes.IssuanceReturn;
-import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
-import eu.abc4trust.returnTypes.UiIssuanceArguments;
-import eu.abc4trust.returnTypes.UiIssuanceReturn;
-import eu.abc4trust.returnTypes.UiPresentationArguments;
-import eu.abc4trust.returnTypes.UiPresentationReturn;
-import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
-import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
-import eu.abc4trust.xml.Credential;
-import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
-import eu.abc4trust.xml.IssuanceMessage;
-import eu.abc4trust.xml.IssuanceMessageAndBoolean;
 import eu.abc4trust.xml.IssuerParameters;
-import eu.abc4trust.xml.ObjectFactory;
-import eu.abc4trust.xml.PresentationPolicyAlternatives;
-import eu.abc4trust.xml.PresentationToken;
 
 @Path("/verification-gui")
 public class VerificationServiceGUI {
