@@ -27,6 +27,9 @@ import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.CredentialSpecification;
+
 public class TestIssuerAPI extends JerseyTest {
 
     private String issuanceServiceURL = "issuance/protected/";
@@ -155,7 +158,7 @@ public class TestIssuerAPI extends JerseyTest {
     }
 
     @Test
-    public void testGenCredSpecAndGenIssuerParameters() throws Exception {
+    public void testGenCredSpec() throws Exception {
         AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
                 .getRequest(
                         issuanceServiceURL + "attributeInfoCollection/test",
@@ -163,7 +166,26 @@ public class TestIssuerAPI extends JerseyTest {
 
         assertEquals(aic.name, "test");
         assertTrue(aic.attributes.size() == 1);
-
+        assertEquals(aic.attributes.get(0).name, "someAttribute");
+        
+        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.postRequest(
+                issuanceServiceURL + "credentialSpecification/generate",
+                RESTHelper.toXML(AttributeInfoCollection.class, aic),
+                CredentialSpecification.class);
+        
+        assertEquals("urn:fiware:privacy:test",credSpec.getSpecificationUID().toString());
+        assertEquals(1,credSpec.getAttributeDescriptions().getAttributeDescription().size());
+        assertEquals("someAttribute", 
+                credSpec.getAttributeDescriptions().getAttributeDescription().get(0).getType().toString());
+        
+        assertEquals("xs:integer",aic.attributes.get(0).mapping);
+        assertEquals("urn:abc4trust:1.0:encoding:integer:signed", aic.attributes.get(0).encoding);
+        
+        AttributeDescription ad = credSpec.getAttributeDescriptions().getAttributeDescription().get(0);
+        assertEquals("xs:integer",ad.getDataType().toString());
+        assertEquals("urn:abc4trust:1.0:encoding:integer:signed", ad.getEncoding().toString());
+        assertEquals("someAttribute attribute", ad.getFriendlyAttributeName().get(0).getValue());
+        assertEquals("en", ad.getFriendlyAttributeName().get(0).getLang());
     }
 
     public void assertOk(Response r) {
