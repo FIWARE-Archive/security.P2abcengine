@@ -98,6 +98,7 @@ public class TestIssuerAPI extends JerseyTest {
         
         ServicesConfiguration.staticInit();
         URIBytesStorage.clearEverything();
+
     }
 
     @After

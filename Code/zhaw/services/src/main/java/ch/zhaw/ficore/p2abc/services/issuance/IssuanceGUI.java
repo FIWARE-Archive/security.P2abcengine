@@ -269,7 +269,7 @@ public class IssuanceGUI {
                         : "(empty)";
                 String cs = uri.toString();
 
-                Form f = new Form("./deleteIssuerParameters").setMethod("post")
+                Form f = new Form("./deleteQueryRule").setMethod("post")
                         .setCSSClass("nopad");
                 f.appendChild(new Input().setType("hidden").setName("cs")
                         .setValue(cs));
@@ -422,6 +422,27 @@ public class IssuanceGUI {
             RESTHelper.deleteRequest(issuanceServiceURL + "protected/issuerParameters/delete/"
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger), request)
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/protected/deleteQueryRule") 
+    public Response deleteQueryRule(
+            @FormParam("cs") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            RESTHelper.deleteRequest(issuanceServiceURL + "protected/queryRule/delete/"
+                    + URLEncoder.encode(credSpecUid, "UTF-8"));
+            return queryRules();
         }
         catch(Exception e) {
             logger.catching(e);

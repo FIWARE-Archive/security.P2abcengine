@@ -88,7 +88,7 @@ public class TestFlow extends JerseyTest {
         ic.bind("java:/comp/env/cfg/bindQuery", "FAKE");
         ic.bind("java:/comp/env/cfg/restAuthPassword", "");
         ic.bind("java:/comp/env/cfg/restAuthUser", "flow");
-        ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
+        ic.bind("java:/comp/env/cfg/issuanceServiceURL", getBaseURI() + "issuance/");
         ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI() + "user/");
         ic.bind("java:/comp/env/cfg/verificationServiceURL", getBaseURI() + "verification/");
 
