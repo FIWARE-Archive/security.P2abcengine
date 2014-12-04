@@ -88,10 +88,8 @@ public class VerificationService {
     ObjectFactory of = new ObjectFactory();
 
     public VerificationService() throws Exception {
-        System.out.println("VerificationService");
 
         if (VerificationHelper.isInit()) {
-            System.out.println(" - Helper already init'ed");
         } else {
             if (System.getProperty("PathToUProveExe", null) == null) {
                 String uprovePath = "./../uprove/UProveWSDLService/ABC4Trust-UProve/bin/Release";

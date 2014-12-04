@@ -33,6 +33,7 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
+import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
@@ -44,6 +45,7 @@ import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.cryptoEngine.util.SystemParametersUtil;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.util.CryptoUriUtil;
 import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
@@ -951,6 +953,36 @@ public class IssuanceService {
                     .build();
         }
     }
+    
+    @DELETE()
+    @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
+    public Response deleteIssuerParameters(
+            @PathParam("issuerParametersUid") String issuerParametersUid) {
+        logger.entry();
+
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+
+            KeyStorage keyStorage = instance.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(issuerParametersUid));
+            } else {
+                return logger.exit(
+                        Response.status(Response.Status.BAD_REQUEST).entity(
+                                errNotImplemented)).build();
+            }
+
+            return logger.exit(Response.ok("OK").build());
+        } catch (Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+    }
 
     /* QUERY RULE */
 
@@ -996,6 +1028,44 @@ public class IssuanceService {
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /protected/queryRule/delete/{credentialSpecificationUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes a query rule.<br>
+     * <br>
+     * <b>Path parameters:</b>
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification the query rule is associated with.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * @param credSpecUid
+     * @return
+     */
+    @DELETE()
+    @Path("/protected/queryRule/delete/{credentialSpecificationUid}")
+    public Response deleteQueryRule(
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        logger.entry();
+        
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+            IssuanceHelper instance = IssuanceHelper.getInstance();
+            
+            instance.issuanceStorage.deleteQueryRule(new URI(credSpecUid));
+            
+            return logger.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger)); 
         }
     }
 
@@ -1437,8 +1507,6 @@ public class IssuanceService {
                     .getRevocationParametersUID();
             List<FriendlyDescription> friendlyDescriptions = issuerParametersInput
                     .getFriendlyIssuerDescription();
-            System.out.println("FriendlyIssuerDescription: "
-                    + friendlyDescriptions.size());
             IssuerParameters issuerParameters = instance.setupIssuerParameters(
                     cryptoEngine, credspec, systemParameters,
                     issuerParametersUid, hash, revocationParametersUid,
@@ -1448,7 +1516,7 @@ public class IssuanceService {
 
             List<Object> objs = systemParameters.getAny();
             for (Object obj : objs)
-                System.out.println(obj + "-" + obj.getClass());
+                logger.info(obj + "-" + obj.getClass());
 
             SystemParameters serializeSp = SystemParametersUtil
                     .serialize(systemParameters);
@@ -1486,7 +1554,7 @@ public class IssuanceService {
                 logger.info("IssuanceHelper is initialized");
             }
         } catch (Exception e) {
-            System.out.println("Create Domain FAILED " + e);
+            logger.warn("Create Domain FAILED " + e);
             e.printStackTrace();
         }
     }

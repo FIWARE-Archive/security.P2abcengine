@@ -88,8 +88,8 @@ public class IssuanceHelper extends AbstractHelper {
             while ((line = br.readLine()) != null)
                 lines += line + "\n";
             br.close();
-            System.out.println("*** " + path);
-            System.out.println(lines);
+            log.info("*** " + path);
+            log.info(lines);
             return lines;
         } catch (Exception e) {
             throw new RuntimeException("readTextFile(" + path + ") failed!");

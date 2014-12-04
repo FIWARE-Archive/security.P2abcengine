@@ -69,7 +69,6 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                 String bindQuery = QueryHelper.buildQuery(
                         configuration.getBindQuery(),
                         QueryHelper.ldapSanitize(simpleAuth.username));
-                System.out.println("q:" + bindQuery);
 
                 ConnectionParameters adminCfg = configuration
                         .getAuthenticationConnectionParameters();
@@ -82,7 +81,6 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                     SearchResult sr = (SearchResult) results.next();
                     binddn = sr.getName();
                 }
-                System.out.println(binddn);
 
                 if (binddn == null) {
                     logger.warn("Couldn't find DN for user "
