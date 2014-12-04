@@ -25,6 +25,7 @@
 package ch.zhaw.ficore.p2abc.services.verification;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,6 +85,44 @@ public class VerificationServiceGUI {
     
     private Logger log = LogManager.getLogger();
     private static String verificationServiceURL = ServicesConfiguration.getVerificationServiceURL();
+    private static List<String> predicateFunctions;
+    
+    static {
+        predicateFunctions = new ArrayList<String>();
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:string-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:boolean-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:time-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:anyURI-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than-or-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-less-than");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-less-than-or-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-greater-than");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-greater-than-or-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-less-than");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-less-than-or-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than-or-equal");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than");
+        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than-or-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:string-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:boolean-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:integer-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:date-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:time-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:dateTime-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:anyURI-not-equal");
+        predicateFunctions.add("urn:abc4trust:1.0:function:string-equal-oneof");
+        predicateFunctions.add("urn:abc4trust:1.0:function:boolean-equal-oneof");
+        predicateFunctions.add("urn:abc4trust:1.0:function:integer-equal-oneof");
+        predicateFunctions.add("urn:abc4trust:1.0:function:date-equal-oneof");
+        predicateFunctions.add("urn:abc4trust:1.0:function:time-equal-oneof");
+        predicateFunctions.add("urn:abc4trust:1.0:function:dateTime-equal-oneof");
+        predicateFunctions.add("urn:abc4trust:1.0:function:anyURI-equal-oneof");
+    }
     
     @GET()
     @Path("/protected/profile/")
