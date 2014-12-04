@@ -50,11 +50,14 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
+import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
+import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
@@ -87,6 +90,7 @@ public class UserService {
 
     private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
     private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
+    private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
 
     /**
      * <b>Path</b>: /status/ (GET)<br>
@@ -778,6 +782,36 @@ public class UserService {
             return log.exit(Response.ok(
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @DELETE()
+    @Path("/issuerParameters/delete/{issuerParametersUid}")
+    public Response deleteIssuerParameters(
+            @PathParam("issuerParametersUid") String issuerParametersUid) {
+        log.entry();
+
+        try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+            
+            KeyStorage keyStorage = instance.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(issuerParametersUid));
+            } else {
+                return log.exit(
+                        Response.status(Response.Status.BAD_REQUEST).entity(
+                                errNotImplemented)).build();
+            }
+
+            return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));

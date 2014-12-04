@@ -293,6 +293,8 @@ public class TestFlow extends JerseyTest {
             System.gc();
         }
 
+        //while(true)
+        //    Thread.sleep(10000);
     }
 
     public String readTextFile(String path) {

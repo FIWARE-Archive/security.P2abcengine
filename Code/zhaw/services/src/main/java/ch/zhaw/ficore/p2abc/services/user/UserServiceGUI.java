@@ -92,6 +92,7 @@ import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
+import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
@@ -159,6 +160,86 @@ public class UserServiceGUI {
             return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/issuerParameters/")
+    public Response issuerParameters() {
+        log.entry();
+
+        try {
+            Settings settings = (Settings) RESTHelper.getRequest(
+                    userServiceURL + "getSettings/", Settings.class);
+
+            Html html = UserGUI.getHtmlPramble("Issuer Parameters", request);
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text(
+                    "Issuer Parameters")));
+
+            List<IssuerParameters> issuerParams = settings.issuerParametersList;
+
+            Table tbl = new Table();
+            Tr tr = null;
+
+            tr = new Tr()
+                    .appendChild(
+                            new Td().appendChild(new Text(
+                                    "Issuer Parameters Uid")))
+                    .appendChild(
+                            new Td().appendChild(new Text(
+                                    "Credential Specification Uid")))
+                    .appendChild(new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
+
+            for (IssuerParameters ip : issuerParams) {
+                String cs = ip.getCredentialSpecUID().toString();
+                String is = ip.getParametersUID().toString();
+
+                Form f = new Form("./deleteIssuerParameters").setMethod("post")
+                        .setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("is")
+                        .setValue(is));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+
+                tr = new Tr().appendChild(new Td().appendChild(new Text(is)))
+                        .appendChild(new Td().appendChild(new Text(cs)))
+                        .appendChild(new Td().appendChild(f));
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/deleteIssuerParameters") 
+    public Response deleteIssuerParameters(
+            @FormParam("is") String issuerParamsUid) {
+        log.entry();
+        
+        try {
+            RESTHelper.deleteRequest(userServiceURL + "issuerParameters/delete/"
+                    + URLEncoder.encode(issuerParamsUid, "UTF-8"));
+            return issuerParameters();
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
