@@ -783,6 +783,8 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
+     * <li>409 - The credentialSpecificationUid given on the path does not match
+     * the actual credential specification's UDI</li>
      * <li>400 - ERROR</li>
      * </ul>
      * <br>

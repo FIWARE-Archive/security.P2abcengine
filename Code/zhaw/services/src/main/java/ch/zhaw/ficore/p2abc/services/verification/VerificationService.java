@@ -209,6 +209,24 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes issuer parameters. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>issuerParametersUid - UID of the issuer parameters to delet.
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param issuerParametersUid
+     * @return
+     */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
     public Response deleteIssuerParameters(
@@ -238,8 +256,30 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /protected/issuerParameters/store/{issuerParametersUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores issuer parameters at this service. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>issuerParametersUid - UID of the issuer parameters to store</li>
+     * </ul>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>409 - The issuerParemetersUid does not match the actual issuer parameters' UID.</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type:</b> <tt>IssuerParemeters</tt> <br>
+     * @param issuerParametersUid
+     * @param issuerParameters
+     * @return
+     */
     @PUT()
-    @Path("/protected/storeIssuerParameters/{issuerParametersUid}")
+    @Path("/protected/issuerParameters/store/{issuerParametersUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
@@ -255,18 +295,17 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             KeyManager keyManager = verificationHelper.keyManager;
+            
+            if(!issuerParametersUid.toString().equals(issuerParameters.getParametersUID().toString()))
+                return log.exit(Response.status(Response.Status.CONFLICT).build());
 
             boolean r = keyManager.storeIssuerParameters(issuerParametersUid,
                     issuerParameters);
+            
+            if(!r)
+                throw new RuntimeException("Could not store issuer parameters!");
 
-            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r);
-
-            this.log.info("VerificationService - storeIssuerParameters - done ");
-
-            return log.exit(Response.ok(
-                    of.createABCEBoolean(createABCEBoolean),
-                    MediaType.APPLICATION_XML).build());
+            return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));

@@ -538,7 +538,7 @@ public class TestFlow extends JerseyTest {
         Client client = getClient();
 
         WebResource webResource = client.resource(verificationServiceURL
-                + "storeIssuerParameters/" + issuanceURI);
+                + "issuerParameters/store/" + issuanceURI);
 
         ClientResponse response = webResource.type("application/xml").put(
                 ClientResponse.class, p);
