@@ -136,7 +136,7 @@ public class VerificationService {
      * <b>Input type:</b> <tt>PresentationPolicyAlternativesAndPresentationToken</tt> <br>
      * <b>Return type:</b> <tt>PresentationTokenDescription</tt> <br>
      * @param ppaAndpt PresentationPolicyAlternativesAndPresentationToken
-     * @return PresentationTokenDescription
+     * @return Response
      * @throws TokenVerificationException when something went wrong.
      * @throws CryptoEngineException when something went wrong.
      */
@@ -182,8 +182,8 @@ public class VerificationService {
      *  <li>200 - OK (application xml)</li>
      *  <li>500 - ERROR</li>
      * </ul>
-     * @param systemParameters
-     * @return
+     * @param systemParameters SystemParameters
+     * @return Response
      */
     @PUT()
     @Path("/protected/systemParameters/store")
@@ -224,8 +224,8 @@ public class VerificationService {
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * </ul>
-     * @param issuerParametersUid
-     * @return
+     * @param issuerParametersUid UID of the IssuerParameters
+     * @return Response
      */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
@@ -273,10 +273,10 @@ public class VerificationService {
      * <li>500 - ERROR</li>
      * </ul>
      * <br>
-     * <b>Input type:</b> <tt>IssuerParemeters</tt> <br>
-     * @param issuerParametersUid
-     * @param issuerParameters
-     * @return
+     * <b>Input type:</b> <tt>IssuerParameters</tt> <br>
+     * @param issuerParametersUid UID of the IssuerParameters
+     * @param issuerParameters IssuerParameters
+     * @return Response
      */
     @PUT()
     @Path("/protected/issuerParameters/store/{issuerParametersUid}")
@@ -312,6 +312,7 @@ public class VerificationService {
         }
     }
 
+    
     @POST()
     @Path("/createPresentationPolicy")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -371,6 +372,26 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retreive a credential specification stored at this service.<br>
+     * <br>
+     * <b>Path parameters:</b>
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification to retrieve.</li>
+     * </ul>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     * <li>200 - OK (application/xml)</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
+     * @param credSpecUid
+     * @return
+     */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
     public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
@@ -392,6 +413,24 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/{credentialSpecificationUid} (DELETE) <br>
+     * <br>
+     * <b>Description</b>: Deletes a credential specification. <br>
+     * <br>
+     * <b>Path parameters</b>: 
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param credSpecUid UID of the credential specification to delete
+     * @return Response
+     */
     @DELETE()
     @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
     public Response deleteCredentialSpecification(
