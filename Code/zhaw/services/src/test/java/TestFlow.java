@@ -293,8 +293,8 @@ public class TestFlow extends JerseyTest {
             System.gc();
         }
 
-        while(true)
-            Thread.sleep(10000);
+        //while(true)
+        //    Thread.sleep(10000);
     }
 
     public String readTextFile(String path) {
@@ -573,7 +573,7 @@ public class TestFlow extends JerseyTest {
         Client client = getClient();
 
         WebResource webResource = client.resource(verificationServiceURL
-                + "storeSystemParameters/");
+                + "systemParameters/store");
 
         ClientResponse response = webResource.type("application/xml").put(
                 ClientResponse.class, sp);

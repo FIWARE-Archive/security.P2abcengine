@@ -104,27 +104,53 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /protected/status/ (GET)<br>
+     * <br>
+     * <b>Description</b>: This method is available when the service is running.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * </ul>
+     * @return
+     */
     @GET()
     @Path("/protected/status/")
     public Response status() {
         return Response.ok().build();
     }
 
+    /**
+     * <b>Path</b>: /verifyTokenAgainstPolicy (POST) <br>
+     * <br>
+     * <b>Description</b>: This method verifies a given presentation token against a given PresentationPolicyAlternatives. <br>
+     * This method will return a PresentationTokenDescription.
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK (application/xml)</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type:</b> <tt>PresentationPolicyAlternativesAndPresentationToken</tt> <br>
+     * <b>Return type:</b> <tt>PresentationTokenDescription</tt> <br>
+     * @param ppaAndpt PresentationPolicyAlternativesAndPresentationToken
+     * @return PresentationTokenDescription
+     * @throws TokenVerificationException when something went wrong.
+     * @throws CryptoEngineException when something went wrong.
+     */
     @Path("/verifyTokenAgainstPolicy")
     @POST()
     public Response verifyTokenAgainstPolicy(
-            JAXBElement<PresentationPolicyAlternativesAndPresentationToken> ppaAndpt,
-            @QueryParam("store") String storeString)
+            JAXBElement<PresentationPolicyAlternativesAndPresentationToken> ppaAndpt)
             throws TokenVerificationException, CryptoEngineException {
         log.entry();
 
         try {
 
             boolean store = false;
-            if ((storeString != null)
-                    && storeString.toUpperCase().equals("TRUE")) {
-                store = true;
-            }
+            
             VerificationHelper verficationHelper = VerificationHelper
                     .getInstance();
 
@@ -145,43 +171,22 @@ public class VerificationService {
         }
     }
 
-    @Path("/protected/getToken")
-    @GET()
-    public Response getToken(@QueryParam("tokenUID") URI tokenUid) {
-        log.entry();
-
-        try {
-            VerificationHelper verificationHelper = VerificationHelper
-                    .getInstance();
-            PresentationToken pt = verificationHelper.engine.getToken(tokenUid);
-            return log.exit(Response.ok(of.createPresentationToken(pt),
-                    MediaType.APPLICATION_XML).build());
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
-        }
-    }
-
-    @Path("/protected/deleteToken")
-    @POST()
-    public Response deleteToken(@QueryParam("tokenUID") URI tokenUid) {
-        log.entry();
-
-        try {
-            boolean result = VerificationHelper.getInstance().engine
-                    .deleteToken(tokenUid);
-            JAXBElement<Boolean> jaxResult = new JAXBElement<Boolean>(
-                    new QName("deleteToken"), Boolean.TYPE, result);
-            return log.exit(Response.ok(jaxResult, MediaType.APPLICATION_XML)
-                    .build());
-        } catch (Exception e) {
-            log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
-        }
-    }
-
+    
+    /**
+     * <b>Path</b>: /protected/systemParameters/store (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores system parameters at this service.<br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     *  <li>200 - OK (application xml)</li>
+     *  <li>500 - ERROR</li>
+     * </ul>
+     * @param systemParameters
+     * @return
+     */
     @PUT()
-    @Path("/protected/storeSystemParameters/")
+    @Path("/protected/systemParameters/store")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeSystemParameters(SystemParameters systemParameters) {
 
@@ -194,12 +199,10 @@ public class VerificationService {
 
             boolean r = keyManager.storeSystemParameters(systemParameters);
 
-            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r);
-
-            return log.exit(Response.ok(
-                    of.createABCEBoolean(createABCEBoolean),
-                    MediaType.APPLICATION_XML).build());
+            if(!r)
+                throw new RuntimeException("Could not store system parameters.");
+            
+            return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
@@ -224,7 +227,7 @@ public class VerificationService {
                 gkeyStorage.delete(new URI(issuerParametersUid));
             } else {
                 return log.exit(
-                        Response.status(Response.Status.BAD_REQUEST).entity(
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                                 errNotImplemented)).build();
             }
 
@@ -506,8 +509,7 @@ public class VerificationService {
 
             Response r = this
                     .verifyTokenAgainstPolicy(
-                            of.createPresentationPolicyAlternativesAndPresentationToken(ppat),
-                            "false");
+                            of.createPresentationPolicyAlternativesAndPresentationToken(ppat));
             if (r.getStatus() != 200)
                 return log.exit(Response.status(Response.Status.FORBIDDEN)
                         .entity("NOT OK").build());
