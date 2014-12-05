@@ -501,6 +501,20 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicy/list (GET)<br>
+     * <br>
+     * <b>Description</b>: Lists all presentation policies stored at this service. <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>PresentationPolicyAlternativesCollection</tt> <br>
+     * @return Response
+     */
     @GET()
     @Path("/protected/presentationPolicy/list")
     public Response presentationPolicies() {
