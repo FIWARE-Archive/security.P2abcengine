@@ -27,6 +27,7 @@ import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
+import eu.abc4trust.returnTypes.ui.PseudonymInUi;
 import eu.abc4trust.returnTypes.ui.PseudonymListCandidate;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.returnTypes.ui.RevealedFact;
@@ -142,6 +143,11 @@ public class UserGUI {
                 for (PseudonymListCandidate pc : tc.pseudonymCandidates) {
                     sel.appendChild(new Option().appendChild(new Text(Integer
                             .toString(pc.candidateId)))); // chosenPseudonymList
+                    System.out.println("____P_____");
+                    for(PseudonymInUi p : pc.pseudonyms) {
+                        System.out.println(p.uri.toString());
+                        System.out.println(p.pseudonym.getPseudonymUID().toString());
+                    }
                     // TODO: What the hell is this pseudonym thing?
                 }
                 f.appendChild(sel);

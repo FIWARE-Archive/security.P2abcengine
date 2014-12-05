@@ -58,7 +58,9 @@ import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
 import com.hp.gagawa.java.elements.Li;
+import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
+import com.hp.gagawa.java.elements.Select;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
@@ -308,7 +310,20 @@ public class VerificationServiceGUI {
                             new B().appendChild(new Text(ap.getFunction().toString())))
                             .appendChild(new Text(" - " + s)));
                 }
+                
+                Select s = new Select();
+                for(String fp : predicateFunctions) {
+                    Option o = new Option();
+                    o.setValue(fp);
+                    o.appendChild(new Text(fp));
+                    s.appendChild(o);
+                }
+                
+                mainDiv.appendChild(s);
+
             }
+            
+            
             
             return log.exit(Response.ok(html.write()).build());
         }

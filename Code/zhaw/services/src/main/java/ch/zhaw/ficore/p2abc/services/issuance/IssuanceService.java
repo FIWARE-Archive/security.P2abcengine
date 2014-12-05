@@ -953,6 +953,24 @@ public class IssuanceService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes issuer parameters.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>issuerParametersUid - UID of the issuer parameters to delete.
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>400 - ERROR</li>
+     * </ul>
+     * @param issuerParametersUid
+     * @return
+     */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
     public Response deleteIssuerParameters(
