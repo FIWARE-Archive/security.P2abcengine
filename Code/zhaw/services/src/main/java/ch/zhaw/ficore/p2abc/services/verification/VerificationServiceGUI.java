@@ -24,6 +24,7 @@
 
 package ch.zhaw.ficore.p2abc.services.verification;
 
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,8 @@ import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.H3;
+import com.hp.gagawa.java.elements.H4;
+import com.hp.gagawa.java.elements.H5;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
 import com.hp.gagawa.java.elements.Label;
@@ -73,6 +76,8 @@ import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.AttributePredicate;
 import eu.abc4trust.xml.AttributePredicate.Attribute;
+import eu.abc4trust.xml.CredentialInPolicy;
+import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives.IssuerParametersUID;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.IssuerParameters;
@@ -300,7 +305,8 @@ public class VerificationServiceGUI {
                             ConstantValue cv = (ConstantValue)obj;
                             s += cv.toString()+",";
                         } else if(obj instanceof Attribute) {
-                            s += ((Attribute)obj).getAttributeType().toString() + ";";
+                            Attribute attrib = (Attribute)obj;
+                            s += (attrib).getAttributeType().toString() + " (" +  attrib.getCredentialAlias().toString() +")" + ";";
                         } else {
                             ElementNSImpl i = (ElementNSImpl)obj;
                             s += i.getTextContent() + ";";
@@ -309,6 +315,29 @@ public class VerificationServiceGUI {
                     ul.appendChild(new Li().appendChild(
                             new B().appendChild(new Text(ap.getFunction().toString())))
                             .appendChild(new Text(" - " + s)));
+                }
+                
+                
+                List<CredentialInPolicy> cips = pp.getCredential();
+                for(CredentialInPolicy cip : cips) {
+                    
+                    mainDiv.appendChild(new H4().appendChild(new Text(cip.getAlias().toString())));
+                    mainDiv.appendChild(new H5().appendChild(new Text("Credential specification alternatives")));
+                    List<URI> credSpecs = cip.getCredentialSpecAlternatives().getCredentialSpecUID();
+                    ul = new Ul();
+                    for(URI uri : credSpecs) {
+                        ul.appendChild(new Li().appendChild(new Text(uri.toString())));
+                    }
+                    mainDiv.appendChild(ul);
+                    mainDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
+                    ul = new Ul();
+                    for(IssuerParametersUID uid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
+                        if(uid.getRevocationInformationUID() != null)
+                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString() + " (" + uid.getRevocationInformationUID().toString()  +")")));
+                        else
+                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString())));
+                    }
+                    mainDiv.appendChild(ul);
                 }
                 
                 Select s = new Select();
