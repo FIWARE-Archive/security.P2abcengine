@@ -268,6 +268,8 @@ public class UserServiceGUI {
                     userServiceURL + "createPresentationTokenUi",
                     RESTHelper.toXML(UiPresentationReturn.class, uir),
                     PresentationToken.class);
+            
+            log.info("Get " + uiContext + "," + getResource(uiContext));
 
             String redirectURI = (String) RESTHelper.postRequest(
                     getURL(uiContext)
@@ -328,6 +330,8 @@ public class UserServiceGUI {
 
             putURL(args.uiContext.toString(), verificationURL);
             putResource(args.uiContext.toString(), resource);
+            
+            log.info("Put " + args.uiContext.toString() + "," + resource);
 
             return this.presentationArguments(ObjectFactoryReturnTypes
                     .wrap(args));

@@ -325,8 +325,16 @@ public class VerificationServiceGUI {
                     mainDiv.appendChild(new H5().appendChild(new Text("Credential specification alternatives")));
                     List<URI> credSpecs = cip.getCredentialSpecAlternatives().getCredentialSpecUID();
                     ul = new Ul();
+                    List<String> credAttributes = new ArrayList<String>();
                     for(URI uri : credSpecs) {
                         ul.appendChild(new Li().appendChild(new Text(uri.toString())));
+                        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
+                                verificationServiceURL + "protected/credentialSpecification/get/"
+                                + URLEncoder.encode(uri.toString(), "UTF-8"), CredentialSpecification.class);
+                        for(AttributeDescription attrDescs : credSpec.getAttributeDescriptions().getAttributeDescription()) {
+                            credAttributes.add(attrDescs.getType().toString());
+                        }
+                        
                     }
                     mainDiv.appendChild(ul);
                     mainDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
@@ -338,17 +346,29 @@ public class VerificationServiceGUI {
                             ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString())));
                     }
                     mainDiv.appendChild(ul);
+                    
+                    Select s = new Select();
+                    for(String fp : predicateFunctions) {
+                        Option o = new Option();
+                        o.setValue(fp);
+                        o.appendChild(new Text(fp));
+                        s.appendChild(o);
+                    }
+                    
+                    mainDiv.appendChild(s);
+                    
+                    s = new Select();
+                    for(String at : credAttributes) {
+                        Option o = new Option();
+                        o.setValue(at);
+                        o.appendChild(new Text(at));
+                        s.appendChild(o);
+                    }
+                    
+                    mainDiv.appendChild(s);
                 }
                 
-                Select s = new Select();
-                for(String fp : predicateFunctions) {
-                    Option o = new Option();
-                    o.setValue(fp);
-                    o.appendChild(new Text(fp));
-                    s.appendChild(o);
-                }
                 
-                mainDiv.appendChild(s);
 
             }
             

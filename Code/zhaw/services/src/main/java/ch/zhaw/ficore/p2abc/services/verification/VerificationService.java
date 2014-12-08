@@ -610,6 +610,7 @@ public class VerificationService {
                     .getRedirectURI(new URI(resource));
             String token = generateAccessToken();
 
+            log.info("VPut: " + token + "," + resource);
             accessTokens.put(token, resource);
 
             return log.exit(Response.ok(
@@ -625,9 +626,11 @@ public class VerificationService {
     @Path("/verifyAccessToken/")
     public Response verifyAccessToken(
             @QueryParam("accesstoken") String accessToken) {
+        log.info("VGet: " + accessToken);
         if (!accessTokens.containsKey(accessToken))
             return Response.status(Response.Status.FORBIDDEN).build();
         else {
+            String resourceString = accessTokens.get(accessToken);
             accessTokens.remove(accessToken);
             return Response.ok(accessTokens.get(accessToken)).build();
         }
