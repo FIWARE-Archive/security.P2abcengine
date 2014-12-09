@@ -70,8 +70,6 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
-import com.sun.org.apache.bcel.internal.classfile.ConstantValue;
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
@@ -305,10 +303,7 @@ public class VerificationServiceGUI {
                     List<Object> objs = ap.getAttributeOrConstantValue();
                     String s = "";
                     for(Object obj : objs) {
-                        if(obj instanceof ConstantValue) {
-                            ConstantValue cv = (ConstantValue)obj;
-                            s += cv.toString()+",";
-                        } else if(obj instanceof Attribute) {
+                        if(obj instanceof Attribute) {
                             Attribute attrib = (Attribute)obj;
                             s += (attrib).getAttributeType().toString() + " (" +  attrib.getCredentialAlias().toString() +")" + ";";
                         } else {

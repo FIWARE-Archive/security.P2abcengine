@@ -50,7 +50,7 @@ public class TestFlow extends JerseyTest {
     }
 
     private static String getBaseURI() {
-        // return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
+        //return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
         return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
 
@@ -595,7 +595,7 @@ public class TestFlow extends JerseyTest {
         Client client = getClient();
 
         WebResource webResource = client.resource(verificationServiceURL
-                + "storeCredentialSpecification/" + credSpecURI);
+                + "credentialSpecification/store/" + credSpecURI);
 
         ClientResponse response = webResource.type("application/xml").put(
                 ClientResponse.class, credSpec);
