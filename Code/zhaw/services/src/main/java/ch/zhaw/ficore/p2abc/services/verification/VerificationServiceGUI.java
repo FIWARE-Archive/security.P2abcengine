@@ -40,6 +40,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Element;
 
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
@@ -308,8 +309,10 @@ public class VerificationServiceGUI {
                             Attribute attrib = (Attribute)obj;
                             s += (attrib).getAttributeType().toString() + " (" +  attrib.getCredentialAlias().toString() +")" + ";";
                         } else {
-                            ElementNSImpl i = (ElementNSImpl)obj;
+                            log.info("InstanceOf Element? " + (obj instanceof Element));
+                            Element i = (Element)obj;
                             s += i.getTextContent() + ";";
+                            log.info("Node name is: " + (i.getNodeName()));
                         }
                     }
                     ul.appendChild(new Li().appendChild(
@@ -347,7 +350,10 @@ public class VerificationServiceGUI {
                     }
                     mainDiv.appendChild(ul);
                     
-                    Select s = new Select();
+                    Form f = new Form(verificationServiceURL + "protected/presentationPolicy/addPredicate/resource").setMethod("post");
+                    mainDiv.appendChild(f);
+                    
+                    Select s = new Select().setName("p");
                     for(String fp : predicateFunctions) {
                         Option o = new Option();
                         o.setValue(fp);
@@ -355,9 +361,11 @@ public class VerificationServiceGUI {
                         s.appendChild(o);
                     }
                     
-                    mainDiv.appendChild(s);
+                    f.appendChild(new Label().appendChild(new Text("Predicate function:"))).appendChild(new Br());
+                    f.appendChild(s);
+                    f.appendChild(new Br());
                     
-                    s = new Select();
+                    s = new Select().setName("at");
                     for(String at : credAttributes) {
                         Option o = new Option();
                         o.setValue(at);
@@ -365,7 +373,17 @@ public class VerificationServiceGUI {
                         s.appendChild(o);
                     }
                     
-                    mainDiv.appendChild(s);
+                    f.appendChild(new Label().appendChild(new Text("Attribute:"))).appendChild(new Br());
+                    f.appendChild(s);
+                    f.appendChild(new Br());
+                    
+                    f.appendChild(new Label().appendChild(new Text("Constant value:"))).appendChild(new Br());
+                    f.appendChild(new Input().setType("text").setName("cv"));
+                    f.appendChild(new Br());
+                    
+                    f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
+                    
+                    f.appendChild(new Input().setType("submit").setValue(("Add predicate")));
                 }
                 
                 

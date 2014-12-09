@@ -33,6 +33,7 @@ import java.util.Random;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -43,11 +44,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
@@ -65,14 +70,23 @@ import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.AttributePredicate;
+import eu.abc4trust.xml.CredentialInPolicy;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
+import eu.abc4trust.xml.PresentationPolicy;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationPolicyAlternativesAndPresentationToken;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.PresentationTokenDescription;
 import eu.abc4trust.xml.SystemParameters;
+import eu.abc4trust.xml.AttributePredicate.Attribute;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
+
 //import java.util.logging.Logger;
 //import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;
 
@@ -84,6 +98,7 @@ public class VerificationService {
     private final static String errMagicCookie = "Magic cookie is not correct!";
     private static Map<String, String> accessTokens = new HashMap<String, String>();
     private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
+    private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -169,6 +184,73 @@ public class VerificationService {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
+    }
+    
+    @POST()
+    @Path("/protected/presentationPolicy/addPredicate/{resource}")
+    public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
+            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                AttributePredicate ap = new AttributePredicate();
+                ap.setFunction(new URI(predicate));
+                Attribute atr = new Attribute();
+
+                
+                for(CredentialInPolicy cip : pp.getCredential()) {
+                    for(URI credSpecUid : cip.getCredentialSpecAlternatives().getCredentialSpecUID()) {
+                        CredentialSpecification credSpec = verificationHelper.
+                                keyManager.getCredentialSpecification(credSpecUid);
+                        for(AttributeDescription attrDesc :
+                            credSpec.getAttributeDescriptions().getAttributeDescription()) {
+                            if(attrDesc.getType().toString().equals(attribute)) {
+                                atr.setAttributeType(attrDesc.getType());
+                                atr.setCredentialAlias(new URI(alias));
+                                found = true;
+                            }
+                        }
+                    }
+                }
+                
+                if(found) {
+                    ap.getAttributeOrConstantValue().add(atr);
+                    Element e = createW3DomElement("ConstantValue", constantValue);
+                    ap.getAttributeOrConstantValue().add(e);
+                    pp.getAttributePredicate().add(ap);
+                    break;
+                }
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAttrib).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+        }
+        catch(Exception e) {
+            
+        }
+        
+        return Response.ok().build();
+    }
+    
+    private static Element createW3DomElement(String elementName, String value) {
+        Element element;
+        try {
+            element = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument().createElement(elementName);
+        } catch (DOMException e) {
+            throw new IllegalStateException("This should always work!",e);
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("This should always work!",e);
+        }
+        element.setTextContent(value);
+        return element;
     }
 
     
