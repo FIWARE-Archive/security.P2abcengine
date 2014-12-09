@@ -158,6 +158,9 @@ public class VerificationServiceGUI {
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./issuerParameters").appendChild(
                     new Text("Manage issuer parameters"))));
+            ul.appendChild(new Li().appendChild(new A().setHref(
+                    "./presentationPolicies").appendChild(
+                    new Text("Manage presentation policies"))));
 
             mainDiv.appendChild(ul);
 
@@ -514,11 +517,15 @@ public class VerificationServiceGUI {
             Html html = VerificationGUI.getHtmlPramble("Presentation Policies", request);
             Div mainDiv = new Div();
             html.appendChild(VerificationGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Presentation policies")));
             
             Ul ul = new Ul();
             
             for(String ppaUri : ppac.uris) {
-                ul.appendChild(new Li().appendChild(new Text(ppaUri.toString())));
+                A a = new A();
+                a.setHref("./presentationPolicy?resource="+URLEncoder.encode(ppaUri.toString(),"UTF-8"));
+                a.appendChild(new Text(ppaUri.toString()));
+                ul.appendChild(new Li().appendChild(a));
             }
             
             mainDiv.appendChild(ul);

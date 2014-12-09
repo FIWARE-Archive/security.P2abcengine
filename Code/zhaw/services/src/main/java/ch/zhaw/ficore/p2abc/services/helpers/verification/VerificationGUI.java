@@ -35,6 +35,7 @@ public class VerificationGUI {
         containerDiv.appendChild(mainDiv);
         navDiv.appendChild(new A().setHref("./profile").appendChild(
                 new Text("Profile")));
+        navDiv.appendChild(new A().setHref("./loadSettings").appendChild(new Text("Load Settings")));
         navDiv.appendChild(new Div().setStyle("clear: both"));
         return new Body().appendChild(containerDiv);
     }
