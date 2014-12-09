@@ -408,9 +408,9 @@ public class VerificationService {
      * <br>
      * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt><br>
      * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt><br>
-     * @param applicationData
-     * @param presentationPolicy
-     * @return
+     * @param applicationData Application Data
+     * @param presentationPolicy PresentationPolicy
+     * @return Response
      */
     @POST()
     @Path("/createPresentationPolicy")
@@ -460,9 +460,9 @@ public class VerificationService {
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>CredentialSpecification</tt> <br>
-     * @param credentialSpecifationUid
-     * @param credSpec
-     * @return
+     * @param credentialSpecificationUid UID of the credential specification
+     * @param credSpec Credential specification
+     * @return Response
      */
     @PUT()
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
@@ -512,8 +512,8 @@ public class VerificationService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
-     * @param credSpecUid
-     * @return
+     * @param credSpecUid UID of the credential specification
+     * @return Response
      */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")

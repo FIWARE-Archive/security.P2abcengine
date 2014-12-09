@@ -2,11 +2,9 @@ package ch.zhaw.ficore.p2abc.services.demo;
 
 import java.net.URLEncoder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;

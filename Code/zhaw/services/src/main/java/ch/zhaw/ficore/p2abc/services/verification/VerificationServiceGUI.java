@@ -71,8 +71,6 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 import com.sun.org.apache.bcel.internal.classfile.ConstantValue;
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.AttributePredicate;

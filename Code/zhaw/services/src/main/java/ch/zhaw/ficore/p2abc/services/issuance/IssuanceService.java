@@ -970,8 +970,8 @@ public class IssuanceService {
      * <li>200 - OK</li>
      * <li>400 - ERROR</li>
      * </ul>
-     * @param issuerParametersUid
-     * @return
+     * @param issuerParametersUid UID of the issuer parameters
+     * @return Response
      */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
@@ -1065,8 +1065,8 @@ public class IssuanceService {
      * <li>200 - OK</li>
      * <li>400 - ERROR</li>
      * </ul>
-     * @param credSpecUid
-     * @return
+     * @param credSpecUid UID of the credential specification.
+     * @return Response
      */
     @DELETE()
     @Path("/protected/queryRule/delete/{credentialSpecificationUid}")

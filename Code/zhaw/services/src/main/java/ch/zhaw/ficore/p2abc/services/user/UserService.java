@@ -50,7 +50,6 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
@@ -803,8 +802,8 @@ public class UserService {
      * <li>200 - OK</li>
      * <li>400 - ERROR</li>
      * </ul>
-     * @param issuerParametersUid
-     * @return
+     * @param issuerParametersUid UID of the issuer parameters
+     * @return Response
      */
     @DELETE()
     @Path("/issuerParameters/delete/{issuerParametersUid}")
