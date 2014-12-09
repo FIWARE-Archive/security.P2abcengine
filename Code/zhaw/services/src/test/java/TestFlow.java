@@ -595,7 +595,7 @@ public class TestFlow extends JerseyTest {
         Client client = getClient();
 
         WebResource webResource = client.resource(verificationServiceURL
-                + "storeCredentialSpecification/" + credSpecURI);
+                + "credentialSpecification/store/" + credSpecURI);
 
         ClientResponse response = webResource.type("application/xml").put(
                 ClientResponse.class, credSpec);
