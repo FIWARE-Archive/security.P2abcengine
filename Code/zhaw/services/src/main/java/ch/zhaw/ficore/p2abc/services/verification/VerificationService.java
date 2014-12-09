@@ -99,6 +99,7 @@ public class VerificationService {
     private static Map<String, String> accessTokens = new HashMap<String, String>();
     private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
     private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
+    private final static String errUid = "The given UID in the path does not match the actual UID.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -394,7 +395,23 @@ public class VerificationService {
         }
     }
 
-    
+    /**
+     * <b>Path</b>: /createPresentationPolicy/ (POST) <br>
+     * <br>
+     * <b>Description</b>: Given a presentation policy template creates a presentation policy (while also embedding nonce bytes). <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK (application/xml)</li>
+     * <li>500 - ERROR </li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * @param applicationData
+     * @param presentationPolicy
+     * @return
+     */
     @POST()
     @Path("/createPresentationPolicy")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -425,11 +442,33 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores a credential specification at this service. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification to store.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>409 - UID given on the path does not match the actual UID.</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>CredentialSpecification</tt> <br>
+     * @param credentialSpecifationUid
+     * @param credSpec
+     * @return
+     */
     @PUT()
-    @Path("/protected/storeCredentialSpecification/{credentialSpecifationUid}")
+    @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeCredentialSpecification(
-            @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
+            @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
             CredentialSpecification credSpec) {
         log.entry();
 
@@ -438,16 +477,18 @@ public class VerificationService {
                     .getInstance();
 
             KeyManager keyManager = verificationHelper.keyManager;
+            
+            if(!credentialSpecificationUid.toString().equals(credSpec.getSpecificationUID().toString()))
+                return log.exit(Response.status(Response.Status.CONFLICT).entity(errUid).build());
 
             boolean r = keyManager.storeCredentialSpecification(
-                    credentialSpecifationUid, credSpec);
+                    credentialSpecificationUid, credSpec);
+           
 
-            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r);
+            if(!r)
+                throw new RuntimeException("Could not store the credential specification");
 
-            return log.exit(Response.ok(
-                    of.createABCEBoolean(createABCEBoolean),
-                    MediaType.APPLICATION_XML).build());
+            return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
