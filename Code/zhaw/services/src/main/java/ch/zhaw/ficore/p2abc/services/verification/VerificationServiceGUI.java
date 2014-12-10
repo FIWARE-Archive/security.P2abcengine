@@ -34,8 +34,10 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
@@ -70,6 +72,7 @@ import com.hp.gagawa.java.elements.Td;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.org.apache.bcel.internal.classfile.ConstantValue;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
@@ -275,6 +278,33 @@ public class VerificationServiceGUI {
         }
     }
     
+    @POST()
+    @Path("/protected/addPredicate/{resource}") 
+    public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
+            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("cv", constantValue);
+            params.add("at", attribute);
+            params.add("p", predicate);
+            params.add("al", alias);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/addPredicate/"
+                    + URLEncoder.encode(resource, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
     @GET()
     @Path("/protected/presentationPolicy")
     public Response presentationPolicy(@QueryParam("resource") String resource) {
@@ -321,6 +351,14 @@ public class VerificationServiceGUI {
                             .appendChild(new Text(" - " + s)));
                 }
                 
+                Settings settings = (Settings) RESTHelper.getRequest(verificationServiceURL
+                        + "getSettings/", Settings.class);
+
+                List<CredentialSpecification> credSpecsSettings = settings.credentialSpecifications;
+                List<IssuerParameters> issuerParamsSettings = settings.issuerParametersList;
+                
+                Select s;
+                Form f;
                 
                 List<CredentialInPolicy> cips = pp.getCredential();
                 for(CredentialInPolicy cip : cips) {
@@ -341,6 +379,22 @@ public class VerificationServiceGUI {
                         
                     }
                     mainDiv.appendChild(ul);
+                    
+                    
+                    s = new Select().setName("p");
+                    for(CredentialSpecification cs : credSpecsSettings) {
+                        Option o = new Option();
+                        o.setValue(cs.getSpecificationUID().toString());
+                        o.appendChild(new Text(cs.getSpecificationUID().toString()));
+                        s.appendChild(o);
+                    }
+                    
+                    f = new Form("").setMethod("post");
+                    f.appendChild(s);
+                    f.appendChild(new Br());
+                    f.appendChild(new Input().setType("submit").setValue("Add credential specification alternative"));
+                    mainDiv.appendChild(f);
+                    
                     mainDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
                     ul = new Ul();
                     for(IssuerParametersUID uid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
@@ -351,10 +405,24 @@ public class VerificationServiceGUI {
                     }
                     mainDiv.appendChild(ul);
                     
-                    Form f = new Form(verificationServiceURL + "protected/presentationPolicy/addPredicate/resource").setMethod("post");
+                    s = new Select().setName("p");
+                    for(IssuerParameters ip : issuerParamsSettings) {
+                        Option o = new Option();
+                        o.setValue(ip.getParametersUID().toString());
+                        o.appendChild(new Text(ip.getParametersUID().toString()));
+                        s.appendChild(o);
+                    }
+                    
+                    f = new Form("").setMethod("post");
+                    f.appendChild(s);
+                    f.appendChild(new Br());
+                    f.appendChild(new Input().setType("submit").setValue("Add issuer alternative"));
                     mainDiv.appendChild(f);
                     
-                    Select s = new Select().setName("p");
+                    f = new Form("./addPredicate/" + URLEncoder.encode(resource, "UTF-8")).setMethod("post");
+                    mainDiv.appendChild(f);
+                    
+                    s = new Select().setName("p");
                     for(String fp : predicateFunctions) {
                         Option o = new Option();
                         o.setValue(fp);
