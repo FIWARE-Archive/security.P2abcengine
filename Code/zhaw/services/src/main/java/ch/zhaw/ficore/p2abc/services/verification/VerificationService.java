@@ -678,6 +678,12 @@ public class VerificationService {
 
             verificationHelper.verificationStorage.addPresentationPolicy(
                     new URI(resource), ppa);
+            
+            long sum = 0;
+            byte[] nonce = ppa.getPresentationPolicy().get(0).getMessage().getNonce();
+            for(int i = 0; i < nonce.length; i++)
+                sum += nonce[i];
+            log.info("- NONCE SUM (pp) IS (store): " + sum);
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
@@ -774,6 +780,13 @@ public class VerificationService {
 
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
                     .getPresentationPolicy(new URI(resource));
+            
+            long sum = 0;
+            byte[] nonce = ppa.getPresentationPolicy().get(0).getMessage().getNonce();
+            for(int i = 0; i < nonce.length; i++)
+                sum += nonce[i];
+            log.info("- NONCE SUM (pp) IS (requestResource): " + sum);
+            
             return log.exit(Response.ok(
                     of.createPresentationPolicyAlternatives(ppa)).build());
         } catch (Exception e) {
@@ -801,6 +814,17 @@ public class VerificationService {
                     .createPresentationPolicyAlternativesAndPresentationToken();
             ppat.setPresentationPolicyAlternatives(ppa);
             ppat.setPresentationToken(pt);
+            
+            long sum = 0;
+            byte[] nonce = ppa.getPresentationPolicy().get(0).getMessage().getNonce();
+            for(int i = 0; i < nonce.length; i++)
+                sum += nonce[i];
+            log.info("- NONCE SUM (pp) IS (requestResource2): " + sum);
+            nonce = pt.getPresentationTokenDescription().getMessage().getNonce();
+            sum = 0;
+            for(int i = 0; i < nonce.length; i++)
+                sum += nonce[i];
+            log.info("- NONCE SUM (pt) IS (requestResource2): " + sum);
 
             Response r = this
                     .verifyTokenAgainstPolicy(

@@ -237,6 +237,7 @@ public class TestFlow extends JerseyTest {
 
             /* Verification stuff */
             String presentationPolicyAlternatives = testCreatePresentationPolicy(readTextFile("presentationPolicyAlternatives.xml"));
+            testCreatePresentationPolicy(readTextFile("presentationPolicyAlternatives.xml"));
 
             String presentationReturn = testCreatePresentationToken(presentationPolicyAlternatives);
             contextString = getContextString(presentationReturn);
@@ -268,24 +269,29 @@ public class TestFlow extends JerseyTest {
             System.out.println("***********");
             System.out.println("***********");
             System.out.println("***********");
-
+            
             testStorePresentationPolicyAlternatives(presentationPolicyAlternatives);
-            testStoreRedirectURI("http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/demo-resource/page");
-            String presentationPolicyAlternatives_ = testRequestResource();
-
-            String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
-            String contextString_ = getContextString(presentationReturn_);
-            System.out.println(contextString_);
-
-            String uiPresentationReturn_ = readTextFile("uiPresentationReturn.xml");
-            uiPresentationReturn_ = replaceContextString(uiPresentationReturn_,
-                    contextString_);
-
-            String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
-
-            String presentationTokenDescription_ = testRequestResource2(presentationToken_);
-            System.out.println("**#*#*#*#*#**#*#");
-            System.out.println(presentationTokenDescription_);
+            
+            System.out.println("!!!!!!!");
+            
+            for(int j = 0; j < 3; j++) {
+                testStoreRedirectURI("http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/demo-resource/page");
+                String presentationPolicyAlternatives_ = testRequestResource();
+    
+                String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
+                String contextString_ = getContextString(presentationReturn_);
+                System.out.println(contextString_);
+    
+                String uiPresentationReturn_ = readTextFile("uiPresentationReturn.xml");
+                uiPresentationReturn_ = replaceContextString(uiPresentationReturn_,
+                        contextString_);
+    
+                String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
+    
+                String presentationTokenDescription_ = testRequestResource2(presentationToken_);
+                System.out.println("**#*#*#*#*#**#*#");
+                System.out.println(presentationTokenDescription_);
+            }
             
             testLoadSettingsVerification();
             testLoadSettingsUser();

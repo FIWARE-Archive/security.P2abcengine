@@ -295,6 +295,10 @@ public class VerificationHelper extends AbstractHelper {
             Message message = pp.getMessage();
             // set nonce
             message.setNonce(nonce);
+            long sum = 0;
+            for(int i = 0; i < nonce.length; i++)
+                sum += nonce[i];
+            logger.info("- NONCE SUM IS (modifyPPA): " + sum);
 
             // set application data
             if (applicationData != null) {
