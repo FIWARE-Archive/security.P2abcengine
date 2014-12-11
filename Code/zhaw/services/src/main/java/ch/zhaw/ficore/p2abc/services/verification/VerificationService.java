@@ -73,6 +73,8 @@ import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributePredicate;
 import eu.abc4trust.xml.CredentialInPolicy;
+import eu.abc4trust.xml.CredentialInPolicy.CredentialSpecAlternatives;
+import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives;
 import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives.IssuerParametersUID;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
@@ -102,6 +104,7 @@ public class VerificationService {
     private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
     private final static String errUid = "The given UID in the path does not match the actual UID.";
     private final static String errNoAlias = "The alias was not found.";
+    private final static String errNoPolicy = "The policy was not found.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -190,9 +193,9 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addCredentialSpecificationAlternative/{resource}")
+    @Path("/protected/presentationPolicy/addCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response addCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) {
         log.entry();
         
         try {
@@ -204,6 +207,9 @@ public class VerificationService {
             boolean found = false;
             
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
                 for(CredentialInPolicy cip : pp.getCredential()) {
                     if(cip.getAlias().toString().equals(alias)) {
                         found = true;
@@ -227,9 +233,9 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/deleteCredentialSpecificationAlternative/{resource}")
+    @Path("/protected/presentationPolicy/deleteCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response deleteCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) {
         log.entry();
         
         try {
@@ -242,6 +248,9 @@ public class VerificationService {
             URI founduid = null;
             
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
                 for(CredentialInPolicy cip : pp.getCredential()) {
                     if(cip.getAlias().toString().equals(alias)) {
                        
@@ -275,9 +284,9 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addIssuerAlternative/{resource}")
+    @Path("/protected/presentationPolicy/addIssuerAlternative/{resource}/{policyUid}")
     public Response addIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid) {
+            @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) {
         log.entry();
         
         try {
@@ -289,6 +298,9 @@ public class VerificationService {
             boolean found = false;
             
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
                 for(CredentialInPolicy cip : pp.getCredential()) {
                     if(cip.getAlias().toString().equals(alias)) {
                         found = true;
@@ -314,9 +326,9 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/deleteIssuerAlternative/{resource}")
+    @Path("/protected/presentationPolicy/deleteIssuerAlternative/{resource}/{policyUid}")
     public Response deleteIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias, 
-            @FormParam("ip") String issuerParamsUid) {
+            @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) {
         log.entry();
         
         try {
@@ -329,6 +341,9 @@ public class VerificationService {
             IssuerParametersUID founduid = null;
             
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
                 for(CredentialInPolicy cip : pp.getCredential()) {
                     if(cip.getAlias().toString().equals(alias)) {
                         for(IssuerParametersUID ipuid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
@@ -362,8 +377,9 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/deleteAlias/{resource}")
-    public Response deleteAlias(@PathParam("resource") String resource, @FormParam("al") String alias) {
+    @Path("/protected/presentationPolicy/addAlias/{resource}/{policyUid}")
+    public Response addAlias(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
+            @FormParam("al") String alias) {
         log.entry();
         
         try {
@@ -376,6 +392,49 @@ public class VerificationService {
             CredentialInPolicy foundcip = null;
             
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
+                found = true;
+                CredentialInPolicy cip = new CredentialInPolicy();
+                cip.setCredentialSpecAlternatives(new CredentialSpecAlternatives());
+                cip.setIssuerAlternatives(new IssuerAlternatives());
+                cip.setAlias(new URI(alias));
+                pp.getCredential().add(cip);
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoPolicy).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
+    @Path("/protected/presentationPolicy/deleteAlias/{resource}/{policyUid}")
+    public Response deleteAlias(@PathParam("resource") String resource, @FormParam("al") String alias,
+            @PathParam("policyUid") String policyUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            CredentialInPolicy foundcip = null;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
                 for(CredentialInPolicy cip : pp.getCredential()) {
                     if(cip.getAlias().toString().equals(alias)) {
                        found = true;
@@ -403,9 +462,10 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addPredicate/{resource}")
+    @Path("/protected/presentationPolicy/addPredicate/{resource}/{policyUid}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
-            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
+            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias,
+            @PathParam("policyUid") String policyUid) {
         log.entry();
         
         try {
@@ -417,6 +477,9 @@ public class VerificationService {
             boolean found = false;
             
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
                 AttributePredicate ap = new AttributePredicate();
                 ap.setFunction(new URI(predicate));
                 Attribute atr = new Attribute();

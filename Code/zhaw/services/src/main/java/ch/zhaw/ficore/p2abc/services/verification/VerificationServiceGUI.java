@@ -282,7 +282,7 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/addCredSpecAlt/")
     public Response addCredSpecAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") String credSpecUid, @FormParam("puid") String puid) {
         log.entry();
         
         try {
@@ -291,7 +291,7 @@ public class VerificationServiceGUI {
             params.add("al", alias);
             
             RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/addCredentialSpecificationAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
         }
@@ -308,7 +308,7 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/deleteCredSpecAlt/")
     public Response deleteCredSpecAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") String credSpecUid, @FormParam("puid") String puid) {
         log.entry();
         
         try {
@@ -317,7 +317,7 @@ public class VerificationServiceGUI {
             params.add("al", alias);
             
             RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/deleteCredentialSpecificationAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
         }
@@ -334,7 +334,7 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/addIssuerAlt/")
     public Response addIssuerAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid) {
+            @FormParam("ip") String issuerParamsUid, @FormParam("puid") String puid) {
         log.entry();
         
         try {
@@ -343,7 +343,7 @@ public class VerificationServiceGUI {
             params.add("al", alias);
             
             RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/addIssuerAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
         }
@@ -360,7 +360,7 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/deleteIssuerAlt/")
     public Response deleteIssuerAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid) {
+            @FormParam("ip") String issuerParamsUid, @FormParam("puid") String puid) {
         log.entry();
         
         try {
@@ -369,7 +369,7 @@ public class VerificationServiceGUI {
             params.add("al", alias);
             
             RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/deleteIssuerAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
         }
@@ -385,7 +385,8 @@ public class VerificationServiceGUI {
     
     @POST()
     @Path("/protected/deleteAlias/")
-    public Response deleteAlias(@FormParam("resource") String resource, @FormParam("al") String alias) {
+    public Response deleteAlias(@FormParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("puid") String puid) {
         log.entry();
         
         try {
@@ -393,7 +394,32 @@ public class VerificationServiceGUI {
             params.add("al", alias);
             
             RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/deleteAlias/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/protected/addAlias/")
+    public Response addAlias(@FormParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("puid") String puid) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("al", alias);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/addAlias/"
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
         }
@@ -410,7 +436,8 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/addPredicate/") 
     public Response addPredicate(@FormParam("resource") String resource, @FormParam("cv") String constantValue,
-            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
+            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias,
+            @FormParam("puid") String puid) {
         log.entry();
         
         try {
@@ -421,7 +448,7 @@ public class VerificationServiceGUI {
             params.add("al", alias);
             
             RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/addPredicate/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
         }
@@ -507,6 +534,7 @@ public class VerificationServiceGUI {
                         f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                         f.appendChild(new Input().setType("hidden").setName("cs").setValue(uri.toString()));
                         f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                        f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
                         f.appendChild(new Input().setType("submit").setValue("Delete"));
                         ul.appendChild(new Li().appendChild(new Text(uri.toString())).appendChild(f));
                         CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
@@ -533,6 +561,7 @@ public class VerificationServiceGUI {
                     f.appendChild(new Br());
                     f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
                     f.appendChild(new Input().setType("submit").setValue("Add credential specification alternative"));
                     subGroupDiv.appendChild(f);
                     
@@ -543,6 +572,7 @@ public class VerificationServiceGUI {
                         f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                         f.appendChild(new Input().setType("hidden").setName("ip").setValue(uid.getValue().toString()));
                         f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                        f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
                         f.appendChild(new Input().setType("submit").setValue("Delete"));
                         if(uid.getRevocationInformationUID() != null)
                             ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString() + " (" + uid.getRevocationInformationUID().toString()  +")")).appendChild(f));
@@ -564,6 +594,7 @@ public class VerificationServiceGUI {
                     f.appendChild(new Br());
                     f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
                     f.appendChild(new Input().setType("submit").setValue("Add issuer alternative"));
                     subGroupDiv.appendChild(f);
                     
@@ -602,17 +633,24 @@ public class VerificationServiceGUI {
                     
                     f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    
+                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
                     f.appendChild(new Input().setType("submit").setValue(("Add predicate")));
                     
                     f = new Form("./deleteAlias").setMethod(("post"));
                     f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    
+                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
                     f.appendChild(new Input().setType("submit").setValue(("Delete this alias")));
                     groupDiv.appendChild(f.setCSSClass("raw"));
                 }
                 
+                f = new Form("./addAlias").setMethod("post");
+                f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                f.appendChild(new Label().appendChild(new Text("Alias name (URI):"))).appendChild(new Br());
+                f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
+                f.appendChild(new Input().setType("text").setName("al"));
+                f.appendChild(new Input().setType("submit").setValue(("Add new alias")));
+                mainDiv.appendChild(f);
                 
 
             }
