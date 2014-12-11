@@ -362,6 +362,47 @@ public class VerificationService {
     }
     
     @POST()
+    @Path("/protected/presentationPolicy/deleteAlias/{resource}")
+    public Response deleteAlias(@PathParam("resource") String resource, @FormParam("al") String alias) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            CredentialInPolicy foundcip = null;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                for(CredentialInPolicy cip : pp.getCredential()) {
+                    if(cip.getAlias().toString().equals(alias)) {
+                       found = true;
+                       foundcip = cip;
+                       break;
+                    }
+                }
+                if(found) {
+                    pp.getCredential().remove(foundcip);
+                    break;
+                }
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
     @Path("/protected/presentationPolicy/addPredicate/{resource}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {

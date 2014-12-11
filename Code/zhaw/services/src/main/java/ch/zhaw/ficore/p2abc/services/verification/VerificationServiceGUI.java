@@ -384,6 +384,30 @@ public class VerificationServiceGUI {
     }
     
     @POST()
+    @Path("/protected/deleteAlias/")
+    public Response deleteAlias(@FormParam("resource") String resource, @FormParam("al") String alias) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("al", alias);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/deleteAlias/"
+                    + URLEncoder.encode(resource, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
     @Path("/protected/addPredicate/") 
     public Response addPredicate(@FormParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
@@ -462,11 +486,19 @@ public class VerificationServiceGUI {
                 Select s;
                 Form f;
                 
+                
                 List<CredentialInPolicy> cips = pp.getCredential();
                 for(CredentialInPolicy cip : cips) {
                     
-                    mainDiv.appendChild(new H4().appendChild(new Text(cip.getAlias().toString())));
-                    mainDiv.appendChild(new H5().appendChild(new Text("Credential specification alternatives")));
+                    Div groupDiv = new Div().setCSSClass("group");
+                    mainDiv.appendChild(groupDiv);
+                    
+                    groupDiv.appendChild(new H4().appendChild(new Text(cip.getAlias().toString())));
+                    
+                    Div subGroupDiv = new Div().setCSSClass("group");
+                    groupDiv.appendChild(subGroupDiv);
+                    
+                    subGroupDiv.appendChild(new H5().appendChild(new Text("Credential specification alternatives")));
                     List<URI> credSpecs = cip.getCredentialSpecAlternatives().getCredentialSpecUID();
                     ul = new Ul();
                     List<String> credAttributes = new ArrayList<String>();
@@ -485,7 +517,7 @@ public class VerificationServiceGUI {
                         }
                         
                     }
-                    mainDiv.appendChild(ul);
+                    subGroupDiv.appendChild(ul);
                     
                     
                     s = new Select().setName("cs");
@@ -502,9 +534,9 @@ public class VerificationServiceGUI {
                     f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
                     f.appendChild(new Input().setType("submit").setValue("Add credential specification alternative"));
-                    mainDiv.appendChild(f);
+                    subGroupDiv.appendChild(f);
                     
-                    mainDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
+                    subGroupDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
                     ul = new Ul();
                     for(IssuerParametersUID uid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
                         f = new Form("./deleteIssuerAlt").setMethod("post").setCSSClass("inl");
@@ -517,7 +549,7 @@ public class VerificationServiceGUI {
                         else
                             ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString())).appendChild(f));
                     }
-                    mainDiv.appendChild(ul);
+                    subGroupDiv.appendChild(ul);
                     
                     s = new Select().setName("ip");
                     for(IssuerParameters ip : issuerParamsSettings) {
@@ -533,10 +565,12 @@ public class VerificationServiceGUI {
                     f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
                     f.appendChild(new Input().setType("submit").setValue("Add issuer alternative"));
-                    mainDiv.appendChild(f);
+                    subGroupDiv.appendChild(f);
                     
                     f = new Form("./addPredicate").setMethod("post");
-                    mainDiv.appendChild(f);
+                    subGroupDiv = new Div().setCSSClass("group");
+                    groupDiv.appendChild(subGroupDiv);
+                    subGroupDiv.appendChild(f);
                     
                     s = new Select().setName("p");
                     for(String fp : predicateFunctions) {
@@ -570,6 +604,13 @@ public class VerificationServiceGUI {
                     f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
                     
                     f.appendChild(new Input().setType("submit").setValue(("Add predicate")));
+                    
+                    f = new Form("./deleteAlias").setMethod(("post"));
+                    f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
+                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                    
+                    f.appendChild(new Input().setType("submit").setValue(("Delete this alias")));
+                    groupDiv.appendChild(f.setCSSClass("raw"));
                 }
                 
                 
