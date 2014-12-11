@@ -266,6 +266,54 @@ public class VerificationService {
     }
     
     @POST()
+    @Path("/protected/presentationPolicy/deleteIssuerAlternative/{resource}")
+    public Response deleteIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias, 
+            @FormParam("ip") String issuerParamsUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            IssuerParametersUID founduid = null;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                for(CredentialInPolicy cip : pp.getCredential()) {
+                    if(cip.getAlias().toString().equals(alias)) {
+                        for(IssuerParametersUID ipuid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
+                            if(ipuid.getValue().toString().equals(issuerParamsUid)) {
+                                founduid = ipuid;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found) {
+                            cip.getIssuerAlternatives().getIssuerParametersUID().remove(founduid);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+            
+            
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
     @Path("/protected/presentationPolicy/addPredicate/{resource}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {

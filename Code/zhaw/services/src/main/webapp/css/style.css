@@ -98,3 +98,5 @@ form.nopad input { padding: 0em; }
 form.nopad { padding: 0em; margin: 0.01em; }
 
 div.credDiv form.nopad { margin-top: 0.01em; }
+
+.inl { display: inline; }

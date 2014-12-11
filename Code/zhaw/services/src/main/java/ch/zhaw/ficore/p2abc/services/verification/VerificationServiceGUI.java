@@ -332,6 +332,32 @@ public class VerificationServiceGUI {
     }
     
     @POST()
+    @Path("/protected/deleteIssuerAlt/")
+    public Response deleteIssuerAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("ip") String issuerParamsUid) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("ip", issuerParamsUid);
+            params.add("al", alias);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/deleteIssuerAlternative/"
+                    + URLEncoder.encode(resource, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
     @Path("/protected/addPredicate/") 
     public Response addPredicate(@FormParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
@@ -419,7 +445,11 @@ public class VerificationServiceGUI {
                     ul = new Ul();
                     List<String> credAttributes = new ArrayList<String>();
                     for(URI uri : credSpecs) {
-                        ul.appendChild(new Li().appendChild(new Text(uri.toString())));
+                        f = new Form("./deleteCredSpecAlt").setMethod("post").setCSSClass("inl");
+                        f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
+                        f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                        f.appendChild(new Input().setType("submit").setValue("Delete"));
+                        ul.appendChild(new Li().appendChild(new Text(uri.toString())).appendChild(f));
                         CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
                                 verificationServiceURL + "protected/credentialSpecification/get/"
                                 + URLEncoder.encode(uri.toString(), "UTF-8"), CredentialSpecification.class);
@@ -450,10 +480,15 @@ public class VerificationServiceGUI {
                     mainDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
                     ul = new Ul();
                     for(IssuerParametersUID uid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
+                        f = new Form("./deleteIssuerAlt").setMethod("post").setCSSClass("inl");
+                        f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
+                        f.appendChild(new Input().setType("hidden").setName("ip").setValue(uid.getValue().toString()));
+                        f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                        f.appendChild(new Input().setType("submit").setValue("Delete"));
                         if(uid.getRevocationInformationUID() != null)
-                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString() + " (" + uid.getRevocationInformationUID().toString()  +")")));
+                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString() + " (" + uid.getRevocationInformationUID().toString()  +")")).appendChild(f));
                         else
-                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString())));
+                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString())).appendChild(f));
                     }
                     mainDiv.appendChild(ul);
                     
