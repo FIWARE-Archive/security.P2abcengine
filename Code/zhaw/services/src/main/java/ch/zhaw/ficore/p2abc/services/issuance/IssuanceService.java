@@ -78,7 +78,7 @@ public class IssuanceService {
     private static final String errNotImplemented = "Sorry, the requested operation is not implemented and/or not supported.";
     private static final String errCredSpecUid = "The credential specification uid does not match or is invalid!";
     private static final String defaultIPUid = "abc4trust:default-issuance-policy";
-    private static final int sysParamsSecurityLevel = 80;
+    private static final int sysParamsSecurityLevel = 128;
     private static final String sysParamsCryptoMechanism = "urn:abc4trust:1.0:algorithm:idemix";
 
     private ObjectFactory of = new ObjectFactory();
@@ -970,8 +970,8 @@ public class IssuanceService {
      * <li>200 - OK</li>
      * <li>400 - ERROR</li>
      * </ul>
-     * @param issuerParametersUid
-     * @return
+     * @param issuerParametersUid UID of the issuer parameters
+     * @return Response
      */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
@@ -1065,8 +1065,8 @@ public class IssuanceService {
      * <li>200 - OK</li>
      * <li>400 - ERROR</li>
      * </ul>
-     * @param credSpecUid
-     * @return
+     * @param credSpecUid UID of the credential specification.
+     * @return Response
      */
     @DELETE()
     @Path("/protected/queryRule/delete/{credentialSpecificationUid}")

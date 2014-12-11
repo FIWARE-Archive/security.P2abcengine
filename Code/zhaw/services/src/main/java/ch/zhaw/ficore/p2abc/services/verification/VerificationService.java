@@ -73,6 +73,7 @@ import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributePredicate;
 import eu.abc4trust.xml.CredentialInPolicy;
+import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives.IssuerParametersUID;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
@@ -100,6 +101,7 @@ public class VerificationService {
     private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
     private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
     private final static String errUid = "The given UID in the path does not match the actual UID.";
+    private final static String errNoAlias = "The alias was not found.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -188,9 +190,87 @@ public class VerificationService {
     }
     
     @POST()
+    @Path("/protected/presentationPolicy/addCredentialSpecificationAlternative/{resource}")
+    public Response addCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("cs") String credSpecUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                for(CredentialInPolicy cip : pp.getCredential()) {
+                    if(cip.getAlias().toString().equals(alias)) {
+                        found = true;
+                        cip.getCredentialSpecAlternatives().getCredentialSpecUID().add(new URI(credSpecUid));
+                        break;
+                    }
+                }
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
+    @Path("/protected/presentationPolicy/addIssuerAlternative/{resource}")
+    public Response addIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("ip") String issuerParamsUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                for(CredentialInPolicy cip : pp.getCredential()) {
+                    if(cip.getAlias().toString().equals(alias)) {
+                        found = true;
+                        IssuerParametersUID ipuid = new IssuerParametersUID();
+                        ipuid.setValue(new URI(issuerParamsUid));
+                        cip.getIssuerAlternatives().getIssuerParametersUID().add(ipuid);
+                        break;
+                    }
+                }
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
     @Path("/protected/presentationPolicy/addPredicate/{resource}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias) {
+        log.entry();
+        
         try {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
@@ -408,9 +488,9 @@ public class VerificationService {
      * <br>
      * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt><br>
      * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt><br>
-     * @param applicationData
-     * @param presentationPolicy
-     * @return
+     * @param applicationData Application Data
+     * @param presentationPolicy PresentationPolicy
+     * @return Response
      */
     @POST()
     @Path("/createPresentationPolicy")
@@ -460,9 +540,9 @@ public class VerificationService {
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>CredentialSpecification</tt> <br>
-     * @param credentialSpecifationUid
-     * @param credSpec
-     * @return
+     * @param credentialSpecificationUid UID of the credential specification
+     * @param credSpec Credential specification
+     * @return Response
      */
     @PUT()
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
@@ -512,8 +592,8 @@ public class VerificationService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
-     * @param credSpecUid
-     * @return
+     * @param credSpecUid UID of the credential specification
+     * @return Response
      */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
