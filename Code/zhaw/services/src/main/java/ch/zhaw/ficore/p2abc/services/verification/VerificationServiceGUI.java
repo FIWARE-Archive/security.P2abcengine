@@ -306,6 +306,32 @@ public class VerificationServiceGUI {
     }
     
     @POST()
+    @Path("/protected/deleteCredSpecAlt/")
+    public Response deleteCredSpecAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("cs") String credSpecUid) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("cs", credSpecUid);
+            params.add("al", alias);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/deleteCredentialSpecificationAlternative/"
+                    + URLEncoder.encode(resource, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
     @Path("/protected/addIssuerAlt/")
     public Response addIssuerAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
             @FormParam("ip") String issuerParamsUid) {
@@ -447,6 +473,7 @@ public class VerificationServiceGUI {
                     for(URI uri : credSpecs) {
                         f = new Form("./deleteCredSpecAlt").setMethod("post").setCSSClass("inl");
                         f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
+                        f.appendChild(new Input().setType("hidden").setName("cs").setValue(uri.toString()));
                         f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
                         f.appendChild(new Input().setType("submit").setValue("Delete"));
                         ul.appendChild(new Li().appendChild(new Text(uri.toString())).appendChild(f));

@@ -227,6 +227,54 @@ public class VerificationService {
     }
     
     @POST()
+    @Path("/protected/presentationPolicy/deleteCredentialSpecificationAlternative/{resource}")
+    public Response deleteCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
+            @FormParam("cs") String credSpecUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            boolean found = false;
+            URI founduid = null;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                for(CredentialInPolicy cip : pp.getCredential()) {
+                    if(cip.getAlias().toString().equals(alias)) {
+                       
+                        for(URI uri : cip.getCredentialSpecAlternatives().getCredentialSpecUID()) {
+                            if(uri.toString().equals(credSpecUid)) {
+                                found = true;
+                                founduid = uri;
+                                break;
+                            }
+                        }
+                        
+                        if(found) {
+                            cip.getCredentialSpecAlternatives().getCredentialSpecUID().remove(founduid);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
     @Path("/protected/presentationPolicy/addIssuerAlternative/{resource}")
     public Response addIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
             @FormParam("ip") String issuerParamsUid) {
