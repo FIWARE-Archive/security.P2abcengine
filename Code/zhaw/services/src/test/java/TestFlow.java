@@ -50,8 +50,8 @@ public class TestFlow extends JerseyTest {
     }
 
     private static String getBaseURI() {
-        //return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
-        return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
+        return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
+        //return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
 
     File storageFile;

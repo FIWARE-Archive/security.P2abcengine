@@ -70,6 +70,7 @@ import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.ApplicationData;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributePredicate;
 import eu.abc4trust.xml.CredentialInPolicy;
@@ -78,6 +79,7 @@ import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives;
 import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives.IssuerParametersUID;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
+import eu.abc4trust.xml.Message;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicy;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
@@ -390,6 +392,10 @@ public class VerificationService {
             PresentationPolicy pp = new PresentationPolicy();
             pp.setPolicyUID(new URI(policyUid));
             ppa.getPresentationPolicy().add(pp);
+            Message m = new Message();
+            ApplicationData apd = new ApplicationData();
+            apd.getContent().add("n/a");
+            m.setApplicationData(apd);
             
             verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
             
@@ -928,11 +934,6 @@ public class VerificationService {
             verificationHelper.verificationStorage.addPresentationPolicy(
                     new URI(resource), ppa);
             
-            long sum = 0;
-            byte[] nonce = ppa.getPresentationPolicy().get(0).getMessage().getNonce();
-            for(int i = 0; i < nonce.length; i++)
-                sum += nonce[i];
-            log.info("- NONCE SUM (pp) IS (store): " + sum);
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
@@ -1030,11 +1031,6 @@ public class VerificationService {
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
                     .getPresentationPolicy(new URI(resource));
             
-            long sum = 0;
-            byte[] nonce = ppa.getPresentationPolicy().get(0).getMessage().getNonce();
-            for(int i = 0; i < nonce.length; i++)
-                sum += nonce[i];
-            log.info("- NONCE SUM (pp) IS (requestResource): " + sum);
             
             return log.exit(Response.ok(
                     of.createPresentationPolicyAlternatives(ppa)).build());
@@ -1064,16 +1060,6 @@ public class VerificationService {
             ppat.setPresentationPolicyAlternatives(ppa);
             ppat.setPresentationToken(pt);
             
-            long sum = 0;
-            byte[] nonce = ppa.getPresentationPolicy().get(0).getMessage().getNonce();
-            for(int i = 0; i < nonce.length; i++)
-                sum += nonce[i];
-            log.info("- NONCE SUM (pp) IS (requestResource2): " + sum);
-            nonce = pt.getPresentationTokenDescription().getMessage().getNonce();
-            sum = 0;
-            for(int i = 0; i < nonce.length; i++)
-                sum += nonce[i];
-            log.info("- NONCE SUM (pt) IS (requestResource2): " + sum);
 
             Response r = this
                     .verifyTokenAgainstPolicy(
