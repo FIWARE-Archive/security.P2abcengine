@@ -162,7 +162,7 @@ public class VerificationServiceGUI {
                     new Text("Manage issuer parameters"))));
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./presentationPolicies").appendChild(
-                    new Text("Manage presentation policies"))));
+                    new Text("Manage presentation policies and/or resources"))));
 
             mainDiv.appendChild(ul);
 
@@ -434,6 +434,54 @@ public class VerificationServiceGUI {
     }
     
     @POST()
+    @Path("/protected/addPolicyAlt")
+    public Response addPolicyAlt(@FormParam("resource") String resource, @FormParam("puid") String puid) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("puid", puid);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicy/addPolicyAlternative/"
+                    + URLEncoder.encode(resource, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/protected/createResource")
+    public Response createResource(@FormParam("rs") String resourceString, @FormParam("ru") String redirectURL) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("redirectURL", redirectURL);
+            
+            RESTHelper.putRequest(verificationServiceURL + "protected/resource/create/"
+                    + URLEncoder.encode(resourceString, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resourceString));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    @POST()
     @Path("/protected/addPredicate/") 
     public Response addPredicate(@FormParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias,
@@ -477,6 +525,15 @@ public class VerificationServiceGUI {
             
             mainDiv.appendChild(new H2().appendChild(new Text("Alternatives")));
             
+            Form f;
+            f = new Form("./addPolicyAlt").setMethod("post");
+            f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+            f.appendChild(new Label().appendChild(new Text("Policy UID: ")));
+            f.appendChild(new Input().setType("text").setName("puid"));
+            f.appendChild(new Input().setType("submit").setValue("Add new policy alternative"));
+            mainDiv.appendChild(f);
+            
+            
             for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
                 Div ppDiv = new Div();
                 mainDiv.appendChild(ppDiv);
@@ -511,7 +568,6 @@ public class VerificationServiceGUI {
                 List<IssuerParameters> issuerParamsSettings = settings.issuerParametersList;
                 
                 Select s;
-                Form f;
                 
                 
                 List<CredentialInPolicy> cips = pp.getCredential();
@@ -791,6 +847,16 @@ public class VerificationServiceGUI {
             }
             
             mainDiv.appendChild(ul);
+            
+            Form f = new Form("./createResource").setMethod("post");
+            f.appendChild(new Label().appendChild(new Text("Resource string: ")));
+            f.appendChild(new Input().setType("text").setName("rs"));
+            f.appendChild(new Br());
+            f.appendChild(new Label().appendChild(new Text("Redirect URL: ")));
+            f.appendChild(new Input().setType("text").setName("ru"));
+            f.appendChild(new Br());
+            f.appendChild(new Input().setType("submit").setValue("Create resource"));
+            mainDiv.appendChild(f);
             
             return log.exit(Response.ok(html.write()).build());
         }

@@ -377,6 +377,55 @@ public class VerificationService {
     }
     
     @POST()
+    @Path("/protected/presentationPolicy/addPolicyAlternative/{resource}")
+    public Response addPolicyAlternative(@PathParam("resource") String resource, @FormParam("puid") String policyUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            
+            PresentationPolicy pp = new PresentationPolicy();
+            pp.setPolicyUID(new URI(policyUid));
+            ppa.getPresentationPolicy().add(pp);
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @PUT()
+    @Path("/protected/resource/create/{resource}")
+    public Response createResource(@PathParam("resource") String resource, @FormParam("redirectURL") String redirectURL) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = new PresentationPolicyAlternatives();
+            ppa.setVersion("1.0");
+            
+            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addRedirectURI(new URI(resource), new URI(redirectURL));
+            
+            return log.exit(Response.ok("OK").build());
+            
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @POST()
     @Path("/protected/presentationPolicy/addAlias/{resource}/{policyUid}")
     public Response addAlias(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
             @FormParam("al") String alias) {
