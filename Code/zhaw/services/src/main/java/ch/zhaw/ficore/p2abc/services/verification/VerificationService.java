@@ -88,6 +88,7 @@ import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.PresentationTokenDescription;
 import eu.abc4trust.xml.SystemParameters;
 import eu.abc4trust.xml.AttributePredicate.Attribute;
+import eu.abc4trust.xml.VerifierIdentity;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
@@ -999,6 +1000,27 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /protected/redirectURI/store/{resource} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores a redirect URI (URL) and associates it with a resource.<br>
+     * <br>
+     * <b>PathParam</b>: 
+     * <ul>
+     * <li>resource - Name/URI of the resource.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>String</tt> <br>
+     * @param resourceUri URI of the resource
+     * @param redirectUri Redirect URL
+     * @return Response
+     */
     @PUT()
     @Path("/protected/redirectURI/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -1021,6 +1043,25 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /requestResource/{resource} <br>
+     * <br>
+     * <b>Description</b>: First step for a user to request a resource. This method will look-up the corresponding
+     * presentation policy alternatives and return them for the user to create presentation tokens for. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Name/URI of the resource to request access to/for.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param resource URI of the resource
+     * @return Response
+     */
     @GET()
     @Path("/requestResource/{resource}")
     public Response requestResource(@PathParam("resource") String resource) {
@@ -1037,7 +1078,7 @@ public class VerificationService {
             String key = System.currentTimeMillis() + ";" + new SecureRandom().nextInt();
             byte[] nonce = verificationHelper.generateNonce();
             
-            ppa = verificationHelper.modifyPPA(ppa, key, nonce);
+            ppa = verificationHelper.modifyPPA(ppa, key, nonce, "This was me!");
             
             synchronized(nonces) {
                 nonces.put(key, nonce);
@@ -1051,6 +1092,23 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /requestResource2/{resource} (POST) <br>
+     * <br>
+     * <b>Description</b>: The second step for a user to request access to a resource. This method will verify
+     * the presentation token for the user and if successful return the redirect URI and an access token. <br>
+     * <br>
+     * <b>Path parameters:</b>
+     * <ul>
+     * <li>resource - Name/URI of the resource.</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>PresentationToken</tt><br>
+     * <b>Return type</b>: <tt>String</tt><br>
+     * @param resource
+     * @param pt
+     * @return
+     */
     @POST()
     @Path("/requestResource2/{resource}/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -1074,12 +1132,19 @@ public class VerificationService {
                 
                 synchronized(nonces) {
                     nonce = nonces.get(uid);
+                    nonces.remove(uid);
                 }
                 
                 pp.getMessage().setNonce(nonce);
                 pp.getMessage().getApplicationData().getContent().clear();
                 pp.getMessage().getApplicationData().getContent().add(uid);
+                VerifierIdentity vi = new VerifierIdentity();
+                vi.getContent().clear();
+                vi.getContent().add("urn:verifier:1");
+                pp.getMessage().setVerifierIdentity(vi);
             }
+            
+            log.info("VI 0 is " + pt.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().get(0));
 
             PresentationPolicyAlternativesAndPresentationToken ppat = of
                     .createPresentationPolicyAlternativesAndPresentationToken();

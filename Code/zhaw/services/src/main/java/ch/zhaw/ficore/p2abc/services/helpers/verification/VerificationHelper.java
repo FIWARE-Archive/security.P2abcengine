@@ -65,6 +65,7 @@ import eu.abc4trust.xml.PresentationPolicy;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.RevocationInformation;
+import eu.abc4trust.xml.VerifierIdentity;
 import eu.abc4trust.xml.util.XmlUtils;
 
 /**
@@ -280,7 +281,7 @@ public class VerificationHelper extends AbstractHelper {
     private static Map<URI, RevocationInformation> revocationInformationCache = new HashMap<URI, RevocationInformation>();
     
     public PresentationPolicyAlternatives modifyPPA(
-            PresentationPolicyAlternatives ppa, String applicationData, byte[] nonce) {
+            PresentationPolicyAlternatives ppa, String applicationData, byte[] nonce, String verifierIdentity) {
         logger.entry();
         
         for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
@@ -289,6 +290,13 @@ public class VerificationHelper extends AbstractHelper {
             ApplicationData apd = m.getApplicationData();
             apd.getContent().clear();
             apd.getContent().add(applicationData);
+            VerifierIdentity vi = m.getVerifierIdentity();
+            if(vi == null) {
+                m.setVerifierIdentity(new VerifierIdentity());
+                vi = m.getVerifierIdentity();
+            }
+            vi.getContent().clear();
+            vi.getContent().add(verifierIdentity);
         }
         
         return logger.exit(ppa);

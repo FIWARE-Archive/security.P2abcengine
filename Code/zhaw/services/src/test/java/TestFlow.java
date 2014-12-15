@@ -31,7 +31,9 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
 import eu.abc4trust.xml.ApplicationData;
+import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
+import eu.abc4trust.xml.PresentationToken;
 
 public class TestFlow extends JerseyTest {
 
@@ -43,6 +45,7 @@ public class TestFlow extends JerseyTest {
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
+    private ObjectFactory of = new ObjectFactory();
 
     public TestFlow() throws Exception {
         super("ch.zhaw.ficore.p2abc");
@@ -266,8 +269,8 @@ public class TestFlow extends JerseyTest {
             ppapt += rPresentationToken;
             ppapt += "</PresentationPolicyAlternativesAndPresentationToken>";
 
-            String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
-            System.out.println(presentationTokenDescription);
+            //String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
+            //System.out.println(presentationTokenDescription);
 
             /* Verification stuff 2 */
             System.out.println("***********");
@@ -298,6 +301,11 @@ public class TestFlow extends JerseyTest {
                         contextString_);
     
                 String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
+                PresentationToken presentationToken2 = (PresentationToken) RESTHelper.fromXML(PresentationToken.class, presentationToken_);
+                System.out.println(";VI 0 is " + presentationToken2.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().get(0));
+                presentationToken2.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().clear();
+                presentationToken2.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().add("urn:verifier:1");
+                presentationToken_ = RESTHelper.toXML(PresentationToken.class, of.createPresentationToken(presentationToken2));
     
                 String presentationTokenDescription_ = testRequestResource2(presentationToken_);
                 System.out.println("**#*#*#*#*#**#*#");

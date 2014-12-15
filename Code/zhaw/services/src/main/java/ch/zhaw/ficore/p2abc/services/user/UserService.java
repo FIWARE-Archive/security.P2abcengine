@@ -72,6 +72,7 @@ import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.SystemParameters;
+import eu.abc4trust.xml.VerifierIdentity;
 
 @Path("/user")
 public class UserService {
@@ -244,6 +245,12 @@ public class UserService {
         try {
             PresentationToken presentationToken = instance.getEngine()
                     .createPresentationToken(upr);
+            /*VerifierIdentity vi = presentationToken.getPresentationTokenDescription().getMessage().getVerifierIdentity();
+            if(vi == null) {
+                presentationToken.getPresentationTokenDescription().getMessage().setVerifierIdentity(new VerifierIdentity());
+                vi = presentationToken.getPresentationTokenDescription().getMessage().getVerifierIdentity();
+                vi.getContent().clear();
+            }*/
             return log.exit(Response.ok(
                     of.createPresentationToken(presentationToken),
                     MediaType.APPLICATION_XML).build());
