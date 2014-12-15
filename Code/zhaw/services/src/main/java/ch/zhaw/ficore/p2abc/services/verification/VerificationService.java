@@ -102,6 +102,8 @@ public class VerificationService {
     private final Logger log = LogManager.getLogger();
     private final static String errMagicCookie = "Magic cookie is not correct!";
     private static Map<String, String> accessTokens = new HashMap<String, String>();
+    private static Map<String, byte[]> nonces = new HashMap<String, byte[]>();
+    
     private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
     private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
     private final static String errUid = "The given UID in the path does not match the actual UID.";
@@ -1032,6 +1034,15 @@ public class VerificationService {
                     .getPresentationPolicy(new URI(resource));
             
             
+            String key = System.currentTimeMillis() + ";" + new SecureRandom().nextInt();
+            byte[] nonce = verificationHelper.generateNonce();
+            
+            ppa = verificationHelper.modifyPPA(ppa, key, nonce);
+            
+            synchronized(nonces) {
+                nonces.put(key, nonce);
+            }
+            
             return log.exit(Response.ok(
                     of.createPresentationPolicyAlternatives(ppa)).build());
         } catch (Exception e) {
@@ -1041,7 +1052,7 @@ public class VerificationService {
     }
 
     @POST()
-    @Path("/requestResource2/{resource}")
+    @Path("/requestResource2/{resource}/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response requestResource2(@PathParam("resource") String resource,
             PresentationToken pt) {
@@ -1054,6 +1065,21 @@ public class VerificationService {
 
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
                     .getPresentationPolicy(new URI(resource));
+            
+            log.info("APD 0 is : " + pt.getPresentationTokenDescription().getMessage().getApplicationData().getContent().get(0));
+            String uid = (String)pt.getPresentationTokenDescription().getMessage().getApplicationData().getContent().get(0);
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                byte[] nonce;
+                
+                synchronized(nonces) {
+                    nonce = nonces.get(uid);
+                }
+                
+                pp.getMessage().setNonce(nonce);
+                pp.getMessage().getApplicationData().getContent().clear();
+                pp.getMessage().getApplicationData().getContent().add(uid);
+            }
 
             PresentationPolicyAlternativesAndPresentationToken ppat = of
                     .createPresentationPolicyAlternativesAndPresentationToken();
@@ -1073,7 +1099,9 @@ public class VerificationService {
             String token = generateAccessToken();
 
             log.info("VPut: " + token + "," + resource);
-            accessTokens.put(token, resource);
+            synchronized(accessTokens) {
+                accessTokens.put(token, resource);
+            }
 
             return log.exit(Response.ok(
                     redirect.toString() + "?accesstoken="
@@ -1089,12 +1117,14 @@ public class VerificationService {
     public Response verifyAccessToken(
             @QueryParam("accesstoken") String accessToken) {
         log.info("VGet: " + accessToken);
-        if (!accessTokens.containsKey(accessToken))
-            return Response.status(Response.Status.FORBIDDEN).build();
-        else {
-            String resourceString = accessTokens.get(accessToken);
-            accessTokens.remove(accessToken);
-            return Response.ok(accessTokens.get(accessToken)).build();
+        synchronized(accessTokens) {
+            if (!accessTokens.containsKey(accessToken))
+                return Response.status(Response.Status.FORBIDDEN).build();
+            else {
+                String resourceString = accessTokens.get(accessToken);
+                accessTokens.remove(accessToken);
+                return Response.ok(accessTokens.get(accessToken)).build();
+            }
         }
     }
     

@@ -278,6 +278,21 @@ public class VerificationHelper extends AbstractHelper {
     public static boolean cacheRevocationInformation = false;
     public static long REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES = 60;
     private static Map<URI, RevocationInformation> revocationInformationCache = new HashMap<URI, RevocationInformation>();
+    
+    public PresentationPolicyAlternatives modifyPPA(
+            PresentationPolicyAlternatives ppa, String applicationData, byte[] nonce) {
+        logger.entry();
+        
+        for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+            Message m = pp.getMessage();
+            m.setNonce(nonce);
+            ApplicationData apd = m.getApplicationData();
+            apd.getContent().clear();
+            apd.getContent().add(applicationData);
+        }
+        
+        return logger.exit(ppa);
+    }
 
     private PresentationPolicyAlternatives modifyPPA(
             PresentationPolicyAlternatives pp_alternatives,

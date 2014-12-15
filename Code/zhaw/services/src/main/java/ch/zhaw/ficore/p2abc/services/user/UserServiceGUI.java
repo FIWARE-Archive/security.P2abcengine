@@ -254,7 +254,8 @@ public class UserServiceGUI {
     public Response requestResource3(@FormParam("policyId") String policyId,
             @FormParam("candidateId") String candidateId,
             @FormParam("pseudonymId") String pseudonymId,
-            @FormParam("uic") String uiContext) {
+            @FormParam("uic") String uiContext,
+            @FormParam("apdata") String applicationData) {
         log.entry();
 
         try {
@@ -275,7 +276,8 @@ public class UserServiceGUI {
                     getURL(uiContext)
                             + "/requestResource2/"
                             + URLEncoder
-                                    .encode(getResource(uiContext), "UTF-8"),
+                                    .encode(getResource(uiContext), "UTF-8") + "/" 
+                                    + URLEncoder.encode(applicationData, "UTF-8"),
                     RESTHelper.toXML(PresentationToken.class,
                             of.createPresentationToken(pt)));
 
@@ -606,7 +608,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(new H1().appendChild(new Text(
                     "Obtain Credential")));
             Div div = UserGUI.getDivForTokenCandidates(args.tokenCandidates, 0,
-                    args.uiContext.toString(), "");
+                    args.uiContext.toString(), "", "");
             mainDiv.appendChild(div);
             return Response.ok(html.write()).build();
         }
@@ -842,9 +844,13 @@ public class UserServiceGUI {
         html.appendChild(UserGUI.getBody(mainDiv));
 
         for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-
+            List<Object> content = tcpp.policy.getMessage().getApplicationData().getContent();
+            if(content == null)
+                throw new RuntimeException("Expecting application data!");
+            
+            
             Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates,
-                    tcpp.policyId, args.uiContext.toString(),
+                    tcpp.policyId, args.uiContext.toString(), (String)content.get(0),
                     "./requestResource3");
 
             mainDiv.appendChild(div);

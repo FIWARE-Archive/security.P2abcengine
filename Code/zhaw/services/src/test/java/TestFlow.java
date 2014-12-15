@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.xml.bind.JAXBException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
 import com.sun.jersey.api.client.Client;
@@ -27,6 +29,9 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
+
+import eu.abc4trust.xml.ApplicationData;
+import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 public class TestFlow extends JerseyTest {
 
@@ -50,8 +55,8 @@ public class TestFlow extends JerseyTest {
     }
 
     private static String getBaseURI() {
-        return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
-        //return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
+        //return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
+        return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
 
     File storageFile;
@@ -135,10 +140,11 @@ public class TestFlow extends JerseyTest {
      * 
      * @throws UnsupportedEncodingException
      * @throws InterruptedException
+     * @throws JAXBException 
      */
     @Test
     public void flowTest() throws UnsupportedEncodingException,
-            InterruptedException {
+            InterruptedException, JAXBException {
         System.out.println("hi there");
 
         /*
@@ -277,7 +283,12 @@ public class TestFlow extends JerseyTest {
             for(int j = 0; j < 3; j++) {
                 testStoreRedirectURI("http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/demo-resource/page");
                 String presentationPolicyAlternatives_ = testRequestResource();
+                
+                PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper.fromXML(PresentationPolicyAlternatives.class, presentationPolicyAlternatives_);
     
+                ApplicationData apd = ppa.getPresentationPolicy().get(0).getMessage().getApplicationData();
+                System.out.println("APD: " + apd.getContent().get(0));
+                
                 String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
                 String contextString_ = getContextString(presentationReturn_);
                 System.out.println(contextString_);

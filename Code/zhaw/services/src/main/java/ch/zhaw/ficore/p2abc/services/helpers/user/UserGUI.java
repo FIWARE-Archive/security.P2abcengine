@@ -11,6 +11,7 @@ import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.H3;
+import com.hp.gagawa.java.elements.H4;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
@@ -89,21 +90,21 @@ public class UserGUI {
      * @return Div (HTML)
      */
     public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext, String backURL) {
+            int policyId, String uiContext, String applicationData, String backURL) {
         Div enclosing = new Div();
         enclosing.appendChild(new P().appendChild(new Text(Integer.toString(tcs
                 .size()))));
         for (TokenCandidate tc : tcs) {
             Div div = new Div();
             div.setCSSClass("tokenCandidate");
-            div.appendChild(new H2().appendChild(new Text("Candidate")));
+            div.appendChild(new H3().appendChild(new Text("Candidate")));
             enclosing.appendChild(div);
 
             Table tbl = new Table();
             Tr row = null;
             Td td = null;
 
-            div.appendChild(new H3().appendChild(new Text("Credentials "
+            div.appendChild(new H4().appendChild(new Text("Credentials "
                     + tc.credentials.size())));
             div.appendChild(tbl);
 
@@ -129,6 +130,8 @@ public class UserGUI {
                 row.appendChild(td);
                 tbl.appendChild(row);
 
+                f.appendChild(new Input().setType("hidden").setName("apdata")
+                        .setValue(applicationData));
                 f.appendChild(new Input().setType("hidden").setName("uic")
                         .setValue(uiContext));
                 f.appendChild(new Input().setType("hidden").setName("policyId") // chosenPolicy
