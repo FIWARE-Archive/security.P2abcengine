@@ -19,6 +19,9 @@ public class PresentationPolicyAlternativesCollection {
     @XmlElement(name = "uris", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     public List<String> uris = new ArrayList<String>();
     
+    @XmlElement(name = "redirect-uris", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    public List<String> redirectURIs = new ArrayList<String>();
+    
     public PresentationPolicyAlternativesCollection() {
 
     }

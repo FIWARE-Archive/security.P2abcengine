@@ -510,7 +510,7 @@ public class VerificationServiceGUI {
     }
     
     @GET()
-    @Path("/protected/presentationPolicy")
+    @Path("/protected/resource")
     public Response presentationPolicy(@QueryParam("resource") String resource) {
         log.entry();
         
@@ -523,9 +523,23 @@ public class VerificationServiceGUI {
                     verificationServiceURL + "protected/presentationPolicy/get/"
                     + URLEncoder.encode(resource, "UTF-8"), PresentationPolicyAlternatives.class);
             
-            mainDiv.appendChild(new H2().appendChild(new Text("Alternatives")));
             
-            Form f;
+            mainDiv.appendChild(new H2().appendChild(new Text("Redirect URI")));
+            
+            String redirectURI = (String) RESTHelper.getRequest(
+                    verificationServiceURL + "protected/redirectURI/get/" + 
+                            URLEncoder.encode(resource, "UTF-8"));
+            
+            Form f = new Form("./changeRedirectURI");
+            f.appendChild(new Label().appendChild(new Text("Redirect URI: ")));
+            f.appendChild(new Input().setType("text").setName("uri").setValue(redirectURI));
+            f.appendChild(new Input().setType("submit").setValue("Change"));
+            f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+            mainDiv.appendChild(f);
+            
+            mainDiv.appendChild(new H2().appendChild(new Text("Presentation Policy Alternatives")));
+            
+            
             f = new Form("./addPolicyAlt").setMethod("post");
             f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
             f.appendChild(new Label().appendChild(new Text("Policy UID: ")));
@@ -839,11 +853,14 @@ public class VerificationServiceGUI {
             
             Ul ul = new Ul();
             
+            int i = 0;
             for(String ppaUri : ppac.uris) {
                 A a = new A();
-                a.setHref("./presentationPolicy?resource="+URLEncoder.encode(ppaUri.toString(),"UTF-8"));
+                a.setHref("./resource?resource="+URLEncoder.encode(ppaUri.toString(),"UTF-8"));
                 a.appendChild(new Text(ppaUri.toString()));
-                ul.appendChild(new Li().appendChild(a));
+                ul.appendChild(new Li().appendChild(a).appendChild(new Text(": " + ppac.redirectURIs.get(i))));
+                
+                i++;
             }
             
             mainDiv.appendChild(ul);

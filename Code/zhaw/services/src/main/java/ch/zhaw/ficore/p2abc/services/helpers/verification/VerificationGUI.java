@@ -2,9 +2,12 @@ package ch.zhaw.ficore.p2abc.services.helpers.verification;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Div;
+import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.H2;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
@@ -30,6 +33,7 @@ public class VerificationGUI {
 
     public static Body getBody(Div mainDiv) {
         Div containerDiv = new Div().setCSSClass("containerDiv");
+        containerDiv.appendChild(new H1().appendChild(new Text("Verifier")));
         Div navDiv = new Div().setCSSClass("navDiv");
         containerDiv.appendChild(navDiv);
         containerDiv.appendChild(mainDiv);

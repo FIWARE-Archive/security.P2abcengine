@@ -169,7 +169,7 @@ public class VerificationService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type:</b> <tt>PresentationPolicyAlternativesAndPresentationToken</tt> <br>
@@ -923,7 +923,7 @@ public class VerificationService {
                 gkeyStorage.delete(new URI(credSpecUid));
             } else {
                 return log.exit(
-                        Response.status(Response.Status.BAD_REQUEST).entity(
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                                 errNotImplemented)).build();
             }
 
@@ -1004,6 +1004,11 @@ public class VerificationService {
             List<String> uris = new ArrayList<String>();
             for(URI uri : verificationHelper.verificationStorage.listPresentationPoliciesURIS())
                 uris.add(uri.toString());
+            List<String> redirectURIs = new ArrayList<String>();
+            for(URI uri : verificationHelper.verificationStorage.listPresentationPoliciesURIS()) {
+                redirectURIs.add(verificationHelper.verificationStorage.getRedirectURI(uri).toString());
+            }
+            ppac.redirectURIs = redirectURIs;
             ppac.uris = uris;
             return log.exit(Response.ok(ppac, MediaType.APPLICATION_XML).build());
         }
@@ -1051,6 +1056,24 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    @GET()
+    @Path("/protected/redirectURI/get/{resource}")
+    public Response getRedirectURI(@PathParam("resource") String resource) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            URI uri = verificationHelper.verificationStorage.getRedirectURI(new URI(resource));
+            return log.exit(Response.ok(uri.toString()).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
@@ -1253,7 +1276,7 @@ public class VerificationService {
      * <b>Response Status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * 
      * @param url
@@ -1315,7 +1338,7 @@ public class VerificationService {
      * <b>Response Status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type:</b> <tt>Settings</tt> <br>
@@ -1368,7 +1391,7 @@ public class VerificationService {
         } catch (Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }

@@ -160,7 +160,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK</li>
      * <li>401 - Authentication was not successful.</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>AuthenticationRequest</tt><br>
@@ -209,7 +209,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>Settings</tt><br>
@@ -265,7 +265,7 @@ public class IssuanceService {
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
                     .build();
         }
@@ -292,7 +292,7 @@ public class IssuanceService {
      * <li>200 - OK (application/xml)</li>
      * <li>401 - Authentication failed</li>
      * <li>404 - A resource needed to process the request was not found</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>IssuanceRequest</tt><br>
@@ -395,7 +395,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
@@ -470,7 +470,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK</li>
      * <li>404 - Credential specification was not found</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * 
      * @param credSpecUid
@@ -500,14 +500,14 @@ public class IssuanceService {
                 keyStorage.delete(new URI(credSpecUid));
             } else {
                 return logger.exit(
-                        Response.status(Response.Status.BAD_REQUEST).entity(
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                                 errNotImplemented)).build();
             }
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
             return logger.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
                     .build();
         }
@@ -533,7 +533,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * <li>404 - Credential specification was not found</li>
      * </ul>
      * 
@@ -586,7 +586,7 @@ public class IssuanceService {
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
                     .build();
         }
@@ -617,7 +617,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK</li>
      * <li>404 - Credential specification could not be found.</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * 
      * @param index
@@ -683,7 +683,7 @@ public class IssuanceService {
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
                     .build();
         }
@@ -713,7 +713,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK</li>
      * <li>404 - Credential specification could not be found.</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * 
      * @param index
@@ -777,7 +777,7 @@ public class IssuanceService {
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
                     .build();
         }
@@ -800,7 +800,7 @@ public class IssuanceService {
      * <li>200 - OK (application/xml)</li>
      * <li>409 - The credentialSpecificationUid given on the path does not match
      * the actual credential specification's UDI</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>CredentialSpecification</tt><br>
@@ -925,7 +925,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 -OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * 
      * @param credSpecUid
@@ -964,7 +964,7 @@ public class IssuanceService {
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
                     .build();
         }
@@ -983,7 +983,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * @param issuerParametersUid UID of the issuer parameters
      * @return Response
@@ -1007,7 +1007,7 @@ public class IssuanceService {
                 gkeyStorage.delete(new URI(issuerParametersUid));
             } else {
                 return logger.exit(
-                        Response.status(Response.Status.BAD_REQUEST).entity(
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                                 errNotImplemented)).build();
             }
 
@@ -1032,7 +1032,7 @@ public class IssuanceService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>QueryRule</tt><br>
@@ -1078,7 +1078,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * @param credSpecUid UID of the credential specification.
      * @return Response
@@ -1117,7 +1117,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK (application/xml)</li>
      * <li>404 - Query rule could not be found.</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>QueryRule</tt><br>
@@ -1161,7 +1161,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>QueryRuleCollection</tt><br>
@@ -1214,7 +1214,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>IssuancePolicy</tt><br>
@@ -1263,7 +1263,7 @@ public class IssuanceService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <b>Return type</b>: <tt>IssuancePolicy</tt><br>
      * 
@@ -1320,7 +1320,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>AtributeInfoCollection</tt><br>
@@ -1360,7 +1360,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>AttributeInfoCollection</tt><br>
@@ -1412,7 +1412,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>SystemParameters</tt><br>
@@ -1486,7 +1486,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * <li>404 - Credential specification could not be found.</li>
      * </ul>
      * <br>

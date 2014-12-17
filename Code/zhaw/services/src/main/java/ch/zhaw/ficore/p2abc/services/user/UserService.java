@@ -138,7 +138,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type:</b> <tt>PresentationPolicyAlternatives</tt><br>
@@ -197,7 +197,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: PresentationPolicyAlternatives<br>
@@ -243,7 +243,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type:</b> <tt>UiPresentationReturn</tt><br>
@@ -301,7 +301,7 @@ public class UserService {
      * <b>Response Status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * 
      * @param url
@@ -363,7 +363,7 @@ public class UserService {
      * <b>Response Status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type:</b> <tt>Settings</tt> <br>
@@ -418,7 +418,7 @@ public class UserService {
         } catch (Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
@@ -432,7 +432,7 @@ public class UserService {
      * <b>Response Status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>CredentialCollection</tt><br>
@@ -470,7 +470,7 @@ public class UserService {
         } catch (Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
@@ -496,7 +496,7 @@ public class UserService {
         catch(Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.BAD_REQUEST).entity(
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
@@ -536,7 +536,7 @@ public class UserService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
@@ -583,7 +583,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>UiIssuanceReturn</tt><br>
@@ -634,7 +634,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
@@ -687,7 +687,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual
      * UID or is invalid.</li>
      * </ul>
@@ -743,7 +743,7 @@ public class UserService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>SystemParameters</tt><br>
@@ -793,7 +793,7 @@ public class UserService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * <li>409 - <em>issuerParametersUid</em> does not match or is invalid.
      * </ul>
      * <br>
@@ -861,7 +861,7 @@ public class UserService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * @param issuerParametersUid UID of the issuer parameters
      * @return Response
@@ -885,7 +885,7 @@ public class UserService {
                 gkeyStorage.delete(new URI(issuerParametersUid));
             } else {
                 return log.exit(
-                        Response.status(Response.Status.BAD_REQUEST).entity(
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                                 errNotImplemented)).build();
             }
 
@@ -939,7 +939,7 @@ public class UserService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK (application/xml)</li>
-     * <li>400 - ERROR</li>
+     * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type:</b> <tt>IssuanceMessageAndBoolean</tt><br>
