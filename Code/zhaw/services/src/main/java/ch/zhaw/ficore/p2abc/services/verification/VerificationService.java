@@ -1217,12 +1217,19 @@ public class VerificationService {
             @QueryParam("accesstoken") String accessToken) {
         log.info("VGet: " + accessToken);
         synchronized(accessTokens) {
-            if (!accessTokens.containsKey(accessToken))
+            if (!accessTokens.containsKey(accessToken)) {
+                for(String key : accessTokens.keySet()) {
+                    log.warn(" atkn: " + key);
+                }
+                log.info("Accesstoken not found!" + accessToken);
                 return Response.status(Response.Status.FORBIDDEN).build();
+            }
             else {
+                log.info("Accesstoken found! " + accessToken);
                 String resourceString = accessTokens.get(accessToken);
+                log.info("Resource string is: " + resourceString);
                 accessTokens.remove(accessToken);
-                return Response.ok(accessTokens.get(accessToken)).build();
+                return Response.ok(resourceString).build();
             }
         }
     }

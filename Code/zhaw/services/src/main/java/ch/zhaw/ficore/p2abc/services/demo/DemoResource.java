@@ -22,12 +22,12 @@ public class DemoResource {
                             + URLEncoder.encode(accessToken, "UTF-8"));
 
             if (result.equals("resource")) {
-                return Response.ok("You are allowed to access this page!")
+                return Response.ok("You are allowed to access this page: " + result)
                         .build();
             }
 
             return Response.status(Response.Status.FORBIDDEN)
-                    .entity("You are not allowed to access this page!").build();
+                    .entity("You are not allowed to access this page: " + result).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.FORBIDDEN)
