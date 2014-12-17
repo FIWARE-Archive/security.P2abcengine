@@ -281,8 +281,7 @@ public class UserServiceGUI {
                     getURL(uiContext)
                             + "/requestResource2/"
                             + URLEncoder
-                                    .encode(getResource(uiContext), "UTF-8") + "/" 
-                                    + URLEncoder.encode(applicationData, "UTF-8"),
+                                    .encode(getResource(uiContext), "UTF-8"),
                     RESTHelper.toXML(PresentationToken.class,
                             of.createPresentationToken(pt)));
 
@@ -492,6 +491,7 @@ public class UserServiceGUI {
                         "Delete credential"));
                 f.appendChild(new Input().setType("hidden").setName("credUid")
                         .setValue(uri.toString()));
+                mainDiv.appendChild(credDiv);
             }
 
             return log.exit(Response.ok(html.write()).build());

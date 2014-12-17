@@ -155,26 +155,15 @@ public class UserGUI {
             div.appendChild(tbl);
 
             for (CredentialInUi c : tc.credentials) {
+                
+                Credential cred = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/"
+                        + URLEncoder.encode(c.uri.toString(), "UTF-8"), Credential.class);
+                
+                enclosing.appendChild(getDivForCredential(cred));
+                
                 Form f = new Form(backURL).setMethod("post");
 
-                row = new Tr();
-                td = new Td();
-                td.appendChild(new Text("Credential"));
-                row.appendChild(td);
-                td = new Td();
-                td.appendChild(new Text(c.uri.toString()));
-                row.appendChild(td);
-                tbl.appendChild(row);
-
-                row = new Tr();
-                td = new Td();
-                td.appendChild(new Text("Specification"));
-                row.appendChild(td);
-                td = new Td();
-                td.appendChild(new Text(c.desc.getCredentialSpecificationUID()
-                        .toString()));
-                row.appendChild(td);
-                tbl.appendChild(row);
+                
 
                 f.appendChild(new Input().setType("hidden").setName("apdata")
                         .setValue(applicationData));
@@ -206,11 +195,6 @@ public class UserGUI {
                         "Continue using this candidate."));
 
                 enclosing.appendChild(f);
-                
-                Credential cred = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/"
-                        + URLEncoder.encode(c.uri.toString(), "UTF-8"), Credential.class);
-                
-                enclosing.appendChild(getDivForCredential(cred));
             }
         }
         P p = new P().appendChild(new B().appendChild(new Text(

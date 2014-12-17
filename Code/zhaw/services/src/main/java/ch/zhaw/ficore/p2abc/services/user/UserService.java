@@ -154,11 +154,14 @@ public class UserService {
     public Response canBeSatisfied(PresentationPolicyAlternatives p) {
         log.entry();
 
-        this.initializeHelper();
+        
 
-        UserHelper instance = UserHelper.getInstance();
+        
 
         try {
+            this.initializeHelper();
+            UserHelper instance = UserHelper.getInstance();
+            
             boolean b = instance.getEngine().canBeSatisfied(p);
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(b);
@@ -210,12 +213,14 @@ public class UserService {
     public Response createPresentationToken(PresentationPolicyAlternatives p) {
         log.entry();
 
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
+        
 
         DummyForNewABCEInterfaces d = null;
         try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+            
             UiPresentationArguments uiPresentationArguments = instance
                     .getEngine().createPresentationToken(p, d);
             return log.exit(Response.ok(
@@ -255,11 +260,11 @@ public class UserService {
 
         log.entry();
 
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
         try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+            
             PresentationToken presentationToken = instance.getEngine()
                     .createPresentationToken(upr);
             /*VerifierIdentity vi = presentationToken.getPresentationTokenDescription().getMessage().getVerifierIdentity();
@@ -472,7 +477,7 @@ public class UserService {
     
     @GET()
     @Path("/credential/get/{credUid}")
-    public Response getCredential(@PathParam ("credUid") @Encoded String credUid) {
+    public Response getCredential(@PathParam ("credUid") String credUid) {
         log.entry();
         
         try {
@@ -486,7 +491,7 @@ public class UserService {
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCred).build());
             }
             
-            return log.exit(Response.ok(of.createCredential()).build());
+            return log.exit(Response.ok(of.createCredential(cred), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
             log.catching(e);
@@ -548,14 +553,16 @@ public class UserService {
 
         log.entry();
 
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
-
-        IssuanceMessage m = jm.getValue();
-
-        DummyForNewABCEInterfaces d = null;
+        
         try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+
+            IssuanceMessage m = jm.getValue();
+
+            DummyForNewABCEInterfaces d = null;
+            
             IssuanceReturn issuanceReturn = instance.getEngine()
                     .issuanceProtocolStep(m, d);
             return log.exit(Response.ok(
@@ -593,11 +600,13 @@ public class UserService {
 
         log.entry();
 
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
+        
 
         try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+            
             IssuanceMessage issuanceMessage = instance.getEngine()
                     .issuanceProtocolStep(uir);
             return log.exit(Response.ok(
@@ -641,11 +650,13 @@ public class UserService {
             @PathParam("credentialUid") URI credentialUid) {
         log.entry();
 
-        this.initializeHelper();
-
-        UserHelper instance = UserHelper.getInstance();
+        
 
         try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+            
             boolean r = instance.credentialManager
                     .deleteCredential(credentialUid);
 
@@ -889,11 +900,11 @@ public class UserService {
         this.log.info("UserService loading...");
 
         try {
-
             PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = true;
 
             if (UserHelper.isInit()) {
                 this.log.info("UserHelper is initialized");
+                
                 // AbstractHelper.verifyFiles(false, this.fileStoragePrefix);
             } else {
                 this.log.info("Initializing UserHelper...");
@@ -908,6 +919,7 @@ public class UserService {
                 this.log.info("UserHelper is initialized");
             }
             UserHelper instance = UserHelper.getInstance();
+            
             Set<URI> keySet = instance.cardStorage.getSmartcards().keySet();
             for (URI uri : keySet) {
                 log.info("Smartcards: " + uri);

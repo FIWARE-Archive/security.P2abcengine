@@ -41,6 +41,7 @@ import eu.abc4trust.cryptoEngine.uprove.user.ReloadTokensCommunicationStrategy;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
 import eu.abc4trust.smartcard.CardStorage;
@@ -85,11 +86,15 @@ public class UserHelper extends AbstractHelper {
         return instance != null;
     }
 
-    public static synchronized UserHelper getInstance() {
+    public static synchronized UserHelper getInstance() throws KeyManagerException {
         if (instance == null) {
             throw new IllegalStateException(
                     "initInstance not called before using UserHelper!");
         }
+        //TODO: I have no idea why this is necessary but it seems that the system parameters
+        //have to be periodically reloaded otherwise the engine will complain about missing gp.xml. 
+        //FIXME: munt
+        instance.keyManager.storeSystemParameters(instance.keyManager.getSystemParameters());
         return instance;
     }
 
