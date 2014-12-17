@@ -91,10 +91,6 @@ public class UserHelper extends AbstractHelper {
             throw new IllegalStateException(
                     "initInstance not called before using UserHelper!");
         }
-        //TODO: I have no idea why this is necessary but it seems that the system parameters
-        //have to be periodically reloaded otherwise the engine will complain about missing gp.xml. 
-        //FIXME: munt
-        instance.keyManager.storeSystemParameters(instance.keyManager.getSystemParameters());
         return instance;
     }
 

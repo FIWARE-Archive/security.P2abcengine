@@ -373,7 +373,7 @@ public class TestFlow extends JerseyTest {
     public void testLoadSettingsUser() throws UnsupportedEncodingException {
         Client client = getClient();
 
-        WebResource webResource = client.resource(verificationServiceURL
+        WebResource webResource = client.resource(userServiceURL
                 + "loadSettings?url=" + URLEncoder.encode(issuanceServiceURLUnprot+"getSettings", "UTF-8"));
 
         ClientResponse response = webResource.type("application/xml").get(
