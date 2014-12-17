@@ -62,6 +62,7 @@ import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
@@ -145,6 +146,18 @@ public class VerificationService {
     @Path("/protected/status/")
     public Response status() {
         return Response.ok().build();
+    }
+    
+    @GET()
+    @Path("/protected/reset")
+    public Response reset() throws Exception {
+        log.entry();
+        VerificationHelper verficationHelper = VerificationHelper
+                .getInstance();
+        
+        ServicesConfiguration.staticInit();
+        URIBytesStorage.clearEverything();
+        return log.exit(Response.ok().build());
     }
 
     /**

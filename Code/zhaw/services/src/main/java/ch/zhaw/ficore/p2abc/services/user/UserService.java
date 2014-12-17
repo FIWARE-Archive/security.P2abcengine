@@ -46,12 +46,14 @@ import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
@@ -111,6 +113,18 @@ public class UserService {
     @Path("/status/")
     public Response status() {
         return Response.ok().build();
+    }
+    
+    @GET()
+    @Path("/reset")
+    public Response reset() throws Exception {
+        log.entry(); 
+        
+        this.initializeHelper();
+        
+        ServicesConfiguration.staticInit();
+        URIBytesStorage.clearEverything();
+        return log.exit(Response.ok().build());
     }
 
     /**

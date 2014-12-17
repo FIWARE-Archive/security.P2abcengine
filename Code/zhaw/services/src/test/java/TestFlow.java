@@ -114,6 +114,8 @@ public class TestFlow extends JerseyTest {
         ic.close();
         
         RESTHelper.getRequest(issuanceServiceURL + "reset");
+        RESTHelper.getRequest(verificationServiceURL + "reset");
+        RESTHelper.getRequest(userServiceURL + "reset");
     }
 
     @After
@@ -318,8 +320,8 @@ public class TestFlow extends JerseyTest {
             System.gc();
         }
 
-        while(true)
-            Thread.sleep(10000);
+        //while(true)
+        //    Thread.sleep(10000);
     }
 
     public String readTextFile(String path) {

@@ -122,9 +122,15 @@ public class IssuanceService {
     @GET()
     @Path("/protected/reset")
     public Response reset() throws Exception {
+        logger.entry();
+        
+        this.initializeHelper(CryptoEngine.IDEMIX);
+
+        IssuanceHelper.getInstance();
+        
         ServicesConfiguration.staticInit();
         URIBytesStorage.clearEverything();
-        return Response.ok().build();
+        return logger.exit(Response.ok().build());
     }
 
     /**
