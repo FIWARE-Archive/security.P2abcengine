@@ -28,7 +28,7 @@ public class GenericVerificationStorage implements VerificationStorage {
         this.redirectURIStorage = redirectURIStorage;
     }
 
-    public void addPresentationPolicy(URI uri,
+    public void addPresentationPolicyAlternatives(URI uri,
             PresentationPolicyAlternatives ppa) throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(ppa);
@@ -47,11 +47,11 @@ public class GenericVerificationStorage implements VerificationStorage {
         }
     }
     
-    public List<PresentationPolicyAlternatives> listPresentationPolicies() throws IOException {
+    public List<PresentationPolicyAlternatives> listPresentationPolicyAlternatives() throws IOException {
         try {
             List<PresentationPolicyAlternatives> ppas = new ArrayList<PresentationPolicyAlternatives>();
             for(URI uri : presentationPolicyStorage.keys()) {
-                ppas.add(getPresentationPolicy(uri));
+                ppas.add(getPresentationPolicyAlternatives(uri));
             }
             return ppas;
         }
@@ -60,7 +60,7 @@ public class GenericVerificationStorage implements VerificationStorage {
         }
     }
     
-    public List<URI> listPresentationPoliciesURIS() throws IOException {
+    public List<URI> listResourceURIs() throws IOException {
         try {
             return presentationPolicyStorage.keys();
         }
@@ -69,7 +69,7 @@ public class GenericVerificationStorage implements VerificationStorage {
         }
     }
 
-    public PresentationPolicyAlternatives getPresentationPolicy(URI uri)
+    public PresentationPolicyAlternatives getPresentationPolicyAlternatives(URI uri)
             throws IOException {
         try {
             if (!presentationPolicyStorage.containsKey(uri))
@@ -91,6 +91,24 @@ public class GenericVerificationStorage implements VerificationStorage {
             byte[] data = redirectURIStorage.get(key);
             return (URI) SerializationUtils.deserialize(data);
         } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+    
+    public void deleteRedirectURI(URI key) throws IOException {
+        try {
+            redirectURIStorage.delete(key);
+        }
+        catch(Exception e) {
+            throw new IOException(e);
+        }
+    }
+    
+    public void deletePresentationPolicyAlternatives(URI key) throws IOException {
+        try {
+            presentationPolicyStorage.delete(key);
+        }
+        catch(Exception e) {
             throw new IOException(e);
         }
     }

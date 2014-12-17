@@ -211,7 +211,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addCredentialSpecificationAlternative/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response addCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
             @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) {
         log.entry();
@@ -220,7 +220,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             
@@ -240,7 +240,7 @@ public class VerificationService {
             if(!found)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -251,7 +251,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/deleteCredentialSpecificationAlternative/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response deleteCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
             @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) {
         log.entry();
@@ -260,7 +260,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             URI founduid = null;
@@ -291,7 +291,7 @@ public class VerificationService {
             if(!found)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -302,7 +302,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addIssuerAlternative/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/addIssuerAlternative/{resource}/{policyUid}")
     public Response addIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
             @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) {
         log.entry();
@@ -311,7 +311,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             
@@ -333,7 +333,7 @@ public class VerificationService {
             if(!found)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -344,7 +344,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/deleteIssuerAlternative/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/deleteIssuerAlternative/{resource}/{policyUid}")
     public Response deleteIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias, 
             @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) {
         log.entry();
@@ -353,7 +353,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             IssuerParametersUID founduid = null;
@@ -384,7 +384,7 @@ public class VerificationService {
             
             
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -395,7 +395,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addPolicyAlternative/{resource}")
+    @Path("/protected/presentationPolicyAlternatives/addPolicyAlternative/{resource}")
     public Response addPolicyAlternative(@PathParam("resource") String resource, @FormParam("puid") String policyUid) {
         log.entry();
         
@@ -403,7 +403,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             PresentationPolicy pp = new PresentationPolicy();
             pp.setPolicyUID(new URI(policyUid));
@@ -413,7 +413,7 @@ public class VerificationService {
             apd.getContent().add("n/a");
             m.setApplicationData(apd);
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -435,7 +435,7 @@ public class VerificationService {
             PresentationPolicyAlternatives ppa = new PresentationPolicyAlternatives();
             ppa.setVersion("1.0");
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             verificationHelper.verificationStorage.addRedirectURI(new URI(resource), new URI(redirectURL));
             
             return log.exit(Response.ok("OK").build());
@@ -448,7 +448,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addAlias/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/addAlias/{resource}/{policyUid}")
     public Response addAlias(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
             @FormParam("al") String alias) {
         log.entry();
@@ -457,7 +457,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             CredentialInPolicy foundcip = null;
@@ -477,7 +477,7 @@ public class VerificationService {
             if(!found)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoPolicy).build());
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -488,7 +488,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/deleteAlias/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/deleteAlias/{resource}/{policyUid}")
     public Response deleteAlias(@PathParam("resource") String resource, @FormParam("al") String alias,
             @PathParam("policyUid") String policyUid) {
         log.entry();
@@ -497,7 +497,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             CredentialInPolicy foundcip = null;
@@ -522,7 +522,7 @@ public class VerificationService {
             if(!found)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
             return log.exit(Response.ok("OK").build());
         }
@@ -533,7 +533,7 @@ public class VerificationService {
     }
     
     @POST()
-    @Path("/protected/presentationPolicy/addPredicate/{resource}/{policyUid}")
+    @Path("/protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias,
             @PathParam("policyUid") String policyUid) {
@@ -543,7 +543,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             
             boolean found = false;
             
@@ -583,7 +583,7 @@ public class VerificationService {
             if(!found)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAttrib).build());
             
-            verificationHelper.verificationStorage.addPresentationPolicy(new URI(resource), ppa);
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
         }
         catch(Exception e) {
             
@@ -933,9 +933,39 @@ public class VerificationService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
+    
+    @DELETE()
+    @Path("/protected/resource/delete/{resource}")
+    public Response deleteResource(@PathParam("resource") String resource) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+
+            try {
+                verificationHelper.verificationStorage.deleteRedirectURI(new URI(resource));
+            }
+            catch(Exception e) {
+                
+            }
+            try {
+                verificationHelper.verificationStorage.deletePresentationPolicyAlternatives(new URI(resource));
+            }
+            catch(Exception e) {
+                
+            }
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
 
     @PUT()
-    @Path("/protected/presentationPolicy/store/{resource}")
+    @Path("/protected/presentationPolicyAlternatives/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storePresentationPolicy(
             @PathParam("resource") String resource,
@@ -947,7 +977,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
 
-            verificationHelper.verificationStorage.addPresentationPolicy(
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(
                     new URI(resource), ppa);
             
 
@@ -959,7 +989,7 @@ public class VerificationService {
     }
     
     @GET()
-    @Path("/protected/presentationPolicy/get/{resource}")
+    @Path("/protected/presentationPolicyAlternatives/get/{resource}")
     public Response getPresentationPolicy(@PathParam("resource") String resource) {
         log.entry();
         
@@ -967,7 +997,7 @@ public class VerificationService {
             VerificationHelper verificationHelper = VerificationHelper
                     .getInstance();
             
-            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicy(new URI(resource));
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
             return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
@@ -977,7 +1007,7 @@ public class VerificationService {
     }
     
     /**
-     * <b>Path</b>: /protected/presentationPolicy/list (GET)<br>
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/list (GET)<br>
      * <br>
      * <b>Description</b>: Lists all presentation policies stored at this service. <br>
      * <br>
@@ -991,7 +1021,7 @@ public class VerificationService {
      * @return Response
      */
     @GET()
-    @Path("/protected/presentationPolicy/list")
+    @Path("/protected/presentationPolicyAlternatives/list")
     public Response presentationPolicies() {
         log.entry();
         
@@ -1000,12 +1030,12 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternativesCollection ppac = new PresentationPolicyAlternativesCollection();
-            ppac.presentationPolicyAlternatives = verificationHelper.verificationStorage.listPresentationPolicies();
+            ppac.presentationPolicyAlternatives = verificationHelper.verificationStorage.listPresentationPolicyAlternatives();
             List<String> uris = new ArrayList<String>();
-            for(URI uri : verificationHelper.verificationStorage.listPresentationPoliciesURIS())
+            for(URI uri : verificationHelper.verificationStorage.listResourceURIs())
                 uris.add(uri.toString());
             List<String> redirectURIs = new ArrayList<String>();
-            for(URI uri : verificationHelper.verificationStorage.listPresentationPoliciesURIS()) {
+            for(URI uri : verificationHelper.verificationStorage.listResourceURIs()) {
                 redirectURIs.add(verificationHelper.verificationStorage.getRedirectURI(uri).toString());
             }
             ppac.redirectURIs = redirectURIs;
@@ -1108,7 +1138,7 @@ public class VerificationService {
                     .getInstance();
 
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
-                    .getPresentationPolicy(new URI(resource));
+                    .getPresentationPolicyAlternatives(new URI(resource));
             
             
             String key = System.currentTimeMillis() + ";" + new SecureRandom().nextInt();
@@ -1158,7 +1188,7 @@ public class VerificationService {
                     .getInstance();
 
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage
-                    .getPresentationPolicy(new URI(resource));
+                    .getPresentationPolicyAlternatives(new URI(resource));
             
             log.info("APD 0 is : " + pt.getPresentationTokenDescription().getMessage().getApplicationData().getContent().get(0));
             String uid = (String)pt.getPresentationTokenDescription().getMessage().getApplicationData().getContent().get(0);
