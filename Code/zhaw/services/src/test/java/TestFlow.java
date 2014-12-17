@@ -48,7 +48,7 @@ public class TestFlow extends JerseyTest {
     private ObjectFactory of = new ObjectFactory();
 
     public TestFlow() throws Exception {
-        super("ch.zhaw.ficore.p2abc");
+        //super("ch.zhaw.ficore.p2abc");
         userServiceURL = getBaseURI() + userServiceURL;
         verificationServiceURL = getBaseURI() + verificationServiceURL;
         verificationServiceURLUnprot = getBaseURI()
@@ -58,8 +58,8 @@ public class TestFlow extends JerseyTest {
     }
 
     private static String getBaseURI() {
-        //return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
-        return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
+        return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
+        //return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
 
     File storageFile;
@@ -113,8 +113,7 @@ public class TestFlow extends JerseyTest {
         
         ic.close();
         
-        ServicesConfiguration.staticInit();
-        URIBytesStorage.clearEverything();
+        RESTHelper.getRequest(issuanceServiceURL + "reset");
     }
 
     @After

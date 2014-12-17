@@ -1,8 +1,14 @@
 package ch.zhaw.ficore.p2abc.services.helpers.user;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
+
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.B;
@@ -26,6 +32,8 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 import eu.abc4trust.returnTypes.ui.CredentialInUi;
 import eu.abc4trust.returnTypes.ui.PseudonymInUi;
@@ -33,6 +41,10 @@ import eu.abc4trust.returnTypes.ui.PseudonymListCandidate;
 import eu.abc4trust.returnTypes.ui.RevealedAttributeValue;
 import eu.abc4trust.returnTypes.ui.RevealedFact;
 import eu.abc4trust.returnTypes.ui.TokenCandidate;
+import eu.abc4trust.xml.Attribute;
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.Credential;
+import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.FriendlyDescription;
 
 public class UserGUI {
@@ -75,6 +87,37 @@ public class UserGUI {
                 new Text(msg)));
         return html;
     }
+    
+    public static Div getDivForCredential(Credential cred) {
+        URI uri = cred.getCredentialDescription().getCredentialUID();
+        Div credDiv = new Div().setCSSClass("credDiv");
+        CredentialDescription credDesc = cred
+                .getCredentialDescription();
+        String credSpec = credDesc.getCredentialSpecificationUID()
+                .toString();
+        credDiv.appendChild(new H4().appendChild(new Text(credSpec
+                + " (" + uri.toString() + ")")));
+        List<Attribute> attribs = credDesc.getAttribute();
+        Table tbl = new Table();
+        credDiv.appendChild(tbl);
+        Tr tr = null;
+        tr = new Tr().setCSSClass("heading")
+                .appendChild(new Td().appendChild(new Text("Name")))
+                .appendChild(new Td().appendChild(new Text("Value")));
+        tbl.appendChild(tr);
+        for (Attribute attrib : attribs) {
+            AttributeDescription attribDesc = attrib
+                    .getAttributeDescription();
+            String name = attribDesc.getFriendlyAttributeName().get(0)
+                    .getValue();
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Text(name))).appendChild(
+                    new Td().appendChild(new Text(attrib
+                            .getAttributeValue().toString())));
+            tbl.appendChild(tr);
+        }
+        return credDiv;
+    }
 
     /**
      * Helper function that generates HTML for the UI. Specifically it generates
@@ -88,12 +131,15 @@ public class UserGUI {
      *            Context string
      * @param backURL URL to go back.
      * @return Div (HTML)
+     * @throws JAXBException 
+     * @throws UnsupportedEncodingException 
+     * @throws UniformInterfaceException 
+     * @throws ClientHandlerException 
      */
     public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext, String applicationData, String backURL) {
+            int policyId, String uiContext, String applicationData, String backURL, String userServiceURL) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
         Div enclosing = new Div();
-        enclosing.appendChild(new P().appendChild(new Text(Integer.toString(tcs
-                .size()))));
+
         for (TokenCandidate tc : tcs) {
             Div div = new Div();
             div.setCSSClass("tokenCandidate");
@@ -160,6 +206,11 @@ public class UserGUI {
                         "Continue using this candidate."));
 
                 enclosing.appendChild(f);
+                
+                Credential cred = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/"
+                        + URLEncoder.encode(c.uri.toString(), "UTF-8"), Credential.class);
+                
+                enclosing.appendChild(getDivForCredential(cred));
             }
         }
         P p = new P().appendChild(new B().appendChild(new Text(

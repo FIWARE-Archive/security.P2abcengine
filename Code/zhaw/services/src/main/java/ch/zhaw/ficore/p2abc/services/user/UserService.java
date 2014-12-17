@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -64,6 +65,7 @@ import eu.abc4trust.returnTypes.UiPresentationArguments;
 import eu.abc4trust.returnTypes.UiPresentationReturn;
 import eu.abc4trust.util.DummyForNewABCEInterfaces;
 import eu.abc4trust.xml.ABCEBoolean;
+import eu.abc4trust.xml.Credential;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
@@ -90,7 +92,8 @@ public class UserService {
 
     private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
     private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
-    private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
+    private static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
+    private static String errNoCred = "The credential could not be found!";
 
     /**
      * <b>Path</b>: /status/ (GET)<br>
@@ -446,6 +449,32 @@ public class UserService {
             return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(
+                    Response.status(Response.Status.BAD_REQUEST).entity(
+                            ExceptionDumper.dumpExceptionStr(e, log))).build();
+        }
+    }
+    
+    @GET()
+    @Path("/credential/get/{credUid}")
+    public Response getCredential(@PathParam ("credUid") @Encoded String credUid) {
+        log.entry();
+        
+        try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+            
+            Credential cred = instance.credentialManager.getCredential(new URI(credUid));
+            
+            if(cred == null) {
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCred).build());
+            }
+            
+            return log.exit(Response.ok(of.createCredential()).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(
                     Response.status(Response.Status.BAD_REQUEST).entity(

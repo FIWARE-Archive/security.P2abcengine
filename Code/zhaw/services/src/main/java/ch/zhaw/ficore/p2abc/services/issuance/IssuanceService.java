@@ -34,6 +34,7 @@ import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.issuer.IssuanceHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.UnsafeTableNameException;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
@@ -117,6 +118,14 @@ public class IssuanceService {
     }
 
     /* GENERAL METHODS */
+    
+    @GET()
+    @Path("/protected/reset")
+    public Response reset() throws Exception {
+        ServicesConfiguration.staticInit();
+        URIBytesStorage.clearEverything();
+        return Response.ok().build();
+    }
 
     /**
      * <b>Path</b>: /protected/status (GET)<br>

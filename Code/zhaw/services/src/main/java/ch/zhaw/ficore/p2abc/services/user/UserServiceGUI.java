@@ -24,6 +24,7 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +56,7 @@ import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
+import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
@@ -76,6 +79,8 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
@@ -479,33 +484,7 @@ public class UserServiceGUI {
 
             for (Credential cred : credentials) {
                 URI uri = cred.getCredentialDescription().getCredentialUID();
-                Div credDiv = new Div().setCSSClass("credDiv");
-                mainDiv.appendChild(credDiv);
-                CredentialDescription credDesc = cred
-                        .getCredentialDescription();
-                String credSpec = credDesc.getCredentialSpecificationUID()
-                        .toString();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                        + " (" + uri.toString() + ")")));
-                List<Attribute> attribs = credDesc.getAttribute();
-                Table tbl = new Table();
-                credDiv.appendChild(tbl);
-                Tr tr = null;
-                tr = new Tr().setCSSClass("heading")
-                        .appendChild(new Td().appendChild(new Text("Name")))
-                        .appendChild(new Td().appendChild(new Text("Value")));
-                tbl.appendChild(tr);
-                for (Attribute attrib : attribs) {
-                    AttributeDescription attribDesc = attrib
-                            .getAttributeDescription();
-                    String name = attribDesc.getFriendlyAttributeName().get(0)
-                            .getValue();
-                    tr = new Tr().appendChild(
-                            new Td().appendChild(new Text(name))).appendChild(
-                            new Td().appendChild(new Text(attrib
-                                    .getAttributeValue().toString())));
-                    tbl.appendChild(tr);
-                }
+                Div credDiv = UserGUI.getDivForCredential(cred);
                 Form f = new Form("./deleteCredential");
                 f.setMethod("post");
                 credDiv.appendChild(f);
@@ -561,7 +540,7 @@ public class UserServiceGUI {
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) {
+    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
         UiIssuanceArguments args = args_.getValue().uia;
         if (args.tokenCandidates.size() == 1
                 && args.tokenCandidates.get(0).credentials.size() == 0) {
@@ -608,7 +587,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(new H1().appendChild(new Text(
                     "Obtain Credential")));
             Div div = UserGUI.getDivForTokenCandidates(args.tokenCandidates, 0,
-                    args.uiContext.toString(), "", "");
+                    args.uiContext.toString(), "", "", userServiceURL);
             mainDiv.appendChild(div);
             return Response.ok(html.write()).build();
         }
@@ -837,7 +816,7 @@ public class UserServiceGUI {
     @Path("/presentationArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response presentationArguments(
-            JAXBElement<UiPresentationArguments> args_) {
+            JAXBElement<UiPresentationArguments> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
         UiPresentationArguments args = args_.getValue();
         Html html = UserGUI.getHtmlPramble("Candidate selection", request);
         Div mainDiv = new Div();
@@ -845,13 +824,21 @@ public class UserServiceGUI {
 
         for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
             List<Object> content = tcpp.policy.getMessage().getApplicationData().getContent();
-            if(content == null)
+            if(content == null || content.size() < 1)
                 throw new RuntimeException("Expecting application data!");
+            content = tcpp.policy.getMessage().getVerifierIdentity().getContent();
+            if(content == null || content.size() < 1)
+                throw new RuntimeException("Expecting verifier identity!");
+            String vi = (String)content.get(0);
+            
+            mainDiv.appendChild(new H2().appendChild(new Text(tcpp.policy.getPolicyUID().toString())));
+            mainDiv.appendChild(new B().appendChild(new Text("Verifier Identity: ")));
+            mainDiv.appendChild(new Text(vi));
             
             
             Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates,
                     tcpp.policyId, args.uiContext.toString(), (String)content.get(0),
-                    "./requestResource3");
+                    "./requestResource3", userServiceURL);
 
             mainDiv.appendChild(div);
         }
