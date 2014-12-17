@@ -79,6 +79,11 @@
 		<env-entry-value> true </env-entry-value>
 		<env-entry-type> java.lang.Boolean </env-entry-type>
 	</env-entry>
+	<env-entry>
+		<description>Identity string of the verifier</description>
+		<env-entry-name>cfg/verifierIdentity</env-entry-name>
+		<env-entry-value>unknown</env-entry-value>
+		<env-entry-type>java.lang.String</env-entry-type>
     <env-entry>
 		<description> BindQuery </description>
 		<env-entry-name>cfg/bindQuery</env-entry-name>

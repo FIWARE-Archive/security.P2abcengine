@@ -83,6 +83,7 @@ public class TestIssuerAPI extends JerseyTest {
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
         ic.bind("java:/comp/env/cfg/userServiceURL", "");
         ic.bind("java:/comp/env/cfg/verificationServiceURL", "");
+        ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
         SQLiteDataSource ds = new SQLiteDataSource();
 

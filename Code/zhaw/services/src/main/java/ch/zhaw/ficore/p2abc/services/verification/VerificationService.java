@@ -1078,7 +1078,7 @@ public class VerificationService {
             String key = System.currentTimeMillis() + ";" + new SecureRandom().nextInt();
             byte[] nonce = verificationHelper.generateNonce();
             
-            ppa = verificationHelper.modifyPPA(ppa, key, nonce, "This was me!");
+            ppa = verificationHelper.modifyPPA(ppa, key, nonce, ServicesConfiguration.getVerifierIdentity());
             
             synchronized(nonces) {
                 nonces.put(key, nonce);
@@ -1140,7 +1140,7 @@ public class VerificationService {
                 pp.getMessage().getApplicationData().getContent().add(uid);
                 VerifierIdentity vi = new VerifierIdentity();
                 vi.getContent().clear();
-                vi.getContent().add("urn:verifier:1");
+                vi.getContent().add(ServicesConfiguration.getVerifierIdentity());
                 pp.getMessage().setVerifierIdentity(vi);
             }
             
@@ -1177,6 +1177,27 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /verifyAccessToken (GET) <br>
+     * <br>
+     * <b>Description</b>: Verifies that an access token is valid. This means, that a user successfully verified his
+     * credentials at this service for a resource. This method will return the name/URI of the resource the user requested.
+     * Once verified the access token is deleted. <br>
+     * <br>
+     * <b>GET parameters</b>:
+     * <ul>
+     * <li>accesstoken - The access token to verify. </li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>403 - Token not valid.</li>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param accessToken
+     * @return
+     */
     @GET()
     @Path("/verifyAccessToken/")
     public Response verifyAccessToken(

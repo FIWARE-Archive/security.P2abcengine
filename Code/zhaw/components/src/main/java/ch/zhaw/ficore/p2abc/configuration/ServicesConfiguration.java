@@ -47,6 +47,8 @@ public class ServicesConfiguration {
     private static String restAuthUser = "user";
 
     private static String restAuthPassword = "password";
+    
+    private static String verifierIdentity = "unknown";
 
     static {
         staticInit();
@@ -75,6 +77,7 @@ public class ServicesConfiguration {
             verificationServiceURL = (String) envCtx.lookup("cfg/verificationServiceURL");
             restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
             restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
+            verifierIdentity = (String) envCtx.lookup("cfg/verifierIdentity");
             
             System.out.println("restAuthUser :=" + restAuthUser);
             logger.info("restAuthUser := " + restAuthUser);
@@ -113,6 +116,10 @@ public class ServicesConfiguration {
 
     public static synchronized String getRestAuthPassword() {
         return restAuthPassword;
+    }
+    
+    public static synchronized String getVerifierIdentity() {
+        return verifierIdentity;
     }
 
     /**

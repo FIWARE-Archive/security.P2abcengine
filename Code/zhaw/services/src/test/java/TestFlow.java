@@ -100,6 +100,7 @@ public class TestFlow extends JerseyTest {
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", getBaseURI() + "issuance/");
         ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI() + "user/");
         ic.bind("java:/comp/env/cfg/verificationServiceURL", getBaseURI() + "verification/");
+        ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
         SQLiteDataSource ds = new SQLiteDataSource();
 
@@ -301,11 +302,11 @@ public class TestFlow extends JerseyTest {
                         contextString_);
     
                 String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
-                PresentationToken presentationToken2 = (PresentationToken) RESTHelper.fromXML(PresentationToken.class, presentationToken_);
+                /*PresentationToken presentationToken2 = (PresentationToken) RESTHelper.fromXML(PresentationToken.class, presentationToken_);
                 System.out.println(";VI 0 is " + presentationToken2.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().get(0));
                 presentationToken2.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().clear();
                 presentationToken2.getPresentationTokenDescription().getMessage().getVerifierIdentity().getContent().add("urn:verifier:1");
-                presentationToken_ = RESTHelper.toXML(PresentationToken.class, of.createPresentationToken(presentationToken2));
+                presentationToken_ = RESTHelper.toXML(PresentationToken.class, of.createPresentationToken(presentationToken2));*/
     
                 String presentationTokenDescription_ = testRequestResource2(presentationToken_);
                 System.out.println("**#*#*#*#*#**#*#");
