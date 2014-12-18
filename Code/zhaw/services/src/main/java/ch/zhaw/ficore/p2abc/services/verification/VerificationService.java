@@ -139,7 +139,7 @@ public class VerificationService {
      * <ul>
      * <li>200 - OK</li>
      * </ul>
-     * @return
+     * @return Response
      */
     @GET()
     @Path("/protected/status/")
@@ -158,8 +158,8 @@ public class VerificationService {
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * </ul>
-     * @return
-     * @throws Exception
+     * @return  Response
+     * @throws Exception when something went wrong
      */
     @POST()
     @Path("/protected/reset")
@@ -544,7 +544,7 @@ public class VerificationService {
      * <br>
      * <b>Description</b>: Adds a presentation policy alternative to a <tt>PresentationPolicyAlternatives</tt>.<br>
      * <br>
-     * <b>Path parameters<b>:
+     * <b>Path parameters</b>:
      * <ul>
      * <li>resource - Resource URI</li>
      * </ul>
@@ -812,17 +812,18 @@ public class VerificationService {
      * </ul>
      * <br>
      * <b>Response status</b>:
+     * <ul>
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * <li>404 - Either the resource, the attribute, the alias or the presentation policy could not be found.</li>
      * </ul>
-     * @param resource
-     * @param constantValue
-     * @param attribute
-     * @param predicate
-     * @param alias
-     * @param policyUid
-     * @return
+     * @param resource Resource URI
+     * @param constantValue Constant Value
+     * @param attribute Attribute
+     * @param predicate Predicate
+     * @param alias Alias
+     * @param policyUid UID of the presentation policy
+     * @return Response
      */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid}")
@@ -1339,7 +1340,7 @@ public class VerificationService {
      * <br>
      * <b>Path parameters</b>:
      * <ul>
-     * <li>resource - Resource URI the <tt>PresentationPolicyAlternatives</tt> are associated with</li>.
+     * <li>resource - Resource URI the <tt>PresentationPolicyAlternatives</tt> are associated with.</li>
      * </ul>
      * <br>
      * <b>Response status</b>:
@@ -1476,8 +1477,8 @@ public class VerificationService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>String</tt><br>
-     * @param resource
-     * @return
+     * @param resource Resource URI
+     * @return Response
      */
     @GET()
     @Path("/protected/redirectURI/get/{resource}")
@@ -1563,9 +1564,9 @@ public class VerificationService {
      * <br>
      * <b>Input type</b>: <tt>PresentationToken</tt><br>
      * <b>Return type</b>: <tt>String</tt><br>
-     * @param resource
-     * @param pt
-     * @return
+     * @param resource Resource URI
+     * @param pt PresentationToken
+     * @return Response
      */
     @POST()
     @Path("/requestResource2/{resource}/")
@@ -1653,8 +1654,10 @@ public class VerificationService {
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * </ul>
-     * @param accessToken
-     * @return
+     * <br>
+     * <b>Return type</b>: <tt>String</tt>
+     * @param accessToken Access Token
+     * @return Response
      */
     @GET()
     @Path("/verifyAccessToken/")

@@ -132,11 +132,13 @@ public class UserGUI {
      * @param uiContext
      *            Context string
      * @param backURL URL to go back.
+     * @param applicationData ApplicationData
+     * @param userServiceURL URL of the user service
      * @return Div (HTML)
-     * @throws JAXBException 
-     * @throws UnsupportedEncodingException 
-     * @throws UniformInterfaceException 
-     * @throws ClientHandlerException 
+     * @throws JAXBException on error
+     * @throws UnsupportedEncodingException on error 
+     * @throws UniformInterfaceException  on error
+     * @throws ClientHandlerException on error
      */
     public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
             int policyId, String uiContext, String applicationData, String backURL, String userServiceURL) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {

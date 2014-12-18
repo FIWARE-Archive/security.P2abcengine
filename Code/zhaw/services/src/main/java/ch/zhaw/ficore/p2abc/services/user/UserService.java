@@ -126,8 +126,8 @@ public class UserService {
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * </ul>
-     * @return
-     * @throws Exception
+     * @return Response
+     * @throws Exception when something went wrong
      */
     @POST()
     @Path("/reset")
@@ -507,8 +507,8 @@ public class UserService {
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>Credential</tt><br>
-     * @param credUid
-     * @return
+     * @param credUid UID of the credential
+     * @return Response
      */
     @GET()
     @Path("/credential/get/{credUid}")

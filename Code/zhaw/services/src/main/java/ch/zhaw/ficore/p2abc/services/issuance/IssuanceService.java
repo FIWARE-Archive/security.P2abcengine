@@ -130,8 +130,8 @@ public class IssuanceService {
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * </ul>
-     * @return
-     * @throws Exception
+     * @return Response
+     * @throws Exception when something went wrong
      */
     @POST()
     @Path("/protected/reset")
