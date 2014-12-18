@@ -150,13 +150,9 @@ public class UserGUI {
             div.appendChild(new H3().appendChild(new Text("Candidate")));
             enclosing.appendChild(div);
 
-            Table tbl = new Table();
-            Tr row = null;
-            Td td = null;
 
             div.appendChild(new H4().appendChild(new Text("Credentials "
                     + tc.credentials.size())));
-            div.appendChild(tbl);
 
             for (CredentialInUi c : tc.credentials) {
                 

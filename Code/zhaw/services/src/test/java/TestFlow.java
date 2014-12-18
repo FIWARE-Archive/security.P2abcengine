@@ -19,9 +19,7 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -31,9 +29,7 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
 import eu.abc4trust.xml.ApplicationData;
-import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
-import eu.abc4trust.xml.PresentationToken;
 
 public class TestFlow extends JerseyTest {
 
@@ -45,8 +41,6 @@ public class TestFlow extends JerseyTest {
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
-    private ObjectFactory of = new ObjectFactory();
-
     public TestFlow() throws Exception {
         super("ch.zhaw.ficore.p2abc");
         userServiceURL = getBaseURI() + userServiceURL;
@@ -271,8 +265,8 @@ public class TestFlow extends JerseyTest {
             ppapt += rPresentationToken;
             ppapt += "</PresentationPolicyAlternativesAndPresentationToken>";
 
-            //String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
-            //System.out.println(presentationTokenDescription);
+            String presentationTokenDescription = testVerifyTokenAgainstPolicy(ppapt);
+            System.out.println(presentationTokenDescription);
 
             /* Verification stuff 2 */
             System.out.println("***********");
