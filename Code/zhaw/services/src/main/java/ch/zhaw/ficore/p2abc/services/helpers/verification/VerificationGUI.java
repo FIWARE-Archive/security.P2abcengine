@@ -1,6 +1,8 @@
-package ch.zhaw.ficore.p2abc.services.helpers.issuer;
+package ch.zhaw.ficore.p2abc.services.helpers.verification;
 
 import javax.servlet.http.HttpServletRequest;
+
+
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
@@ -14,7 +16,7 @@ import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 
-public class IssuerGUI {
+public class VerificationGUI {
 
     private static String cssURL = "/css/style.css";
 
@@ -31,14 +33,13 @@ public class IssuerGUI {
 
     public static Body getBody(Div mainDiv) {
         Div containerDiv = new Div().setCSSClass("containerDiv");
-        containerDiv.appendChild(new H1().appendChild(new Text("Issuer")));
+        containerDiv.appendChild(new H1().appendChild(new Text("Verifier")));
         Div navDiv = new Div().setCSSClass("navDiv");
         containerDiv.appendChild(navDiv);
         containerDiv.appendChild(mainDiv);
-        navDiv.appendChild(new A().setHref("./obtainCredentialSpecification")
-                .appendChild(new Text("Obtain Credential Specification")));
         navDiv.appendChild(new A().setHref("./profile").appendChild(
                 new Text("Profile")));
+        navDiv.appendChild(new A().setHref("./loadSettings").appendChild(new Text("Load Settings")));
         navDiv.appendChild(new Div().setStyle("clear: both"));
         return new Body().appendChild(containerDiv);
     }

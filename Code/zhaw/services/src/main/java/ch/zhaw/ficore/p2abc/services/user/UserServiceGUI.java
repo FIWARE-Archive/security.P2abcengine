@@ -24,6 +24,7 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +56,7 @@ import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.hp.gagawa.java.elements.A;
+import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
@@ -76,12 +79,15 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
 import eu.abc4trust.returnTypes.UiIssuanceArguments;
 import eu.abc4trust.returnTypes.UiIssuanceReturn;
 import eu.abc4trust.returnTypes.UiPresentationArguments;
+import eu.abc4trust.returnTypes.UiPresentationReturn;
 import eu.abc4trust.returnTypes.ui.TokenCandidatePerPolicy;
 import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.AttributeDescription;
@@ -91,7 +97,10 @@ import eu.abc4trust.xml.CredentialDescription;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuanceMessage;
 import eu.abc4trust.xml.IssuanceMessageAndBoolean;
+import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
+import eu.abc4trust.xml.PresentationPolicyAlternatives;
+import eu.abc4trust.xml.PresentationToken;
 
 @Path("/user-gui")
 public class UserServiceGUI {
@@ -99,23 +108,30 @@ public class UserServiceGUI {
     private final ObjectFactory of = new ObjectFactory();
     private Logger log = LogManager.getLogger();
 
-    private static java.util.Map<String, String> uiContextToIssuerURL = new HashMap<String, String>();
-    
-    private static String userServiceURL = ServicesConfiguration.getUserServiceURL();
+    private static java.util.Map<String, String> uiContextToURL = new HashMap<String, String>();
+    private static java.util.Map<String, String> uiContextToResource = new HashMap<String, String>();
 
-    public static synchronized String getIssuerURL(String uiContext) {
-        return uiContextToIssuerURL.get(uiContext);
+    private static String userServiceURL = ServicesConfiguration
+            .getUserServiceURL();
+
+    public static synchronized String getURL(String uiContext) {
+        return uiContextToURL.get(uiContext);
     }
 
-    public static synchronized void putIssuerURL(String uiContext,
-            String issuerURL) {
-        uiContextToIssuerURL.put(uiContext, issuerURL);
+    public static synchronized void putURL(String uiContext, String url) {
+        uiContextToURL.put(uiContext, url);
     }
 
-   
+    public static synchronized String getResource(String uiContext) {
+        return uiContextToResource.get(uiContext);
+    }
+
+    public static synchronized void putResource(String uiContext, String url) {
+        uiContextToResource.put(uiContext, url);
+    }
+
     @Context
     HttpServletRequest request;
-    
 
     @GET()
     @Path("/profile/")
@@ -153,12 +169,230 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
-                    .build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
     
+    @GET()
+    @Path("/issuerParameters/")
+    public Response issuerParameters() {
+        log.entry();
+
+        try {
+            Settings settings = (Settings) RESTHelper.getRequest(
+                    userServiceURL + "getSettings/", Settings.class);
+
+            Html html = UserGUI.getHtmlPramble("Issuer Parameters", request);
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text(
+                    "Issuer Parameters")));
+
+            List<IssuerParameters> issuerParams = settings.issuerParametersList;
+
+            Table tbl = new Table();
+            Tr tr = null;
+
+            tr = new Tr()
+                    .appendChild(
+                            new Td().appendChild(new Text(
+                                    "Issuer Parameters Uid")))
+                    .appendChild(
+                            new Td().appendChild(new Text(
+                                    "Credential Specification Uid")))
+                    .appendChild(new Td().appendChild(new Text("Action")))
+                    .setCSSClass("heading");
+            tbl.appendChild(tr);
+
+            for (IssuerParameters ip : issuerParams) {
+                String cs = ip.getCredentialSpecUID().toString();
+                String is = ip.getParametersUID().toString();
+
+                Form f = new Form("./deleteIssuerParameters").setMethod("post")
+                        .setCSSClass("nopad");
+                f.appendChild(new Input().setType("hidden").setName("is")
+                        .setValue(is));
+                f.appendChild(new Input().setType("submit").setValue("Delete"));
+
+                tr = new Tr().appendChild(new Td().appendChild(new Text(is)))
+                        .appendChild(new Td().appendChild(new Text(cs)))
+                        .appendChild(new Td().appendChild(f));
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+
+            return Response.ok(html.write()).build();
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
     
+    @POST()
+    @Path("/deleteIssuerParameters") 
+    public Response deleteIssuerParameters(
+            @FormParam("is") String issuerParamsUid) {
+        log.entry();
+        
+        try {
+            RESTHelper.deleteRequest(userServiceURL + "issuerParameters/delete/"
+                    + URLEncoder.encode(issuerParamsUid, "UTF-8"));
+            return issuerParameters();
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+
+    @POST()
+    @Path("/requestResource3/")
+    public Response requestResource3(@FormParam("policyId") String policyId,
+            @FormParam("candidateId") String candidateId,
+            @FormParam("pseudonymId") String pseudonymId,
+            @FormParam("uic") String uiContext,
+            @FormParam("apdata") String applicationData) {
+        log.entry();
+
+        try {
+            UiPresentationReturn uir = new UiPresentationReturn();
+            uir.uiContext = new URI(uiContext);
+            uir.chosenPresentationToken = Integer.parseInt(candidateId);
+            uir.chosenPseudonymList = Integer.parseInt(pseudonymId);
+            uir.metadataToChange = new HashMap<>();
+
+            PresentationToken pt = (PresentationToken) RESTHelper.postRequest(
+                    userServiceURL + "createPresentationTokenUi",
+                    RESTHelper.toXML(UiPresentationReturn.class, uir),
+                    PresentationToken.class);
+            
+            log.info("Get " + uiContext + "," + getResource(uiContext));
+
+            String redirectURI = (String) RESTHelper.postRequest(
+                    getURL(uiContext)
+                            + "/requestResource2/"
+                            + URLEncoder
+                                    .encode(getResource(uiContext), "UTF-8"),
+                    RESTHelper.toXML(PresentationToken.class,
+                            of.createPresentationToken(pt)));
+
+            Html html = UserGUI.getHtmlPramble("Request Resource [3]", request);
+            Div mainDiv = new Div();
+            html.appendChild(UserGUI.getBody(mainDiv));
+
+            P p = new P()
+                    .setCSSClass("info")
+                    .appendChild(
+                            new Text(
+                                    "You have successfully verified your credential "
+                                            + "at the verifier. Please follow the link below to access the resource you requested."));
+
+            mainDiv.appendChild(p);
+
+            A a = new A().setHref(redirectURI).appendChild(
+                    new Text(redirectURI));
+            mainDiv.appendChild(a);
+
+            return log.exit(Response.ok(html.write()).build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+
+    @POST()
+    @Path("/requestResource2")
+    public Response requestResource(@FormParam("vu") String verificationURL,
+            @FormParam("r") String resource) {
+        log.entry();
+
+        try {
+
+            PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper
+                    .getRequest(verificationURL + "/requestResource/"
+                            + URLEncoder.encode(resource, "UTF-8"),
+                            PresentationPolicyAlternatives.class);
+
+            UiPresentationArguments args = (UiPresentationArguments) RESTHelper
+                    .postRequest(
+                            userServiceURL + "createPresentationToken",
+                            RESTHelper.toXML(
+                                    PresentationPolicyAlternatives.class,
+                                    of.createPresentationPolicyAlternatives(ppa)),
+                            UiPresentationArguments.class);
+
+            putURL(args.uiContext.toString(), verificationURL);
+            putResource(args.uiContext.toString(), resource);
+            
+            log.info("Put " + args.uiContext.toString() + "," + resource);
+
+            return this.presentationArguments(ObjectFactoryReturnTypes
+                    .wrap(args));
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+
+    @GET()
+    @Path("/requestResource/")
+    public Response requestResource() {
+        log.entry();
+
+        try {
+            Html html = UserGUI.getHtmlPramble("Request resource [1]", request);
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+
+            mainDiv.appendChild(new H2().appendChild(new Text(
+                    "Request resource")));
+
+            Form f = new Form("./requestResource2").setMethod("post");
+            Table tbl = new Table();
+            Tr tr = null;
+
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Label().appendChild(new Text(
+                            "Verification URL:")))).appendChild(
+                    new Td().appendChild(new Input().setType("text").setName(
+                            "vu")));
+            tbl.appendChild(tr);
+            tr = new Tr().appendChild(
+                    new Td().appendChild(new Label().appendChild(new Text(
+                            "Resource:")))).appendChild(
+                    new Td().appendChild(new Input().setType("text").setName(
+                            "r")));
+            tbl.appendChild(tr);
+            f.appendChild(tbl);
+            f.appendChild(new Input().setType("submit").setValue("Request"));
+            mainDiv.appendChild(f);
+            return log.exit(Response.ok(html.write()).build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
 
     @GET()
     @Path("/credentialSpecifications/")
@@ -166,13 +400,10 @@ public class UserServiceGUI {
         log.entry();
 
         try {
-            Settings settings = 
-                    (Settings) RESTHelper.getRequest(userServiceURL + "getSettings/", 
-                    Settings.class);
+            Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
+                    + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
-
-            
 
             Html html = UserGUI.getHtmlPramble("Profile", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -225,12 +456,11 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
-                    .build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
 
-    
     @GET()
     @Path("/credentials/")
     public Response credentials() {
@@ -238,9 +468,9 @@ public class UserServiceGUI {
         log.entry();
 
         try {
-            CredentialCollection credCol = 
-                    (CredentialCollection) RESTHelper.getRequest(userServiceURL + "credential/list", 
-                    CredentialCollection.class);
+            CredentialCollection credCol = (CredentialCollection) RESTHelper
+                    .getRequest(userServiceURL + "credential/list",
+                            CredentialCollection.class);
 
             List<Credential> credentials = credCol.credentials;
 
@@ -253,33 +483,7 @@ public class UserServiceGUI {
 
             for (Credential cred : credentials) {
                 URI uri = cred.getCredentialDescription().getCredentialUID();
-                Div credDiv = new Div().setCSSClass("credDiv");
-                mainDiv.appendChild(credDiv);
-                CredentialDescription credDesc = cred
-                        .getCredentialDescription();
-                String credSpec = credDesc.getCredentialSpecificationUID()
-                        .toString();
-                credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                        + " (" + uri.toString() + ")")));
-                List<Attribute> attribs = credDesc.getAttribute();
-                Table tbl = new Table();
-                credDiv.appendChild(tbl);
-                Tr tr = null;
-                tr = new Tr().setCSSClass("heading")
-                        .appendChild(new Td().appendChild(new Text("Name")))
-                        .appendChild(new Td().appendChild(new Text("Value")));
-                tbl.appendChild(tr);
-                for (Attribute attrib : attribs) {
-                    AttributeDescription attribDesc = attrib
-                            .getAttributeDescription();
-                    String name = attribDesc.getFriendlyAttributeName().get(0)
-                            .getValue();
-                    tr = new Tr().appendChild(
-                            new Td().appendChild(new Text(name))).appendChild(
-                            new Td().appendChild(new Text(attrib
-                                    .getAttributeValue().toString())));
-                    tbl.appendChild(tr);
-                }
+                Div credDiv = UserGUI.getDivForCredential(cred);
                 Form f = new Form("./deleteCredential");
                 f.setMethod("post");
                 credDiv.appendChild(f);
@@ -287,6 +491,7 @@ public class UserServiceGUI {
                         "Delete credential"));
                 f.appendChild(new Input().setType("hidden").setName("credUid")
                         .setValue(uri.toString()));
+                mainDiv.appendChild(credDiv);
             }
 
             return log.exit(Response.ok(html.write()).build());
@@ -295,16 +500,16 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
-                    .build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/deleteCredential/")
     public Response deleteCredential(@FormParam("credUid") String credUid) {
         try {
-            
+
             RESTHelper.deleteRequest(userServiceURL + "credential/delete/"
                     + URLEncoder.encode(credUid, "UTF-8"));
 
@@ -327,15 +532,15 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
-                    .build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) {
+    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
         UiIssuanceArguments args = args_.getValue().uia;
         if (args.tokenCandidates.size() == 1
                 && args.tokenCandidates.get(0).credentials.size() == 0) {
@@ -382,7 +587,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(new H1().appendChild(new Text(
                     "Obtain Credential")));
             Div div = UserGUI.getDivForTokenCandidates(args.tokenCandidates, 0,
-                    args.uiContext.toString());
+                    args.uiContext.toString(), "", "", userServiceURL);
             mainDiv.appendChild(div);
             return Response.ok(html.write()).build();
         }
@@ -429,12 +634,16 @@ public class UserServiceGUI {
 
             IssuanceMessage firstIssuanceMessage = issuanceMessageAndBoolean
                     .getIssuanceMessage();
-            
-            IssuanceReturn issuanceReturn = (IssuanceReturn) RESTHelper.postRequest(userServiceURL + "issuanceProtocolStep",
-                    RESTHelper.toXML(IssuanceMessage.class, of.createIssuanceMessage(firstIssuanceMessage)),
-                    IssuanceReturn.class);
 
-            putIssuerURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
+            IssuanceReturn issuanceReturn = (IssuanceReturn) RESTHelper
+                    .postRequest(
+                            userServiceURL + "issuanceProtocolStep",
+                            RESTHelper.toXML(
+                                    IssuanceMessage.class,
+                                    of.createIssuanceMessage(firstIssuanceMessage)),
+                            IssuanceReturn.class);
+
+            putURL(issuanceReturn.uia.uiContext.toString(), issuerUrl);
 
             return issuanceArguments(ObjectFactoryReturnTypes
                     .wrap(issuanceReturn));
@@ -443,8 +652,8 @@ public class UserServiceGUI {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log), request).write())
-                    .build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
 
@@ -460,7 +669,7 @@ public class UserServiceGUI {
      * @param uiContext
      *            Context identifier
      * @return Response
-     */ 
+     */
     @POST
     @Path("/obtainCredential3")
     public Response obtainCredential3(@FormParam("policyId") String policyId,
@@ -473,14 +682,12 @@ public class UserServiceGUI {
             uir.chosenIssuanceToken = Integer.parseInt(candidateId);
             uir.chosenPseudonymList = Integer.parseInt(pseudonymId);
 
-            String issuerUrl = getIssuerURL(uiContext);
+            String issuerUrl = getURL(uiContext);
 
-            
-            IssuanceMessage secondIssuanceMessage = (IssuanceMessage) RESTHelper.postRequest(
-                    userServiceURL + "issuanceProtocolStepUi",
-                    RESTHelper.toXML(UiIssuanceReturn.class, uir),
-                    IssuanceMessage.class);
-
+            IssuanceMessage secondIssuanceMessage = (IssuanceMessage) RESTHelper
+                    .postRequest(userServiceURL + "issuanceProtocolStepUi",
+                            RESTHelper.toXML(UiIssuanceReturn.class, uir),
+                            IssuanceMessage.class);
 
             IssuanceMessageAndBoolean thirdIssuanceMessageAndBoolean = (IssuanceMessageAndBoolean) RESTHelper
                     .postRequest(
@@ -492,12 +699,14 @@ public class UserServiceGUI {
             IssuanceMessage thirdIssuanceMessage = thirdIssuanceMessageAndBoolean
                     .getIssuanceMessage();
 
-            
             RESTHelper.postRequest(
-                    userServiceURL + "issuanceProtocolStep", 
-                    RESTHelper.toXML(IssuanceMessage.class, of.createIssuanceMessage(thirdIssuanceMessage)), IssuanceReturn.class);
+                    userServiceURL + "issuanceProtocolStep",
+                    RESTHelper.toXML(IssuanceMessage.class,
+                            of.createIssuanceMessage(thirdIssuanceMessage)),
+                    IssuanceReturn.class);
 
-            Html html = UserGUI.getHtmlPramble("Obtain Credential [3]", request);
+            Html html = UserGUI
+                    .getHtmlPramble("Obtain Credential [3]", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             mainDiv.appendChild(new H2().appendChild(new Text(
                     "Obtain Credential")));
@@ -511,10 +720,14 @@ public class UserServiceGUI {
             return Response.ok(html.write()).build();
         } catch (Exception e) {
             log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
 
-    } 
+    }
 
     /**
      * This is the entry point for the User to obtain a credential from an
@@ -527,7 +740,8 @@ public class UserServiceGUI {
     @Path("/obtainCredential/")
     public Response obtainCredential() {
         try {
-            Html html = UserGUI.getHtmlPramble("Obtain Credential [1]", request);
+            Html html = UserGUI
+                    .getHtmlPramble("Obtain Credential [1]", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(UserGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text(
@@ -575,13 +789,11 @@ public class UserServiceGUI {
             f.appendChild(new Input().setType("submit").setValue("Obtain"));
 
             mainDiv.appendChild(f);
-            
-            Settings settings = 
-                    (Settings) RESTHelper.getRequest(userServiceURL + "getSettings/", 
-                    Settings.class);
+
+            Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
+                    + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
-
 
             for (CredentialSpecification credSpec : credSpecs) {
                 URI uri = credSpec.getSpecificationUID();
@@ -592,7 +804,11 @@ public class UserServiceGUI {
             return Response.ok(html.write()).build();
         } catch (Exception e) {
             log.catching(e);
-            return log.exit(ExceptionDumper.dumpException(e, log));
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
 
@@ -600,30 +816,94 @@ public class UserServiceGUI {
     @Path("/presentationArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response presentationArguments(
-            JAXBElement<UiPresentationArguments> args_) {
+            JAXBElement<UiPresentationArguments> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
         UiPresentationArguments args = args_.getValue();
-        Html html = new Html();
-        Head head = new Head();
-        head.appendChild(new Title()
-                .appendChild(new Text("Candidate Selection")));
-
-        html.appendChild(head);
-
+        Html html = UserGUI.getHtmlPramble("Candidate selection", request);
         Div mainDiv = new Div();
-
-        html.appendChild(new Body().appendChild(mainDiv));
+        html.appendChild(UserGUI.getBody(mainDiv));
 
         for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
-
+            List<Object> content = tcpp.policy.getMessage().getApplicationData().getContent();
+            if(content == null || content.size() < 1)
+                throw new RuntimeException("Expecting application data!");
+            content = tcpp.policy.getMessage().getVerifierIdentity().getContent();
+            if(content == null || content.size() < 1)
+                throw new RuntimeException("Expecting verifier identity!");
+            String vi = (String)content.get(0);
+            
+            mainDiv.appendChild(new H2().appendChild(new Text(tcpp.policy.getPolicyUID().toString())));
+            mainDiv.appendChild(new B().appendChild(new Text("Verifier Identity: ")));
+            mainDiv.appendChild(new Text(vi));
+            
+            
             Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates,
-                    tcpp.policyId, args.uiContext.toString());
+                    tcpp.policyId, args.uiContext.toString(), (String)content.get(0),
+                    "./requestResource3", userServiceURL);
 
             mainDiv.appendChild(div);
         }
 
         return Response.ok(html.write()).build();
     }
-
     
+    @POST()
+    @Path("/loadSettings2")
+    public Response loadSettings2(@FormParam("url") String url) {
+        log.entry();
+        
+        try {
+            RESTHelper.getRequest(userServiceURL + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            
+            Html html = UserGUI.getHtmlPramble("Load Settings", request);
+            Div mainDiv = new Div();
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Load Settings")));
+            P p = new P().setCSSClass("success");
+            p.appendChild(new Text("You've successfully downloaded the settings."));
+            mainDiv.appendChild(p);
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/loadSettings")
+    public Response loadSettings() {
+        log.entry();
+        
+        try {
+            Html html = UserGUI.getHtmlPramble("Load Settings", request);
+            Div mainDiv = new Div();
+            html.appendChild(UserGUI.getBody(mainDiv));
+            mainDiv.appendChild(new H2().appendChild(new Text("Load Settings")));
+            P p = new P().setCSSClass("info");
+            p.appendChild(new Text("Download settings from a settings provider or issuer. Please be careful to only" +
+            		" download settings from trusted sources as this will overwrite certain critical settings."));
+            mainDiv.appendChild(p);
+            Form f = new Form("./loadSettings2").setMethod("post");
+            Table tbl = new Table();
+            tbl.appendChild(new Tr().appendChild(new Td().appendChild(new Label().appendChild(new Text("Settings provider URL:"))))
+                    .appendChild(new Td().appendChild(new Input().setType("text").setName("url"))));
+            f.appendChild(tbl);
+            f.appendChild(new Input().setType("Submit").setValue("Download settings"));
+            mainDiv.appendChild(f);
+            return log.exit(Response.ok(html.write()).build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
 
 }

@@ -27,7 +27,8 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
     /**
      * Constructor
      * 
-     * @param configuration Configuration (Issuance)
+     * @param configuration
+     *            Configuration (Issuance)
      */
     public JdbcAttributeInfoProvider(IssuanceConfiguration configuration) {
         super(configuration);
@@ -80,13 +81,13 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
                         || type == java.sql.Types.SMALLINT) {
                     aiCol.addAttribute(rs.getString(4), "xs:integer",
                             "urn:abc4trust:1.0:encoding:integer:signed");
-                  
-                } else if (type == java.sql.Types.TIMESTAMP || type == java.sql.Types.TIME ||
-                        type == java.sql.Types.DATE) {
+
+                } else if (type == java.sql.Types.TIMESTAMP
+                        || type == java.sql.Types.TIME
+                        || type == java.sql.Types.DATE) {
                     aiCol.addAttribute(rs.getString(4), "xs:dateTime",
                             "urn:abc4trust:1.0:encoding:dateTime:unix:unsigned");
-                }
-                else {
+                } else {
                     throw new RuntimeException("Unknown type: " + type);
                 }
             }

@@ -4,10 +4,10 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<security-constraint> 
    <!-- web resources that are protected -->
-   <web-resource-collection>
+   <!-- <web-resource-collection>
      <web-resource-name>A Protected Page</web-resource-name>
      <url-pattern>/issuance/protected/*</url-pattern>
-   </web-resource-collection>
+   </web-resource-collection> -->
 
    <auth-constraint>
      <!-- role-name indicates roles that are allowed
@@ -29,6 +29,14 @@
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>ch.zhaw.ficore.p2abc.services</param-value>
         </init-param>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>ch.zhaw.ficore.p2abc.services</param-value>
+		</init-param>
+		<init-param>
+   	        <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+    	    <param-value>ch.zhaw.ficore.p2abc.services.LoggingFilter</param-value>
+	    </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
@@ -46,6 +54,10 @@
 	<servlet-mapping>
         <servlet-name>FI-Core Privacy Services</servlet-name>
         <url-pattern>/user/**</url-pattern>
+    </servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>FI-Core Privacy Services</servlet-name>
+        <url-pattern>/demo-resource/**</url-pattern>
     </servlet-mapping>
 	<servlet-mapping>
     <servlet-name>default</servlet-name>
@@ -67,6 +79,12 @@
 		<env-entry-value> true </env-entry-value>
 		<env-entry-type> java.lang.Boolean </env-entry-type>
 	</env-entry>
+	<env-entry>
+		<description>Identity string of the verifier</description>
+		<env-entry-name>cfg/verifierIdentity</env-entry-name>
+		<env-entry-value>unknown</env-entry-value>
+		<env-entry-type>java.lang.String</env-entry-type>
+	</env-entry>
     <env-entry>
 		<description> BindQuery </description>
 		<env-entry-name>cfg/bindQuery</env-entry-name>
@@ -83,6 +101,12 @@
 		<description> UserServiceURL </description>
 		<env-entry-name>cfg/userServiceURL</env-entry-name>
 		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/user/</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<description> VerificationServiceURL </description>
+		<env-entry-name>cfg/verificationServiceURL</env-entry-name>
+		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/verification/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>

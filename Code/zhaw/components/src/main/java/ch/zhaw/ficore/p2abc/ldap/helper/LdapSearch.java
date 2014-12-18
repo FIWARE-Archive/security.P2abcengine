@@ -45,9 +45,11 @@ public class LdapSearch {
     /**
      * Perform a search using a specified filter-Expression
      * 
-     * @param filter the filter expression to use
+     * @param filter
+     *            the filter expression to use
      * @return NamingEnumeration
-     * @throws NamingException on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public NamingEnumeration<SearchResult> search(String filter)
             throws NamingException {
@@ -57,11 +59,15 @@ public class LdapSearch {
     /**
      * Ask for an attribute.
      * 
-     * @param filter the filter to use
-     * @param attr the attribute to search for
+     * @param filter
+     *            the filter to use
+     * @param attr
+     *            the attribute to search for
      * @return Object the object associated with that attribute
-     * @throws LdapException on an LDAP error
-     * @throws NamingException on an LDAP error
+     * @throws LdapException
+     *             on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public Object getAttribute(String filter, String attr)
             throws LdapException, NamingException {
@@ -71,11 +77,14 @@ public class LdapSearch {
     /**
      * Returs true if an object matches the filter-Expression.
      * 
-     * @param filter the filter to use
+     * @param filter
+     *            the filter to use
      * @return true if an object exists that matches the filter expression,
-     *     false otherwise
-     * @throws LdapException on an LDAP error
-     * @throws NamingException on an LDAP error
+     *         false otherwise
+     * @throws LdapException
+     *             on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public boolean doesExist(String filter) throws LdapException,
             NamingException {
@@ -87,9 +96,11 @@ public class LdapSearch {
      * 
      * @param name
      *            (context)
-     * @param filter the filter expression to use
+     * @param filter
+     *            the filter expression to use
      * @return a number of results
-     * @throws NamingException on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public NamingEnumeration<SearchResult> search(String name, String filter)
             throws NamingException {
@@ -102,12 +113,17 @@ public class LdapSearch {
      * Ask for an attribute of an object that matches the specified
      * filter-Expression.
      * 
-     * @param name the name of the object
-     * @param filter the filter expression to use
-     * @param attr ate attribute to look for
+     * @param name
+     *            the name of the object
+     * @param filter
+     *            the filter expression to use
+     * @param attr
+     *            ate attribute to look for
      * @return the matched object
-     * @throws LdapException on an LDAP error
-     * @throws NamingException on an LDAP error
+     * @throws LdapException
+     *             on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public Object getAttribute(String name, String filter, String attr)
             throws LdapException, NamingException {
@@ -123,11 +139,15 @@ public class LdapSearch {
     /**
      * Returns true if the specified filter-Expression matches something.
      * 
-     * @param name the name of the object
-     * @param filter the filter expression to use
+     * @param name
+     *            the name of the object
+     * @param filter
+     *            the filter expression to use
      * @return true if the specified object exists, false otherwise
-     * @throws LdapException on an LDAP error
-     * @throws NamingException on an LDAP error
+     * @throws LdapException
+     *             on an LDAP error
+     * @throws NamingException
+     *             on an LDAP error
      */
     public boolean doesExist(String name, String filter) throws LdapException,
             NamingException {

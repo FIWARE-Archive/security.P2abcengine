@@ -9,16 +9,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import eu.abc4trust.xml.Credential;
 
-@XmlRootElement(name = "credential-collection", namespace="http://abc4trust.eu/wp2/abcschemav1.0")
+@XmlRootElement(name = "credential-collection", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
 public class CredentialCollection {
 
-    @XmlElementWrapper(name = "credentials", required = true, namespace="http://abc4trust.eu/wp2/abcschemav1.0")
-    @XmlElement(name = "credential", namespace="http://abc4trust.eu/wp2/abcschemav1.0")
+    @XmlElementWrapper(name = "credentials", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @XmlElement(name = "credential", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     public List<Credential> credentials = new ArrayList<Credential>();
-    
-  
-    
+
     public CredentialCollection() {
-        
+
     }
 }

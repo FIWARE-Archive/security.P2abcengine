@@ -37,17 +37,24 @@ public class ServicesConfiguration {
     private static Logger logger = LogManager.getLogger();
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
-    
+
     private static String issuanceServiceURL = "http://localhost/";
-    
+
     private static String userServiceURL = "http://localhost/";
     
+    private static String verificationServiceURL = "http://localhost/";
+
     private static String restAuthUser = "user";
-    
+
     private static String restAuthPassword = "password";
     
+    private static String verifierIdentity = "unknown";
 
     static {
+        staticInit();
+    }
+    
+    public static synchronized void staticInit() {
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:/comp/env");
@@ -63,11 +70,17 @@ public class ServicesConfiguration {
                             .lookup("cfg/Source/authentication"));
 
             String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
-            
-            issuanceServiceURL = (String) envCtx.lookup("cfg/issuanceServiceURL");
+
+            issuanceServiceURL = (String) envCtx
+                    .lookup("cfg/issuanceServiceURL");
             userServiceURL = (String) envCtx.lookup("cfg/userServiceURL");
+            verificationServiceURL = (String) envCtx.lookup("cfg/verificationServiceURL");
             restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
             restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
+            verifierIdentity = (String) envCtx.lookup("cfg/verifierIdentity");
+            
+            System.out.println("restAuthUser :=" + restAuthUser);
+            logger.info("restAuthUser := " + restAuthUser);
 
             IssuanceConfiguration cfgData = new IssuanceConfiguration(
                     sourceAttributes, cpAttributes, sourceAuthentication,
@@ -79,8 +92,6 @@ public class ServicesConfiguration {
         }
     }
 
-   
-
     /**
      * URI base The URI base is used as a prefix to URIs for example in the
      * generation of CredentialSpecifications.
@@ -90,17 +101,25 @@ public class ServicesConfiguration {
     public static synchronized String getIssuanceServiceURL() {
         return issuanceServiceURL;
     }
-    
+
     public static synchronized String getUserServiceURL() {
         return userServiceURL;
     }
     
+    public static synchronized String getVerificationServiceURL() {
+        return verificationServiceURL;
+    }
+
     public static synchronized String getRestAuthUser() {
         return restAuthUser;
     }
-    
+
     public static synchronized String getRestAuthPassword() {
         return restAuthPassword;
+    }
+    
+    public static synchronized String getVerifierIdentity() {
+        return verifierIdentity;
     }
 
     /**

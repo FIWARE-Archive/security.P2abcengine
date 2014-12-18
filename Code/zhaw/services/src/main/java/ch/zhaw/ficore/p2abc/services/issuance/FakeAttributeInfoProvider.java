@@ -14,7 +14,8 @@ public class FakeAttributeInfoProvider extends AttributeInfoProvider {
     /**
      * Constructor
      * 
-     * @param configuration Configuration (Issuance)
+     * @param configuration
+     *            Configuration (Issuance)
      */
     public FakeAttributeInfoProvider(IssuanceConfiguration configuration) {
         super(configuration);

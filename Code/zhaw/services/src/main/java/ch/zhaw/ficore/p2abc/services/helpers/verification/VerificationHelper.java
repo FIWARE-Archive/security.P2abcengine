@@ -33,6 +33,11 @@ import java.util.Random;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ch.zhaw.ficore.p2abc.services.verification.VerificationStorage;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -45,6 +50,7 @@ import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyManagerException;
+import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
 import eu.abc4trust.xml.ApplicationData;
 import eu.abc4trust.xml.CredentialInPolicy;
@@ -59,6 +65,7 @@ import eu.abc4trust.xml.PresentationPolicy;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.RevocationInformation;
+import eu.abc4trust.xml.VerifierIdentity;
 import eu.abc4trust.xml.util.XmlUtils;
 
 /**
@@ -76,10 +83,9 @@ public class VerificationHelper extends AbstractHelper {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
         }
-        System.out.println("VerificationHelper.initInstance ([])");
+
         instance = new VerificationHelper(cryptoEngine, modules);
 
-        System.out.println("VerificationHelper.initInstance : DONE");
 
         return instance;
     }
@@ -95,17 +101,19 @@ public class VerificationHelper extends AbstractHelper {
      * @return initialized instance of VerificationHelper
      */
     public static synchronized VerificationHelper getInstance() {
-        System.out.println("VerificationHelper.getInstance : " + instance);
+
         if (instance == null) {
             throw new IllegalStateException(
                     "initInstance not called before using VerificationHelper!");
         }
         return instance;
     }
-
+    
     public VerifierAbcEngine engine;
     private Random random;
-
+    public VerificationStorage verificationStorage;
+    public KeyStorage keyStorage;
+    private Logger logger = LogManager.getLogger();
 
     /**
      * holds map resources by filename (without path) and the bytes of resource
@@ -128,7 +136,7 @@ public class VerificationHelper extends AbstractHelper {
      */
     private VerificationHelper(CryptoEngine cryptoEngine, Module... modules)
             throws URISyntaxException {
-        System.out.println("VerificationHelper : create instance "
+        logger.info("VerificationHelper : create instance "
                 + cryptoEngine);
         this.cryptoEngine = cryptoEngine;
         try {
@@ -141,9 +149,11 @@ public class VerificationHelper extends AbstractHelper {
 
             this.engine = new SynchronizedVerifierAbcEngineImpl(e);
             this.keyManager = injector.getInstance(KeyManager.class);
+            this.keyStorage = injector.getInstance(KeyStorage.class);
+            this.verificationStorage = injector
+                    .getInstance(VerificationStorage.class);
 
             this.random = injector.getInstance(Random.class);
-
 
             if ((cryptoEngine == CryptoEngine.UPROVE)
                     || (cryptoEngine == CryptoEngine.BRIDGED)) {
@@ -160,11 +170,15 @@ public class VerificationHelper extends AbstractHelper {
     /**
      * Adds extra policy resorces to VerificationHelper
      * 
-     * @param presentationPolicyAlternatives PresentationPolicyAlternatives
-     * @param applicationData application data
-     * @param revInfoUIDs Map of revocation info uids
+     * @param presentationPolicyAlternatives
+     *            PresentationPolicyAlternatives
+     * @param applicationData
+     *            application data
+     * @param revInfoUIDs
+     *            Map of revocation info uids
      * @return PresentationPolicyAlternatives
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
             PresentationPolicyAlternatives presentationPolicyAlternatives,
@@ -183,14 +197,16 @@ public class VerificationHelper extends AbstractHelper {
      *            name of policy resource (without path)
      * @param applicationData
      *            if present - will be inserted on all presentation policies
-     * @param nonce Nonce
+     * @param nonce
+     *            Nonce
      * @return PresentationPolicyAlternatives - patched with applicationData -
      *         marshaled to String
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public String createPresentationPolicy_String(String policyName,
             byte[] nonce, String applicationData) throws Exception {
-        System.out.println("VerificationHelper - create policy String : "
+        logger.info("VerificationHelper - create policy String : "
                 + policyName + " - data : " + applicationData);
 
         PresentationPolicyAlternatives pp_alternatives = this
@@ -201,7 +217,7 @@ public class VerificationHelper extends AbstractHelper {
 
         String xml = XmlUtils.toXml(result, false);
 
-        System.out.println(" - createPolicy - return  XML");
+        logger.info(" - createPolicy - return  XML");
 
         return xml;
 
@@ -222,14 +238,16 @@ public class VerificationHelper extends AbstractHelper {
      * @param revInfoUIDs
      *            if present - will try to fetch revocation information based on
      *            the uids.
-     * @param nonce Nonce
+     * @param nonce
+     *            Nonce
      * @return PresentationPolicyAlternatives - patched with applicationData
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
             String policyName, byte[] nonce, String applicationData,
             Map<URI, URI> revInfoUIDs) throws Exception {
-        System.out.println("VerificationHelper - create policy : " + policyName
+        logger.info("VerificationHelper - create policy : " + policyName
                 + " - data : " + applicationData);
 
         PresentationPolicyAlternatives pp_alternatives;
@@ -261,13 +279,35 @@ public class VerificationHelper extends AbstractHelper {
     public static boolean cacheRevocationInformation = false;
     public static long REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES = 60;
     private static Map<URI, RevocationInformation> revocationInformationCache = new HashMap<URI, RevocationInformation>();
+    
+    public PresentationPolicyAlternatives modifyPPA(
+            PresentationPolicyAlternatives ppa, String applicationData, byte[] nonce, String verifierIdentity) {
+        logger.entry();
+        
+        for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+            Message m = pp.getMessage();
+            m.setNonce(nonce);
+            ApplicationData apd = m.getApplicationData();
+            apd.getContent().clear();
+            apd.getContent().add(applicationData);
+            VerifierIdentity vi = m.getVerifierIdentity();
+            if(vi == null) {
+                m.setVerifierIdentity(new VerifierIdentity());
+                vi = m.getVerifierIdentity();
+            }
+            vi.getContent().clear();
+            vi.getContent().add(verifierIdentity);
+        }
+        
+        return logger.exit(ppa);
+    }
 
     private PresentationPolicyAlternatives modifyPPA(
             PresentationPolicyAlternatives pp_alternatives,
             String applicationData, byte[] nonce, Map<URI, URI> revInfoUIDs)
             throws Exception {
 
-        System.out.println("Modify PPA... ");
+        logger.info("Modify PPA... ");
 
         // try to make sure that RevocationInformation is only fetch once per
         // RevAuth
@@ -282,7 +322,7 @@ public class VerificationHelper extends AbstractHelper {
             // set application data
             if (applicationData != null) {
 
-                System.out.println("- SET APPLICATION DATA : "
+                logger.info("- SET APPLICATION DATA : "
                         + applicationData);
                 // message.setApplicationData(applicationData.getBytes());
                 ApplicationData a = message.getApplicationData();
@@ -292,7 +332,7 @@ public class VerificationHelper extends AbstractHelper {
 
             // REVOCATION!
             for (CredentialInPolicy cred : pp.getCredential()) {
-                System.out.println("- check Credential In Policy - alias : "
+                logger.info("- check Credential In Policy - alias : "
                         + cred.getAlias());
                 List<URI> credSpecURIList = cred
                         .getCredentialSpecAlternatives().getCredentialSpecUID();
@@ -303,18 +343,16 @@ public class VerificationHelper extends AbstractHelper {
                         credSpec = this.keyManager
                                 .getCredentialSpecification(uri);
                         if (credSpec.isRevocable()) {
-                            System.out
-                                    .println(" - credentialSpecification is Revocable : "
+                            logger.info(" - credentialSpecification is Revocable : "
                                             + uri);
                             containsRevoceableCredential = true;
                             break;
                         } else {
-                            System.out
-                                    .println(" - credentialSpecification is NOT Revocable : "
+                            logger.info(" - credentialSpecification is NOT Revocable : "
                                             + uri);
                         }
                     } catch (KeyManagerException ignore) {
-                        System.out.println(" - ERROR credspec not registed : "
+                        logger.info(" - ERROR credspec not registed : "
                                 + uri);
                     }
                 }
@@ -322,7 +360,7 @@ public class VerificationHelper extends AbstractHelper {
                     IssuerAlternatives ia = cred.getIssuerAlternatives();
                     for (IssuerParametersUID ipUid : ia
                             .getIssuerParametersUID()) {
-                        System.out.println(" - check issuer parameter : "
+                        logger.info(" - check issuer parameter : "
                                 + ipUid.getValue() + " : "
                                 + ipUid.getRevocationInformationUID());
                         IssuerParameters ip = this.keyManager
@@ -332,8 +370,7 @@ public class VerificationHelper extends AbstractHelper {
                             // issuer params / credspec has revocation...
                             RevocationInformation ri;
                             if (revInfoUIDs != null) {
-                                System.out
-                                        .println("Trying to get revInfo under "
+                                logger.info("Trying to get revInfo under "
                                                 + credSpec
                                                         .getSpecificationUID());
                                 URI revInformationUid = revInfoUIDs
@@ -341,20 +378,18 @@ public class VerificationHelper extends AbstractHelper {
                                 ri = this.revocationInformationStore
                                         .get(revInformationUid);
                                 if (ri != null) {
-                                    System.out.println("Got revInfo: "
+                                    logger.info("Got revInfo: "
                                             + ri.getInformationUID()
                                             + ", which should be the same as: "
                                             + revInformationUid);
                                 } else {
-                                    System.out
-                                            .println("Revocation information is not there");
+                                    logger.info("Revocation information is not there");
                                 }
                             } else {
                                 ri = revocationInformationMap.get(ip
                                         .getRevocationParametersUID());
                                 if (ri != null) {
-                                    System.out
-                                            .println(" - revocationInformation found in (reuse) map");
+                                    logger.info(" - revocationInformation found in (reuse) map");
                                 }
                             }
                             if ((ri == null) && cacheRevocationInformation) {
@@ -364,8 +399,7 @@ public class VerificationHelper extends AbstractHelper {
                                     Calendar now = Calendar.getInstance();
                                     if (now.getTimeInMillis() > ri.getExpires()
                                             .getTimeInMillis()) {
-                                        System.out
-                                                .println(" - revocationInformation has expired! - now : "
+                                        logger.info(" - revocationInformation has expired! - now : "
                                                         + now.getTime()
                                                         + " - created : "
                                                         + ri.getCreated()
@@ -378,8 +412,7 @@ public class VerificationHelper extends AbstractHelper {
                                         long millis_to_expiration = (ri
                                                 .getExpires().getTimeInMillis() - (REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES * 60 * 1000))
                                                 - now.getTimeInMillis();
-                                        System.out
-                                                .println(" - revocationInformation was invalidated ! - now : "
+                                        logger.info(" - revocationInformation was invalidated ! - now : "
                                                         + now.getTime()
                                                         + " - created : "
                                                         + ri.getCreated()
@@ -394,8 +427,7 @@ public class VerificationHelper extends AbstractHelper {
                                         long millis_to_expiration = (ri
                                                 .getExpires().getTimeInMillis() - (REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES * 60 * 1000))
                                                 - now.getTimeInMillis();
-                                        System.out
-                                                .println(" - valid revocationInformation found in Cache - now : "
+                                        logger.info(" - valid revocationInformation found in Cache - now : "
                                                         + now.getTime()
                                                         + " - created : "
                                                         + ri.getCreated()
@@ -412,8 +444,7 @@ public class VerificationHelper extends AbstractHelper {
                                 }
                             }
                             if (ri == null) {
-                                System.out
-                                        .println(" - get latest information from RevocationAuthority - uid : "
+                                logger.info(" - get latest information from RevocationAuthority - uid : "
                                                 + ip.getRevocationParametersUID());
                                 ri = this.keyManager
                                         .getLatestRevocationInformation(ip
@@ -423,8 +454,7 @@ public class VerificationHelper extends AbstractHelper {
                                 this.revocationInformationStore.put(
                                         ri.getInformationUID(), ri);
                                 if (cacheRevocationInformation) {
-                                    System.out
-                                            .println(" - storege RevocationInformation in cache : "
+                                    logger.info(" - storege RevocationInformation in cache : "
                                                     + ip.getRevocationParametersUID());
                                     revocationInformationCache
                                             .put(ip.getRevocationParametersUID(),
@@ -439,7 +469,7 @@ public class VerificationHelper extends AbstractHelper {
             }
 
         }
-        System.out.println(" - presentationPolicy created");
+        logger.info(" - presentationPolicy created");
 
         return pp_alternatives;
     }
@@ -451,7 +481,8 @@ public class VerificationHelper extends AbstractHelper {
      * @param orig
      *            XML as string
      * @return patched XML as JaxB
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     private PresentationToken getPatchedPresetationToken(String orig)
             throws Exception {
@@ -479,15 +510,18 @@ public class VerificationHelper extends AbstractHelper {
      * @param applicationData
      *            if present - will be inserted on all presentation policies -
      *            must match application data supplied when creating Policy
-     * @param presentationToken PresentationToken
-     * @param nonce Nonce
+     * @param presentationToken
+     *            PresentationToken
+     * @param nonce
+     *            Nonce
      * @return true or false
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     public boolean verifyToken(String policyName, byte[] nonce,
             String applicationData, PresentationToken presentationToken)
             throws Exception {
-        System.out.println("VerificationHelper - verify token : " + policyName
+        logger.info("VerificationHelper - verify token : " + policyName
                 + " - applicationData : " + applicationData);
 
         String orig = XmlUtils.toXml(this.of
@@ -529,16 +563,18 @@ public class VerificationHelper extends AbstractHelper {
     /**
      * @param ppa
      *            PresentationPolicyAlternatives
-     * @param presentationToken PresentationToken
+     * @param presentationToken
+     *            PresentationToken
      * @return true or false
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     public boolean verifyToken(PresentationPolicyAlternatives ppa,
             PresentationToken presentationToken) throws Exception {
         try {
             // verify in ABCE
             this.engine.verifyTokenAgainstPolicy(ppa, presentationToken, true);
-            System.out.println(" - OK!");
+            logger.info(" - OK!");
             return true;
         } catch (TokenVerificationException e) {
             System.err.println(" - TokenVerificationException : " + e);

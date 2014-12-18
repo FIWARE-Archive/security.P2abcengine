@@ -70,6 +70,10 @@ public class CredentialSpecGenerator {
             }
 
             credSpec.setAttributeDescriptions(attrDescs);
+            FriendlyDescription fd = new FriendlyDescription();
+            fd.setLang("en");
+            fd.setValue(attrInfoCol.name + " credential specification");
+            credSpec.getFriendlyCredentialName().add(fd);
 
             return credSpec;
         } catch (Exception e) {

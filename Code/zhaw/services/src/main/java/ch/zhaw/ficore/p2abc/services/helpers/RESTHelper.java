@@ -19,15 +19,15 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 public class RESTHelper {
-    
+
     private static String authUser = "both";
     private static String authPw = "tomcat";
-    
+
     static {
         authUser = ServicesConfiguration.getRestAuthUser();
         authPw = ServicesConfiguration.getRestAuthPassword();
     }
-    
+
     /**
      * Serializes an object using JAXB to a XML.
      * 
@@ -36,7 +36,8 @@ public class RESTHelper {
      * @param obj
      *            the object
      * @return XML as string
-     * @throws JAXBException when serialization fails.
+     * @throws JAXBException
+     *             when serialization fails.
      */
     @SuppressWarnings("rawtypes")
     public static String toXML(Class clazz, Object obj) throws JAXBException {
@@ -57,7 +58,8 @@ public class RESTHelper {
      * @param xml
      *            the input data
      * @return the object
-     * @throws JAXBException when deseralization fails.
+     * @throws JAXBException
+     *             when deseralization fails.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {
@@ -75,9 +77,12 @@ public class RESTHelper {
      *            class of the object to be returned (needed for
      *            deserialization)
      * @return the object
-     * @throws ClientHandlerException When a connection error occurs.
-     * @throws UniformInterfaceException When something else went wrong.
-     * @throws JAXBException When either serialization or deserialization fails.
+     * @throws ClientHandlerException
+     *             When a connection error occurs.
+     * @throws UniformInterfaceException
+     *             When something else went wrong.
+     * @throws JAXBException
+     *             When either serialization or deserialization fails.
      */
     @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, String xml, Class clazz)
@@ -93,11 +98,31 @@ public class RESTHelper {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return fromXML(clazz, response.getEntity(String.class));
     }
-    
+
+    public static Object postRequest(String url, String xml)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException {
+        Client client = new Client();
+        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type("application/xml").post(
+                ClientResponse.class, xml);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
+
+        return response.getEntity(String.class);
+    }
+
     @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
@@ -112,14 +137,14 @@ public class RESTHelper {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return fromXML(clazz, response.getEntity(String.class));
     }
-    
-    public static Object postRequest(String url)
-            throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+
+    public static Object postRequest(String url) throws ClientHandlerException,
+            UniformInterfaceException, JAXBException {
         Client client = new Client();
         client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
 
@@ -130,12 +155,14 @@ public class RESTHelper {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return response.getEntity(String.class);
     }
-    
-    public static Object postRequest(String url, MultivaluedMap<String, String> params)
+
+    public static Object postRequest(String url,
+            MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
         Client client = new Client();
@@ -143,17 +170,18 @@ public class RESTHelper {
 
         WebResource webResource = client.resource(url);
 
-        ClientResponse response = webResource.type(MediaType.
-                APPLICATION_FORM_URLENCODED_TYPE).post(
+        ClientResponse response = webResource.type(
+                MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(
                 ClientResponse.class, params);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return response.getEntity(String.class);
     }
-    
+
     @SuppressWarnings("rawtypes")
     public static Object putRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
@@ -168,12 +196,12 @@ public class RESTHelper {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("postRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return fromXML(clazz, response.getEntity(String.class));
     }
-    
-    @SuppressWarnings("rawtypes")
+
     public static Object putRequest(String url, String xml)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
@@ -187,12 +215,14 @@ public class RESTHelper {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("putRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return response.getEntity(String.class);
     }
-    
-    public static Object putRequest(String url, MultivaluedMap<String, String> params)
+
+    public static Object putRequest(String url,
+            MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
         Client client = new Client();
@@ -200,17 +230,18 @@ public class RESTHelper {
 
         WebResource webResource = client.resource(url);
 
-        ClientResponse response = webResource.type(MediaType.
-                APPLICATION_FORM_URLENCODED_TYPE).put(
+        ClientResponse response = webResource.type(
+                MediaType.APPLICATION_FORM_URLENCODED_TYPE).put(
                 ClientResponse.class, params);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("putRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return response.getEntity(String.class);
     }
-    
+
     @SuppressWarnings("rawtypes")
     public static Object getRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
@@ -220,8 +251,7 @@ public class RESTHelper {
 
         WebResource webResource = client.resource(url);
 
-        ClientResponse response = webResource.get(
-                ClientResponse.class);
+        ClientResponse response = webResource.get(ClientResponse.class);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("getRequest failed for: " + url
@@ -229,17 +259,15 @@ public class RESTHelper {
 
         return fromXML(clazz, response.getEntity(String.class));
     }
-    
-    public static Object getRequest(String url)
-            throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+
+    public static Object getRequest(String url) throws ClientHandlerException,
+            UniformInterfaceException, JAXBException {
         Client client = new Client();
         client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
 
         WebResource webResource = client.resource(url);
 
-        ClientResponse response = webResource.get(
-                ClientResponse.class);
+        ClientResponse response = webResource.get(ClientResponse.class);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("getRequest failed for: " + url
@@ -247,7 +275,7 @@ public class RESTHelper {
 
         return response.getEntity(String.class);
     }
-    
+
     public static Object deleteRequest(String url)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
@@ -261,12 +289,14 @@ public class RESTHelper {
 
         if (response.getStatus() != 200)
             throw new RuntimeException("deleteRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return response.getEntity(String.class);
     }
-    
-    public static Object deleteRequest(String url, MultivaluedMap<String, String> params)
+
+    public static Object deleteRequest(String url,
+            MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException {
         Client client = new Client();
@@ -274,13 +304,14 @@ public class RESTHelper {
 
         WebResource webResource = client.resource(url);
 
-        ClientResponse response = webResource.type(MediaType.
-                APPLICATION_FORM_URLENCODED_TYPE).delete(
+        ClientResponse response = webResource.type(
+                MediaType.APPLICATION_FORM_URLENCODED_TYPE).delete(
                 ClientResponse.class, params);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("deleteRequest failed for: " + url
-                    + " got " + response.getStatus() + "|" + response.getEntity(String.class));
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class));
 
         return response.getEntity(String.class);
     }

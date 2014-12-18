@@ -7,6 +7,8 @@ import javax.naming.NamingException;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.issuance.GenericIssuanceStorage;
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
+import ch.zhaw.ficore.p2abc.services.verification.GenericVerificationStorage;
+import ch.zhaw.ficore.p2abc.services.verification.VerificationStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericIssuerCredentialStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.GenericSecretStorage;
@@ -77,6 +79,19 @@ public class SqliteStorageModule extends AbstractModule {
                                     + "queryRuleStorage"));
             this.bind(IssuanceStorage.class).to(GenericIssuanceStorage.class)
                     .in(Singleton.class);
+
+            this.bind(URIBytesStorage.class)
+                    .annotatedWith(Names.named("presentationPolicyStorage"))
+                    .toInstance(
+                            new JdbcURIBytesStorage(dbName, name + "_"
+                                    + "presentationPolicyStorage"));
+            this.bind(URIBytesStorage.class)
+                    .annotatedWith(Names.named("redirectURIStorage"))
+                    .toInstance(
+                            new JdbcURIBytesStorage(dbName, name + "_"
+                                    + "redirectURIStorage"));
+            this.bind(VerificationStorage.class)
+                    .to(GenericVerificationStorage.class).in(Singleton.class);
 
             this.bind(URIBytesStorage.class)
                     .annotatedWith(Names.named("tokensStorageIssuer"))

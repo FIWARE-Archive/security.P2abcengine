@@ -41,6 +41,7 @@ import eu.abc4trust.cryptoEngine.uprove.user.ReloadTokensCommunicationStrategy;
 import eu.abc4trust.guice.ProductionModuleFactory;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.ri.servicehelper.AbstractHelper;
 import eu.abc4trust.smartcard.CardStorage;
@@ -61,7 +62,7 @@ public class UserHelper extends AbstractHelper {
 
         initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
-        System.out.println("UserHelper.initInstance : DONE");
+        logger.info("UserHelper.initInstance : DONE");
 
         return instance;
     }
@@ -70,14 +71,14 @@ public class UserHelper extends AbstractHelper {
         instance.checkIfSystemParametersAreLoaded();
     }
 
-    private static synchronized void initializeInstanceField(CryptoEngine cryptoEngine,
-            String fileStoragePrefix, Module... modules)
-            throws URISyntaxException {
+    private static synchronized void initializeInstanceField(
+            CryptoEngine cryptoEngine, String fileStoragePrefix,
+            Module... modules) throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
         }
-        System.out.println("UserHelper.initInstance");
+        logger.info("UserHelper.initInstance");
         instance = new UserHelper(cryptoEngine, fileStoragePrefix, modules);
     }
 
@@ -85,10 +86,8 @@ public class UserHelper extends AbstractHelper {
         return instance != null;
     }
 
-    public static synchronized UserHelper getInstance() {
+    public static synchronized UserHelper getInstance() throws KeyManagerException {
         if (instance == null) {
-            System.out
-                    .println("initInstance not called before using UserHelper!");
             throw new IllegalStateException(
                     "initInstance not called before using UserHelper!");
         }

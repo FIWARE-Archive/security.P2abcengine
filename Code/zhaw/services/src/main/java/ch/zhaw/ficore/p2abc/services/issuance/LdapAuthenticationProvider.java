@@ -1,7 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 import javax.naming.directory.SearchResult;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +27,8 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
     /**
      * Constructor
      * 
-     * @param configuration Configuration (Issuance)
+     * @param configuration
+     *            Configuration (Issuance)
      */
     public LdapAuthenticationProvider(IssuanceConfiguration configuration) {
         super(configuration);
@@ -69,7 +69,6 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                 String bindQuery = QueryHelper.buildQuery(
                         configuration.getBindQuery(),
                         QueryHelper.ldapSanitize(simpleAuth.username));
-                System.out.println("q:" + bindQuery);
 
                 ConnectionParameters adminCfg = configuration
                         .getAuthenticationConnectionParameters();
@@ -82,7 +81,6 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                     SearchResult sr = (SearchResult) results.next();
                     binddn = sr.getName();
                 }
-                System.out.println(binddn);
 
                 if (binddn == null) {
                     logger.warn("Couldn't find DN for user "

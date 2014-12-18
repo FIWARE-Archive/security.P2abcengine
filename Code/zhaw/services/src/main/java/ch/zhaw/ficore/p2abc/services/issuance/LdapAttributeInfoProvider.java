@@ -67,7 +67,8 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
     /**
      * Constructor
      * 
-     * @param configuration Configuration (Issuance)
+     * @param configuration
+     *            Configuration (Issuance)
      */
     public LdapAttributeInfoProvider(IssuanceConfiguration configuration) {
         super(configuration);

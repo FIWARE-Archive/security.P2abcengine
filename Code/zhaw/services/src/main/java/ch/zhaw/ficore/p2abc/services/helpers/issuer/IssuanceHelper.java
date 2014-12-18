@@ -77,7 +77,7 @@ public class IssuanceHelper extends AbstractHelper {
     public KeyStorage keyStorage;
 
     public IssuanceStorage issuanceStorage;
-    
+
     public String readTextFile(String path) {
         try {
             ClassLoader cl = IssuanceHelper.class.getClassLoader();
@@ -85,15 +85,14 @@ public class IssuanceHelper extends AbstractHelper {
             BufferedReader br = new BufferedReader(new FileReader(f));
             String lines = "";
             String line = "";
-            while((line = br.readLine()) != null)
+            while ((line = br.readLine()) != null)
                 lines += line + "\n";
             br.close();
-            System.out.println("*** " + path);
-            System.out.println(lines);
+            log.info("*** " + path);
+            log.info(lines);
             return lines;
-        }
-        catch(Exception e) {
-            throw new RuntimeException("readTextFile("+path+") failed!");
+        } catch (Exception e) {
+            throw new RuntimeException("readTextFile(" + path + ") failed!");
         }
     }
 
@@ -130,7 +129,7 @@ public class IssuanceHelper extends AbstractHelper {
                         + cryptoEngine + " : " + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
         this.fileStoragePrefix = fileStoragePrefix;
-        UProveUtils uproveUtils = new UProveUtils();
+        UProveUtils uproveUtils = null;
         this.setupSingleEngineForService(cryptoEngine, uproveUtils,
                 revocationAuthorityParametersResourcesList, modules);
 
@@ -157,12 +156,11 @@ public class IssuanceHelper extends AbstractHelper {
         return instance;
     }
 
+
     private IssuerAbcEngine singleEngine = null;
-    private IssuerAbcEngine uproveEngine = null;
     private IssuerAbcEngine idemixEngine = null;
 
     private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
-    private KeyManager uproveKeyManager;
     private KeyManager idemixKeyManager;
 
     private final String fileStoragePrefix;
@@ -305,25 +303,7 @@ public class IssuanceHelper extends AbstractHelper {
                     hash, issuerParamsUid, revocationParamsUid,
                     friendlyDescriptions);
             break;
-        case UPROVE:
-            engine = this.uproveEngine;
-            if (this.uproveEngine == null) {
-                engine = this.singleEngine;
-            }
-            akeyManager = this.uproveKeyManager;
-            if (this.idemixEngine == null) {
-                engine = this.singleEngine;
-            }
-            if (this.uproveKeyManager == null) {
-                akeyManager = this.keyManager;
-            }
-            issuerParameters = this.setupAndStoreIssuerParameters(cryptoEngine,
-                    engine, akeyManager, this.credentialManager,
-                    systemAndIssuerParamsPrefix, systemParameters, credSpec,
-                    hash, issuerParamsUid, revocationParamsUid,
-                    friendlyDescriptions);
-
-            break;
+        
         default:
             throw new IllegalStateException("The crypto engine: "
                     + cryptoEngine
@@ -339,7 +319,8 @@ public class IssuanceHelper extends AbstractHelper {
      * @param issuanceMessage
      *            IssuanceMessager as String
      * @return IssuanceMessageAndBoolean
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public IssuanceMessageAndBoolean issueStep(IssuanceMessage issuanceMessage)
             throws Exception {
@@ -366,9 +347,11 @@ public class IssuanceHelper extends AbstractHelper {
      * 
      * @param issuanceMessage
      *            IssuanceMessager as String
-     * @param cryptoEngine crypto engin to use.
+     * @param cryptoEngine
+     *            crypto engin to use.
      * @return IssuanceMessageAndBoolean
-     * @throws Exception when something went wrong.
+     * @throws Exception
+     *             when something went wrong.
      */
     public IssuanceMessageAndBoolean issueStep(CryptoEngine cryptoEngine,
             IssuanceMessage issuanceMessage) throws Exception {
@@ -390,8 +373,7 @@ public class IssuanceHelper extends AbstractHelper {
         } else {
             if (cryptoEngine == CryptoEngine.IDEMIX) {
                 useEngine = this.idemixEngine;
-            } else if (cryptoEngine == CryptoEngine.UPROVE) {
-                useEngine = this.uproveEngine;
+           
             } else {
                 throw new IllegalStateException(
                         "IssuanceHelper.issueStep : idemix/uprove engine not initialized...");
@@ -473,15 +455,6 @@ public class IssuanceHelper extends AbstractHelper {
             }
             issuanceMessageAndBoolean = this.initIssuanceProtocol(engine,
                     attributes, issuancePolicy, issuerPolicyParametersUid);
-            break;
-        case UPROVE:
-            engine = this.idemixEngine;
-            if (this.idemixEngine == null) {
-                engine = this.singleEngine;
-            }
-            issuanceMessageAndBoolean = this.initIssuanceProtocol(engine,
-                    attributes, issuancePolicy, issuerPolicyParametersUid);
-
             break;
         default:
             throw new IllegalStateException("The crypto engine: "
