@@ -87,7 +87,7 @@ public class IssuanceService {
     private Logger logger;
 
     public IssuanceService() throws ClassNotFoundException, SQLException,
-            UnsafeTableNameException {
+    UnsafeTableNameException {
         logger = LogManager.getLogger();
         setup();
     }
@@ -118,37 +118,56 @@ public class IssuanceService {
     }
 
     /* GENERAL METHODS */
-    
-    @GET()
+
+    /**
+     * <b>Path</b>: /protected/reset (POST)<br>
+     * <br>
+     * <b>Description</b>: This method reloads the configuration of the webservice(s) and will completely wipe
+     * all storage of the webservice(s). Use with extreme caution! <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @return
+     * @throws Exception
+     */
+    @POST()
     @Path("/protected/reset")
     public Response reset() throws Exception {
         logger.entry();
-        
-        this.initializeHelper(CryptoEngine.IDEMIX);
-
-        IssuanceHelper.getInstance();
-        
-        ServicesConfiguration.staticInit();
-        URIBytesStorage.clearEverything();
-        return logger.exit(Response.ok().build());
+        try {
+            this.initializeHelper(CryptoEngine.IDEMIX);
+    
+            IssuanceHelper.getInstance();
+    
+            ServicesConfiguration.staticInit();
+            URIBytesStorage.clearEverything();
+            return logger.exit(Response.ok().build());
+        }
+        catch(Exception e) {
+            logger.catching(e);
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
+        }
     }
 
     /**
      * <b>Path</b>: /protected/status (GET)<br>
      * <br>
      * <b>Description</b>: This method is available when the service is running. <br>
-     * <b>Response status:</b>
+     * <br>
+     * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
      * </ul>
-     * 
      * @return Response
      */
     @GET()
     @Path("/protected/status")
     @Produces({ MediaType.TEXT_PLAIN })
     public Response issuerStatus() {
-        return Response.ok(request.getRemoteUser()).build();
+        return Response.ok("OK").build();
     }
 
     /**
@@ -158,7 +177,7 @@ public class IssuanceService {
      * <br>
      * <b>Response status</b>:
      * <ul>
-     * <li>200 - OK</li>
+     * <li>200 - OK (Authentication successful)</li>
      * <li>401 - Authentication was not successful.</li>
      * <li>500 - ERROR</li>
      * </ul>
@@ -173,6 +192,8 @@ public class IssuanceService {
     @Path("/testAuthentication")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response testAuthentication(AuthenticationRequest authReq) {
+        
+        logger.entry();
 
         AuthenticationProvider authProvider = null;
 
@@ -203,17 +224,16 @@ public class IssuanceService {
      * <br>
      * <b>Description</b>: Returns the settings of this issuance service.
      * Settings includes issuer parameters, credential specifications and the
-     * system parameters. This method is usually called by a user service to
-     * download the settings. <br>
+     * system parameters. This method is usually called by a user service or a verification
+     * service to download the settings. <br>
      * <br>
      * <b>Response status</b>:
      * <ul>
-     * <li>200 - OK</li>
+     * <li>200 - OK (application/xml)</li>
      * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>Settings</tt><br>
-     * 
      * @return Response
      */
     @GET()
@@ -267,7 +287,7 @@ public class IssuanceService {
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
-                    .build();
+                            .build();
         }
     }
 
@@ -276,16 +296,22 @@ public class IssuanceService {
      * <br>
      * <b>Description</b>: This method is called by a user to initiate an
      * issuance protocol. The user must provide an issuance request containing
-     * his authentication information and the uid of the corresponding
+     * his authentication information and the UID of the corresponding
      * credential specification. The issuer will then try to authenticate the
      * user by using an authentication source (e.g. LDAP) and fetch the
      * attributes required by the credential specification from an attribute
-     * source (e.g. LDAP) and initiates the round based issuance protocol.
+     * source (e.g. LDAP) and initiates the round based issuance protocol.<br><br>
      * 
      * If authentication of the user fails this method will return the status
      * code FORBIDDEN. If the issuer is missing the credential specification,
      * the issuance policy or the query rule this method will return status code
-     * NOT_FOUND.<br>
+     * NOT_FOUND.<br><br>
+     * 
+     * 
+     * This method will search for an issuance policy and a query rule using the
+     * UID of the credential specification as the key. If the issuance policy could
+     * not be found a default issuance policy will be used which asks the user
+     * to reveal nothing in particular. <br>
      * <br>
      * <b>Response status</b>:
      * <ul>
@@ -365,7 +391,7 @@ public class IssuanceService {
                     attrValProvider.getAttributes(qr.queryString,
                             authProvider.getUserID(), credSpec));
 
-            return initIssuanceProtocol(ipa);
+            return logger.exit(initIssuanceProtocol(ipa));
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -381,12 +407,11 @@ public class IssuanceService {
      * <b>Path</b>: /issuanceProtocolStep (POST)<br>
      * <br>
      * <b>Description</b>:
-     * 
      * This method performs one step in an interactive issuance protocol. On
-     * input an incoming issuance message m received from the User, it returns
+     * input an incoming issuance message <tt>m</tt> received from the User, it returns
      * the outgoing issuance message that is to be sent back to the User, a
      * boolean indicating whether this is the last message in the protocol, and
-     * the uid of the stored issuance log entry that contains an issuance token
+     * the UID of the stored issuance log entry that contains an issuance token
      * together with the attribute values provided by the issuer to keep track
      * of the issued credentials. The Context attribute of the outgoing message
      * has the same value as that of the incoming message, allowing the Issuer
@@ -453,12 +478,10 @@ public class IssuanceService {
     /* CREDENTIAL SPECIFICATION */
 
     /**
-     * <b>Path</b>:
-     * /protected/credentialSpecification/delete/{credentialSpecificationUid}
-     * (DELETE)<br>
+     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid} (DELETE)<br>
      * <br>
      * <b>Description</b>: Deletes a credential specification that was stored
-     * under the given identifier. <br>
+     * under the UID provided as part of the path. <br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
@@ -469,7 +492,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>404 - Credential specification was not found</li>
+     * <li>404 - Credential specification was not found.</li>
      * <li>500 - ERROR</li>
      * </ul>
      * 
@@ -509,13 +532,12 @@ public class IssuanceService {
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
-                    .build();
+                            .build();
         }
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/deleteAttribute/{
-     * credentialSpecificationUid} (DELETE)<br>
+     * <b>Path</b>: /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid} (DELETE)<br>
      * <br>
      * <b>Description</b>: Deletes an attribute from a credential specification. <br>
      * <br>
@@ -534,7 +556,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
-     * <li>404 - Credential specification was not found</li>
+     * <li>404 - Credential specification was not found.</li>
      * </ul>
      * 
      * @param index
@@ -573,11 +595,11 @@ public class IssuanceService {
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
                                 .entity("Credential specification could not be found!"))
-                        .build();
+                                .build();
             }
 
             credSpec.getAttributeDescriptions().getAttributeDescription()
-                    .remove(index);
+            .remove(index);
 
             instance.keyManager.storeCredentialSpecification(new URI(
                     credSpecUid), credSpec);
@@ -588,22 +610,19 @@ public class IssuanceService {
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
-                    .build();
+                            .build();
         }
     }
 
     /**
-     * <b>Path</b>:
-     * /protected/credentialSpecification/deleteFriendlyDescription/
-     * {credentialSpecificationUid} (DELETE)<br>
+     * <b>Path</b>: /protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid} (DELETE)<br>
      * <br>
-     * <b>Description</b>: Deletes a friendly description from a credential
+     * <b>Description</b>: Deletes a friendly description from an attribute of credential
      * specification. <br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to
-     * delete the friendly description from.
+     * <li>credentialSpecificationUid - UID of the credential specification.</li>
      * </ul>
      * <br>
      * <b>Delete parameters</b>:
@@ -629,7 +648,7 @@ public class IssuanceService {
      * @return Response
      */
     @DELETE()
-    @Path("/protected/credentialSpecification/deleteFriendlyDescription/{credentialSpecificationUid}")
+    @Path("/protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid}")
     public Response deleteFriendlyDescription(@FormParam("i") int index,
             @PathParam("credentialSpecificationUid") String credSpecUid,
             @FormParam("language") String language) {
@@ -659,7 +678,7 @@ public class IssuanceService {
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
                                 .entity("Credential specification could not be found!"))
-                        .build();
+                                .build();
             }
 
             AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
@@ -685,21 +704,19 @@ public class IssuanceService {
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
-                    .build();
+                            .build();
         }
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/addFriendlyDescription/{
-     * credentialSpecificationUid} (PUT)<br>
+     * <b>Path</b>: /protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid} (PUT)<br>
      * <br>
      * <b>Description</b>: Adds a friendly description to an attribute of a
      * credential specification.<br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification.
-     * <li>
+     * <li>credentialSpecificationUid - UID of the credential specification.<li>
      * </ul>
      * <br>
      * <b>Put parameters</b>:
@@ -727,8 +744,8 @@ public class IssuanceService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/credentialSpecification/addFriendlyDescription/{credentialSpecificationUid}")
-    public Response addFriendlyDescription(@FormParam("i") int index,
+    @Path("/protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid}")
+    public Response addFriendlyDescriptionAttribute(@FormParam("i") int index,
             @PathParam("credentialSpecificationUid") String credSpecUid,
             @FormParam("language") String language,
             @FormParam("value") String value) {
@@ -758,7 +775,7 @@ public class IssuanceService {
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
                                 .entity("Credential specification could not be found!"))
-                        .build();
+                                .build();
             }
 
             AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
@@ -779,16 +796,15 @@ public class IssuanceService {
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
-                    .build();
+                            .build();
         }
     }
 
     /**
-     * <b>Path</b>:
-     * /protected/credentialSpecification/store/{credentialSpecificationUid}
-     * (PUT)<br>
+     * <b>Path</b>: /protected/credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
      * <br>
-     * <b>Description</b>: Store a credential specification at this service.<br>
+     * <b>Description</b>: Store a credential specification at this service. The UID given as part of the path
+     * must match the UID of the passed credential specification. <br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
@@ -797,14 +813,13 @@ public class IssuanceService {
      * <br>
      * <b>Response status</b>:
      * <ul>
-     * <li>200 - OK (application/xml)</li>
+     * <li>200 - OK</li>
      * <li>409 - The credentialSpecificationUid given on the path does not match
-     * the actual credential specification's UDI</li>
+     * the actual credential specification's UID</li>
      * <li>500 - ERROR</li>
      * </ul>
      * <br>
      * <b>Input type</b>: <tt>CredentialSpecification</tt><br>
-     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
      * 
      * @param credentialSpecifationUid
      *            UID of the credential specification
@@ -840,12 +855,10 @@ public class IssuanceService {
             boolean r1 = keyManager.storeCredentialSpecification(
                     credentialSpecifationUid, credSpec);
 
-            ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
-            createABCEBoolean.setValue(r1);
+            if(!r1)
+                throw new RuntimeException("Could not store the credential specification.");
 
-            return logger.exit(Response.ok(
-                    of.createABCEBoolean(createABCEBoolean),
-                    MediaType.APPLICATION_XML).build());
+            return logger.exit(Response.ok("OK").build());
         } catch (Exception ex) {
             logger.catching(ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
@@ -853,8 +866,7 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>:
-     * /protected/credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
+     * <b>Path</b>: /protected/credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
      * <br>
      * <b>Description</b>: Retrieve a credential specification.<br>
      * <br>
@@ -909,8 +921,7 @@ public class IssuanceService {
     /* ISSUER PARAMETERS */
 
     /**
-     * <b>Path</b>:
-     * /protected/issuerParameters/generate/{credentialSpecificationUid} (POST)<br>
+     * <b>Path</b>: /protected/issuerParameters/generate/{credentialSpecificationUid} (POST)<br>
      * <br>
      * <b>Description</b>: Generates issuer parameters for a specified
      * credential specification. The generated issuer parameters will
@@ -924,7 +935,7 @@ public class IssuanceService {
      * <br>
      * <b>Response status</b>:
      * <ul>
-     * <li>200 -OK</li>
+     * <li>200 - OK</li>
      * <li>500 - ERROR</li>
      * </ul>
      * 
@@ -966,10 +977,10 @@ public class IssuanceService {
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
-                    .build();
+                            .build();
         }
     }
-    
+
     /**
      * <b>Path</b>: /protected/issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
      * <br>
@@ -1021,8 +1032,7 @@ public class IssuanceService {
     /* QUERY RULE */
 
     /**
-     * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid}
-     * (PUT)<br>
+     * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid} (PUT)<br>
      * <br>
      * <b>Description</b>: Stores a query rule and associates it with the
      * specified credential specification. A query rule is stored at the
@@ -1064,7 +1074,7 @@ public class IssuanceService {
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
-    
+
     /**
      * <b>Path</b>: /protected/queryRule/delete/{credentialSpecificationUid} (DELETE)<br>
      * <br>
@@ -1088,13 +1098,13 @@ public class IssuanceService {
     public Response deleteQueryRule(
             @PathParam("credentialSpecificationUid") String credSpecUid) {
         logger.entry();
-        
+
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
-            
+
             instance.issuanceStorage.deleteQueryRule(new URI(credSpecUid));
-            
+
             return logger.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
@@ -1199,8 +1209,7 @@ public class IssuanceService {
     /* ISSUANCE POLICY */
 
     /**
-     * <b>Path</b>: /protected/issuancePolicy/store/{credentialSpecificationUid}
-     * (PUT)<br>
+     * <b>Path</b>: /protected/issuancePolicy/store/{credentialSpecificationUid} (PUT)<br>
      * <br>
      * <b>Description</b>: Stores an issuance policy and associates it with a
      * credential specification.<br>
@@ -1248,8 +1257,7 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/issuancePolicy/get/{credentialSpecificationUid}
-     * (GET)<br>
+     * <b>Path</b>: /protected/issuancePolicy/get/{credentialSpecificationUid} (GET)<br>
      * <br>
      * <b>Description</b>: Retrieve an issuance policy that was previously
      * stored. <br>
@@ -1263,6 +1271,7 @@ public class IssuanceService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK (application/xml)</li>
+     * <li>404 - Issuance policy could not be found.</li>
      * <li>500 - ERROR</li>
      * </ul>
      * <b>Return type</b>: <tt>IssuancePolicy</tt><br>
@@ -1332,6 +1341,8 @@ public class IssuanceService {
     @GET()
     @Path("/protected/attributeInfoCollection/{name}")
     public Response attributeInfoCollection(@PathParam("name") String name) {
+        logger.entry();
+        
         AttributeInfoProvider attribInfoProvider = null;
 
         try {
@@ -1380,8 +1391,8 @@ public class IssuanceService {
 
             return Response
                     .ok(of.createCredentialSpecification(new CredentialSpecGenerator()
-                            .generateCredentialSpecification(attrInfoCol)),
-                            MediaType.APPLICATION_XML).build();
+                    .generateCredentialSpecification(attrInfoCol)),
+                    MediaType.APPLICATION_XML).build();
         } catch (Exception e) {
             logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1471,7 +1482,7 @@ public class IssuanceService {
      * <b>Description:</b>
      * 
      * This method generates a fresh issuance key and the corresponding Issuer
-     * parameters. The issuance key is stored in the Issuer’s key store, the
+     * parameters. The issuance key is stored in the Issuer's key store, the
      * Issuer parameters are returned as output of the method. The input to this
      * method specify the credential specification credspec of the credentials
      * that will be issued with these parameters, the system parameters syspars,
@@ -1578,12 +1589,12 @@ public class IssuanceService {
                 logger.info("Initializing IssuanceHelper...");
 
                 IssuanceHelper
-                        .initInstanceForService(
-                                cryptoEngine,
-                                "",
-                                "",
-                                StorageModuleFactory
-                                        .getModulesForServiceConfiguration(ServiceType.ISSUANCE));
+                .initInstanceForService(
+                        cryptoEngine,
+                        "",
+                        "",
+                        StorageModuleFactory
+                        .getModulesForServiceConfiguration(ServiceType.ISSUANCE));
 
                 logger.info("IssuanceHelper is initialized");
             }
@@ -1689,7 +1700,7 @@ public class IssuanceService {
     // @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     private Response initIssuanceProtocol(
             IssuancePolicyAndAttributes issuancePolicyAndAttributes)
-            throws Exception {
+                    throws Exception {
 
         logger.entry();
 

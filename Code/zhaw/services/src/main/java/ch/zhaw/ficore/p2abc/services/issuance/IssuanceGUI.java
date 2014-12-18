@@ -140,7 +140,7 @@ public class IssuanceGUI {
             RESTHelper
                     .putRequest(
                             issuanceServiceURL
-                                    + "protected/credentialSpecification/addFriendlyDescription/"
+                                    + "protected/credentialSpecification/addFriendlyDescriptionAttribute/"
                                     + URLEncoder.encode(credSpecUid, "UTF-8"),
                             params);
 
@@ -170,7 +170,7 @@ public class IssuanceGUI {
             RESTHelper
                     .deleteRequest(
                             issuanceServiceURL
-                                    + "protected/credentialSpecification/deleteFriendlyDescription/"
+                                    + "protected/credentialSpecification/deleteFriendlyDescriptionAttribute/"
                                     + URLEncoder.encode(credSpecUid, "UTF-8"),
                             params);
 
