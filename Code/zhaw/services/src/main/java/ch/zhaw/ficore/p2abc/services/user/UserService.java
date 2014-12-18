@@ -115,7 +115,21 @@ public class UserService {
         return Response.ok().build();
     }
     
-    @GET()
+    /**
+     * <b>Path</b>: /protected/reset (POST)<br>
+     * <br>
+     * <b>Description</b>: This method reloads the configuration of the webservice(s) and will completely wipe
+     * all storage of the webservice(s). Use with extreme caution! <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @return
+     * @throws Exception
+     */
+    @POST()
     @Path("/reset")
     public Response reset() throws Exception {
         log.entry(); 
@@ -283,7 +297,7 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /loadSettings/ (GET)<br>
+     * <b>Path</b>: /loadSettings/ (POST)<br>
      * <br>
      * <b>Description</b>: Download and load settings from an issuer or any
      * settings provider. This method will cause the user service to make a
@@ -308,7 +322,7 @@ public class UserService {
      *            URL to download settings from.
      * @return Response
      */
-    @GET()
+    @POST()
     @Path("/loadSettings/")
     public Response loadSettings(@QueryParam("url") String url) {
         log.entry();
@@ -475,6 +489,27 @@ public class UserService {
         }
     }
     
+    /**
+     * <b>Path</b>: /credential/get/{credUid} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retrieve a credential. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>credUid - UID of the credential</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - The credential could not be found.</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>Credential</tt><br>
+     * @param credUid
+     * @return
+     */
     @GET()
     @Path("/credential/get/{credUid}")
     public Response getCredential(@PathParam ("credUid") String credUid) {

@@ -109,8 +109,7 @@ public class VerificationService {
     private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
     private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
     private final static String errUid = "The given UID in the path does not match the actual UID.";
-    private final static String errNoAlias = "The alias was not found.";
-    private final static String errNoPolicy = "The policy was not found.";
+    private final static String errNotFound = "The requested resource or parts of it could not be found.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -148,7 +147,21 @@ public class VerificationService {
         return Response.ok().build();
     }
     
-    @GET()
+    /**
+     * <b>Path</b>: /protected/reset (POST)<br>
+     * <br>
+     * <b>Description</b>: This method reloads the configuration of the webservice(s) and will completely wipe
+     * all storage of the webservice(s). Use with extreme caution! <br>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @return
+     * @throws Exception
+     */
+    @POST()
     @Path("/protected/reset")
     public Response reset() throws Exception {
         log.entry();
@@ -164,7 +177,7 @@ public class VerificationService {
      * <b>Path</b>: /verifyTokenAgainstPolicy (POST) <br>
      * <br>
      * <b>Description</b>: This method verifies a given presentation token against a given PresentationPolicyAlternatives. <br>
-     * This method will return a PresentationTokenDescription.
+     * This method will return a PresentationTokenDescription. 
      * <br>
      * <b>Response status</b>:
      * <ul>
@@ -210,6 +223,36 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: This method adds a credential specification alternative to a presentation policy inside
+     * <tt>PresentationPolicyAlternatives</tt>. 
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUID - UID of the presentation policy.</li> 
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>al - Alias</li>
+     * <li>cs - UID of the credential specification</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param alias Alias
+     * @param credSpecUid UID of the credential specification
+     * @param policyUid UID of the presantation policy
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response addCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
@@ -221,6 +264,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             
@@ -238,7 +284,7 @@ public class VerificationService {
             }
             
             if(!found)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
@@ -250,6 +296,36 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Deletes a credential specification alternative from a presentation policy inside a
+     * <tt>PresentationPolicyAlternatives</tt>. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>al - Alias</li>
+     * <li>cs - UID of the credential specification</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param alias Alias
+     * @param credSpecUid UID of the credential specification
+     * @param policyUid UID of the presentation policy
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response deleteCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
@@ -261,6 +337,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             URI founduid = null;
@@ -289,7 +368,7 @@ public class VerificationService {
             }
             
             if(!found)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
@@ -301,6 +380,36 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/addIssuerAlternative/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Adds an issuer alternative to a presentation policy inside a
+     * <tt>PresentationPolicyAlternatives</tt>. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>al - Alias</li>
+     * <li>ip - UID of the issuer parameters</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param alias Alias
+     * @param issuerParamsUid UID of the issuer parameters
+     * @param policyUid UID of the presentation policy
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addIssuerAlternative/{resource}/{policyUid}")
     public Response addIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
@@ -312,6 +421,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             
@@ -331,7 +443,7 @@ public class VerificationService {
             }
             
             if(!found)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
@@ -343,6 +455,36 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/deleteIssuerAlternative/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Deletes an issuer alternative from a presentation policy inside a
+     * <tt>PresentationPolicyAlternatives</tt>. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>al - Alias</li>
+     * <li>ip - UID of the issuer parameters</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param alias Alias
+     * @param issuerParamsUid UID of the issuer parameters
+     * @param policyUid UID of the presentation policy
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deleteIssuerAlternative/{resource}/{policyUid}")
     public Response deleteIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias, 
@@ -354,6 +496,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             IssuerParametersUID founduid = null;
@@ -380,7 +525,7 @@ public class VerificationService {
             }
             
             if(!found)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             
             
@@ -394,6 +539,31 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/addPolicyAlternative/{resource} (POST) <br>
+     * <br>
+     * <b>Description</b>: Adds a presentation policy alternative to a <tt>PresentationPolicyAlternatives</tt>.<br>
+     * <br>
+     * <b>Path parameters<b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>puid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param policyUid UID of the presentation policy
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addPolicyAlternative/{resource}")
     public Response addPolicyAlternative(@PathParam("resource") String resource, @FormParam("puid") String policyUid) {
@@ -404,6 +574,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             PresentationPolicy pp = new PresentationPolicy();
             pp.setPolicyUID(new URI(policyUid));
@@ -423,9 +596,34 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/resource/create/{resource} (PUT) <br>
+     * <br>
+     * <b>Description</b>: Creates a resource under the URI given as part of the path. This will create an
+     * empty <tt>PresentationPolicyAlternatives</tt> stored under the resource URI as the key. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * </ul>
+     * <br>
+     * <b>PUT parameters</b>:
+     * <ul>
+     * <li>redirectURI - Redirect URI (in almost all cases this will most likely be an URL of a website)</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param redirectURI Redirect URI
+     * @return Response
+     */
     @PUT()
     @Path("/protected/resource/create/{resource}")
-    public Response createResource(@PathParam("resource") String resource, @FormParam("redirectURL") String redirectURL) {
+    public Response createResource(@PathParam("resource") String resource, @FormParam("redirectURI") String redirectURI) {
         log.entry();
         
         try {
@@ -436,7 +634,7 @@ public class VerificationService {
             ppa.setVersion("1.0");
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
-            verificationHelper.verificationStorage.addRedirectURI(new URI(resource), new URI(redirectURL));
+            verificationHelper.verificationStorage.addRedirectURI(new URI(resource), new URI(redirectURI));
             
             return log.exit(Response.ok("OK").build());
             
@@ -447,6 +645,33 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/addAlias/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Adds an alias to a presentation policy in a <tt>PresentationPolicyAlternatives</tt>.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>al - Alias (must be a valid URI)</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the resource, the alias or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param policyUid UID of the presentation policy
+     * @param alias name of the alias
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addAlias/{resource}/{policyUid}")
     public Response addAlias(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
@@ -458,6 +683,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             CredentialInPolicy foundcip = null;
@@ -475,7 +703,7 @@ public class VerificationService {
             }
             
             if(!found)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoPolicy).build());
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
@@ -487,6 +715,33 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/deleteAlias/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Deletes an alias from a presentation policy inside a <tt>PresentationPolicyAlternatives</tt>.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>al - Alias</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the resource, the alias or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param alias Alias
+     * @param policyUid UID of the presentation policy
+     * @return Response
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deleteAlias/{resource}/{policyUid}")
     public Response deleteAlias(@PathParam("resource") String resource, @FormParam("al") String alias,
@@ -498,6 +753,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             CredentialInPolicy foundcip = null;
@@ -520,7 +778,7 @@ public class VerificationService {
             }
             
             if(!found)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoAlias).build());
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             
@@ -532,6 +790,40 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Add a predicate to a presentation policy in a <tt>PresentationPolicyAlternatives</tt>.<br>
+     * The predicate <tt>p</tt> is a function (e.g. integer-less) with two argument. An attribute <tt>at</tt> as lvalue
+     * and a constant value (e.g. 123) as rvalue. This method does not allow comparing attributes with other attributes as of now.
+     * <br>
+     * <b>Path parameters</b>: 
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>cv - Constant Value</li>
+     * <li>at - Attribute</li>
+     * <li>p - Predicate</li>
+     * <li>al - Alias</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the resource, the attribute, the alias or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource
+     * @param constantValue
+     * @param attribute
+     * @param predicate
+     * @param alias
+     * @param policyUid
+     * @return
+     */
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
@@ -544,6 +836,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
             
             boolean found = false;
             
@@ -616,6 +911,8 @@ public class VerificationService {
      *  <li>200 - OK (application xml)</li>
      *  <li>500 - ERROR</li>
      * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>SystemParameters</tt><br>
      * @param systemParameters SystemParameters
      * @return Response
      */
@@ -693,7 +990,8 @@ public class VerificationService {
     /**
      * <b>Path</b>: /protected/issuerParameters/store/{issuerParametersUid} (PUT)<br>
      * <br>
-     * <b>Description</b>: Stores issuer parameters at this service. <br>
+     * <b>Description</b>: Stores issuer parameters at this service. The UID given as part of the path
+     * must match the UID of the passed issuer parameters. <br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
@@ -796,7 +1094,8 @@ public class VerificationService {
     /**
      * <b>Path</b>: /protected/credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
      * <br>
-     * <b>Description</b>: Stores a credential specification at this service. <br>
+     * <b>Description</b>: Stores a credential specification at this service. The UID given as part of the path
+     * must match the UID of the passed credential specification. <br>
      * <br>
      * <b>Path parameters</b>:
      * <ul>
@@ -860,6 +1159,7 @@ public class VerificationService {
      * <ul>
      * <li>200 - OK (application/xml)</li>
      * <li>500 - ERROR</li>
+     * <li>404 - The credential specification could not be found.</li>
      * </ul>
      * <br>
      * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
@@ -879,6 +1179,9 @@ public class VerificationService {
             
             CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credSpecUid));
             
+            if(credSpec == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
             return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
@@ -888,7 +1191,7 @@ public class VerificationService {
     }
     
     /**
-     * <b>Path</b>: /protected/credentialSpecification/{credentialSpecificationUid} (DELETE) <br>
+     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid} (DELETE) <br>
      * <br>
      * <b>Description</b>: Deletes a credential specification. <br>
      * <br>
@@ -934,6 +1237,25 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/resource/delete/{resource} (DELETE)<br>
+     * <br>
+     * <b>Description</b>: Deletes a resource. This means, it deletes the associated redirect URI and
+     * <tt>PresentationPolicyAlternatives.</tt><br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * </ul> 
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param resource Resource URI
+     * @return Response
+     */
     @DELETE()
     @Path("/protected/resource/delete/{resource}")
     public Response deleteResource(@PathParam("resource") String resource) {
@@ -964,6 +1286,28 @@ public class VerificationService {
         }
     }
 
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/store/{resource} (PUT)<br>
+     * <br>
+     * <b>Description</b>: Stores <tt>PresentationPolicyAlternatives</tt> using the resource URI as part of the path
+     * as the key (i.e. associates the <tt>PresentationPolicyAlternatives</tt> with the resource URI)<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * @param resource Resource URI
+     * @param ppa PresentationPolicyAlternatives
+     * @return Response
+     */
     @PUT()
     @Path("/protected/presentationPolicyAlternatives/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
@@ -988,6 +1332,27 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/get/{resource} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retrieves <tt>PresentationPolicyAlternatives</tt>.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI the <tt>PresentationPolicyAlternatives</tt> are associated with</li>.
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - <tt>PresentationPolicyAlternatives</tt> could not be found./<li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * @param resource Resource URI
+     * @return Response
+     */
     @GET()
     @Path("/protected/presentationPolicyAlternatives/get/{resource}")
     public Response getPresentationPolicy(@PathParam("resource") String resource) {
@@ -998,6 +1363,9 @@ public class VerificationService {
                     .getInstance();
             
             PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
             return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
@@ -1091,6 +1459,26 @@ public class VerificationService {
         }
     }
     
+    /**
+     * <b>Path</b>: /protected/redirectURI/get/{resource} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retrieves a redirect URI.<br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * </ul> 
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>String</tt><br>
+     * @param resource
+     * @return
+     */
     @GET()
     @Path("/protected/redirectURI/get/{resource}")
     public Response getRedirectURI(@PathParam("resource") String resource) {
@@ -1101,6 +1489,10 @@ public class VerificationService {
                     .getInstance();
             
             URI uri = verificationHelper.verificationStorage.getRedirectURI(new URI(resource));
+            
+            if(uri == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
             return log.exit(Response.ok(uri.toString()).build());
         }
         catch(Exception e) {
@@ -1288,7 +1680,7 @@ public class VerificationService {
     }
     
     /**
-     * <b>Path</b>: /protected/loadSettings/ (GET)<br>
+     * <b>Path</b>: /protected/loadSettings/ (POST)<br>
      * <br>
      * <b>Description</b>: Download and load settings from an issuer or any
      * settings provider. This method will cause the user service to make a
@@ -1313,7 +1705,7 @@ public class VerificationService {
      *            URL to download settings from.
      * @return Response
      */
-    @GET()
+    @POST()
     @Path("/protected/loadSettings/")
     public Response loadSettings(@QueryParam("url") String url) {
         log.entry();

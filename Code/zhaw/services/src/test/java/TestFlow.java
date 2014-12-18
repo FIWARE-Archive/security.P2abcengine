@@ -48,7 +48,7 @@ public class TestFlow extends JerseyTest {
     private ObjectFactory of = new ObjectFactory();
 
     public TestFlow() throws Exception {
-        //super("ch.zhaw.ficore.p2abc");
+        super("ch.zhaw.ficore.p2abc");
         userServiceURL = getBaseURI() + userServiceURL;
         verificationServiceURL = getBaseURI() + verificationServiceURL;
         verificationServiceURLUnprot = getBaseURI()
@@ -58,8 +58,8 @@ public class TestFlow extends JerseyTest {
     }
 
     private static String getBaseURI() {
-        return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
-        //return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
+        //return "http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/";
+        return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
 
     File storageFile;
@@ -113,9 +113,9 @@ public class TestFlow extends JerseyTest {
         
         ic.close();
         
-        RESTHelper.getRequest(issuanceServiceURL + "reset");
-        RESTHelper.getRequest(verificationServiceURL + "reset");
-        RESTHelper.getRequest(userServiceURL + "reset");
+        RESTHelper.postRequest(issuanceServiceURL + "reset");
+        RESTHelper.postRequest(verificationServiceURL + "reset");
+        RESTHelper.postRequest(userServiceURL + "reset");
     }
 
     @After
@@ -365,7 +365,7 @@ public class TestFlow extends JerseyTest {
         WebResource webResource = client.resource(verificationServiceURL
                 + "loadSettings?url=" + URLEncoder.encode(issuanceServiceURLUnprot+"getSettings", "UTF-8"));
 
-        ClientResponse response = webResource.type("application/xml").get(
+        ClientResponse response = webResource.type("application/xml").post(
                 ClientResponse.class);
         assertOk(response);
     }
@@ -376,7 +376,7 @@ public class TestFlow extends JerseyTest {
         WebResource webResource = client.resource(userServiceURL
                 + "loadSettings?url=" + URLEncoder.encode(issuanceServiceURLUnprot+"getSettings", "UTF-8"));
 
-        ClientResponse response = webResource.type("application/xml").get(
+        ClientResponse response = webResource.type("application/xml").post(
                 ClientResponse.class);
         assertOk(response);
     }
@@ -411,7 +411,7 @@ public class TestFlow extends JerseyTest {
         Client client = getClient();
 
         WebResource webResource = client.resource(verificationServiceURL
-                + "presentationPolicy/store/resource");
+                + "presentationPolicyAlternatives/store/resource");
 
         ClientResponse response = webResource.type("application/xml").put(
                 ClientResponse.class, ppa);
