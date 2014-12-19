@@ -41,6 +41,7 @@ public class TestFlow extends JerseyTest {
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
+    
     public TestFlow() throws Exception {
         super("ch.zhaw.ficore.p2abc");
         userServiceURL = getBaseURI() + userServiceURL;
@@ -258,6 +259,8 @@ public class TestFlow extends JerseyTest {
                     "<\\?xml(.*)\\?>", "");
             String rPresentationPolicyAlternatives = presentationPolicyAlternatives
                     .replaceAll("<\\?xml(.*)\\?>", "");
+
+            @SuppressWarnings("unused")
             String ppapt = "";
             ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
             ppapt += "<PresentationPolicyAlternativesAndPresentationToken xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\" Version=\"1.0\">";

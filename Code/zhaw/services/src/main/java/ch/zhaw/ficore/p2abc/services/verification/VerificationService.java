@@ -43,7 +43,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -51,29 +50,28 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
 
 import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
-import ch.zhaw.ficore.p2abc.xml.Settings;
 import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.cryptoEngine.CryptoEngineException;
 import eu.abc4trust.exceptions.TokenVerificationException;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyStorage;
-import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.ApplicationData;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributePredicate;
+import eu.abc4trust.xml.AttributePredicate.Attribute;
 import eu.abc4trust.xml.CredentialInPolicy;
 import eu.abc4trust.xml.CredentialInPolicy.CredentialSpecAlternatives;
 import eu.abc4trust.xml.CredentialInPolicy.IssuerAlternatives;
@@ -88,11 +86,7 @@ import eu.abc4trust.xml.PresentationPolicyAlternativesAndPresentationToken;
 import eu.abc4trust.xml.PresentationToken;
 import eu.abc4trust.xml.PresentationTokenDescription;
 import eu.abc4trust.xml.SystemParameters;
-import eu.abc4trust.xml.AttributePredicate.Attribute;
 import eu.abc4trust.xml.VerifierIdentity;
-
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
 
 //import java.util.logging.Logger;
 //import eu.abc4trust.ri.servicehelper.verifier.VerificationHelper;

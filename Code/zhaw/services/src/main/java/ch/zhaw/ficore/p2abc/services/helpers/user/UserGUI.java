@@ -150,7 +150,6 @@ public class UserGUI {
             div.appendChild(new H3().appendChild(new Text("Candidate")));
             enclosing.appendChild(div);
 
-
             div.appendChild(new H4().appendChild(new Text("Credentials "
                     + tc.credentials.size())));
 
