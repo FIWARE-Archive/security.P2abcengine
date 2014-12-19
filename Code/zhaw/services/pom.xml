@@ -14,13 +14,13 @@
       doesn't let us do this via properties.  So, unfortunately, you
       need to keep these in sync manually.
   -->
-  <version>4.1.2</version>
+  <version>4.1.3</version>
   <packaging>war</packaging>
 	
   <parent>
     <groupId>ch.zhaw.ficore.p2abc</groupId>
     <artifactId>privacy-ge-zhaw</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   

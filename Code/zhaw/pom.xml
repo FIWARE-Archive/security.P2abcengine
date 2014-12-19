@@ -8,7 +8,7 @@
   <groupId>ch.zhaw.ficore.p2abc</groupId>
   <artifactId>privacy-ge-zhaw</artifactId>
   <!-- Version of latest FI-Core sprint or release -->
-  <version>4.1.2</version>
+  <version>4.1.3</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -120,6 +120,7 @@
   <modules>
     <module>services</module>
     <module>components</module>
+    <module>integration-tests</module>
   </modules>
   
 </project>
