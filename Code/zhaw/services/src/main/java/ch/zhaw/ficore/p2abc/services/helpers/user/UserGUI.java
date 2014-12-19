@@ -151,7 +151,10 @@ public class UserGUI {
             enclosing.appendChild(div);
 
             Table tbl = new Table();
+            @SuppressWarnings("unused")
             Tr row = null;
+
+            @SuppressWarnings("unused")
             Td td = null;
 
             div.appendChild(new H4().appendChild(new Text("Credentials "

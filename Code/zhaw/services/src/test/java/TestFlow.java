@@ -19,9 +19,7 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -33,7 +31,6 @@ import com.sun.jersey.test.framework.TestConstants;
 import eu.abc4trust.xml.ApplicationData;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
-import eu.abc4trust.xml.PresentationToken;
 
 public class TestFlow extends JerseyTest {
 
@@ -45,6 +42,8 @@ public class TestFlow extends JerseyTest {
     private static String credSpecName = "test";
     private static String credSpecURI = "urn%3Afiware%3Aprivacy%3Atest";
     private static String issuanceURI = "urn%3Afiware%3Aprivacy%3Aissuance%3Aidemix";
+
+    @SuppressWarnings("unused")
     private ObjectFactory of = new ObjectFactory();
 
     public TestFlow() throws Exception {
@@ -264,6 +263,8 @@ public class TestFlow extends JerseyTest {
                     "<\\?xml(.*)\\?>", "");
             String rPresentationPolicyAlternatives = presentationPolicyAlternatives
                     .replaceAll("<\\?xml(.*)\\?>", "");
+
+            @SuppressWarnings("unused")
             String ppapt = "";
             ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
             ppapt += "<PresentationPolicyAlternativesAndPresentationToken xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\" Version=\"1.0\">";

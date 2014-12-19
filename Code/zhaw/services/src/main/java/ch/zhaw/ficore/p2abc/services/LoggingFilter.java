@@ -5,12 +5,12 @@ import javax.ws.rs.ext.Provider;
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.container.ContainerResponse;
 
 @Provider
 public class LoggingFilter implements
         ContainerRequestFilter {
 
+    @SuppressWarnings("unused")
     private static final ThreadLocal<Long> startTime = new ThreadLocal<Long>();
     public static boolean verboseLogging = false;
 

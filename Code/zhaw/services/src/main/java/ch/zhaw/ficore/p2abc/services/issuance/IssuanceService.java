@@ -47,7 +47,6 @@ import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.util.CryptoUriUtil;
-import eu.abc4trust.xml.ABCEBoolean;
 import eu.abc4trust.xml.Attribute;
 import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.CredentialSpecification;
