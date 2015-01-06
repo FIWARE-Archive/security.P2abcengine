@@ -507,6 +507,30 @@ public class VerificationServiceGUI {
         }
     }
     
+    @POST()
+    @Path("/protected/deletePredicate/")
+    public Response deletePredicate(@FormParam("resource") String resource, @FormParam("index") int index,
+            @FormParam("puid") String puid) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("index", Integer.toString(index));
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deletePredicate/"
+                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
     @GET()
     @Path("/protected/resource")
     public Response presentationPolicy(@QueryParam("resource") String resource) {
@@ -554,6 +578,8 @@ public class VerificationServiceGUI {
                 Ul ul = new Ul();
                 ppDiv.appendChild(ul);
                 
+                int j = 0;
+                
                 for(AttributePredicate ap : pp.getAttributePredicate()) {
                     List<Object> objs = ap.getAttributeOrConstantValue();
                     String s = "";
@@ -568,9 +594,20 @@ public class VerificationServiceGUI {
                             log.info("Node name is: " + (i.getNodeName()));
                         }
                     }
+                    
+                    f = new Form("./deletePredicate").setMethod("post").setCSSClass("inl");
+                    
+                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
+                    f.appendChild(new Input().setType("hidden").setName("index").setValue(Integer.toString(j)));
+                    f.appendChild(new Input().setType("submit").setValue("Delete"));
+                    
+                    
                     ul.appendChild(new Li().appendChild(
                             new B().appendChild(new Text(ap.getFunction().toString())))
-                            .appendChild(new Text(" - " + s)));
+                            .appendChild(new Text(" - " + s)).appendChild(f));
+                    
+                    j += 1;
                 }
                 
                 Settings settings = (Settings) RESTHelper.getRequest(verificationServiceURL

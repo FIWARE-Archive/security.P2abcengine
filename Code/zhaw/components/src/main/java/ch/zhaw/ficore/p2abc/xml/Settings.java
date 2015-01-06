@@ -24,4 +24,6 @@ public class Settings {
     @XmlElement(name = "system-parameters")
     public SystemParameters systemParameters;
 
+    public Settings() { }
+
 }

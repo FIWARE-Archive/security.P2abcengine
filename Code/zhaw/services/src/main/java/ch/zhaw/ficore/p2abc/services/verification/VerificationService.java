@@ -785,6 +785,71 @@ public class VerificationService {
     }
     
     /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/deletePredicate/{resource}/{policyUid} (POST)<br>
+     * <br>
+     * <b>Description</b>: Deletes a predicate from a <tt>PresentationPolicyAlternatives</tt>. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * <li>policyUid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>index - Index of the attribute as in the list of predicates inside the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - The predicate or presentation policy does not exist.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param policyUid UID of the presentation policy
+     * @param index Index of the predicate
+     * @return Response
+     */
+    @POST()
+    @Path("/protected/presentationPolicyAlternatives/deletePredicate/{resource}/{policyUid}")
+    public Response deletePredicate(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
+            @FormParam("index") int index) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
+            boolean found = false;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
+                pp.getAttributePredicate().remove(index);
+                found = true;
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    /**
      * <b>Path</b>: /protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid} (POST)<br>
      * <br>
      * <b>Description</b>: Add a predicate to a presentation policy in a <tt>PresentationPolicyAlternatives</tt>.<br>
