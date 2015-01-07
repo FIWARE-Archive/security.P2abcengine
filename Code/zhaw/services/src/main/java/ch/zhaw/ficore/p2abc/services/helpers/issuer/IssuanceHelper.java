@@ -78,7 +78,7 @@ public class IssuanceHelper extends AbstractHelper {
 
     public IssuanceStorage issuanceStorage;
 
-    public String readTextFile(String path) {
+    public static synchronized String readTextFile(String path) {
         try {
             ClassLoader cl = IssuanceHelper.class.getClassLoader();
             File f = new File(cl.getResource(path).getFile());
