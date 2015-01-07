@@ -457,12 +457,12 @@ public class VerificationServiceGUI {
     
     @POST()
     @Path("/protected/createResource")
-    public Response createResource(@FormParam("rs") String resourceString, @FormParam("ru") String redirectURL) {
+    public Response createResource(@FormParam("rs") String resourceString, @FormParam("ru") String redirectURI) {
         log.entry();
         
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-            params.add("redirectURL", redirectURL);
+            params.add("redirectURI", redirectURI);
             
             RESTHelper.putRequest(verificationServiceURL + "protected/resource/create/"
                     + URLEncoder.encode(resourceString, "UTF-8"), params);
@@ -985,7 +985,7 @@ public class VerificationServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.getRequest(verificationServiceURL + "protected/loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            RESTHelper.postRequest(verificationServiceURL + "protected/loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
             
             Html html = VerificationGUI.getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();

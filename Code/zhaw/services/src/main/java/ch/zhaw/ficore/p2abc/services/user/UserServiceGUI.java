@@ -850,7 +850,7 @@ public class UserServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.getRequest(userServiceURL + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            RESTHelper.postRequest(userServiceURL + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
             
             Html html = UserGUI.getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();

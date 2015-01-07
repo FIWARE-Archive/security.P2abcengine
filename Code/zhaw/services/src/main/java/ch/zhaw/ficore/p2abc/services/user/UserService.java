@@ -94,6 +94,7 @@ public class UserService {
     private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
     private static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
     private static String errNoCred = "The credential could not be found!";
+    private final static String errNotFound = "The requested resource or parts of it could not be found.";
 
     /**
      * <b>Path</b>: /status/ (GET)<br>
@@ -762,6 +763,52 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
+     * <br>
+     * <b>Description</b>: Retreive a credential specification stored at this service.<br>
+     * <br>
+     * <b>Path parameters:</b>
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification to retrieve.</li>
+     * </ul>
+     * <br>
+     * <b>Response status:</b>
+     * <ul>
+     * <li>200 - OK (application/xml)</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - The credential specification could not be found.</li>
+     * </ul>
+     * <br>
+     * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
+     * @param credSpecUid UID of the credential specification
+     * @return Response
+     */
+    @GET()
+    @Path("/credentialSpecification/get/{credentialSpecificationUid}")
+    public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
+        log.entry();
+        
+        try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+
+            KeyManager keyManager = instance.keyManager;
+            
+            CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credSpecUid));
+            
+            if(credSpec == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
+            return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
+        }
+        catch(Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }

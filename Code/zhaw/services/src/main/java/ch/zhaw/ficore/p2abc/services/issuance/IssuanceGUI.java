@@ -351,8 +351,7 @@ public class IssuanceGUI {
                             + URLEncoder.encode(credSpec.getSpecificationUID()
                                     .toString(), "UTF-8"), RESTHelper.toXML(
                             CredentialSpecification.class,
-                            of.createCredentialSpecification(credSpec)),
-                    String.class);
+                            of.createCredentialSpecification(credSpec)));
 
             return credentialSpecifications();
         } catch (Exception e) {

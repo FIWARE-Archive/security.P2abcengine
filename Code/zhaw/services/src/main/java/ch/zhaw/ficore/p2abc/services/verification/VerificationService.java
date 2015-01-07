@@ -579,6 +579,7 @@ public class VerificationService {
             ApplicationData apd = new ApplicationData();
             apd.getContent().add("n/a");
             m.setApplicationData(apd);
+            pp.setMessage(m);
             
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
             

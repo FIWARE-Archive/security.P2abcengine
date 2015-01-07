@@ -63,6 +63,9 @@ public class RESTHelper {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object fromXML(Class clazz, String xml) throws JAXBException {
+        System.out.println("--- 1");
+        System.out.println(xml);
+        System.out.println("2 ---");
         return JAXB.unmarshal(new StringReader(xml), clazz);
     }
 
