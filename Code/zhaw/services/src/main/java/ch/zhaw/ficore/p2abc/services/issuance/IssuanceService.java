@@ -100,7 +100,7 @@ public class IssuanceService {
 
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
-            String ipDefault = instance
+            String ipDefault = IssuanceHelper
                     .readTextFile("defaultIssuancePolicy.xml");
             IssuancePolicy ip = (IssuancePolicy) RESTHelper.fromXML(
                     IssuancePolicy.class, ipDefault);
