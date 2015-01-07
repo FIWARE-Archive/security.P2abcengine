@@ -92,7 +92,7 @@ public class IssuanceHelper extends AbstractHelper {
             log.info(lines);
             return lines;
         } catch (Exception e) {
-            throw new RuntimeException("readTextFile(" + path + ") failed!");
+            throw new RuntimeException("readTextFile(" + path + ") failed: " + e.getMessage());
         }
     }
 
