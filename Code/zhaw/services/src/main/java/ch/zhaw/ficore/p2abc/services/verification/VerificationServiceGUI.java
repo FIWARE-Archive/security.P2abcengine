@@ -456,6 +456,31 @@ public class VerificationServiceGUI {
     }
     
     @POST()
+    @Path("/protected/deletePolicyAlt")
+    public Response deletePolicyAlt(@FormParam("resource") String resource, @FormParam("puid") String puid) {
+        log.entry();
+        
+        try {
+            MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+            params.add("puid", puid);
+            
+            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deletePolicyAlternative/"
+                    + URLEncoder.encode(resource, "UTF-8"), params);
+            
+            return log.exit(presentationPolicy(resource));
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log),
+                            request).write()).build());
+        }
+    }
+    
+    
+    @POST()
     @Path("/protected/createResource")
     public Response createResource(@FormParam("rs") String resourceString, @FormParam("ru") String redirectURI) {
         log.entry();
@@ -574,6 +599,12 @@ public class VerificationServiceGUI {
                 Div ppDiv = new Div();
                 mainDiv.appendChild(ppDiv);
                 ppDiv.appendChild(new H3().appendChild(new Text(pp.getPolicyUID().toString())));
+                
+                f = new Form("./deletePolicyAlt").setMethod("post").setCSSClass("raw");
+                f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+                f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
+                f.appendChild(new Input().setType("submit").setValue("Delete this policy alternative"));
+                ppDiv.appendChild(f);
                 
                 Ul ul = new Ul();
                 ppDiv.appendChild(ul);

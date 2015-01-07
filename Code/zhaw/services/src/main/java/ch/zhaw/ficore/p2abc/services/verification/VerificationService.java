@@ -592,6 +592,72 @@ public class VerificationService {
     }
     
     /**
+     * <b>Path</b>: /protected/presentationPolicyAlternatives/deletePolicyAlternative/{resource} (POST)<br>
+     * <br>
+     * <b>Description</b>: Delete a presentation policy alternative from a <tt>PresentationPolicyAlternatives</tt>. <br>
+     * <br>
+     * <b>Path parameters</b>:
+     * <ul>
+     * <li>resource - Resource URI</li>
+     * </ul>
+     * <br>
+     * <b>POST parameters</b>:
+     * <ul>
+     * <li>puid - UID of the presentation policy</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
+     * </ul>
+     * @param resource Resource URI
+     * @param policyUid UID of the presentation policy
+     * @return Response
+     */
+    @POST()
+    @Path("/protected/presentationPolicyAlternatives/deletePolicyAlternative/{resource}")
+    public Response deletePolicyAlternative(@PathParam("resource") String resource, @FormParam("puid") String policyUid) {
+        log.entry();
+        
+        try {
+            VerificationHelper verificationHelper = VerificationHelper
+                    .getInstance();
+            
+            PresentationPolicyAlternatives ppa = verificationHelper.verificationStorage.getPresentationPolicyAlternatives(new URI(resource));
+            
+            if(ppa == null)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
+            boolean found = false;
+            PresentationPolicy toDelete = null;
+            
+            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+                if(!pp.getPolicyUID().toString().equals(policyUid))
+                    continue;
+                
+                toDelete = pp;
+                found = true;
+                break;
+            }
+            
+            if(!found)
+                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            
+            ppa.getPresentationPolicy().remove(toDelete);
+            
+            verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
+            
+            return log.exit(Response.ok("OK").build());
+        }
+        catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    /**
      * <b>Path</b>: /protected/resource/create/{resource} (PUT) <br>
      * <br>
      * <b>Description</b>: Creates a resource under the URI given as part of the path. This will create an
