@@ -141,6 +141,15 @@ public class TestFlowGUI extends JerseyTest {
         
         RESTHelper.postRequest(issuanceGUI + "protected/addQueryRule", params);
         
+        /*
+         * Load settings from issuer onto the other services
+         */
+        String url = issuanceServiceURLUnprot + "getSettings";
+        params = new MultivaluedMapImpl();
+        params.add("url", url);
+        RESTHelper.postRequest(userGUI + "loadSettings2", params);
+        RESTHelper.postRequest(verificationGUI + "protected/loadSettings2", params);
+        
         //while(true)
         //    Thread.sleep(1000);
     }
