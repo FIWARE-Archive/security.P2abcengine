@@ -55,7 +55,7 @@ public class TestFlowGUI extends JerseyTest {
 
     @Before
     public void initJNDI() throws Exception {
-        System.out.println("init [TestFlow]");
+        System.out.println("init [TestFlowGUI]");
         this.setUp();
         // Create initial context
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
@@ -130,7 +130,16 @@ public class TestFlowGUI extends JerseyTest {
         params = new MultivaluedMapImpl();
         params.add("cs","urn:fiware:privacy:test");
         
-        RESTHelper.postRequest(issuanceGUI+ "protected/generateIssuerParameters", params);
+        RESTHelper.postRequest(issuanceGUI + "protected/generateIssuerParameters", params);
+        
+        /*
+         * Add a dummy query rule
+         */
+        params = new MultivaluedMapImpl();
+        params.add("cs", "urn:fiware:privacy:test");
+        params.add("qr", "demo");
+        
+        RESTHelper.postRequest(issuanceGUI + "protected/addQueryRule", params);
         
         //while(true)
         //    Thread.sleep(1000);

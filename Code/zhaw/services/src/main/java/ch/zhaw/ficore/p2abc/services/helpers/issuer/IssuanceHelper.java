@@ -82,6 +82,7 @@ public class IssuanceHelper extends AbstractHelper {
         try {
             ClassLoader cl = IssuanceHelper.class.getClassLoader();
             File f = new File(cl.getResource(path).getFile());
+            log.warn(f.getAbsolutePath());
             BufferedReader br = new BufferedReader(new FileReader(f));
             String lines = "";
             String line = "";
