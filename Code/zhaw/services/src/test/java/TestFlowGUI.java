@@ -124,6 +124,14 @@ public class TestFlowGUI extends JerseyTest {
         RESTHelper.postRequest(issuanceGUI + "protected/obtainCredentialSpecification2", params);
         RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/" + URLEncoder.encode("urn:fiware:privacy:test", "utf-8"));
         
+        /*
+         * Generate issuer parameters for the credential specification
+         */
+        params = new MultivaluedMapImpl();
+        params.add("cs","urn:fiware:privacy:test");
+        
+        RESTHelper.postRequest(issuanceGUI+ "protected/generateIssuerParameters", params);
+        
         //while(true)
         //    Thread.sleep(1000);
     }
