@@ -29,14 +29,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
+import java.net.URLDecoder;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.grizzly.http.util.URLDecoder;
 
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 
@@ -83,7 +82,7 @@ public class IssuanceHelper extends AbstractHelper {
     public static synchronized String readTextFile(String path) {
         try {
             ClassLoader cl = IssuanceHelper.class.getClassLoader();
-            String resourcePath = URLDecoder.decode(cl.getResource(path).getFile());
+            String resourcePath = URLDecoder.decode(cl.getResource(path).getFile(),"utf-8");
             File f = new File(resourcePath);
             BufferedReader br = new BufferedReader(new FileReader(f));
             String lines = "";
