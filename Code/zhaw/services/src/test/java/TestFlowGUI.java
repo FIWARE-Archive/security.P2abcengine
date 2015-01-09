@@ -150,6 +150,16 @@ public class TestFlowGUI extends JerseyTest {
         RESTHelper.postRequest(userGUI + "loadSettings2", params);
         RESTHelper.postRequest(verificationGUI + "protected/loadSettings2", params);
         
+        /*
+         * Obtain a credential from the issuer
+         */
+        params = new MultivaluedMapImpl();
+        params.add("un", "CaroleKing");
+        params.add("pw", "Jazzman");
+        params.add("is", issuanceServiceURLUnprot.substring(0, issuanceServiceURLUnprot.lastIndexOf("/")));
+        params.add("cs", "urn:fiware:privacy:test");
+        RESTHelper.postRequest(userGUI + "obtainCredential2", params);
+        
         //while(true)
         //    Thread.sleep(1000);
     }
