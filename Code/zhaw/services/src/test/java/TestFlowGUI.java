@@ -170,6 +170,14 @@ public class TestFlowGUI extends JerseyTest {
         params.add("uic", getContextString(result));
         RESTHelper.postRequest(userGUI + "obtainCredential3", params);
         
+        /*
+         * Create a resource at the verifier
+         */
+        params = new MultivaluedMapImpl();
+        params.add("rs", "resource");
+        params.add("ru", "http://google.com");
+        RESTHelper.postRequest(verificationGUI + "protected/createResource", params);
+        
         //while(true)
         //    Thread.sleep(1000);
     }
