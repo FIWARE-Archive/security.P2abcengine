@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -158,9 +160,24 @@ public class TestFlowGUI extends JerseyTest {
         params.add("pw", "Jazzman");
         params.add("is", issuanceServiceURLUnprot.substring(0, issuanceServiceURLUnprot.lastIndexOf("/")));
         params.add("cs", "urn:fiware:privacy:test");
-        RESTHelper.postRequest(userGUI + "obtainCredential2", params);
+        String result = (String)RESTHelper.postRequest(userGUI + "obtainCredential2", params);
+        System.out.println("CTX: " + getContextString(result));
+        
+        params = new MultivaluedMapImpl();
+        params.add("policyId","0");
+        params.add("candidateId","0");
+        params.add("pseudonymId","0");
+        params.add("uic", getContextString(result));
+        RESTHelper.postRequest(userGUI + "obtainCredential3", params);
         
         //while(true)
         //    Thread.sleep(1000);
+    }
+    
+    public String getContextString(String input) {
+        Pattern pattern = Pattern.compile("ui-context-(.*?)\">");
+        Matcher m = pattern.matcher(input);
+        m.find();
+        return "ui-context-"+m.group(1);
     }
 }
