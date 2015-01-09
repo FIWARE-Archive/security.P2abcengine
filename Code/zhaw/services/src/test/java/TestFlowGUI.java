@@ -178,6 +178,14 @@ public class TestFlowGUI extends JerseyTest {
         params.add("ru", "http://google.com");
         RESTHelper.postRequest(verificationGUI + "protected/createResource", params);
         
+        /*
+         * Add a policy alternative
+         */
+        params = new MultivaluedMapImpl();
+        params.add("resource", "resource");
+        params.add("puid", "urn:policy");
+        RESTHelper.postRequest(verificationGUI + "protected/addPolicyAlt", params);
+        
         //while(true)
         //    Thread.sleep(1000);
     }
