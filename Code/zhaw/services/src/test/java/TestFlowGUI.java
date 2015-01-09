@@ -186,6 +186,15 @@ public class TestFlowGUI extends JerseyTest {
         params.add("puid", "urn:policy");
         RESTHelper.postRequest(verificationGUI + "protected/addPolicyAlt", params);
         
+        /*
+         * Add a new alias
+         */
+        params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        params.add("al", "test");
+        params.add("resource", "resource");
+        RESTHelper.postRequest(verificationGUI + "protected/addAlias", params);
+        
         //while(true)
         //    Thread.sleep(1000);
     }
