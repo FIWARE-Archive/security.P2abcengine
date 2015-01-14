@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -141,7 +143,66 @@ public class TestFlowGUI extends JerseyTest {
         
         RESTHelper.postRequest(issuanceGUI + "protected/addQueryRule", params);
         
+        /*
+         * Load settings from issuer onto the other services
+         */
+        String url = issuanceServiceURLUnprot + "getSettings";
+        params = new MultivaluedMapImpl();
+        params.add("url", url);
+        RESTHelper.postRequest(userGUI + "loadSettings2", params);
+        RESTHelper.postRequest(verificationGUI + "protected/loadSettings2", params);
+        
+        /*
+         * Obtain a credential from the issuer
+         */
+        params = new MultivaluedMapImpl();
+        params.add("un", "CaroleKing");
+        params.add("pw", "Jazzman");
+        params.add("is", issuanceServiceURLUnprot.substring(0, issuanceServiceURLUnprot.lastIndexOf("/")));
+        params.add("cs", "urn:fiware:privacy:test");
+        String result = (String)RESTHelper.postRequest(userGUI + "obtainCredential2", params);
+        System.out.println("CTX: " + getContextString(result));
+        
+        params = new MultivaluedMapImpl();
+        params.add("policyId","0");
+        params.add("candidateId","0");
+        params.add("pseudonymId","0");
+        params.add("uic", getContextString(result));
+        RESTHelper.postRequest(userGUI + "obtainCredential3", params);
+        
+        /*
+         * Create a resource at the verifier
+         */
+        params = new MultivaluedMapImpl();
+        params.add("rs", "resource");
+        params.add("ru", "http://google.com");
+        RESTHelper.postRequest(verificationGUI + "protected/createResource", params);
+        
+        /*
+         * Add a policy alternative
+         */
+        params = new MultivaluedMapImpl();
+        params.add("resource", "resource");
+        params.add("puid", "urn:policy");
+        RESTHelper.postRequest(verificationGUI + "protected/addPolicyAlt", params);
+        
+        /*
+         * Add a new alias
+         */
+        params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        params.add("al", "test");
+        params.add("resource", "resource");
+        RESTHelper.postRequest(verificationGUI + "protected/addAlias", params);
+        
         //while(true)
         //    Thread.sleep(1000);
+    }
+    
+    public String getContextString(String input) {
+        Pattern pattern = Pattern.compile("ui-context-(.*?)\">");
+        Matcher m = pattern.matcher(input);
+        m.find();
+        return "ui-context-"+m.group(1);
     }
 }
