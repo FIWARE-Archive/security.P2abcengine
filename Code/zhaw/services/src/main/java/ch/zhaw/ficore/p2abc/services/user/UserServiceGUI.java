@@ -27,6 +27,7 @@ package ch.zhaw.ficore.p2abc.services.user;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +43,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,6 +51,8 @@ import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
+import ch.zhaw.ficore.p2abc.storage.JdbcURIBytesStorage;
+import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
@@ -108,6 +112,16 @@ public class UserServiceGUI {
 
     private static java.util.Map<String, String> uiContextToURL = new HashMap<String, String>();
     private static java.util.Map<String, String> uiContextToResource = new HashMap<String, String>();
+    private static URIBytesStorage urlStorage;
+    
+    static {
+        try {
+            urlStorage = new JdbcURIBytesStorage("URIBytesStorage", "usergui_urls");
+        }
+        catch(Exception e) {
+            e.printStackTrace(); //ignore it, will die later on in the process I guess.
+        }
+    }
 
     private static String userServiceURL = ServicesConfiguration
             .getUserServiceURL();
@@ -147,7 +161,9 @@ public class UserServiceGUI {
             mainDiv.appendChild(p);
             p.appendChild(new Text(text));
             p.appendChild(new Br());
-            text = "Credentials contain attributes issued to you by issuers. Credential specifications specify what attributes a credential can or has to contain.";
+            text = "Credentials contain attributes issued to you by issuers. Credential specifications specify what attributes a credential can or has to contain." +
+            "You can also define aliases for URLs which are required for obtaining credentials or requesting resources. An alias for an URL " +
+                    "is just a shorthand name you can choose so you don't have to remember long URLs.";
             p.appendChild(new Text(text));
 
             Ul ul = new Ul();
@@ -157,6 +173,8 @@ public class UserServiceGUI {
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./credentialSpecifications").appendChild(
                     new Text("Manage credential specifications"))));
+            ul.appendChild(new Li().appendChild(new A().setHref(
+                    "./urls").appendChild(new Text("Manage URL aliases"))));
 
             mainDiv.appendChild(ul);
 
@@ -361,16 +379,38 @@ public class UserServiceGUI {
 
             mainDiv.appendChild(new H2().appendChild(new Text(
                     "Request resource")));
+            
+            mainDiv.appendChild(new P()
+            .setCSSClass("info")
+            .appendChild(
+                    new Text(
+                            "Please enter the information required for the resource. " +
+                    "If the the Verifier field is blank please add an alias for an URL first via the Profile page.")));
 
             Form f = new Form("./requestResource2").setMethod("post");
             Table tbl = new Table();
             Tr tr = null;
+            
+            Select s = new Select().setName("vu");
+            
+            
+            List<String> keys = urlStorage.keysAsStrings();
+            List<byte[]> values = urlStorage.values();
+            List<String> urls = new ArrayList<String>();
+            
+            for(byte[] b : values) {
+                urls.add((String) SerializationUtils.deserialize(b));
+            }
+            
+            for(int i = 0; i < keys.size(); i++) {
+                Option o = new Option().appendChild(new Text(keys.get(i))).setValue(urls.get(i));
+                s.appendChild(o);
+            }
 
             tr = new Tr().appendChild(
                     new Td().appendChild(new Label().appendChild(new Text(
-                            "Verification URL:")))).appendChild(
-                    new Td().appendChild(new Input().setType("text").setName(
-                            "vu")));
+                            "Verifier:")))).appendChild(
+                    new Td().appendChild(s));
             tbl.appendChild(tr);
             tr = new Tr().appendChild(
                     new Td().appendChild(new Label().appendChild(new Text(
@@ -382,6 +422,115 @@ public class UserServiceGUI {
             f.appendChild(new Input().setType("submit").setValue("Request"));
             mainDiv.appendChild(f);
             return log.exit(Response.ok(html.write()).build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/deleteURL")
+    public Response deleteURL(@FormParam("name") String name) {
+        log.entry();
+        
+        try {
+            urlStorage.delete(name);
+            return log.exit(urls());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @POST()
+    @Path("/addURL")
+    public Response addURL(@FormParam("name") String name, @FormParam("url") String url) {
+        log.entry();
+        
+        try {
+            urlStorage.put(name, SerializationUtils.serialize(url));
+            return log.exit(urls());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+    }
+    
+    @GET()
+    @Path("/urls")
+    public Response urls() {
+        log.entry();
+        
+        try {
+            List<String> keys = urlStorage.keysAsStrings();
+            List<byte[]> values = urlStorage.values();
+            List<String> urls = new ArrayList<String>();
+            
+            for(byte[] b : values) {
+                urls.add((String) SerializationUtils.deserialize(b));
+            }
+            
+            Html html = UserGUI.getHtmlPramble("URLs", request);
+            Div mainDiv = new Div().setCSSClass("mainDiv");
+            html.appendChild(UserGUI.getBody(mainDiv));
+            
+            String text = "Here you can define aliases for URLs which are later required when you choose the issuer or verifier while obtaining credentials or requesting a resource.";
+            P p = new P().setCSSClass("info");
+            mainDiv.appendChild(p);
+            p.appendChild(new Text(text));
+
+            mainDiv.appendChild(new H2().appendChild(new Text("URLs")));
+            
+            Table tbl = new Table();
+            Tr heading = new Tr().setCSSClass("heading");
+            heading.appendChild(new Td().appendChild(new Text("Name")));
+            heading.appendChild(new Td().appendChild(new Text("URL")));
+            heading.appendChild(new Td().appendChild(new Text("Action")));
+            tbl.appendChild(heading);
+            int i = 0;
+            for(String key : keys) {
+                Tr tr = new Tr();
+                tr.appendChild(new Td().appendChild(new Text(key)));
+                tr.appendChild(new Td().appendChild(new Text(urls.get(i))));
+                Form f = new Form("./deleteURL").setMethod("post").setCSSClass("nopad");
+                f.appendChild(new Input().setType("submit").setValue("delete"));
+                f.appendChild(new Input().setType("hidden").setName("name").setValue(key));
+                tr.appendChild(new Td().appendChild(f));
+                i++;
+                tbl.appendChild(tr);
+            }
+            mainDiv.appendChild(tbl);
+            
+            tbl = new Table();
+            Tr tr = new Tr();
+            tr.appendChild(new Td().appendChild(new Text("Name: ")));
+            tr.appendChild(new Td().appendChild(new Input().setType("text").setName("name")));
+            tbl.appendChild(tr);
+            tr = new Tr();
+            tr.appendChild(new Td().appendChild(new Text("URL: ")));
+            tr.appendChild(new Td().appendChild(new Input().setType("text").setName("url")));
+            tbl.appendChild(tr);
+            
+            Form f = new Form("./addURL").setMethod("post");
+            f.appendChild(tbl);
+            f.appendChild(new Input().setType("Submit").setValue("Add"));
+            mainDiv.appendChild(f);
+            
+            
+            return log.exit(Response.ok(html.write()).build());
+            
         } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
@@ -748,7 +897,8 @@ public class UserServiceGUI {
                     .setCSSClass("info")
                     .appendChild(
                             new Text(
-                                    "Please enter the information required to obtain the credential.")));
+                                    "Please enter the information required to obtain the credential. " +
+                            "If the the Issuer field is blank please add an alias for an URL first via the Profile page.")));
             Form f = new Form("./obtainCredential2");
             f.setMethod("post");
 
@@ -773,8 +923,26 @@ public class UserServiceGUI {
             row = new Tr();
             row.appendChild(new Td().appendChild(new Label()
                     .appendChild(new Text("Issuer:"))));
-            row.appendChild(new Td().appendChild(new Input().setType("text")
-                    .setName("is")));
+            //row.appendChild(new Td().appendChild(new Input().setType("text")
+            //        .setName("is")));
+            Select s = new Select().setName("is");
+            
+            row.appendChild(new Td().appendChild(s));
+            //        .setName("is")));
+            
+            List<String> keys = urlStorage.keysAsStrings();
+            List<byte[]> values = urlStorage.values();
+            List<String> urls = new ArrayList<String>();
+            
+            for(byte[] b : values) {
+                urls.add((String) SerializationUtils.deserialize(b));
+            }
+            
+            for(int i = 0; i < keys.size(); i++) {
+                Option o = new Option().appendChild(new Text(keys.get(i))).setValue(urls.get(i));
+                s.appendChild(o);
+            }
+            
             tbl.appendChild(row);
 
             row = new Tr();

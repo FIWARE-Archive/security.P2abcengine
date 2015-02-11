@@ -108,6 +108,8 @@ public class TestIssuerAPI extends JerseyTest {
 
     @Test
     public void testQueryRules() throws Exception {
+        
+        
         QueryRule qr = new QueryRule();
         qr.queryString = "string1";
 

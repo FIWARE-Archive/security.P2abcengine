@@ -318,9 +318,8 @@ public class TestFlow extends JerseyTest {
 
             System.gc();
         }
-
-        //while(true)
-        //    Thread.sleep(10000);
+        
+        System.out.println("......h..h.h.h.h.h.");
     }
 
     public String readTextFile(String path) {
