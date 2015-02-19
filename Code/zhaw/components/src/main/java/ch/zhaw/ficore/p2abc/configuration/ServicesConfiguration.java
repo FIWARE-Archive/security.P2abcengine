@@ -26,9 +26,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class ServicesConfiguration {
 
-    /** Configuration data for issuance service. */
-    private IssuanceConfiguration issuanceConfiguration;
-
     /** Configuration data for verification service. */
     private VerificationConfiguration verificationConfiguration;
 
@@ -124,13 +121,7 @@ public class ServicesConfiguration {
 
         String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
 
-        String issuanceServiceURL = (String) envCtx
-                .lookup("cfg/issuanceServiceURL");
-        String userServiceURL = (String) envCtx.lookup("cfg/userServiceURL");
-        String verificationServiceURL = (String) envCtx.lookup("cfg/verificationServiceURL");
-        String restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
         String restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
-        String verifierIdentity = (String) envCtx.lookup("cfg/verifierIdentity");
         
         System.out.println("restAuthUser :=" + restAuthUser);
         logger.info("restAuthUser := " + restAuthUser);
