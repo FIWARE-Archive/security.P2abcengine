@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBException;
 
@@ -115,7 +116,7 @@ public class TestFlowGUI extends JerseyTest {
     }
     
     @Test
-    public void flow() throws InterruptedException, ClientHandlerException, UniformInterfaceException, JAXBException, UnsupportedEncodingException {
+    public void flow() throws InterruptedException, ClientHandlerException, UniformInterfaceException, JAXBException, UnsupportedEncodingException, NamingException {
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         
         params.add("n", "test");
