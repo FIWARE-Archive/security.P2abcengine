@@ -262,7 +262,6 @@ public class TestFlow extends JerseyTest {
             String rPresentationPolicyAlternatives = presentationPolicyAlternatives
                     .replaceAll("<\\?xml(.*)\\?>", "");
 
-            @SuppressWarnings("unused")
             String ppapt = "";
             ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
             ppapt += "<PresentationPolicyAlternativesAndPresentationToken xmlns=\"http://abc4trust.eu/wp2/abcschemav1.0\" Version=\"1.0\">";

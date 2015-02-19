@@ -9,6 +9,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
+
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.H2;
@@ -18,9 +20,6 @@ import com.hp.gagawa.java.elements.Link;
 import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
-
-import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 
 @Path("/demo-resource")
 public class DemoResource {
