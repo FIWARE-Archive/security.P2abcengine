@@ -115,6 +115,14 @@ public class UserServiceGUI {
     private static java.util.Map<String, String> uiContextToResource = new HashMap<String, String>();
     private static URIBytesStorage urlStorage;
     
+    private final static String errMissingUIArgs = "Did not receive any UI presentation arguments. This is most likely due to you not " +
+                                                "having the required credentials to request the resource. ";
+    
+    private final static String errMissingPPA = "Did not receive any presentation policy alternatives. This is most likely due to the fact " +
+                                                "that the resource does not exist at the verifier. ";
+    
+    
+    
     static {
         try {
             urlStorage = new JdbcURIBytesStorage("URIBytesStorage", "usergui_urls");
@@ -339,6 +347,12 @@ public class UserServiceGUI {
                     .getRequest(verificationURL + "/requestResource/"
                             + URLEncoder.encode(resource, "UTF-8"),
                             PresentationPolicyAlternatives.class);
+            
+            if(ppa == null) {
+                return log.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(UserGUI.errorPage(errMissingPPA, request).write()).build());
+            }
 
             UiPresentationArguments args = (UiPresentationArguments) RESTHelper
                     .postRequest(
@@ -347,6 +361,12 @@ public class UserServiceGUI {
                                     PresentationPolicyAlternatives.class,
                                     of.createPresentationPolicyAlternatives(ppa)),
                             UiPresentationArguments.class);
+            
+            if(args == null) {
+                return log.exit(Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(UserGUI.errorPage(errMissingUIArgs, request).write()).build());
+            }
 
             putURL(args.uiContext.toString(), verificationURL);
             putResource(args.uiContext.toString(), resource);
