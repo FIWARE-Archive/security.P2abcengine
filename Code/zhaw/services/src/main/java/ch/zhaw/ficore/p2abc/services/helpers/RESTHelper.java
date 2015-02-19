@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.services.helpers;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXB;
@@ -19,15 +20,6 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 public class RESTHelper {
-
-    private static String authUser = "both";
-    private static String authPw = "tomcat";
-
-    static {
-        authUser = ServicesConfiguration.getRestAuthUser();
-        authPw = ServicesConfiguration.getRestAuthPassword();
-    }
-
     /**
      * Serializes an object using JAXB to a XML.
      * 
@@ -90,9 +82,9 @@ public class RESTHelper {
     @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -109,9 +101,9 @@ public class RESTHelper {
 
     public static Object postRequest(String url, String xml)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -129,9 +121,9 @@ public class RESTHelper {
     @SuppressWarnings("rawtypes")
     public static Object postRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -147,9 +139,9 @@ public class RESTHelper {
     }
 
     public static Object postRequest(String url) throws ClientHandlerException,
-            UniformInterfaceException, JAXBException {
+            UniformInterfaceException, JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -167,9 +159,9 @@ public class RESTHelper {
     public static Object postRequest(String url,
             MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -188,9 +180,9 @@ public class RESTHelper {
     @SuppressWarnings("rawtypes")
     public static Object putRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -207,9 +199,9 @@ public class RESTHelper {
 
     public static Object putRequest(String url, String xml)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -227,9 +219,9 @@ public class RESTHelper {
     public static Object putRequest(String url,
             MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -248,9 +240,9 @@ public class RESTHelper {
     @SuppressWarnings("rawtypes")
     public static Object getRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -264,9 +256,9 @@ public class RESTHelper {
     }
 
     public static Object getRequest(String url) throws ClientHandlerException,
-            UniformInterfaceException, JAXBException {
+            UniformInterfaceException, JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -281,9 +273,9 @@ public class RESTHelper {
 
     public static Object deleteRequest(String url)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 
@@ -301,9 +293,9 @@ public class RESTHelper {
     public static Object deleteRequest(String url,
             MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
-            JAXBException {
+            JAXBException, NamingException {
         Client client = new Client();
-        client.addFilter(new HTTPBasicAuthFilter(authUser, authPw));
+        client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
 

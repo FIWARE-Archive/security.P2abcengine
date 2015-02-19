@@ -2,6 +2,7 @@ package ch.zhaw.ficore.p2abc.configuration;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,58 +39,10 @@ public class ServicesConfiguration {
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
 
-    private static String issuanceServiceURL = "http://localhost/";
-
-    private static String userServiceURL = "http://localhost/";
-    
-    private static String verificationServiceURL = "http://localhost/";
-
-    private static String restAuthUser = "user";
-
-    private static String restAuthPassword = "password";
-    
-    private static String verifierIdentity = "unknown";
-
-    static {
-        staticInit();
-    }
-    
-    public static synchronized void staticInit() {
-        try {
-            Context initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:/comp/env");
-
-            ConnectionParameters cpAttributes = (ConnectionParameters) envCtx
-                    .lookup("cfg/ConnectionParameters/attributes");
-            ConnectionParameters cpAuthentication = (ConnectionParameters) envCtx
-                    .lookup("cfg/ConnectionParameters/authentication");
-            IssuanceConfiguration.IdentitySource sourceAttributes = IssuanceConfiguration.IdentitySource
-                    .valueOf((String) envCtx.lookup("cfg/Source/attributes"));
-            IssuanceConfiguration.IdentitySource sourceAuthentication = IssuanceConfiguration.IdentitySource
-                    .valueOf((String) envCtx
-                            .lookup("cfg/Source/authentication"));
-
-            String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
-
-            issuanceServiceURL = (String) envCtx
-                    .lookup("cfg/issuanceServiceURL");
-            userServiceURL = (String) envCtx.lookup("cfg/userServiceURL");
-            verificationServiceURL = (String) envCtx.lookup("cfg/verificationServiceURL");
-            restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
-            restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
-            verifierIdentity = (String) envCtx.lookup("cfg/verifierIdentity");
-            
-            System.out.println("restAuthUser :=" + restAuthUser);
-            logger.info("restAuthUser := " + restAuthUser);
-
-            IssuanceConfiguration cfgData = new IssuanceConfiguration(
-                    sourceAttributes, cpAttributes, sourceAuthentication,
-                    cpAuthentication, bindQuery);
-            ServicesConfiguration.setIssuanceConfiguration(cfgData);
-        } catch (Exception e) {
-            logger.catching(e);
-            throw new RuntimeException(e);
-        }
+    private static Context getEnvContext() throws NamingException {
+        Context initCtx = new InitialContext();
+        Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+        return envCtx;
     }
 
     /**
@@ -98,28 +51,42 @@ public class ServicesConfiguration {
      */
     private static String uriBase = "urn:fiware:privacy:";
 
-    public static synchronized String getIssuanceServiceURL() {
-        return issuanceServiceURL;
+    public static synchronized String getIssuanceServiceURL() throws NamingException {
+        Context envCtx = ServicesConfiguration.getEnvContext();
+
+        return (String) envCtx
+                .lookup("cfg/issuanceServiceURL");
     }
 
-    public static synchronized String getUserServiceURL() {
-        return userServiceURL;
+    public static synchronized String getUserServiceURL() throws NamingException {
+        Context envCtx = ServicesConfiguration.getEnvContext();
+
+        return (String) envCtx
+                .lookup("cfg/userServiceURL");
     }
     
-    public static synchronized String getVerificationServiceURL() {
-        return verificationServiceURL;
+    public static synchronized String getVerificationServiceURL() throws NamingException {
+        Context envCtx = ServicesConfiguration.getEnvContext();
+
+        return (String) envCtx.lookup("cfg/verificationServiceURL");
     }
 
-    public static synchronized String getRestAuthUser() {
-        return restAuthUser;
+    public static synchronized String getRestAuthUser() throws NamingException {
+        Context envCtx = ServicesConfiguration.getEnvContext();
+
+        return (String) envCtx.lookup("cfg/restAuthUser");
     }
 
-    public static synchronized String getRestAuthPassword() {
-        return restAuthPassword;
+    public static synchronized String getRestAuthPassword() throws NamingException {
+        Context envCtx = ServicesConfiguration.getEnvContext();
+
+        return (String) envCtx.lookup("cfg/restAuthPassword");
     }
     
-    public static synchronized String getVerifierIdentity() {
-        return verifierIdentity;
+    public static synchronized String getVerifierIdentity() throws NamingException {
+        Context envCtx = ServicesConfiguration.getEnvContext();
+
+        return (String) envCtx.lookup("cfg/verifierIdentity");
     }
 
     /**
@@ -139,10 +106,38 @@ public class ServicesConfiguration {
      * Returns the current issuance configuration.
      * 
      * @return the current issuance parameters.
+     * @throws NamingException 
      */
-    public static synchronized IssuanceConfiguration getIssuanceConfiguration() {
+    public static synchronized IssuanceConfiguration getIssuanceConfiguration() throws NamingException {
         logger.entry();
-        return logger.exit(instance.issuanceConfiguration);
+        Context envCtx = ServicesConfiguration.getEnvContext();
+        
+        ConnectionParameters cpAttributes = (ConnectionParameters) envCtx
+                .lookup("cfg/ConnectionParameters/attributes");
+        ConnectionParameters cpAuthentication = (ConnectionParameters) envCtx
+                .lookup("cfg/ConnectionParameters/authentication");
+        IssuanceConfiguration.IdentitySource sourceAttributes = IssuanceConfiguration.IdentitySource
+                .valueOf((String) envCtx.lookup("cfg/Source/attributes"));
+        IssuanceConfiguration.IdentitySource sourceAuthentication = IssuanceConfiguration.IdentitySource
+                .valueOf((String) envCtx
+                        .lookup("cfg/Source/authentication"));
+
+        String bindQuery = (String) envCtx.lookup("cfg/bindQuery");
+
+        String issuanceServiceURL = (String) envCtx
+                .lookup("cfg/issuanceServiceURL");
+        String userServiceURL = (String) envCtx.lookup("cfg/userServiceURL");
+        String verificationServiceURL = (String) envCtx.lookup("cfg/verificationServiceURL");
+        String restAuthPassword = (String) envCtx.lookup("cfg/restAuthPassword");
+        String restAuthUser = (String) envCtx.lookup("cfg/restAuthUser");
+        String verifierIdentity = (String) envCtx.lookup("cfg/verifierIdentity");
+        
+        System.out.println("restAuthUser :=" + restAuthUser);
+        logger.info("restAuthUser := " + restAuthUser);
+
+        return logger.exit(new IssuanceConfiguration(
+                sourceAttributes, cpAttributes, sourceAuthentication,
+                cpAuthentication, bindQuery));
     }
 
     public static synchronized VerificationConfiguration getVerificationConfiguration() {
@@ -153,53 +148,5 @@ public class ServicesConfiguration {
     public static synchronized UserConfiguration getUserConfiguration() {
         logger.entry();
         return logger.exit(instance.userConfiguration);
-    }
-
-    /**
-     * Replaces the current issuance configuration.
-     * 
-     * The new configuration is scrutinised and, if all sanity checks are
-     * passed, the old configuration is replaced with the new one. If there is
-     * something wrong with the configuration, the current configuration is
-     * retained.
-     * 
-     * @param newConfig
-     *            the new configuration
-     */
-    public static synchronized void setIssuanceConfiguration(
-            IssuanceConfiguration newConfig) {
-        logger.entry();
-
-        if (newConfig.isPlausible())
-            instance.issuanceConfiguration = newConfig;
-        else
-            logger.warn("Issuance configuration not plausible, retaining old one");
-
-        logger.exit();
-    }
-
-    public static synchronized void setVerificationConfiguration(
-            VerificationConfiguration newConfig) {
-        logger.entry();
-        instance.verificationConfiguration = newConfig;
-        logger.exit();
-    }
-
-    public static synchronized void setUserConfiguration(
-            UserConfiguration newConfig) {
-        logger.entry();
-        instance.userConfiguration = newConfig;
-        logger.exit();
-    }
-
-    public static synchronized void setFakeIssuanceParameters() {
-        logger.entry();
-        instance.issuanceConfiguration.setFakeSources();
-        // TODO: Set more parameters?
-        logger.exit();
-    }
-
-    public boolean isPlausible() {
-        return true;
     }
 }

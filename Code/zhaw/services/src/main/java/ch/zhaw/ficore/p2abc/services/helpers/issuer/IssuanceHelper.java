@@ -378,7 +378,7 @@ public class IssuanceHelper extends AbstractHelper {
            
             } else {
                 throw new IllegalStateException(
-                        "IssuanceHelper.issueStep : idemix/uprove engine not initialized...");
+                        "IssuanceHelper.issueStep : idemix/uprove engine not initialized");
             }
         }
         return this.issueStep(useEngine, issuanceMessage);

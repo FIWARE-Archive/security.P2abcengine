@@ -65,9 +65,6 @@ public class IssuanceGUI {
     @Context
     HttpServletRequest request;
 
-    private static String issuanceServiceURL = ServicesConfiguration
-            .getIssuanceServiceURL();
-
     private ObjectFactory of = new ObjectFactory();
 
     private Logger logger;
@@ -86,7 +83,7 @@ public class IssuanceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("i", Integer.toString(index));
 
-            RESTHelper.deleteRequest(issuanceServiceURL
+            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL()
                     + "protected/credentialSpecification/deleteAttribute/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"), params);
 
@@ -108,7 +105,7 @@ public class IssuanceGUI {
         logger.entry();
 
         try {
-            RESTHelper.deleteRequest(issuanceServiceURL
+            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL()
                     + "protected/credentialSpecification/delete/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
 
@@ -139,7 +136,7 @@ public class IssuanceGUI {
 
             RESTHelper
                     .putRequest(
-                            issuanceServiceURL
+                            ServicesConfiguration.getIssuanceServiceURL()
                                     + "protected/credentialSpecification/addFriendlyDescriptionAttribute/"
                                     + URLEncoder.encode(credSpecUid, "UTF-8"),
                             params);
@@ -169,7 +166,7 @@ public class IssuanceGUI {
 
             RESTHelper
                     .deleteRequest(
-                            issuanceServiceURL
+                            ServicesConfiguration.getIssuanceServiceURL()
                                     + "protected/credentialSpecification/deleteFriendlyDescriptionAttribute/"
                                     + URLEncoder.encode(credSpecUid, "UTF-8"),
                             params);
@@ -191,7 +188,7 @@ public class IssuanceGUI {
         logger.entry();
 
         try {
-            RESTHelper.postRequest(issuanceServiceURL
+            RESTHelper.postRequest(ServicesConfiguration.getIssuanceServiceURL()
                     + "protected/issuerParameters/generate/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
 
@@ -217,7 +214,7 @@ public class IssuanceGUI {
             qr.queryString = query;
 
             RESTHelper.putRequest(
-                    issuanceServiceURL + "protected/queryRule/store/"
+                    ServicesConfiguration.getIssuanceServiceURL() + "protected/queryRule/store/"
                             + URLEncoder.encode(credSpecUid, "UTF-8"),
                     RESTHelper.toXML(QueryRule.class, qr));
 
@@ -240,7 +237,7 @@ public class IssuanceGUI {
         try {
             QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper
                     .getRequest(
-                            issuanceServiceURL + "protected/queryRule/list",
+                            ServicesConfiguration.getIssuanceServiceURL() + "protected/queryRule/list",
                             QueryRuleCollection.class);
 
             Html html = IssuerGUI.getHtmlPramble("Query Rules", request);
@@ -282,7 +279,7 @@ public class IssuanceGUI {
             mainDiv.appendChild(tbl);
 
             Settings settings = (Settings) RESTHelper.getRequest(
-                    issuanceServiceURL + "getSettings/", Settings.class);
+                    ServicesConfiguration.getIssuanceServiceURL() + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
@@ -333,20 +330,20 @@ public class IssuanceGUI {
         try {
             AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
                     .getRequest(
-                            issuanceServiceURL
+                            ServicesConfiguration.getIssuanceServiceURL()
                                     + "protected/attributeInfoCollection/"
                                     + URLEncoder.encode(name, "UTF-8"),
                             AttributeInfoCollection.class);
 
             CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
-                    .postRequest(issuanceServiceURL
+                    .postRequest(ServicesConfiguration.getIssuanceServiceURL()
                             + "protected/credentialSpecification/generate",
                             RESTHelper
                                     .toXML(AttributeInfoCollection.class, aic),
                             CredentialSpecification.class);
 
             RESTHelper.putRequest(
-                    issuanceServiceURL
+                    ServicesConfiguration.getIssuanceServiceURL()
                             + "protected/credentialSpecification/store/"
                             + URLEncoder.encode(credSpec.getSpecificationUID()
                                     .toString(), "UTF-8"), RESTHelper.toXML(
@@ -417,7 +414,7 @@ public class IssuanceGUI {
         logger.entry();
         
         try {
-            RESTHelper.deleteRequest(issuanceServiceURL + "protected/issuerParameters/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL() + "protected/issuerParameters/delete/"
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
         }
@@ -438,7 +435,7 @@ public class IssuanceGUI {
         logger.entry();
         
         try {
-            RESTHelper.deleteRequest(issuanceServiceURL + "protected/queryRule/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL() + "protected/queryRule/delete/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
             return queryRules();
         }
@@ -459,7 +456,7 @@ public class IssuanceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    issuanceServiceURL + "getSettings/", Settings.class);
+                    ServicesConfiguration.getIssuanceServiceURL() + "getSettings/", Settings.class);
 
             Html html = IssuerGUI.getHtmlPramble("Issuer Parameters", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -518,7 +515,7 @@ public class IssuanceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    issuanceServiceURL + "getSettings/", Settings.class);
+                    ServicesConfiguration.getIssuanceServiceURL() + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 

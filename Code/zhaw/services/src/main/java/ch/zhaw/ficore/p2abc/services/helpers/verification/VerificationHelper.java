@@ -268,7 +268,7 @@ public class VerificationHelper extends AbstractHelper {
             System.err.println(" - could init sample XML - create default");
             e.printStackTrace();
             throw new IllegalStateException(
-                    "Could not init PresentationPolicy - event though it should have been verifed...");
+                    "Could not init PresentationPolicy - event though it should have been verifed");
         }
 
         this.modifyPPA(pp_alternatives, applicationData, nonce, revInfoUIDs);
@@ -307,7 +307,7 @@ public class VerificationHelper extends AbstractHelper {
             String applicationData, byte[] nonce, Map<URI, URI> revInfoUIDs)
             throws Exception {
 
-        logger.info("Modify PPA... ");
+        logger.info("Modify PPA");
 
         // try to make sure that RevocationInformation is only fetch once per
         // RevAuth

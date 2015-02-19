@@ -162,7 +162,6 @@ public class VerificationService {
         VerificationHelper verficationHelper = VerificationHelper
                 .getInstance();
         
-        ServicesConfiguration.staticInit();
         URIBytesStorage.clearEverything();
         return log.exit(Response.ok().build());
     }

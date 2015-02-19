@@ -1,5 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
+import javax.naming.NamingException;
+
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 
@@ -52,8 +54,9 @@ public abstract class AuthenticationProvider {
      *            AuthenticationInformation as given by a user.
      * @return true if AuthenticationInformation is correct (e.g. username,
      *         password is correct)
+     * @throws NamingException 
      */
-    public abstract boolean authenticate(AuthenticationInformation authInfo);
+    public abstract boolean authenticate(AuthenticationInformation authInfo) throws NamingException;
 
     /**
      * Called when this AuthenticationProvider is no longer required. Providers

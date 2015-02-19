@@ -1,6 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import javax.naming.directory.SearchResult;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,8 +47,9 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
      * Performs the authentication through Ldap.
      * 
      * @return true if successful, false otherwise.
+     * @throws NamingException 
      */
-    public boolean authenticate(AuthenticationInformation authInfo) {
+    public boolean authenticate(AuthenticationInformation authInfo) throws NamingException {
         boolean isGood = true;
 
         logger.entry();

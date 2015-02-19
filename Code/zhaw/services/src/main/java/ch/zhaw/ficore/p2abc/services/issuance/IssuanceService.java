@@ -141,7 +141,6 @@ public class IssuanceService {
     
             IssuanceHelper.getInstance();
     
-            ServicesConfiguration.staticInit();
             URIBytesStorage.clearEverything();
             return logger.exit(Response.ok().build());
         }
@@ -374,7 +373,8 @@ public class IssuanceService {
 
             if (credSpec == null)
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNoCredSpec).build();
+                        .entity(errNoCredSpec + ": "
+                                + request.credentialSpecificationUid).build();
             if (ip == null)
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(errNoIssuancePolicy).build();
@@ -449,7 +449,7 @@ public class IssuanceService {
                 response = IssuanceHelper.getInstance().issueStep(engine,
                         issuanceMessage);
             } catch (Exception e) {
-                logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user...");
+                logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user");
                 e.printStackTrace();
                 throw new IllegalStateException(
                         "Failed to proces IssuanceMessage from user");
@@ -1578,14 +1578,14 @@ public class IssuanceService {
     /* NON-REST METHODS */
 
     private void initializeHelper(CryptoEngine cryptoEngine) {
-        logger.info("IssuanceService loading...");
+        logger.info("IssuanceService loading");
 
         try {
             if (IssuanceHelper.isInit()) {
                 logger.info("IssuanceHelper is initialized");
             } else {
 
-                logger.info("Initializing IssuanceHelper...");
+                logger.info("Initializing IssuanceHelper");
 
                 IssuanceHelper
                 .initInstanceForService(

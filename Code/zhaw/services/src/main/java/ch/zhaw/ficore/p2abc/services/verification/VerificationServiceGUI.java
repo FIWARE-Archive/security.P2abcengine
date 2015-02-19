@@ -92,7 +92,6 @@ public class VerificationServiceGUI {
     HttpServletRequest request;
     
     private Logger log = LogManager.getLogger();
-    private static String verificationServiceURL = ServicesConfiguration.getVerificationServiceURL();
     private static List<String> predicateFunctions;
     
     static {
@@ -183,7 +182,7 @@ public class VerificationServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.deleteRequest(verificationServiceURL + "protected/issuerParameters/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/issuerParameters/delete/"
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
         }
@@ -204,7 +203,7 @@ public class VerificationServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.deleteRequest(verificationServiceURL + "protected/credentialSpecification/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/credentialSpecification/delete/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
             return credentialSpecifications();
         }
@@ -225,7 +224,7 @@ public class VerificationServiceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    verificationServiceURL + "getSettings/", Settings.class);
+                    ServicesConfiguration.getVerificationServiceURL() + "getSettings/", Settings.class);
 
             Html html = VerificationGUI.getHtmlPramble("Issuer Parameters", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -288,7 +287,7 @@ public class VerificationServiceGUI {
             params.add("cs", credSpecUid);
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -314,7 +313,7 @@ public class VerificationServiceGUI {
             params.add("cs", credSpecUid);
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -340,7 +339,7 @@ public class VerificationServiceGUI {
             params.add("ip", issuerParamsUid);
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/addIssuerAlternative/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addIssuerAlternative/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -366,7 +365,7 @@ public class VerificationServiceGUI {
             params.add("ip", issuerParamsUid);
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deleteIssuerAlternative/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deleteIssuerAlternative/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -391,7 +390,7 @@ public class VerificationServiceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deleteAlias/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deleteAlias/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -416,7 +415,7 @@ public class VerificationServiceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/addAlias/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addAlias/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -440,7 +439,7 @@ public class VerificationServiceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("puid", puid);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/addPolicyAlternative/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addPolicyAlternative/"
                     + URLEncoder.encode(resource, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -464,7 +463,7 @@ public class VerificationServiceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("puid", puid);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deletePolicyAlternative/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deletePolicyAlternative/"
                     + URLEncoder.encode(resource, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -489,7 +488,7 @@ public class VerificationServiceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("redirectURI", redirectURI);
             
-            RESTHelper.putRequest(verificationServiceURL + "protected/resource/create/"
+            RESTHelper.putRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/resource/create/"
                     + URLEncoder.encode(resourceString, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resourceString));
@@ -518,7 +517,7 @@ public class VerificationServiceGUI {
             params.add("p", predicate);
             params.add("al", alias);
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/addPredicate/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addPredicate/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -542,7 +541,7 @@ public class VerificationServiceGUI {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("index", Integer.toString(index));
             
-            RESTHelper.postRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/deletePredicate/"
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deletePredicate/"
                     + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
             
             return log.exit(presentationPolicy(resource));
@@ -567,14 +566,14 @@ public class VerificationServiceGUI {
             html.appendChild(VerificationGUI.getBody(mainDiv));
             
             PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper.getRequest(
-                    verificationServiceURL + "protected/presentationPolicyAlternatives/get/"
+                    ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/get/"
                     + URLEncoder.encode(resource, "UTF-8"), PresentationPolicyAlternatives.class);
             
             
             mainDiv.appendChild(new H2().appendChild(new Text("Redirect URI")));
             
             String redirectURI = (String) RESTHelper.getRequest(
-                    verificationServiceURL + "protected/redirectURI/get/" + 
+                    ServicesConfiguration.getVerificationServiceURL() + "protected/redirectURI/get/" + 
                             URLEncoder.encode(resource, "UTF-8"));
             
             Form f = new Form("./changeRedirectURI");
@@ -641,7 +640,7 @@ public class VerificationServiceGUI {
                     j += 1;
                 }
                 
-                Settings settings = (Settings) RESTHelper.getRequest(verificationServiceURL
+                Settings settings = (Settings) RESTHelper.getRequest(ServicesConfiguration.getVerificationServiceURL()
                         + "getSettings/", Settings.class);
 
                 List<CredentialSpecification> credSpecsSettings = settings.credentialSpecifications;
@@ -674,7 +673,7 @@ public class VerificationServiceGUI {
                         f.appendChild(new Input().setType("submit").setValue("Delete"));
                         ul.appendChild(new Li().appendChild(new Text(uri.toString())).appendChild(f));
                         CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
-                                verificationServiceURL + "protected/credentialSpecification/get/"
+                                ServicesConfiguration.getVerificationServiceURL() + "protected/credentialSpecification/get/"
                                 + URLEncoder.encode(uri.toString(), "UTF-8"), CredentialSpecification.class);
                         for(AttributeDescription attrDescs : credSpec.getAttributeDescriptions().getAttributeDescription()) {
                             credAttributes.add(attrDescs.getType().toString());
@@ -818,7 +817,7 @@ public class VerificationServiceGUI {
             mainDiv.appendChild(credDiv);
             
             CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
-                    verificationServiceURL + "protected/credentialSpecification/get/"
+                    ServicesConfiguration.getVerificationServiceURL() + "protected/credentialSpecification/get/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"), CredentialSpecification.class);
     
             AttributeDescriptions attribDescs = credSpec
@@ -908,7 +907,7 @@ public class VerificationServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.deleteRequest(verificationServiceURL+"protected/resource/delete/" + 
+            RESTHelper.deleteRequest(ServicesConfiguration.getVerificationServiceURL()+"protected/resource/delete/" + 
                     URLEncoder.encode(resource, "UTF-8"));
             return resources();
         }
@@ -929,7 +928,7 @@ public class VerificationServiceGUI {
         
         try {
             PresentationPolicyAlternativesCollection ppac = 
-                    (PresentationPolicyAlternativesCollection) RESTHelper.getRequest(verificationServiceURL + "protected/presentationPolicyAlternatives/list",
+                    (PresentationPolicyAlternativesCollection) RESTHelper.getRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/list",
                     PresentationPolicyAlternativesCollection.class);
             
             Html html = VerificationGUI.getHtmlPramble("Resources", request);
@@ -1016,7 +1015,7 @@ public class VerificationServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.postRequest(verificationServiceURL + "protected/loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
             
             Html html = VerificationGUI.getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();
@@ -1043,7 +1042,7 @@ public class VerificationServiceGUI {
         log.entry();
 
         try {
-            Settings settings = (Settings) RESTHelper.getRequest(verificationServiceURL
+            Settings settings = (Settings) RESTHelper.getRequest(ServicesConfiguration.getVerificationServiceURL()
                     + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;

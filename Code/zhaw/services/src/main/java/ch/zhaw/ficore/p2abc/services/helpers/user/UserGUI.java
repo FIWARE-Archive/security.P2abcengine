@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.List;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
@@ -139,9 +140,10 @@ public class UserGUI {
      * @throws UnsupportedEncodingException on error 
      * @throws UniformInterfaceException  on error
      * @throws ClientHandlerException on error
+     * @throws NamingException 
      */
     public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext, String applicationData, String backURL, String userServiceURL) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
+            int policyId, String uiContext, String applicationData, String backURL, String userServiceURL) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException, NamingException {
         Div enclosing = new Div();
 
         for (TokenCandidate tc : tcs) {

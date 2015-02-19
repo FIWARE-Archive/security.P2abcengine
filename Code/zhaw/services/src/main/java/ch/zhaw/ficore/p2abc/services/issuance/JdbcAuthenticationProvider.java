@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.naming.NamingException;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,8 +50,9 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
     /**
      * Performs the authentication. Uses a dummy hardcoded combination of a
      * username "CaroleKing" and "Jazzman" as the password.
+     * @throws NamingException 
      */
-    public boolean authenticate(AuthenticationInformation authInfo) {
+    public boolean authenticate(AuthenticationInformation authInfo) throws NamingException {
         logger.info("jdbc auth");
 
         if (!(authInfo instanceof AuthInfoSimple))

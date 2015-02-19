@@ -24,7 +24,7 @@ public class FindAttribute {
         System.out.println("testAttribut2 value");
         System.out.println(srch.getAttribute("(cn=munt)", "testAttribut2"));
 
-        System.out.println("bind...");
+        System.out.println("bind");
         // cfg.setAuth("uid=admin, ou=system","secret");
         // con.reloadConfig();
         srch.dumpAttributes(srch.getName(), "(cn=munt)");

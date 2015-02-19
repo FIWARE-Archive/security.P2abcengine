@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -123,9 +124,6 @@ public class UserServiceGUI {
         }
     }
 
-    private static String userServiceURL = ServicesConfiguration
-            .getUserServiceURL();
-
     public static synchronized String getURL(String uiContext) {
         return uiContextToURL.get(uiContext);
     }
@@ -197,7 +195,7 @@ public class UserServiceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    userServiceURL + "getSettings/", Settings.class);
+                    ServicesConfiguration.getUserServiceURL() + "getSettings/", Settings.class);
 
             Html html = UserGUI.getHtmlPramble("Issuer Parameters", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -256,7 +254,7 @@ public class UserServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.deleteRequest(userServiceURL + "issuerParameters/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration.getUserServiceURL() + "issuerParameters/delete/"
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
         }
@@ -287,7 +285,7 @@ public class UserServiceGUI {
             uir.metadataToChange = new HashMap<>();
 
             PresentationToken pt = (PresentationToken) RESTHelper.postRequest(
-                    userServiceURL + "createPresentationTokenUi",
+                    ServicesConfiguration.getUserServiceURL() + "createPresentationTokenUi",
                     RESTHelper.toXML(UiPresentationReturn.class, uir),
                     PresentationToken.class);
             
@@ -344,7 +342,7 @@ public class UserServiceGUI {
 
             UiPresentationArguments args = (UiPresentationArguments) RESTHelper
                     .postRequest(
-                            userServiceURL + "createPresentationToken",
+                            ServicesConfiguration.getUserServiceURL() + "createPresentationToken",
                             RESTHelper.toXML(
                                     PresentationPolicyAlternatives.class,
                                     of.createPresentationPolicyAlternatives(ppa)),
@@ -547,7 +545,7 @@ public class UserServiceGUI {
         log.entry();
 
         try {
-            Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
+            Settings settings = (Settings) RESTHelper.getRequest(ServicesConfiguration.getUserServiceURL()
                     + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
@@ -616,7 +614,7 @@ public class UserServiceGUI {
 
         try {
             CredentialCollection credCol = (CredentialCollection) RESTHelper
-                    .getRequest(userServiceURL + "credential/list",
+                    .getRequest(ServicesConfiguration.getUserServiceURL() + "credential/list",
                             CredentialCollection.class);
 
             List<Credential> credentials = credCol.credentials;
@@ -657,7 +655,7 @@ public class UserServiceGUI {
     public Response deleteCredential(@FormParam("credUid") String credUid) {
         try {
 
-            RESTHelper.deleteRequest(userServiceURL + "credential/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration.getUserServiceURL() + "credential/delete/"
                     + URLEncoder.encode(credUid, "UTF-8"));
 
             String text = "";
@@ -687,7 +685,7 @@ public class UserServiceGUI {
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
+    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException, NamingException {
         UiIssuanceArguments args = args_.getValue().uia;
         if (args.tokenCandidates.size() == 1
                 && args.tokenCandidates.get(0).credentials.size() == 0) {
@@ -734,7 +732,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(new H1().appendChild(new Text(
                     "Obtain Credential")));
             Div div = UserGUI.getDivForTokenCandidates(args.tokenCandidates, 0,
-                    args.uiContext.toString(), "", "", userServiceURL);
+                    args.uiContext.toString(), "", "", ServicesConfiguration.getUserServiceURL());
             mainDiv.appendChild(div);
             return Response.ok(html.write()).build();
         }
@@ -784,7 +782,7 @@ public class UserServiceGUI {
 
             IssuanceReturn issuanceReturn = (IssuanceReturn) RESTHelper
                     .postRequest(
-                            userServiceURL + "issuanceProtocolStep",
+                            ServicesConfiguration.getUserServiceURL() + "issuanceProtocolStep",
                             RESTHelper.toXML(
                                     IssuanceMessage.class,
                                     of.createIssuanceMessage(firstIssuanceMessage)),
@@ -832,7 +830,7 @@ public class UserServiceGUI {
             String issuerUrl = getURL(uiContext);
 
             IssuanceMessage secondIssuanceMessage = (IssuanceMessage) RESTHelper
-                    .postRequest(userServiceURL + "issuanceProtocolStepUi",
+                    .postRequest(ServicesConfiguration.getUserServiceURL() + "issuanceProtocolStepUi",
                             RESTHelper.toXML(UiIssuanceReturn.class, uir),
                             IssuanceMessage.class);
 
@@ -847,7 +845,7 @@ public class UserServiceGUI {
                     .getIssuanceMessage();
 
             RESTHelper.postRequest(
-                    userServiceURL + "issuanceProtocolStep",
+                    ServicesConfiguration.getUserServiceURL() + "issuanceProtocolStep",
                     RESTHelper.toXML(IssuanceMessage.class,
                             of.createIssuanceMessage(thirdIssuanceMessage)),
                     IssuanceReturn.class);
@@ -956,7 +954,7 @@ public class UserServiceGUI {
 
             mainDiv.appendChild(f);
 
-            Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
+            Settings settings = (Settings) RESTHelper.getRequest(ServicesConfiguration.getUserServiceURL()
                     + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
@@ -982,7 +980,7 @@ public class UserServiceGUI {
     @Path("/presentationArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response presentationArguments(
-            JAXBElement<UiPresentationArguments> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException {
+            JAXBElement<UiPresentationArguments> args_) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException, NamingException {
         UiPresentationArguments args = args_.getValue();
         Html html = UserGUI.getHtmlPramble("Candidate selection", request);
         Div mainDiv = new Div();
@@ -1004,7 +1002,7 @@ public class UserServiceGUI {
             
             Div div = UserGUI.getDivForTokenCandidates(tcpp.tokenCandidates,
                     tcpp.policyId, args.uiContext.toString(), (String)content.get(0),
-                    "./requestResource3", userServiceURL);
+                    "./requestResource3", ServicesConfiguration.getUserServiceURL());
 
             mainDiv.appendChild(div);
         }
@@ -1018,7 +1016,7 @@ public class UserServiceGUI {
         log.entry();
         
         try {
-            RESTHelper.postRequest(userServiceURL + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
+            RESTHelper.postRequest(ServicesConfiguration.getUserServiceURL() + "loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
             
             Html html = UserGUI.getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();

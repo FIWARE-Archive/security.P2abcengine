@@ -45,7 +45,6 @@ import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
@@ -135,7 +134,6 @@ public class UserService {
         
         this.initializeHelper();
         
-        ServicesConfiguration.staticInit();
         URIBytesStorage.clearEverything();
         return log.exit(Response.ok().build());
     }
@@ -977,7 +975,7 @@ public class UserService {
     }
 
     private void initializeHelper() {
-        this.log.info("UserService loading...");
+        this.log.info("UserService loading");
 
         try {
             PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = true;
@@ -987,7 +985,7 @@ public class UserService {
                 
                 // AbstractHelper.verifyFiles(false, this.fileStoragePrefix);
             } else {
-                this.log.info("Initializing UserHelper...");
+                this.log.info("Initializing UserHelper");
 
                 UserHelper
                         .initInstanceForService(

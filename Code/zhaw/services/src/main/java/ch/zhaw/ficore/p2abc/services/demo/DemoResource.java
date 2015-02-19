@@ -34,7 +34,7 @@ public class DemoResource {
             throws Exception {
         try {
             String result = (String) RESTHelper
-                    .getRequest("http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/verification/verifyAccessToken?accesstoken="
+                    .getRequest("http://localhost:8080/zhaw-p2abc-webservices/verification/verifyAccessToken?accesstoken="
                             + URLEncoder.encode(accessToken, "UTF-8"));
 
             if (result.equals("resource")) {

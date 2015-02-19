@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
@@ -96,7 +95,6 @@ public class TestIssuerAPI extends JerseyTest {
         
         ic.close();
         
-        ServicesConfiguration.staticInit();
         URIBytesStorage.clearEverything();
 
     }
