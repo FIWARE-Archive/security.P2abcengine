@@ -196,8 +196,8 @@ public class TestFlowGUI extends JerseyTest {
         params.add("resource", "resource");
         RESTHelper.postRequest(verificationGUI + "protected/addAlias", params);
         
-        while(true)
-            Thread.sleep(1000);
+        //while(true)
+        //    Thread.sleep(1000);
     }
     
     public String getContextString(String input) {
