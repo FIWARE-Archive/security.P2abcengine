@@ -27,6 +27,7 @@ import com.hp.gagawa.java.elements.Li;
 import com.hp.gagawa.java.elements.Link;
 import com.hp.gagawa.java.elements.Option;
 import com.hp.gagawa.java.elements.P;
+import com.hp.gagawa.java.elements.Script;
 import com.hp.gagawa.java.elements.Select;
 import com.hp.gagawa.java.elements.Table;
 import com.hp.gagawa.java.elements.Td;
@@ -60,6 +61,7 @@ public class UserGUI {
         html.appendChild(head);
         head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
                 .setRel("stylesheet").setType("text/css"));
+        head.appendChild(new Script("").setSrc(req.getContextPath() + "/csrf.js").setType("text/javascript"));
         return html;
     }
 
@@ -78,7 +80,9 @@ public class UserGUI {
         navDiv.appendChild(new A().setHref("./loadSettings").appendChild(
                 new Text("Load Settings")));
         navDiv.appendChild(new Div().setStyle("clear: both"));
-        return new Body().appendChild(containerDiv);
+        Body body = new Body().appendChild(containerDiv);
+        body.setAttribute("onload", "csrf();");
+        return body; 
     }
 
     public static Html errorPage(String msg, HttpServletRequest req) {

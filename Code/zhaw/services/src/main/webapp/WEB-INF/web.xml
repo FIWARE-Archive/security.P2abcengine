@@ -35,7 +35,11 @@
 		</init-param>
 		<init-param>
    	        <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-    	    <param-value>ch.zhaw.ficore.p2abc.services.LoggingFilter</param-value>
+    	    <param-value>ch.zhaw.ficore.p2abc.services.CSRFReqFilter</param-value>
+	    </init-param>
+        <init-param>
+   	        <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+    	    <param-value>ch.zhaw.ficore.p2abc.services.CSRFRespFilter</param-value>
 	    </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -62,6 +66,10 @@
 	<servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>/css/style.css</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/csrf.js</url-pattern>
 </servlet-mapping>
     <resource-ref>
       <description>
