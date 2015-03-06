@@ -108,7 +108,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
                 throw new RuntimeException("Didn't get a result :(");
             }
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw new RuntimeException(e);
         } finally {
             if (conn != null)
@@ -119,7 +119,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
                         stmt.close();
                     conn.close();
                 } catch (SQLException e) {
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                 }
         }
 

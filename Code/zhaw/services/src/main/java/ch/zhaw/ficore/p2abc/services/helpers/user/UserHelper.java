@@ -127,7 +127,7 @@ public class UserHelper extends AbstractHelper {
             }
 
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             System.err.println("Init Failed");
             e.printStackTrace();
             throw new IllegalStateException("Could not setup user !", e);

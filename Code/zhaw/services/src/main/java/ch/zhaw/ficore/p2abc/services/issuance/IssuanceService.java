@@ -144,7 +144,7 @@ public class IssuanceService {
             return logger.exit(Response.ok().build());
         }
         catch(Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -208,7 +208,7 @@ public class IssuanceService {
                         .build();
             }
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         } finally {
             if (authProvider != null)
@@ -280,7 +280,7 @@ public class IssuanceService {
             return logger.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
@@ -391,7 +391,7 @@ public class IssuanceService {
 
             return logger.exit(initIssuanceProtocol(ipa));
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         } finally {
             if (attrValProvider != null)
@@ -468,7 +468,7 @@ public class IssuanceService {
                     this.of.createIssuanceMessageAndBoolean(response),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -604,7 +604,7 @@ public class IssuanceService {
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
@@ -698,7 +698,7 @@ public class IssuanceService {
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
@@ -790,7 +790,7 @@ public class IssuanceService {
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
@@ -858,7 +858,7 @@ public class IssuanceService {
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception ex) {
-            logger.error("Exception: " + ex);
+            logger.catching( ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
         }
     }
@@ -911,7 +911,7 @@ public class IssuanceService {
                         of.createCredentialSpecification(credSpec),
                         MediaType.APPLICATION_XML).build());
         } catch (Exception ex) {
-            logger.error("Exception: " + ex);
+            logger.catching( ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
         }
     }
@@ -971,7 +971,7 @@ public class IssuanceService {
             return Response.ok("OK").build();
 
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, logger)))
@@ -1022,7 +1022,7 @@ public class IssuanceService {
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1068,7 +1068,7 @@ public class IssuanceService {
                     credentialSpecificationUid), rule);
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1106,7 +1106,7 @@ public class IssuanceService {
             return logger.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger)); 
         }
     }
@@ -1155,7 +1155,7 @@ public class IssuanceService {
                 return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML)
                         .build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1199,7 +1199,7 @@ public class IssuanceService {
             return logger.exit(Response.ok(qrc, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1249,7 +1249,7 @@ public class IssuanceService {
                     credentialSpecificationUid), policy);
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1299,7 +1299,7 @@ public class IssuanceService {
                 return logger.exit(Response.ok(of.createIssuancePolicy(policy),
                         MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1352,7 +1352,7 @@ public class IssuanceService {
             return Response.ok(attribInfoProvider.getAttributes(name),
                     MediaType.APPLICATION_XML).build();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         } finally {
             if (attribInfoProvider != null)
@@ -1392,7 +1392,7 @@ public class IssuanceService {
                     .generateCredentialSpecification(attrInfoCol)),
                     MediaType.APPLICATION_XML).build();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1467,7 +1467,7 @@ public class IssuanceService {
                     this.of.createSystemParameters(serializeSp),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1569,7 +1569,7 @@ public class IssuanceService {
                     this.of.createIssuerParameters(issuerParameters),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1728,7 +1728,7 @@ public class IssuanceService {
                                     .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean),
                                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
 

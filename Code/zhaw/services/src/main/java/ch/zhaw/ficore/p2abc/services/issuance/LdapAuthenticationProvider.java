@@ -105,21 +105,21 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                     adminConnection.close();
                 }
             } catch (Exception e) {
-                logger.error("Exception: " + e);
+                logger.catching( e);
                 return logger.exit(false);
             } finally {
                 try {
                     if (adminConnection != null)
                         adminConnection.close();
                 } catch (Exception e) {
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                     isGood = false;
                 }
                 try {
                     if (userConnection != null)
                         userConnection.close();
                 } catch (Exception e) {
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                     isGood = false;
                 }
             }

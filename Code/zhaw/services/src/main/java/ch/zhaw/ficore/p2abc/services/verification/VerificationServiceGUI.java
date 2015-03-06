@@ -166,7 +166,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -187,7 +187,7 @@ public class VerificationServiceGUI {
             return issuerParameters();
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -208,7 +208,7 @@ public class VerificationServiceGUI {
             return credentialSpecifications();
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -267,7 +267,7 @@ public class VerificationServiceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -293,7 +293,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -319,7 +319,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -345,7 +345,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -371,7 +371,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -396,7 +396,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -421,7 +421,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -445,7 +445,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -469,7 +469,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resource));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -494,7 +494,7 @@ public class VerificationServiceGUI {
             return log.exit(presentationPolicy(resourceString));
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -795,7 +795,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -892,7 +892,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -912,7 +912,7 @@ public class VerificationServiceGUI {
             return resources();
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -967,7 +967,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -1000,7 +1000,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -1027,7 +1027,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
@@ -1081,7 +1081,7 @@ public class VerificationServiceGUI {
             return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(

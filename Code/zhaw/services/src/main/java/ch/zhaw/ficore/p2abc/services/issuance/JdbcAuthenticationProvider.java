@@ -93,7 +93,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             return false;
 
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return false;
         } finally {
             if (conn != null)
@@ -102,7 +102,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
                     stmt.close();
                     conn.close();
                 } catch (SQLException e) {
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                 }
         }
     }

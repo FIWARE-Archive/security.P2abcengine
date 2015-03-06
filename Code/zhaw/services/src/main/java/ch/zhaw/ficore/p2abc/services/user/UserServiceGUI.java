@@ -187,7 +187,7 @@ public class UserServiceGUI {
             return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -246,7 +246,7 @@ public class UserServiceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -267,7 +267,7 @@ public class UserServiceGUI {
             return issuerParameters();
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -326,7 +326,7 @@ public class UserServiceGUI {
 
             return log.exit(Response.ok(html.write()).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -376,7 +376,7 @@ public class UserServiceGUI {
             return this.presentationArguments(ObjectFactoryReturnTypes
                     .wrap(args));
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -441,7 +441,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(f);
             return log.exit(Response.ok(html.write()).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -459,7 +459,7 @@ public class UserServiceGUI {
             urlStorage.delete(name);
             return log.exit(urls());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -477,7 +477,7 @@ public class UserServiceGUI {
             urlStorage.put(name, SerializationUtils.serialize(url));
             return log.exit(urls());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -550,7 +550,7 @@ public class UserServiceGUI {
             return log.exit(Response.ok(html.write()).build());
             
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -617,7 +617,7 @@ public class UserServiceGUI {
             return log.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -661,7 +661,7 @@ public class UserServiceGUI {
 
             return log.exit(Response.ok(html.write()).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -693,7 +693,7 @@ public class UserServiceGUI {
                     new Text(text)));
             return log.exit(Response.ok(html.write()).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -813,7 +813,7 @@ public class UserServiceGUI {
             return issuanceArguments(ObjectFactoryReturnTypes
                     .wrap(issuanceReturn));
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -884,7 +884,7 @@ public class UserServiceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -987,7 +987,7 @@ public class UserServiceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -1048,7 +1048,7 @@ public class UserServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -1081,7 +1081,7 @@ public class UserServiceGUI {
             return log.exit(Response.ok(html.write()).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(

@@ -93,7 +93,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 
             return aiCol;
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw new RuntimeException(e);
         } finally {
             if (conn != null)
@@ -101,7 +101,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
                     rs.close();
                     conn.close();
                 } catch (SQLException e) {
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                 }
         }
     }

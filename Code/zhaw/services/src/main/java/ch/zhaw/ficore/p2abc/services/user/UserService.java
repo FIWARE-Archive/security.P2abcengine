@@ -180,7 +180,7 @@ public class UserService {
                     this.of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception ex) {
-            log.error("Exception: " + ex);
+            log.catching(ex);
             return log.exit(ExceptionDumper.dumpException(ex, log));
         }
     }
@@ -238,7 +238,7 @@ public class UserService {
                     ObjectFactoryReturnTypes.wrap(uiPresentationArguments),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
 
@@ -288,7 +288,7 @@ public class UserService {
                     of.createPresentationToken(presentationToken),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -352,7 +352,7 @@ public class UserService {
 
             return log.exit(Response.ok().build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -427,7 +427,7 @@ public class UserService {
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
@@ -479,7 +479,7 @@ public class UserService {
             return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
@@ -526,7 +526,7 @@ public class UserService {
             return log.exit(Response.ok(of.createCredential(cred), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
@@ -601,7 +601,7 @@ public class UserService {
                     ObjectFactoryReturnTypes.wrap(issuanceReturn),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -645,7 +645,7 @@ public class UserService {
                     new ObjectFactory().createIssuanceMessage(issuanceMessage),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -699,7 +699,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -761,7 +761,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -807,7 +807,7 @@ public class UserService {
             return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -857,7 +857,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -921,7 +921,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -969,7 +969,7 @@ public class UserService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1045,7 +1045,7 @@ public class UserService {
                     of.createIssuanceMessage(issuanceMessage),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.error("Exception: " + e);
+            log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }

@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 import org.sqlite.SQLiteDataSource;
 
 /**
@@ -41,7 +42,8 @@ public class TestSqliteURIBytesStorage {
     private static String dbName = "URIBytesStorage";
     private static File storageFile;
     private static URI myUri;
-
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(TestSqliteURIBytesStorage.class));
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
         storageFile = new File(dbName);
@@ -65,7 +67,7 @@ public class TestSqliteURIBytesStorage {
             ic.bind("java:/comp/env/jdbc/" + dbName, ds);
             ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
         } catch (NamingException ex) {
-            LoggerFactory.getLogger(TestSqliteURIBytesStorage.class).error("Exception: " + ex);
+            logger.catching( ex);
         }
 
         storage = new JdbcURIBytesStorage(dbName, table);
