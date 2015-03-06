@@ -2,7 +2,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.naming.Context;
@@ -26,7 +29,10 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
 import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.ObjectFactory;
 
 public class TestIssuerAPI extends JerseyTest {
 
@@ -47,6 +53,7 @@ public class TestIssuerAPI extends JerseyTest {
 
     File storageFile;
     String dbName = "URIBytesStorage";
+    ObjectFactory of = new ObjectFactory();
 
     @Before
     public void initJNDI() throws Exception {        
@@ -187,6 +194,34 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals("urn:abc4trust:1.0:encoding:integer:signed", ad.getEncoding().toString());
         assertEquals("someAttribute attribute", ad.getFriendlyAttributeName().get(0).getValue());
         assertEquals("en", ad.getFriendlyAttributeName().get(0).getLang());
+    }
+    
+    @Test
+    public void testStoreGetCredSpec() throws Exception {
+        CredentialSpecification orig = new CredentialSpecification();
+        orig.setSpecificationUID(new URI("urn:fiware:cred"));
+        AttributeDescriptions attrDescs = new AttributeDescriptions();
+        List<AttributeDescription> lsAttrDesc = attrDescs.getAttributeDescription();
+        
+        AttributeDescription ad = new AttributeDescription();
+        ad.setDataType(new URI("xs:integer"));
+        ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
+        ad.setType(new URI("someAttribute"));
+        
+        FriendlyDescription fd = new FriendlyDescription();
+        fd.setLang("en");
+        fd.setValue("huhu");
+        
+        ad.getFriendlyAttributeName().add(fd);
+        
+        lsAttrDesc.add(ad);
+        
+        orig.setAttributeDescriptions(attrDescs);
+        
+        RESTHelper.putRequest(issuanceServiceURL + "credentialSpecification/store/" 
+                    + URLEncoder.encode("urn:fiware:cred", "UTF-8"), 
+                RESTHelper.toXML(CredentialSpecification.class, 
+                        of.createCredentialSpecification(orig)));
     }
 
     public void assertOk(Response r) {
