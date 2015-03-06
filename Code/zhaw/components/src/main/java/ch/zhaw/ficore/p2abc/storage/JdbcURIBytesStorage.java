@@ -23,8 +23,8 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -59,7 +59,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
 
     private static boolean useLocking = false;
 
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(JdbcURIBytesStorage.class));
 
     /**
      * Constructor.
@@ -86,7 +86,6 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             @Named("sqliteTblName") String table)
             throws ClassNotFoundException, SQLException,
             UnsafeTableNameException, NamingException {
-        logger = LogManager.getLogger();
 
         init(dbName, table);
     }
@@ -110,7 +109,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
                 }
             }
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException(e));
         }
     }
@@ -160,10 +159,10 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             this.tableName = tableName;
 
         } catch (SQLException e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(e);
         } catch (NamingException e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(e);
         } finally {
             unlock(this, logger);
@@ -190,7 +189,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
         return locks.get(key);
     }
 
-    private static void lock(JdbcURIBytesStorage storage, Logger logger) {
+    private static void lock(JdbcURIBytesStorage storage, XLogger logger) {
         logger.entry();
 
         if (!useLocking) {
@@ -204,7 +203,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
         logger.exit();
     }
 
-    private static void unlock(JdbcURIBytesStorage storage, Logger logger) {
+    private static void unlock(JdbcURIBytesStorage storage, XLogger logger) {
         logger.entry();
 
         if (!useLocking) {
@@ -297,12 +296,12 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
                     // managed to store an invalid URI in the storage.
                     // We do *not* break off the loop here, since we'll
                     // try to get more URIs out.
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                 }
             }
             return logger.exit(uris);
         } catch (SQLException e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -345,7 +344,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             }
             return logger.exit(null);
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -358,7 +357,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
         }
     }
 
-    private static void hexdump(Logger logger, byte[] bytes) {
+    private static void hexdump(XLogger logger, byte[] bytes) {
         logger.trace("Dumping byte array of size " + bytes.length + " (max. "
                 + DUMP_LIMIT + " bytes)");
         logger.trace(" Offset   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f   0123456789abcdef");
@@ -369,7 +368,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
         }
     }
 
-    private static void dumpLine(Logger logger, byte[] bytes, int offset) {
+    private static void dumpLine(XLogger logger, byte[] bytes, int offset) {
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.ROOT);
         formatter.format("%1$08x", offset);
@@ -412,7 +411,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             deleteStatement.setString(1, hash);
             deleteStatement.executeUpdate();
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -460,7 +459,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
 
             putStatement.executeUpdate();
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -503,7 +502,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             putNewStatement.executeUpdate();
             return logger.exit(true);
         } catch (SQLException e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure: "
                     + e.getMessage()));
         } finally {
@@ -544,7 +543,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             else
                 return logger.exit(false);
         } catch (SQLException e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure: "
                     + e.getMessage()));
         } finally {
@@ -577,7 +576,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
                     .prepareStatement("DELETE FROM " + tableName);
             deleteAllStatement.execute();
         } catch (SQLException e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw logger.throwing(new RuntimeException("Storage failure: "
                     + e.getMessage()));
         } finally {

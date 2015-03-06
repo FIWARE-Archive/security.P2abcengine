@@ -1,7 +1,7 @@
 package ch.zhaw.ficore.p2abc.services;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.services.guice.SqliteStorageModule;
 
@@ -15,8 +15,8 @@ import com.google.inject.Module;
  */
 public class StorageModuleFactory {
 
-    private static Logger logger = LogManager
-            .getLogger(StorageModuleFactory.class.getName());
+    private static final XLogger logger = new XLogger(LoggerFactory
+            .getLogger(StorageModuleFactory.class.getName()));
 
     /**
      * Factory method. Returns an array of Modules.

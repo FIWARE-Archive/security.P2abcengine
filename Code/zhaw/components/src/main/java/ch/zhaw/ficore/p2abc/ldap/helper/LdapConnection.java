@@ -7,8 +7,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 
@@ -21,7 +21,7 @@ import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 public class LdapConnection {
     private DirContext initialDirContext;
     private ConnectionParameters config;
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(LdapConnection.class));
 
     /**
      * Creates a Connection using a ConnectionParameters.
@@ -32,7 +32,6 @@ public class LdapConnection {
      *             on an LDAP error
      */
     public LdapConnection(ConnectionParameters config) throws NamingException {
-        logger = LogManager.getLogger();
         if (config.usesTls())
             throw logger.throwing(new RuntimeException(
                     "TLS not supported yet :("));

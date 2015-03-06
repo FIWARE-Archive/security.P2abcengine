@@ -3,7 +3,6 @@ package ch.zhaw.ficore.p2abc.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 
 import com.sun.jersey.spi.container.ContainerRequest;

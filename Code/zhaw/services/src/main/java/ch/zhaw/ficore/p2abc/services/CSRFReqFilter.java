@@ -1,9 +1,6 @@
 package ch.zhaw.ficore.p2abc.services;
 
-import java.util.List;
-
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.Provider;
 
 import com.sun.jersey.api.representation.Form;

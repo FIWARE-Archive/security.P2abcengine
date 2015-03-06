@@ -9,8 +9,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
@@ -33,7 +33,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      */
     public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(LdapAttributeInfoProvider.class));
 
     /* Ldap Syntax Constants */
     private static final String directoryStringOid = "1.3.6.1.4.1.1466.115.121.1.15";
@@ -72,8 +72,6 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      */
     public LdapAttributeInfoProvider(IssuanceConfiguration configuration) {
         super(configuration);
-        logger = LogManager
-                .getLogger(LdapAttributeInfoProvider.class.getName());
     }
 
     /**
@@ -130,14 +128,14 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
             return logger.exit(aic);
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             return logger.exit(null);
         } finally {
             if (con != null)
                 try {
                     con.close();
                 } catch (NamingException e) {
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                 }
         }
     }

@@ -48,8 +48,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.SerializationUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
@@ -95,7 +95,7 @@ import eu.abc4trust.xml.VerifierIdentity;
 @Path("/verification")
 public class VerificationService {
 
-    private final Logger log = LogManager.getLogger();
+    private static final XLogger log = new XLogger(LoggerFactory.getLogger(VerificationService.class));
     private final static String errMagicCookie = "Magic cookie is not correct!";
     private static Map<String, String> accessTokens = new HashMap<String, String>();
     private static Map<String, byte[]> nonces = new HashMap<String, byte[]>();
@@ -211,7 +211,7 @@ public class VerificationService {
                     of.createPresentationTokenDescription(ptd),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -284,7 +284,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -368,7 +368,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -443,7 +443,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -527,7 +527,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -585,7 +585,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -651,7 +651,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -700,7 +700,7 @@ public class VerificationService {
             
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -770,7 +770,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -845,7 +845,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -910,7 +910,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1061,7 +1061,7 @@ public class VerificationService {
             
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1108,7 +1108,7 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1145,7 +1145,7 @@ public class VerificationService {
 
         log.entry();
 
-        this.log.info("VerificationService - storeIssuerParameters - issuerParametersUid: "
+        log.info("VerificationService - storeIssuerParameters - issuerParametersUid: "
                 + issuerParametersUid
                 + ", "
                 + issuerParameters.getParametersUID());
@@ -1165,7 +1165,7 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1205,14 +1205,14 @@ public class VerificationService {
             PresentationPolicyAlternatives modifiedPresentationPolicyAlternatives = verificationHelper
                     .createPresentationPolicy(presentationPolicy,
                             applicationData, revocationInformationUids);
-            this.log.info("VerificationService - createPresentationPolicy - done ");
+            log.info("VerificationService - createPresentationPolicy - done ");
 
             return log
                     .exit(Response
                             .ok(of.createPresentationPolicyAlternatives(modifiedPresentationPolicyAlternatives),
                                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1266,7 +1266,7 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1311,7 +1311,7 @@ public class VerificationService {
             return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1358,7 +1358,7 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1407,7 +1407,7 @@ public class VerificationService {
             return log.exit(Response.ok("OK").build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1453,7 +1453,7 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1495,7 +1495,7 @@ public class VerificationService {
             return log.exit(Response.ok(of.createPresentationPolicyAlternatives(ppa), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1537,7 +1537,7 @@ public class VerificationService {
             return log.exit(Response.ok(ppac, MediaType.APPLICATION_XML).build());
         }
         catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1580,7 +1580,7 @@ public class VerificationService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1622,7 +1622,7 @@ public class VerificationService {
             return log.exit(Response.ok(uri.toString()).build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1671,7 +1671,7 @@ public class VerificationService {
             return log.exit(Response.ok(
                     of.createPresentationPolicyAlternatives(ppa)).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1756,7 +1756,7 @@ public class VerificationService {
                     redirect.toString() + "?accesstoken="
                             + URLEncoder.encode(token, "UTF-8")).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1866,7 +1866,7 @@ public class VerificationService {
 
             return log.exit(Response.ok().build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -1939,7 +1939,7 @@ public class VerificationService {
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();

@@ -14,11 +14,11 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.logging.log4j.LogManager;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 /**
@@ -65,7 +65,7 @@ public class TestSqliteURIBytesStorage {
             ic.bind("java:/comp/env/jdbc/" + dbName, ds);
             ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
         } catch (NamingException ex) {
-            LogManager.getLogger().catching(ex);
+            LoggerFactory.getLogger(TestSqliteURIBytesStorage.class).error("Exception: " + ex);
         }
 
         storage = new JdbcURIBytesStorage(dbName, table);

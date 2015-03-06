@@ -4,8 +4,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+
 
 /**
  * Holds the configuration for all the services.
@@ -32,7 +33,7 @@ public class ServicesConfiguration {
     /** Configuration data for user service. */
     private UserConfiguration userConfiguration;
 
-    private static Logger logger = LogManager.getLogger();
+    private static XLogger logger = new XLogger(LoggerFactory.getLogger(ServicesConfiguration.class));
 
     private static ServicesConfiguration instance = new ServicesConfiguration();
 

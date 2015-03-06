@@ -6,8 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
@@ -22,7 +22,7 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
  */
 public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(JdbcAttributeInfoProvider.class));
 
     /**
      * Constructor
@@ -32,7 +32,6 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
      */
     public JdbcAttributeInfoProvider(IssuanceConfiguration configuration) {
         super(configuration);
-        logger = LogManager.getLogger();
     }
 
     /**
@@ -94,7 +93,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 
             return aiCol;
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw new RuntimeException(e);
         } finally {
             if (conn != null)
@@ -102,7 +101,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
                     rs.close();
                     conn.close();
                 } catch (SQLException e) {
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                 }
         }
     }

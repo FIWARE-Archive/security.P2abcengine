@@ -42,8 +42,8 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang.SerializationUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.services.ExceptionDumper;
 import ch.zhaw.ficore.p2abc.services.ServiceType;
@@ -85,7 +85,7 @@ public class UserService {
                                                                            // munt
 
     private final ObjectFactory of = new ObjectFactory();
-    private Logger log = LogManager.getLogger();
+    private static final XLogger log = new XLogger(LoggerFactory.getLogger(UserService.class));
 
     private final String fileStoragePrefix = ""; // no prefix -- munt
 
@@ -180,7 +180,7 @@ public class UserService {
                     this.of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception ex) {
-            log.catching(ex);
+            log.error("Exception: " + ex);
             return log.exit(ExceptionDumper.dumpException(ex, log));
         }
     }
@@ -238,7 +238,7 @@ public class UserService {
                     ObjectFactoryReturnTypes.wrap(uiPresentationArguments),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
 
@@ -288,7 +288,7 @@ public class UserService {
                     of.createPresentationToken(presentationToken),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -352,7 +352,7 @@ public class UserService {
 
             return log.exit(Response.ok().build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -427,7 +427,7 @@ public class UserService {
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
@@ -479,7 +479,7 @@ public class UserService {
             return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
@@ -526,7 +526,7 @@ public class UserService {
             return log.exit(Response.ok(of.createCredential(cred), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(
                     Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
@@ -601,7 +601,7 @@ public class UserService {
                     ObjectFactoryReturnTypes.wrap(issuanceReturn),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -645,7 +645,7 @@ public class UserService {
                     new ObjectFactory().createIssuanceMessage(issuanceMessage),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -699,7 +699,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -761,7 +761,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -807,7 +807,7 @@ public class UserService {
             return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -857,7 +857,7 @@ public class UserService {
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -893,7 +893,7 @@ public class UserService {
 
         log.entry();
 
-        this.log.info("UserService - storeIssuerParameters - issuerParametersUid: "
+        log.info("UserService - storeIssuerParameters - issuerParametersUid: "
                 + issuerParametersUid
                 + ", "
                 + issuerParameters.getParametersUID());
@@ -915,13 +915,13 @@ public class UserService {
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
 
-            this.log.info("UserService - storeIssuerParameters - done ");
+            log.info("UserService - storeIssuerParameters - done ");
 
             return log.exit(Response.ok(
                     of.createABCEBoolean(createABCEBoolean),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
@@ -969,23 +969,23 @@ public class UserService {
 
             return log.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
     private void initializeHelper() {
-        this.log.info("UserService loading");
+        log.info("UserService loading");
 
         try {
             PolicyCredentialMatcherImpl.GENERATE_SECRET_IF_NONE_EXIST = true;
 
             if (UserHelper.isInit()) {
-                this.log.info("UserHelper is initialized");
+                log.info("UserHelper is initialized");
                 
                 // AbstractHelper.verifyFiles(false, this.fileStoragePrefix);
             } else {
-                this.log.info("Initializing UserHelper");
+                log.info("Initializing UserHelper");
 
                 UserHelper
                         .initInstanceForService(
@@ -994,7 +994,7 @@ public class UserService {
                                 StorageModuleFactory
                                         .getModulesForServiceConfiguration(ServiceType.USER));
 
-                this.log.info("UserHelper is initialized");
+                log.info("UserHelper is initialized");
             }
             UserHelper instance = UserHelper.getInstance();
             
@@ -1045,7 +1045,7 @@ public class UserService {
                     of.createIssuanceMessage(issuanceMessage),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            log.catching(e);
+            log.error("Exception: " + e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }

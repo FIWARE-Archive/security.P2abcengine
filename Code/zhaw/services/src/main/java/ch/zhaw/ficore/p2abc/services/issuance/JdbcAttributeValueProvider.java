@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
@@ -23,14 +23,13 @@ import eu.abc4trust.xml.ObjectFactory;
 
 public class JdbcAttributeValueProvider extends AttributeValueProvider {
 
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(JdbcAttributeValueProvider.class));
 
     private ObjectFactory of;
 
     public JdbcAttributeValueProvider(IssuanceConfiguration config) {
         super(config);
         of = new ObjectFactory();
-        logger = LogManager.getLogger();
     }
 
     public void shutdown() {
@@ -109,7 +108,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
                 throw new RuntimeException("Didn't get a result :(");
             }
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             throw new RuntimeException(e);
         } finally {
             if (conn != null)
@@ -120,7 +119,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
                         stmt.close();
                     conn.close();
                 } catch (SQLException e) {
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                 }
         }
 

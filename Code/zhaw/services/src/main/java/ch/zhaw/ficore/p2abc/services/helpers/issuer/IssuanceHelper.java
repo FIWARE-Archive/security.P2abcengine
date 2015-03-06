@@ -34,8 +34,8 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.services.issuance.IssuanceStorage;
 
@@ -72,7 +72,7 @@ import eu.abc4trust.xml.SystemParameters;
 @SuppressWarnings("deprecation")
 public class IssuanceHelper extends AbstractHelper {
 
-    static Logger log = LogManager.getLogger();
+    private static final XLogger log = new XLogger(LoggerFactory.getLogger(IssuanceHelper.class));
 
     private static IssuanceHelper instance;
     public KeyStorage keyStorage;

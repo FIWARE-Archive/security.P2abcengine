@@ -26,8 +26,8 @@ package ch.zhaw.ficore.p2abc.services.helpers.user;
 
 import java.net.URISyntaxException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -49,8 +49,7 @@ import eu.abc4trust.smartcardManager.AbcSmartcardManager;
 
 public class UserHelper extends AbstractHelper {
 
-    private static final Logger logger = LogManager.getLogger(UserHelper.class
-            .toString());
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(UserHelper.class));
 
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
@@ -128,7 +127,7 @@ public class UserHelper extends AbstractHelper {
             }
 
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             System.err.println("Init Failed");
             e.printStackTrace();
             throw new IllegalStateException("Could not setup user !", e);

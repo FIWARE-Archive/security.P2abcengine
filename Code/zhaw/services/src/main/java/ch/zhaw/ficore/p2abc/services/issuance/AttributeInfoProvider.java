@@ -1,7 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
@@ -16,7 +16,7 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
  * @author mroman
  */
 public abstract class AttributeInfoProvider {
-    private static final Logger logger = LogManager.getLogger();
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(AttributeInfoProvider.class));
 
     protected IssuanceConfiguration configuration;
 

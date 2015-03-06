@@ -4,8 +4,8 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.SearchResult;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
@@ -21,7 +21,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public class LdapAuthenticationProvider extends AuthenticationProvider {
 
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(LdapAuthenticationProvider.class));
     private boolean authenticated = false;
     private String uid;
 
@@ -33,7 +33,6 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
      */
     public LdapAuthenticationProvider(IssuanceConfiguration configuration) {
         super(configuration);
-        logger = LogManager.getLogger();
     }
 
     /**
@@ -106,21 +105,21 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                     adminConnection.close();
                 }
             } catch (Exception e) {
-                logger.catching(e);
+                logger.error("Exception: " + e);
                 return logger.exit(false);
             } finally {
                 try {
                     if (adminConnection != null)
                         adminConnection.close();
                 } catch (Exception e) {
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                     isGood = false;
                 }
                 try {
                     if (userConnection != null)
                         userConnection.close();
                 } catch (Exception e) {
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                     isGood = false;
                 }
             }

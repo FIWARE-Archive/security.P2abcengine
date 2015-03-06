@@ -9,8 +9,8 @@ import java.sql.Statement;
 import javax.naming.NamingException;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
@@ -26,7 +26,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public class JdbcAuthenticationProvider extends AuthenticationProvider {
 
-    private Logger logger;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
     private String userId;
 
     /**
@@ -37,7 +37,6 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
      */
     public JdbcAuthenticationProvider(IssuanceConfiguration configuration) {
         super(configuration);
-        logger = LogManager.getLogger();
     }
 
     /**
@@ -94,7 +93,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             return false;
 
         } catch (Exception e) {
-            logger.catching(e);
+            logger.error("Exception: " + e);
             return false;
         } finally {
             if (conn != null)
@@ -103,7 +102,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
                     stmt.close();
                     conn.close();
                 } catch (SQLException e) {
-                    logger.catching(e);
+                    logger.error("Exception: " + e);
                 }
         }
     }

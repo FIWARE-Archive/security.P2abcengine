@@ -33,8 +33,8 @@ import java.util.Random;
 
 import javax.xml.bind.JAXBElement;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
 
 import ch.zhaw.ficore.p2abc.services.verification.VerificationStorage;
 
@@ -75,6 +75,12 @@ import eu.abc4trust.xml.util.XmlUtils;
 public class VerificationHelper extends AbstractHelper {
 
     private static VerificationHelper instance;
+    public VerifierAbcEngine engine;
+    private Random random;
+    public VerificationStorage verificationStorage;
+    public KeyStorage keyStorage;
+    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(VerificationHelper.class));
+
 
     public static synchronized VerificationHelper initInstance(
             CryptoEngine cryptoEngine, Module[] modules,
@@ -109,12 +115,6 @@ public class VerificationHelper extends AbstractHelper {
         return instance;
     }
     
-    public VerifierAbcEngine engine;
-    private Random random;
-    public VerificationStorage verificationStorage;
-    public KeyStorage keyStorage;
-    private Logger logger = LogManager.getLogger();
-
     /**
      * holds map resources by filename (without path) and the bytes of resource
      */

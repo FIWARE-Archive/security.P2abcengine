@@ -3,7 +3,8 @@ package ch.zhaw.ficore.p2abc.services;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+
 
 public class ExceptionDumper {
 
