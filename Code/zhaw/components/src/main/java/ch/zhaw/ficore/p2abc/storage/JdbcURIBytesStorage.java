@@ -109,7 +109,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException(e));
         }
     }
@@ -159,10 +159,10 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             this.tableName = tableName;
 
         } catch (SQLException e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(e);
         } catch (NamingException e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(e);
         } finally {
             unlock(this, logger);
@@ -296,12 +296,12 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
                     // managed to store an invalid URI in the storage.
                     // We do *not* break off the loop here, since we'll
                     // try to get more URIs out.
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                 }
             }
             return logger.exit(uris);
         } catch (SQLException e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -344,7 +344,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             }
             return logger.exit(null);
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -411,7 +411,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             deleteStatement.setString(1, hash);
             deleteStatement.executeUpdate();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -459,7 +459,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
 
             putStatement.executeUpdate();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure!"));
         } finally {
             unlock(this, logger);
@@ -502,7 +502,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             putNewStatement.executeUpdate();
             return logger.exit(true);
         } catch (SQLException e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure: "
                     + e.getMessage()));
         } finally {
@@ -543,7 +543,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
             else
                 return logger.exit(false);
         } catch (SQLException e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure: "
                     + e.getMessage()));
         } finally {
@@ -576,7 +576,7 @@ public class JdbcURIBytesStorage extends URIBytesStorage {
                     .prepareStatement("DELETE FROM " + tableName);
             deleteAllStatement.execute();
         } catch (SQLException e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             throw logger.throwing(new RuntimeException("Storage failure: "
                     + e.getMessage()));
         } finally {

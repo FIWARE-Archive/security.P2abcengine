@@ -128,14 +128,14 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
             return logger.exit(aic);
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(null);
         } finally {
             if (con != null)
                 try {
                     con.close();
                 } catch (NamingException e) {
-                    logger.error("Exception: " + e);
+                    logger.catching( e);
                 }
         }
     }

@@ -88,7 +88,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -110,7 +110,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -142,7 +142,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -172,7 +172,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -193,7 +193,7 @@ public class IssuanceGUI {
 
             return issuerParameters();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -219,7 +219,7 @@ public class IssuanceGUI {
 
             return queryRules();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -312,7 +312,7 @@ public class IssuanceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -351,7 +351,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -397,7 +397,7 @@ public class IssuanceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -418,7 +418,7 @@ public class IssuanceGUI {
             return issuerParameters();
         }
         catch(Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -439,7 +439,7 @@ public class IssuanceGUI {
             return queryRules();
         }
         catch(Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -498,7 +498,7 @@ public class IssuanceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -669,7 +669,7 @@ public class IssuanceGUI {
             return logger.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -712,7 +712,7 @@ public class IssuanceGUI {
             return logger.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            logger.error("Exception: " + e);
+            logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
