@@ -92,9 +92,9 @@ public class RESTHelper {
                 ClientResponse.class, xml);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RESTException("postRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return fromXML(clazz, response.getEntity(String.class));
     }
@@ -111,9 +111,9 @@ public class RESTHelper {
                 ClientResponse.class, xml);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RESTException("postRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -131,9 +131,9 @@ public class RESTHelper {
                 ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RESTException("postRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return fromXML(clazz, response.getEntity(String.class));
     }
@@ -149,9 +149,9 @@ public class RESTHelper {
                 ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RESTException("postRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -170,9 +170,9 @@ public class RESTHelper {
                 ClientResponse.class, params);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RESTException("postRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -190,9 +190,9 @@ public class RESTHelper {
                 ClientResponse.class, xml);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("postRequest failed for: " + url
+            throw new RESTException("putRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return fromXML(clazz, response.getEntity(String.class));
     }
@@ -209,9 +209,9 @@ public class RESTHelper {
                 ClientResponse.class, xml);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("putRequest failed for: " + url
+            throw new RESTException("putRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -230,9 +230,9 @@ public class RESTHelper {
                 ClientResponse.class, params);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("putRequest failed for: " + url
+            throw new RESTException("putRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -249,8 +249,9 @@ public class RESTHelper {
         ClientResponse response = webResource.get(ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("getRequest failed for: " + url
-                    + " got " + response.getStatus());
+            throw new RESTException("getRequest failed for: " + url
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class), response.getStatus());
 
         return fromXML(clazz, response.getEntity(String.class));
     }
@@ -265,8 +266,9 @@ public class RESTHelper {
         ClientResponse response = webResource.get(ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("getRequest failed for: " + url
-                    + " got " + response.getStatus());
+            throw new RESTException("gettRequest failed for: " + url
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -283,9 +285,9 @@ public class RESTHelper {
                 ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("deleteRequest failed for: " + url
+            throw new RESTException("deleteRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }
@@ -304,9 +306,9 @@ public class RESTHelper {
                 ClientResponse.class, params);
 
         if (response.getStatus() != 200)
-            throw new RuntimeException("deleteRequest failed for: " + url
+            throw new RESTException("deleteRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
-                    + response.getEntity(String.class));
+                    + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
     }

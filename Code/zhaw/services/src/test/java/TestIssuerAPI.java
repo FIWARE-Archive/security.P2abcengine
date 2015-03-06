@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTException;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
@@ -222,6 +223,40 @@ public class TestIssuerAPI extends JerseyTest {
                     + URLEncoder.encode("urn:fiware:cred", "UTF-8"), 
                 RESTHelper.toXML(CredentialSpecification.class, 
                         of.createCredentialSpecification(orig)));
+    }
+    
+    @Test
+    public void testStoreSpecInvalid() throws Exception {
+        CredentialSpecification orig = new CredentialSpecification();
+        orig.setSpecificationUID(new URI("urn:fiware:cred"));
+        AttributeDescriptions attrDescs = new AttributeDescriptions();
+        List<AttributeDescription> lsAttrDesc = attrDescs.getAttributeDescription();
+        
+        AttributeDescription ad = new AttributeDescription();
+        ad.setDataType(new URI("xs:integer"));
+        ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
+        ad.setType(new URI("someAttribute"));
+        
+        FriendlyDescription fd = new FriendlyDescription();
+        fd.setLang("en");
+        fd.setValue("huhu");
+        
+        ad.getFriendlyAttributeName().add(fd);
+        
+        lsAttrDesc.add(ad);
+        
+        orig.setAttributeDescriptions(attrDescs);
+        
+        try {
+            RESTHelper.putRequest(issuanceServiceURL + "credentialSpecification/store/" 
+                        + URLEncoder.encode("urn:fiware:creed", "UTF-8"), 
+                    RESTHelper.toXML(CredentialSpecification.class, 
+                            of.createCredentialSpecification(orig)));
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 409);
+        }
     }
 
     public void assertOk(Response r) {
