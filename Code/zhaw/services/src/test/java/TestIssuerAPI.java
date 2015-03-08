@@ -26,6 +26,7 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
+import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 
@@ -299,6 +300,26 @@ public class TestIssuerAPI extends JerseyTest {
         try {
             RESTHelper.postRequest(issuanceServiceURLUnprot + "testAuthentication",
                     RESTHelper.toXML(AuthenticationRequest.class, authReq));
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 403);
+        }
+    }
+    
+    @Test
+    public void testIssuanceRequestInvalid() throws Exception {
+        
+        
+        AuthenticationRequest authReq = new AuthenticationRequest();
+        AuthenticationInformation authInfo = new AuthInfoSimple("CaröléKing","Jazzman");
+        authReq.authInfo = authInfo;
+        IssuanceRequest isReq = new IssuanceRequest();
+        isReq.authRequest = authReq;
+        isReq.credentialSpecificationUid = "urn:fiware:cred";
+        try {
+            RESTHelper.postRequest(issuanceServiceURLUnprot + "issuanceRequest",
+                    RESTHelper.toXML(IssuanceRequest.class, isReq));
             throw new RuntimeException("Expected exception!");
         }
         catch(RESTException e) {
