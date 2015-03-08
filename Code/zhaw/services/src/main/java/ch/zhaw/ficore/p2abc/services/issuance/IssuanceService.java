@@ -188,7 +188,7 @@ public class IssuanceService {
     @POST()
     @Path("/testAuthentication")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response testAuthentication(AuthenticationRequest authReq) {
+    public Response testAuthentication(AuthenticationRequest authReq) { /* [TEST EXISTS] */
         
         logger.entry();
 
