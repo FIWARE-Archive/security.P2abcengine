@@ -23,6 +23,9 @@ import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
+import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
+import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 
@@ -277,6 +280,30 @@ public class TestIssuerAPI extends JerseyTest {
         testStoreGetCredSpec();
         RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/delete/" +
                 URLEncoder.encode("urn:fiware:cred","UTF-8"));
+    }
+    
+    @Test
+    public void testTestAuthentication() throws Exception {
+        AuthenticationRequest authReq = new AuthenticationRequest();
+        AuthenticationInformation authInfo = new AuthInfoSimple("CaroleKing","Jazzman");
+        authReq.authInfo = authInfo;
+        RESTHelper.postRequest(issuanceServiceURLUnprot + "testAuthentication",
+                RESTHelper.toXML(AuthenticationRequest.class, authReq));
+    }
+    
+    @Test
+    public void testTestAuthenticationInvalid() throws Exception {
+        AuthenticationRequest authReq = new AuthenticationRequest();
+        AuthenticationInformation authInfo = new AuthInfoSimple("CaröléKing","Jazzman");
+        authReq.authInfo = authInfo;
+        try {
+            RESTHelper.postRequest(issuanceServiceURLUnprot + "testAuthentication",
+                    RESTHelper.toXML(AuthenticationRequest.class, authReq));
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 403);
+        }
     }
 
     public void assertOk(Response r) {
