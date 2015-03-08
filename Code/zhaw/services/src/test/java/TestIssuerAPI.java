@@ -258,6 +258,18 @@ public class TestIssuerAPI extends JerseyTest {
             assertEquals(e.getStatusCode(), 409);
         }
     }
+    
+    @Test
+    public void testDeleteSpecInvalid() throws Exception {
+        try {
+            RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/delete/" +
+                    URLEncoder.encode("urn:non-existing","UTF-8"));
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 404);
+        }
+    }
 
     public void assertOk(Response r) {
         assertEquals(r.getStatus(), 200);
