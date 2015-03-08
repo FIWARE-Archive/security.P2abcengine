@@ -326,6 +326,26 @@ public class TestIssuerAPI extends JerseyTest {
             assertEquals(e.getStatusCode(), 403);
         }
     }
+    
+    @Test
+    public void testIssuanceRequestInvalid_NoCred() throws Exception {
+        
+        
+        AuthenticationRequest authReq = new AuthenticationRequest();
+        AuthenticationInformation authInfo = new AuthInfoSimple("CaroleKing","Jazzman");
+        authReq.authInfo = authInfo;
+        IssuanceRequest isReq = new IssuanceRequest();
+        isReq.authRequest = authReq;
+        isReq.credentialSpecificationUid = "urn:fiiware:cred";
+        try {
+            RESTHelper.postRequest(issuanceServiceURLUnprot + "issuanceRequest",
+                    RESTHelper.toXML(IssuanceRequest.class, isReq));
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 404);
+        }
+    }
 
     public void assertOk(Response r) {
         assertEquals(r.getStatus(), 200);
