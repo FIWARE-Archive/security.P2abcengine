@@ -102,8 +102,8 @@ public class TestIssuerAPI extends JerseyTest {
         ic.bind("java:/comp/env/cfg/useDbLocking", new Boolean(true));
         
         ic.close();
-        
-        URIBytesStorage.clearEverything();
+
+        RESTHelper.postRequest(issuanceServiceURL + "reset"); //make sure the service is *clean* before each test.
 
     }
 
