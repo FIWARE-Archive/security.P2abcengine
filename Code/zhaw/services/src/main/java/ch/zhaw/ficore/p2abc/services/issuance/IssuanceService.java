@@ -500,7 +500,7 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
-    public Response deleteCredentialSpecification(
+    public Response deleteCredentialSpecification( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid) {
         logger.entry();
 
@@ -828,7 +828,7 @@ public class IssuanceService {
     @PUT()
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response storeCredentialSpecification(
+    public Response storeCredentialSpecification( /* [TEST EXISTS] */
             @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
             CredentialSpecification credSpec) {
 
@@ -887,7 +887,7 @@ public class IssuanceService {
      */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
-    public Response getCredentialSpecification(
+    public Response getCredentialSpecification( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
         logger.entry();
 
@@ -1054,7 +1054,7 @@ public class IssuanceService {
     @PUT()
     @Path("/protected/queryRule/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response storeQueryRule(
+    public Response storeQueryRule( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
             QueryRule rule) {
 
@@ -1093,7 +1093,7 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/queryRule/delete/{credentialSpecificationUid}")
-    public Response deleteQueryRule(
+    public Response deleteQueryRule( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid) {
         logger.entry();
 
@@ -1137,7 +1137,7 @@ public class IssuanceService {
     @GET()
     @Path("/protected/queryRule/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response getQueryRule(
+    public Response getQueryRule( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
         logger.entry();
@@ -1178,7 +1178,7 @@ public class IssuanceService {
      */
     @GET()
     @Path("/protected/queryRule/list")
-    public Response queryRules() {
+    public Response queryRules() { /* [TEST EXISTS] */
         logger.entry();
 
         try {
@@ -1338,7 +1338,7 @@ public class IssuanceService {
      */
     @GET()
     @Path("/protected/attributeInfoCollection/{name}")
-    public Response attributeInfoCollection(@PathParam("name") String name) {
+    public Response attributeInfoCollection(@PathParam("name") String name) { /* [TEST EXISTS] */
         logger.entry();
         
         AttributeInfoProvider attribInfoProvider = null;
@@ -1382,7 +1382,7 @@ public class IssuanceService {
     @POST()
     @Path("/protected/credentialSpecification/generate")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response generateCredentialSpecification(
+    public Response generateCredentialSpecification( /* [TEST EXISTS] */
             AttributeInfoCollection attrInfoCol) {
 
         try {
