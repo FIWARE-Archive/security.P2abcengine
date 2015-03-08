@@ -270,6 +270,14 @@ public class TestIssuerAPI extends JerseyTest {
             assertEquals(e.getStatusCode(), 404);
         }
     }
+    
+    @Test
+    public void testDeleteSpec() throws Exception {
+        /* First we need to actually store one. So we call a test... */
+        testStoreGetCredSpec();
+        RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/delete/" +
+                URLEncoder.encode("urn:fiware:cred","UTF-8"));
+    }
 
     public void assertOk(Response r) {
         assertEquals(r.getStatus(), 200);
