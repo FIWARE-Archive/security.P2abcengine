@@ -227,6 +227,8 @@ public class TestIssuerAPI extends JerseyTest {
                     + URLEncoder.encode("urn:fiware:cred", "UTF-8"), 
                 RESTHelper.toXML(CredentialSpecification.class, 
                         of.createCredentialSpecification(orig)));
+        
+        //TODO: Actually get cred spec back and perform some comparisons. 
     }
     
     @Test
