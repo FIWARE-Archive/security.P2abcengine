@@ -319,9 +319,9 @@ public class TestFlow extends JerseyTest {
         }
         
         
-        while(true) {
-            Thread.sleep(100);
-        }
+        //while(true) {
+        //    Thread.sleep(100);
+        //}
     }
 
     public String readTextFile(String path) {

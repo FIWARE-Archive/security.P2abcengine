@@ -229,6 +229,8 @@ public class TestIssuerAPI extends JerseyTest {
                         of.createCredentialSpecification(orig)));
         
         //TODO: Actually get cred spec back and perform some comparisons. 
+        RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
     }
     
     @Test
@@ -338,7 +340,7 @@ public class TestIssuerAPI extends JerseyTest {
         authReq.authInfo = authInfo;
         IssuanceRequest isReq = new IssuanceRequest();
         isReq.authRequest = authReq;
-        isReq.credentialSpecificationUid = "urn:fiiware:cred";
+        isReq.credentialSpecificationUid = "urn:fiware:cred";
         try {
             RESTHelper.postRequest(issuanceServiceURLUnprot + "issuanceRequest",
                     RESTHelper.toXML(IssuanceRequest.class, isReq));
