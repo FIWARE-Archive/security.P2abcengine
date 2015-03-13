@@ -768,11 +768,12 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null) {
+            if (credSpec == null || credSpec.getAttributeDescriptions().getAttributeDescription().size()
+                    <= index) {
                 return logger
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
-                                .entity("Credential specification could not be found!"))
+                                .entity("Credential specification or attribute description could not be found!"))
                                 .build();
             }
 

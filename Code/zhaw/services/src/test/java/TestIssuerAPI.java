@@ -30,6 +30,7 @@ import ch.zhaw.ficore.p2abc.xml.IssuanceRequest;
 import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.xml.QueryRuleCollection;
 
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
@@ -231,6 +232,50 @@ public class TestIssuerAPI extends JerseyTest {
         //TODO: Actually get cred spec back and perform some comparisons. 
         RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/"
                 + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+    }
+    
+    @Test
+    public void testAddFriendlyDescription() throws Exception {
+        testStoreGetCredSpec();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("language", "ch");
+        params.add("value", "chuchichäschtli");
+        params.add("i", "0");
+        
+        RESTHelper.putRequest(issuanceServiceURL + "credentialSpecification/addFriendlyDescriptionAttribute/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
+                params);
+        
+        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"), CredentialSpecification.class);
+        
+        List<FriendlyDescription> fds = credSpec.getAttributeDescriptions().
+                getAttributeDescription().get(0).getFriendlyAttributeName();
+        assertEquals(fds.get(1).getLang(),"ch");
+        assertEquals(fds.get(1).getValue(),"chuchichäschtli");
+    }
+    
+    @Test
+    public void testAddFriendlyDescriptionInvalid() throws Exception {
+        testStoreGetCredSpec();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("language", "ch");
+        params.add("value", "chuchichäschtli");
+        params.add("i", "5");
+        
+        try {
+        
+            RESTHelper.putRequest(issuanceServiceURL + "credentialSpecification/addFriendlyDescriptionAttribute/"
+                    + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
+                    params);
+            
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 404);
+        }
     }
     
     @Test
