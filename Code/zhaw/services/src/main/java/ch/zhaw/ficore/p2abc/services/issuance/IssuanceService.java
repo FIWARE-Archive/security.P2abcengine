@@ -633,7 +633,7 @@ public class IssuanceService {
      * <b>Response status:</b>
      * <ul>
      * <li>200 - OK</li>
-     * <li>404 - Credential specification could not be found.</li>
+     * <li>404 - Credential specification, attribute description or friendly description could not be found.</li>
      * <li>500 - ERROR</li>
      * </ul>
      * 
@@ -671,11 +671,12 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null) {
+            if (credSpec == null || index >= credSpec.getAttributeDescriptions().
+                    getAttributeDescription().size()) {
                 return logger
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
-                                .entity("Credential specification could not be found!"))
+                                .entity("Credential specification or attribute description could not be found!"))
                                 .build();
             }
 
@@ -692,6 +693,12 @@ public class IssuanceService {
 
             if (fd != null)
                 attrDesc.getFriendlyAttributeName().remove(fd);
+            else
+                return logger
+                        .exit(Response
+                                .status(Response.Status.NOT_FOUND)
+                                .entity("Friendly description could not be found!"))
+                                .build();
 
             instance.keyManager.storeCredentialSpecification(new URI(
                     credSpecUid), credSpec);
@@ -727,7 +734,7 @@ public class IssuanceService {
      * <b>Response status</b>:
      * <ul>
      * <li>200 - OK</li>
-     * <li>404 - Credential specification could not be found.</li>
+     * <li>404 - Credential specification or attribute description could not be found.</li>
      * <li>500 - ERROR</li>
      * </ul>
      * 
@@ -743,7 +750,7 @@ public class IssuanceService {
      */
     @PUT()
     @Path("/protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid}")
-    public Response addFriendlyDescriptionAttribute(@FormParam("i") int index,
+    public Response addFriendlyDescriptionAttribute(@FormParam("i") int index, /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid,
             @FormParam("language") String language,
             @FormParam("value") String value) {

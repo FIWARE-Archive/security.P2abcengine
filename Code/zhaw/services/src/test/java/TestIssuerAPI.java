@@ -257,6 +257,45 @@ public class TestIssuerAPI extends JerseyTest {
     }
     
     @Test
+    public void testDeleteFriendlyDescription() throws Exception {
+        testAddFriendlyDescription();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("language", "ch");
+        params.add("i", "0");
+        RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/deleteFriendlyDescriptionAttribute/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
+                params);
+        
+        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"), CredentialSpecification.class);
+        
+        List<FriendlyDescription> fds = credSpec.getAttributeDescriptions().
+                getAttributeDescription().get(0).getFriendlyAttributeName();
+        
+        assertEquals(fds.size(),1);
+    }
+    
+    @Test
+    public void testDeleteFriendlyDescriptionInvalid() throws Exception {
+        testAddFriendlyDescription();
+        
+        try {
+            MultivaluedMapImpl params = new MultivaluedMapImpl();
+            params.add("language", "de");
+            params.add("i", "0");
+            RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/deleteFriendlyDescriptionAttribute/"
+                    + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
+                    params);
+            throw new RuntimeException("Expected exception!");
+        
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(),404);
+        }
+    }
+    
+    @Test
     public void testAddFriendlyDescriptionInvalid() throws Exception {
         testStoreGetCredSpec();
         
