@@ -647,7 +647,7 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid}")
-    public Response deleteFriendlyDescription(@FormParam("i") int index,
+    public Response deleteFriendlyDescription(@FormParam("i") int index, /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid,
             @FormParam("language") String language) {
 
