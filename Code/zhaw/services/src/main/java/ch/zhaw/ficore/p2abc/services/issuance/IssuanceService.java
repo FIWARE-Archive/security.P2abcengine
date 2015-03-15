@@ -235,7 +235,7 @@ public class IssuanceService {
      */
     @GET()
     @Path("/getSettings/")
-    public Response getSettings() {
+    public Response getSettings() { /* [TEST EXISTS, FLOW TEST] */
         logger.entry();
 
         try {
@@ -328,7 +328,7 @@ public class IssuanceService {
     @POST()
     @Path("/issuanceRequest/")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response issuanceRequest(IssuanceRequest request) {
+    public Response issuanceRequest(IssuanceRequest request) { /* [TEST EXISTS, FLOW TEST] */
 
         AttributeValueProvider attrValProvider = null;
         AuthenticationProvider authProvider = null;

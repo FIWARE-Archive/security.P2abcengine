@@ -116,6 +116,17 @@ public class TestIssuerAPI extends JerseyTest {
     public void cleanup() throws Exception {
     }
     
+    
+    @Test
+    public void testGetSettings() throws Exception {
+        /*
+         * There isn't much we can test here yet I think because settings involves
+         * system parameters and involves A LOT of random stuff. Also the correct
+         * functioning of getSettings should also be at least partly covered by the flow
+         * tests.
+         */
+        RESTHelper.getRequest(issuanceServiceURLUnprot +"getSettings");
+    }
 
     @Test
     public void testQueryRules() throws Exception {
