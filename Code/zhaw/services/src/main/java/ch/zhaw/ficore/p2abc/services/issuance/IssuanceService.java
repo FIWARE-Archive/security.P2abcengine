@@ -431,7 +431,7 @@ public class IssuanceService {
     @POST()
     @Path("/issuanceProtocolStep")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(final IssuanceMessage issuanceMessage) {
+    public Response issuanceProtocolStep(final IssuanceMessage issuanceMessage) { /* [FLOW TEST] */
 
         logger.entry();
 
@@ -554,7 +554,7 @@ public class IssuanceService {
      * <ul>
      * <li>200 - OK</li>
      * <li>500 - ERROR</li>
-     * <li>404 - Credential specification was not found.</li>
+     * <li>404 - Credential specification or attribute description was not found.</li>
      * </ul>
      * 
      * @param index
@@ -565,7 +565,7 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}")
-    public Response deleteAttribute(@FormParam("i") int index,
+    public Response deleteAttribute(@FormParam("i") int index, /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid) {
 
         logger.entry();
@@ -588,11 +588,11 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null) {
+            if (credSpec == null || index >= credSpec.getAttributeDescriptions().getAttributeDescription().size()) {
                 return logger
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
-                                .entity("Credential specification could not be found!"))
+                                .entity("Credential specification or attribute description could not be found!"))
                                 .build();
             }
 
@@ -951,7 +951,7 @@ public class IssuanceService {
      */
     @POST()
     @Path("/protected/issuerParameters/generate/{credentialSpecificationUid}")
-    public Response generateIssuerParameters(
+    public Response generateIssuerParameters( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid) {
         logger.entry();
 
@@ -1007,7 +1007,7 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
-    public Response deleteIssuerParameters(
+    public Response deleteIssuerParameters( /* [TEST EXISTS] */
             @PathParam("issuerParametersUid") String issuerParametersUid) {
         logger.entry();
 
@@ -1243,7 +1243,7 @@ public class IssuanceService {
     @PUT()
     @Path("/protected/issuancePolicy/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response storeIssuancePolicy(
+    public Response storeIssuancePolicy( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
             IssuancePolicy policy) {
 
@@ -1289,7 +1289,7 @@ public class IssuanceService {
     @GET()
     @Path("/protected/issuancePolicy/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response getIssuancePolicy(
+    public Response getIssuancePolicy( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
 
         logger.entry();
@@ -1517,7 +1517,7 @@ public class IssuanceService {
     @POST()
     @Path("/protected/setupIssuerParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response setupIssuerParameters(
+    public Response setupIssuerParameters( /* [FLOW TEST] */
             IssuerParametersInput issuerParametersInput) {
 
         logger.entry();

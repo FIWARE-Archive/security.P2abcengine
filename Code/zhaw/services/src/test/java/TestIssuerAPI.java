@@ -38,6 +38,7 @@ import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.IssuancePolicy;
 import eu.abc4trust.xml.ObjectFactory;
 
 public class TestIssuerAPI extends JerseyTest {
@@ -240,9 +241,87 @@ public class TestIssuerAPI extends JerseyTest {
                 RESTHelper.toXML(CredentialSpecification.class, 
                         of.createCredentialSpecification(orig)));
         
-        //TODO: Actually get cred spec back and perform some comparisons. 
         RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/"
                 + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+    }
+    
+    @Test
+    public void testDeleteAttribute() throws Exception {
+        testStoreGetCredSpec();
+        
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("i", "0");
+        
+        RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/deleteAttribute/"
+                + URLEncoder.encode("urn:fiware:cred","UTF-8"), params);
+        
+        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(issuanceServiceURL + "credentialSpecification/get/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"), CredentialSpecification.class);
+        
+        assertEquals(credSpec.getAttributeDescriptions().getAttributeDescription().size(), 0);
+    }
+    
+    @Test
+    public void testDeleteAttributeInvalid() throws Exception {
+        testStoreGetCredSpec();
+        
+        try {
+            MultivaluedMapImpl params = new MultivaluedMapImpl();
+            params.add("i", "2");
+            
+            RESTHelper.deleteRequest(issuanceServiceURL + "credentialSpecification/deleteAttribute/"
+                    + URLEncoder.encode("urn:fiware:cred","UTF-8"), params);
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 404);
+        }
+    }
+    
+    @Test
+    public void testGenerateIssuerParams() throws Exception {
+        testStoreGetCredSpec();
+        
+        RESTHelper.postRequest(issuanceServiceURL + "issuerParameters/generate/"
+                + URLEncoder.encode("urn:fiware:cred","UTF-8"));
+    }
+    
+    @Test
+    public void testGenerateIssuerParamsInvalid() throws Exception {
+        testStoreGetCredSpec();
+        
+        try {
+            RESTHelper.postRequest(issuanceServiceURL + "issuerParameters/generate/"
+                    + URLEncoder.encode("urn:fiware:crad","UTF-8"));
+            throw new RuntimeException("Expected exception!");
+        }
+        catch(RESTException e) {
+            assertEquals(e.getStatusCode(), 500);
+        }
+    }
+    
+    @Test
+    public void testDeleteIssuerParams() throws Exception {
+        testGenerateIssuerParams();
+        
+        RESTHelper.deleteRequest(issuanceServiceURL + "issuerParameters/delete/"
+                + URLEncoder.encode("urn:fiware:cred","UTF-8"));
+    }
+    
+    @Test
+    public void testStoreIssuancePolicy() throws Exception {
+        IssuancePolicy ip = new IssuancePolicy();
+        
+        RESTHelper.putRequest(issuanceServiceURL + "issuancePolicy/store/ip",
+                RESTHelper.toXML(IssuancePolicy.class, of.createIssuancePolicy(ip)));
+    }
+    
+    @Test
+    public void testGetIssuancePolicy() throws Exception {
+        testStoreIssuancePolicy();
+        
+        RESTHelper.getRequest(issuanceServiceURL + "issuancePolicy/get/ip");
     }
     
     @Test
