@@ -13,7 +13,9 @@ import javax.naming.InitialContext;
 import javax.ws.rs.core.Response;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
@@ -57,14 +59,13 @@ public class TestIssuerAPI extends JerseyTest {
         return "http://localhost:" + TestConstants.JERSEY_HTTP_PORT + "/";
     }
 
-    File storageFile;
-    String dbName = "URIBytesStorage";
+    static File storageFile;
+    static String dbName = "URIBytesStorage";
     ObjectFactory of = new ObjectFactory();
 
-    @Before
-    public void initJNDI() throws Exception {        
+    @BeforeClass
+    public static void initJNDI() throws Exception {        
         System.out.println("init [TestIssuerAPI]");
-        this.setUp();
         // Create initial context
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
@@ -108,12 +109,16 @@ public class TestIssuerAPI extends JerseyTest {
         
         ic.close();
 
+    }
+    
+    @Before
+    public void doReset() throws Exception {
         RESTHelper.postRequest(issuanceServiceURL + "reset"); //make sure the service is *clean* before each test.
-
     }
 
-    @After
-    public void cleanup() throws Exception {
+    @AfterClass
+    public static void cleanup() throws Exception {
+        storageFile.delete();
     }
     
     
@@ -496,8 +501,7 @@ public class TestIssuerAPI extends JerseyTest {
     
     @Test
     public void testIssuanceRequestInvalid() throws Exception {
-        
-        
+
         AuthenticationRequest authReq = new AuthenticationRequest();
         AuthenticationInformation authInfo = new AuthInfoSimple("CaröléKing","Jazzman");
         authReq.authInfo = authInfo;
@@ -516,8 +520,7 @@ public class TestIssuerAPI extends JerseyTest {
     
     @Test
     public void testIssuanceRequestInvalid_NoCred() throws Exception {
-        
-        
+
         AuthenticationRequest authReq = new AuthenticationRequest();
         AuthenticationInformation authInfo = new AuthInfoSimple("CaroleKing","Jazzman");
         authReq.authInfo = authInfo;
