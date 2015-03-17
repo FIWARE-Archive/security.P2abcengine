@@ -21,7 +21,6 @@ import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTException;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.user.UserService;
-import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
@@ -118,6 +117,16 @@ public class TestIssuerAPI extends JerseyTest {
     }
     
     
+    /** Tests getSettings.
+     * 
+     * <b>Test</b>: getSettings
+     * 
+     * <b>Description</b>: This method tests the getSettings method of the
+     * issuer. It issues the request and checks that a HTTP 200 answer is
+     * received. 
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetSettings() throws Exception {
         /*
