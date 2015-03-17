@@ -1,3 +1,4 @@
+package ch.zhaw.ficore.p2abc.services.tests;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

@@ -1,3 +1,4 @@
+package ch.zhaw.ficore.p2abc.services.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -12,7 +13,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
