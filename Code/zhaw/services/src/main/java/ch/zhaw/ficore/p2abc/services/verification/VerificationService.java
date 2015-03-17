@@ -1883,7 +1883,7 @@ public class VerificationService {
      * <br>
      * The user service is capable of downloading settings from an issuer (or
      * from anything that provides settings). To download settings use
-     * <tt>/loadSetting?url=...</tt> ({@link #loadSettings(String)}). <br>
+     * <tt>/loadSettings?url=...</tt> ({@link #loadSettings(String)}). <br>
      * <br>
      * <b>Response Status</b>:
      * <ul>
