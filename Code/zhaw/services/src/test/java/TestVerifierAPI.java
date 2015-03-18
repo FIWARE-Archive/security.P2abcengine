@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
+import ch.zhaw.ficore.p2abc.services.helpers.RESTException;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 
@@ -159,4 +160,19 @@ public class TestVerifierAPI extends JerseyTest {
         
         assertEquals(ppas.getPresentationPolicy().size(), 0);
     }
+    
+    @Test
+    public void testDeleteResource() throws Exception {
+        testCreateResource();
+        
+        RESTHelper.deleteRequest(verificationServiceURL + "resource/delete/test");
+        
+        PresentationPolicyAlternativesCollection ppac = 
+                (PresentationPolicyAlternativesCollection) RESTHelper.getRequest(verificationServiceURL + "presentationPolicyAlternatives/list",
+                PresentationPolicyAlternativesCollection.class);
+        
+        assertEquals(ppac.uris.size(), 0);
+    }
+    
+    
 }

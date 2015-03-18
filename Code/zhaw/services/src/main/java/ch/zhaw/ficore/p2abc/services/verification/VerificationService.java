@@ -1384,7 +1384,7 @@ public class VerificationService {
      */
     @DELETE()
     @Path("/protected/resource/delete/{resource}")
-    public Response deleteResource(@PathParam("resource") String resource) {
+    public Response deleteResource(@PathParam("resource") String resource) { /* [TEST EXISTS] */
         log.entry();
         
         try {
