@@ -616,7 +616,7 @@ public class VerificationService {
      * @return Response
      */
     @POST()
-    @Path("/protected/presentationPolicyAlternatives/deletePolicyAlternative/{resource}")
+    @Path("/protected/presentationPolicyAlternatives/deletePolicyAlternative/{resource}") /* [TEST EXISTS] */
     public Response deletePolicyAlternative(@PathParam("resource") String resource, @FormParam("puid") String policyUid) {
         log.entry();
         
