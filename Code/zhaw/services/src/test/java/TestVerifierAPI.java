@@ -1,3 +1,5 @@
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 
 import javax.naming.Context;
@@ -11,7 +13,9 @@ import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
+import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
@@ -99,5 +103,23 @@ public class TestVerifierAPI extends JerseyTest {
     @Test
     public void testStatus() throws Exception {
         RESTHelper.getRequest(verificationServiceURL +"status");
+    }
+    
+    @Test
+    public void testCreateResource() throws Exception {
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("redirectURI", "http://localhost/foo");
+        
+        RESTHelper.putRequest(verificationServiceURL + "resource/create/test", params);
+        
+        PresentationPolicyAlternativesCollection ppac = 
+                (PresentationPolicyAlternativesCollection) RESTHelper.getRequest(verificationServiceURL + "presentationPolicyAlternatives/list",
+                PresentationPolicyAlternativesCollection.class);
+        
+        assertEquals(ppac.uris.size(), 1);
+        assertEquals(ppac.uris.get(0),"test");
+        assertEquals(ppac.redirectURIs.size(), 1);
+        assertEquals(ppac.redirectURIs.get(0),"http://localhost/foo");
+        assertEquals(ppac.presentationPolicyAlternatives.size(), 1);
     }
 }
