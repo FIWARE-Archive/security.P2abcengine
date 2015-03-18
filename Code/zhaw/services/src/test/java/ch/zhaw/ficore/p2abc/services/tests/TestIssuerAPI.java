@@ -124,9 +124,9 @@ public class TestIssuerAPI extends JerseyTest {
     
     /** Tests getSettings.
      * 
-     * <b>Test</b>: getSettings
+     * @fiware-unit-test-name Test getSettings
      * 
-     * <b>Description</b>: This method tests the getSettings method of the
+     * @fiware-unit-test-test This method tests the getSettings method of the
      * issuer. It issues the request and checks that a HTTP 200 answer is
      * received. 
      * 
