@@ -558,7 +558,7 @@ public class VerificationService {
      * @return Response
      */
     @POST()
-    @Path("/protected/presentationPolicyAlternatives/addPolicyAlternative/{resource}")
+    @Path("/protected/presentationPolicyAlternatives/addPolicyAlternative/{resource}") /* [TEST EXISTS] */
     public Response addPolicyAlternative(@PathParam("resource") String resource, @FormParam("puid") String policyUid) {
         log.entry();
         
@@ -682,7 +682,7 @@ public class VerificationService {
      * @return Response
      */
     @PUT()
-    @Path("/protected/resource/create/{resource}")
+    @Path("/protected/resource/create/{resource}") /* [TEST EXISTS] */
     public Response createResource(@PathParam("resource") String resource, @FormParam("redirectURI") String redirectURI) {
         log.entry();
         
@@ -1481,7 +1481,7 @@ public class VerificationService {
      */
     @GET()
     @Path("/protected/presentationPolicyAlternatives/get/{resource}")
-    public Response getPresentationPolicy(@PathParam("resource") String resource) {
+    public Response getPresentationPolicy(@PathParam("resource") String resource) { /* [TEST EXISTS] */
         log.entry();
         
         try {
@@ -1516,7 +1516,7 @@ public class VerificationService {
      */
     @GET()
     @Path("/protected/presentationPolicyAlternatives/list")
-    public Response presentationPolicies() {
+    public Response presentationPolicies() { /* [TEST EXISTS] */
         log.entry();
         
         try {
