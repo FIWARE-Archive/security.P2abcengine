@@ -141,4 +141,22 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppas.getPresentationPolicy().size(), 1);
         assertEquals(ppas.getPresentationPolicy().get(0).getPolicyUID().toString(),"urn:policy");
     }
+    
+    @Test
+    public void testDeletePPA() throws Exception {
+        testAddPPA();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        
+        RESTHelper.postRequest(
+                verificationServiceURL + "presentationPolicyAlternatives/deletePolicyAlternative/test",
+                params);
+        
+        PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper.getRequest(
+                verificationServiceURL + "presentationPolicyAlternatives/get/test",
+                PresentationPolicyAlternatives.class);
+        
+        assertEquals(ppas.getPresentationPolicy().size(), 0);
+    }
 }
