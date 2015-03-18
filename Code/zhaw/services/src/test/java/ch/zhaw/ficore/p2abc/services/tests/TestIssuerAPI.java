@@ -124,7 +124,8 @@ public class TestIssuerAPI extends JerseyTest {
     
     /** Tests getSettings.
      * 
-     * @fiware-unit-test-name Test getSettings
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.bla
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.blubb
      * 
      * @fiware-unit-test-test This method tests the getSettings method of the
      * issuer. It issues the request and checks that a HTTP 200 answer is
