@@ -163,7 +163,7 @@ public class TestFlow extends JerseyTest {
          */
 
         /* Test authentication */
-        testAuthentication(readTextFile("simpleAuth.xml"));
+        testAuthentication(readTextFile("/simpleAuth.xml"));
 
         /*
          * Get an attributeInfoCollection and convert it to a
@@ -177,11 +177,11 @@ public class TestFlow extends JerseyTest {
         testGetCredSpecFromIssuer();
 
         /* Store/Get queryRule at issuer */
-        testStoreQueryRuleAtIssuer(readTextFile("queryRule.xml"));
+        testStoreQueryRuleAtIssuer(readTextFile("/queryRule.xml"));
         testGetQueryRuleFromIssuer();
 
         /* Store/Get IssuancePolicy at issuer */
-        testStoreIssuancePolicyAtIssuer(readTextFile("issuancePolicy.xml"));
+        testStoreIssuancePolicyAtIssuer(readTextFile("/issuancePolicy.xml"));
         testGetIssuancePolicyFromIssuer();
 
         /*
@@ -200,7 +200,7 @@ public class TestFlow extends JerseyTest {
         testStoreSysParamsAtVerifier(systemParameters);
 
         /* Setup IssuerParameters */
-        String issuerParameters = testSetupIssuerParametersIssuer(readTextFile("issuerParametersInput.xml"));
+        String issuerParameters = testSetupIssuerParametersIssuer(readTextFile("/issuerParametersInput.xml"));
         System.out.println("--- issuerParameters");
         System.out.println(issuerParameters);
 
@@ -214,7 +214,7 @@ public class TestFlow extends JerseyTest {
          */
 
         for (int i = 0; i < 1; i++) {
-            String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("issuanceRequest.xml"));
+            String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("/issuanceRequest.xml"));
 
             /* Extract issuance message */
             String firstIssuanceMessage = testExtractIssuanceMessage(issuanceMessageAndBoolean);
@@ -228,7 +228,7 @@ public class TestFlow extends JerseyTest {
             System.out.println(issuanceReturn);
             System.out.println(contextString);
 
-            String uiIssuanceReturn = readTextFile("uiIssuanceReturn.xml");
+            String uiIssuanceReturn = readTextFile("/uiIssuanceReturn.xml");
             uiIssuanceReturn = replaceContextString(uiIssuanceReturn,
                     contextString);
             System.out.println("--- uiIssuanceReturn");
@@ -245,14 +245,14 @@ public class TestFlow extends JerseyTest {
             String fourthIssuanceMessageAndBoolean = testIssuanceStepUser2(thirdIssuanceMessage);
 
             /* Verification stuff */
-            String presentationPolicyAlternatives = testCreatePresentationPolicy(readTextFile("presentationPolicyAlternatives.xml"));
-            testCreatePresentationPolicy(readTextFile("presentationPolicyAlternatives.xml"));
+            String presentationPolicyAlternatives = testCreatePresentationPolicy(readTextFile("/presentationPolicyAlternatives.xml"));
+            testCreatePresentationPolicy(readTextFile("/presentationPolicyAlternatives.xml"));
 
             String presentationReturn = testCreatePresentationToken(presentationPolicyAlternatives);
             contextString = getContextString(presentationReturn);
             System.out.println(contextString);
 
-            String uiPresentationReturn = readTextFile("uiPresentationReturn.xml");
+            String uiPresentationReturn = readTextFile("/uiPresentationReturn.xml");
             uiPresentationReturn = replaceContextString(uiPresentationReturn,
                     contextString);
 
@@ -297,7 +297,7 @@ public class TestFlow extends JerseyTest {
                 String contextString_ = getContextString(presentationReturn_);
                 System.out.println(contextString_);
     
-                String uiPresentationReturn_ = readTextFile("uiPresentationReturn.xml");
+                String uiPresentationReturn_ = readTextFile("/uiPresentationReturn.xml");
                 uiPresentationReturn_ = replaceContextString(uiPresentationReturn_,
                         contextString_);
     
