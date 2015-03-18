@@ -20,6 +20,7 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
 import eu.abc4trust.xml.ObjectFactory;
+import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 public class TestVerifierAPI extends JerseyTest {
 
@@ -121,5 +122,23 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppac.redirectURIs.size(), 1);
         assertEquals(ppac.redirectURIs.get(0),"http://localhost/foo");
         assertEquals(ppac.presentationPolicyAlternatives.size(), 1);
+    }
+    
+    @Test
+    public void testAddPPA() throws Exception {
+        testCreateResource();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        
+        
+        RESTHelper.postRequest(verificationServiceURL + "presentationPolicyAlternatives/addPolicyAlternative/test", params);
+        
+        PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper.getRequest(
+                verificationServiceURL + "presentationPolicyAlternatives/get/test",
+                PresentationPolicyAlternatives.class);
+        
+        assertEquals(ppas.getPresentationPolicy().size(), 1);
+        assertEquals(ppas.getPresentationPolicy().get(0).getPolicyUID().toString(),"urn:policy");
     }
 }
