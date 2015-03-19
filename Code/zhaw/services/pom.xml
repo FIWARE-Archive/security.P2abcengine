@@ -127,19 +127,19 @@
 					<path>/zhaw-p2abc-webservices</path>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.2</version>
-				<configuration>
-					<doclet>ch.zhaw.ficore.p2abc.FicoreUnitTestDoclet</doclet>
-					<docletPath>${project.parent.basedir}/documenter/target/documenter.jar</docletPath>
-					<useStandardDocletOptions>false</useStandardDocletOptions>
-					<destDir>unit-test</destDir>
-					<name>Unit Test</name>
-					<description>Unit Test Plan.</description>
-				</configuration>
-			</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.2</version>
+            <configuration>
+              <doclet>ch.zhaw.ficore.p2abc.FicoreUnitTestDoclet</doclet>
+              <docletPath>${project.parent.basedir}/documenter/target/documenter.jar</docletPath>
+              <useStandardDocletOptions>false</useStandardDocletOptions>
+              <destDir>unit-test</destDir>
+              <name>Unit Test</name>
+              <description>Unit Test Plan.</description>
+            </configuration>
+      </plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -151,6 +151,33 @@
 				<configuration>
 					<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.2</version>
+				<reportSets>
+					<reportSet>
+						<id>html</id>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>test-html</id>
+						<configuration>
+							<doclet>ch.zhaw.ficore.p2abc.FicoreUnitTestDoclet</doclet>
+							<docletPath>${project.parent.basedir}/documenter/target/documenter.jar</docletPath>
+							<useStandardDocletOptions>false</useStandardDocletOptions>
+							<destDir>unit-test</destDir>
+							<name>Unit Test</name>
+							<description>Unit Test Plan.</description>
+						</configuration>
+						<reports>
+							<report>test-javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
