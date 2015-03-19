@@ -251,6 +251,18 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppac.uris.size(), 0);
     }
     
+    /** Tests adding an alias to a PresentationPolicyAlternative of a resource.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Requires a resource with name "test" and a PresentationPolicyAlternative with "urn:policy".
+     * 
+     * @fiware-unit-test-test This test tests that an alias can be added. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testAddAlias() throws Exception {
         testAddPPA();
