@@ -735,7 +735,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addAlias/{resource}/{policyUid}")
     public Response addAlias(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
-            @FormParam("al") String alias) {
+            @FormParam("al") String alias) { /* [TEST EXISTS] */
         log.entry();
         
         try {

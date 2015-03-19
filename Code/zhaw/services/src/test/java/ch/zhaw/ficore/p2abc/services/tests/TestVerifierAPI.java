@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.services.tests;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.net.URLEncoder;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -175,5 +176,15 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppac.uris.size(), 0);
     }
     
+    @Test
+    public void testAddAlias() throws Exception {
+        testAddPPA();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        
+        RESTHelper.postRequest(verificationServiceURL + "presentationPolicyAlternatives/addAlias/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
     
 }
