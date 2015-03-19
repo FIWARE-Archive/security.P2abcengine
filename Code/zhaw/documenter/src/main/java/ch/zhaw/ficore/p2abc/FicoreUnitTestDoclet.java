@@ -98,13 +98,19 @@ public class FicoreUnitTestDoclet {
                         if (tag == UnitTestTag.FEATURE) {
                             writer.println(tagToMarkdown.get(tag) + "\n");
                             for (int k = 0; k < tags.length; k++) {
-                                writer.println("* " + tags[k].text());
+                                writer.println("* [[" + tags[k].text() + "]]");
                             }
                             writer.println();
                         } else {
                             for (int k = 0; k < tags.length; k++) {
-                                writer.println(tagToMarkdown.get(tag) + "\n\n" 
-                                        + tags[k].text());
+                                // The "text" is a multi-line string where
+                                // all lines except the first begin with
+                                // spaces. These need to be removed.
+                                String[] texts = tags[k].text().split("\n");
+                                writer.println(tagToMarkdown.get(tag) + "\n");
+                                for (int l = 0; l < texts.length; l++) {
+                                    writer.println(texts[l].trim());
+                                }
                             }
                             writer.println();
                         }

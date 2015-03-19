@@ -124,7 +124,7 @@ public class TestIssuerAPI extends JerseyTest {
     
     /** Tests getSettings.
      * 
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
      * 
      * @fiware-unit-test-initial-condition Issuer set up.
      * 
@@ -153,7 +153,7 @@ public class TestIssuerAPI extends JerseyTest {
 
     /** Tests query rules.
      * 
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
      * 
      * @fiware-unit-test-initial-condition Issuer set up, no query rules
      * stored in database.
@@ -228,7 +228,7 @@ public class TestIssuerAPI extends JerseyTest {
 
     /** Tests credential specification generation.
      * 
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
      * 
      * @fiware-unit-test-initial-condition Issuer set up, attribute provider
      * has attribute "someAttribute" pf type integer, no credential specification
@@ -282,13 +282,20 @@ public class TestIssuerAPI extends JerseyTest {
     
     /** Tests credential specification storage and retrieval.
      * 
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
      * 
-     * @fiware-unit-test-initial-condition
+     * @fiware-unit-test-initial-condition Issuer set up, no credential
+     * specification with URN "urn:fiware:cred" in the database.
      * 
-     * @fiware-unit-test-test
+     * @fiware-unit-test-test This test creates a new credential specification
+     * with one attribute called "someAttribute" of type "xs:integer" and
+     * encoding "urn:abc4trust:1.0:encoding:integer:signed".  It also creates
+     * a description with language "en". It then stores the credential
+     * specification and retrieves it again.
      * 
-     * @fiware-unit-test-expected-outcome
+     * @fiware-unit-test-expected-outcome HTTP 200 for all operations. After this
+     * test, there will be a credential specification with URN "urn:fiware:cred"
+     * in the database.
      * 
      */
     @Test
@@ -322,15 +329,20 @@ public class TestIssuerAPI extends JerseyTest {
                 + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
     }
     
-    /** Tests credential specifications.
+    /** Tests attribute deletion.
      * 
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
      * 
-     * @fiware-unit-test-initial-condition
+     * @fiware-unit-test-initial-condition Issuer set up, a credential
+     * specification with URN "urn:fiware:cred" exists in the database,
+     * this credential specification has exactly one attribute.
      * 
-     * @fiware-unit-test-test
+     * @fiware-unit-test-test This test tests the deletion of attributes
+     * from credential specifications. We delete the first attribute from
+     * a credential "urn:fiware:cred".
      * 
-     * @fiware-unit-test-expected-outcome
+     * @fiware-unit-test-expected-outcome HTTP 200 on all requests and zero
+     * attributes remaining in "urn:fiware"cred" afterwards.
      * 
      */
     @Test
@@ -350,6 +362,24 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals(credSpec.getAttributeDescriptions().getAttributeDescription().size(), 0);
     }
     
+    /** Tests wrong deletion of nonexistent attribute.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, a credential
+     * specification with URN "urn:fiware:cred" exists in the database,
+     * this credential specification has exactly one attribute.
+     * 
+     * @fiware-unit-test-test This test tests what happens when someone
+     * attempts to delete an attribute that does not exist. It uses the same
+     * credential as the {@link #testDeleteAttribute() testDeleteAttribute}
+     * test but tries to delete the (nonexistent) second attribute instead of
+     * the first.
+     * 
+     * @fiware-unit-test-expected-outcome A HTTP 404 on the attempt to delete
+     * the (nonexistent) second attribute.
+     * 
+     */
     @Test
     public void testDeleteAttributeInvalid() throws Exception {
         testStoreGetCredSpec();
@@ -367,6 +397,20 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests generation of issuer parameters.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, a credential
+     * specification with URN "urn:fiware:cred" exists in the database,
+     * this credential specification has exactly one attribute.
+     * 
+     * @fiware-unit-test-test This test tests the generation of issuer
+     * parameters for a given credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
     @Test
     public void testGenerateIssuerParams() throws Exception {
         testStoreGetCredSpec();
@@ -375,6 +419,21 @@ public class TestIssuerAPI extends JerseyTest {
                 + URLEncoder.encode("urn:fiware:cred","UTF-8"));
     }
     
+    /** Tests generation of issuer parameters for nonexistent credential
+     * specification.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, <em>no</em> credential
+     * specification with URN "urn:fiware:crad" (note the "a") exists in the
+     * database.
+     * 
+     * @fiware-unit-test-test This test tests the generation of issuer
+     * parameters for a nonexistent credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 404.
+     * 
+     */
     @Test
     public void testGenerateIssuerParamsInvalid() throws Exception {
         testStoreGetCredSpec();
@@ -385,10 +444,23 @@ public class TestIssuerAPI extends JerseyTest {
             throw new RuntimeException("Expected exception!");
         }
         catch(RESTException e) {
-            assertEquals(e.getStatusCode(), 500);
+            assertEquals(e.getStatusCode(), 404);
         }
     }
     
+    /** Tests deletion of issuer parameters.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, a credential
+     * specification with URN "urn:fiware:cred" exists in the database.
+     * 
+     * @fiware-unit-test-test This test tests the deletion of issuer
+     * parameters for a given credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
     @Test
     public void testDeleteIssuerParams() throws Exception {
         testGenerateIssuerParams();
@@ -397,6 +469,18 @@ public class TestIssuerAPI extends JerseyTest {
                 + URLEncoder.encode("urn:fiware:cred","UTF-8"));
     }
     
+    /** Tests storing of issuance policies.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up.
+     * 
+     * @fiware-unit-test-test This test tests the storing of a default
+     * issuance policy. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
     @Test
     public void testStoreIssuancePolicy() throws Exception {
         IssuancePolicy ip = new IssuancePolicy();
@@ -405,6 +489,19 @@ public class TestIssuerAPI extends JerseyTest {
                 RESTHelper.toXML(IssuancePolicy.class, of.createIssuancePolicy(ip)));
     }
     
+    /** Tests retrieval of issuance policies.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, some issuance policy
+     * stored in the database.
+     * 
+     * @fiware-unit-test-test This test tests the deletion of an issuance
+     * policy. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
     @Test
     public void testGetIssuancePolicy() throws Exception {
         testStoreIssuancePolicy();
@@ -412,6 +509,21 @@ public class TestIssuerAPI extends JerseyTest {
         RESTHelper.getRequest(issuanceServiceURL + "issuancePolicy/get/ip");
     }
     
+    /** Tests adding of descriptions.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, credential
+     * specification with name "urn:fiware:cred" stored in the database.
+     * 
+     * @fiware-unit-test-test This test tests adding "friendly descriptions"
+     * to a credential specification. In this case, we also test that languages
+     * that use UTF-8 characters not present in ASCII are correctly supported. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 and parameters retrieved
+     * correctly in the correct encoding.
+     * 
+     */
     @Test
     public void testAddFriendlyDescription() throws Exception {
         testStoreGetCredSpec();
@@ -434,6 +546,21 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals(fds.get(1).getValue(),"chuchichäschtli");
     }
     
+    /** Tests deletion of descriptions.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, credential
+     * specification with name "urn:fiware:cred" stored in the database,
+     * with exactly one friendly description.
+     * 
+     * @fiware-unit-test-test This test tests deleting "friendly descriptions"
+     * to a credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 and there are no more
+     * friendly descriptions for that credential specification.
+     * 
+     */
     @Test
     public void testDeleteFriendlyDescription() throws Exception {
         testAddFriendlyDescription();
@@ -454,6 +581,21 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals(fds.size(),1);
     }
     
+    /** Tests invalid deletion of nonexistent descriptions.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, credential
+     * specification with name "urn:fiware:cred" stored in the database,
+     * with no friendly descriptions.
+     * 
+     * @fiware-unit-test-test This test tests invalidly deleting
+     * "friendly descriptions" from a credential specification that has no
+     * friendly descriptions. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 404.
+     * 
+     */
     @Test
     public void testDeleteFriendlyDescriptionInvalid() throws Exception {
         testAddFriendlyDescription();
@@ -473,6 +615,21 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests invalid adding of descriptions.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, credential
+     * specification with name "urn:fiware:cred" stored in the database,
+     * with no more than 4 friendly descriptions.
+     * 
+     * @fiware-unit-test-test This test tests invalidly adding a "friendly
+     * descriptions" as the sixth description for a credential specification
+     * that has no more than four friendly descriptions. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 404.
+     * 
+     */
     @Test
     public void testAddFriendlyDescriptionInvalid() throws Exception {
         testStoreGetCredSpec();
@@ -495,6 +652,21 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests invalid adding of descriptions.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, credential
+     * specification with name "urn:fiware:cred" stored in the database,
+     * with no more than 4 friendly descriptions.
+     * 
+     * @fiware-unit-test-test This test tests invalidly adding a credential
+     * specification which claims in its data to be called "urn:fiware:cred",
+     * but which is referenced in the URL as "urn:fiware:creed". 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 409.
+     * 
+     */
     @Test
     public void testStoreSpecInvalid() throws Exception {
         CredentialSpecification orig = new CredentialSpecification();
@@ -529,6 +701,19 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests invalid deletion of nonexistentent descriptions.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, <em>no</em> credential
+     * specification with name "urn:non-existing" stored in the database.
+     * 
+     * @fiware-unit-test-test This test tests invalidly deleting a nonexistent
+     * credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 404.
+     * 
+     */
     @Test
     public void testDeleteSpecInvalid() throws Exception {
         try {
@@ -541,6 +726,19 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests deletion of credential specifications.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, credential
+     * specification with name "urn:fiware:cred" stored in the database.
+     * 
+     * @fiware-unit-test-test This test tests deleting an existent
+     * credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
     @Test
     public void testDeleteSpec() throws Exception {
         /* First we need to actually store one. So we call a test... */
@@ -549,6 +747,18 @@ public class TestIssuerAPI extends JerseyTest {
                 URLEncoder.encode("urn:fiware:cred","UTF-8"));
     }
     
+    /** Tests correct authentication.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, user with user name
+     * "CaroleKing" and password "Jazzman" stored in the authentication provider.
+     * 
+     * @fiware-unit-test-test This test tests successful authentication. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
     @Test
     public void testTestAuthentication() throws Exception {
         AuthenticationRequest authReq = new AuthenticationRequest();
@@ -558,6 +768,19 @@ public class TestIssuerAPI extends JerseyTest {
                 RESTHelper.toXML(AuthenticationRequest.class, authReq));
     }
     
+    /** Tests authentication failure with invalid credentials.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, <em>no</em>with user
+     * name "CaröléKing" and password "Jazzman" stored in the authentication
+     * provider.
+     * 
+     * @fiware-unit-test-test This test tests authentication failure. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 403.
+     * 
+     */
     @Test
     public void testTestAuthenticationInvalid() throws Exception {
         AuthenticationRequest authReq = new AuthenticationRequest();
@@ -573,6 +796,20 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests authentication failure with credential issuance.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, <em>no</em>with user
+     * name "CaröléKing" and password "Jazzman" stored in the authentication
+     * provider.
+     * 
+     * @fiware-unit-test-test This test tests authentication failure when a
+     * user issues a credential issuance request with invalid credentials. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 403.
+     * 
+     */
     @Test
     public void testIssuanceRequestInvalid() throws Exception {
 
@@ -592,6 +829,22 @@ public class TestIssuerAPI extends JerseyTest {
         }
     }
     
+    /** Tests failure with credential issuance request for nonexistent
+     * credential specification.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, with user
+     * name "CaröléKing" and password "Jazzman" stored in the authentication
+     * provider, <em>no</em> credential specification with URN "urn:fiware:cred"
+     * in the database.
+     * 
+     * @fiware-unit-test-test This test tests failure when a
+     * user issues a credential issuance request with valid credentials
+     * but for a nonexistent credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 404.
+     */
     @Test
     public void testIssuanceRequestInvalid_NoCred() throws Exception {
 
