@@ -972,8 +972,7 @@ public class IssuanceService {
             Response r = setupIssuerParameters(ip);
 
             if (r.getStatus() != 200) {
-                throw new RuntimeException("Internal step failed! ("
-                        + r.getStatus() + ")");
+                return r;
             }
 
             return Response.ok("OK").build();
