@@ -1,3 +1,5 @@
+package ch.zhaw.ficore.p2abc.services.tests;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -12,7 +14,6 @@ import org.junit.Test;
 import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
-import ch.zhaw.ficore.p2abc.services.helpers.RESTException;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
 

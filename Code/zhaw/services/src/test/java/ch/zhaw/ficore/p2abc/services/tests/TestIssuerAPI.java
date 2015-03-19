@@ -124,12 +124,19 @@ public class TestIssuerAPI extends JerseyTest {
     
     /** Tests getSettings.
      * 
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.bla
-     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.blubb
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
      * 
-     * @fiware-unit-test-test This method tests the getSettings method of the
+     * @fiware-unit-test-initial-condition Issuer set up.
+     * 
+     * @fiware-unit-test-test This test tests the getSettings method of the
      * issuer. It issues the request and checks that a HTTP 200 answer is
-     * received. 
+     * received. There is not much that one can test here betond a HTTP 200
+     * because settings by nature involve much random (or at least
+     * random-looking) data such as the system parameters. Also the correct
+     * functioning of getSettings should also be at least partly covered by the
+     * flow tests.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200
      * 
      * @throws Exception
      */
@@ -144,6 +151,27 @@ public class TestIssuerAPI extends JerseyTest {
         RESTHelper.getRequest(issuanceServiceURLUnprot +"getSettings");
     }
 
+    /** Tests query rules.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, no query rules
+     * stored in database.
+     * 
+     * @fiware-unit-test-test This test tests the correct functioning of the
+     * query rule administration interface. The test stores a small number of
+     * simple query strings, retrieves them again, and checks if they are
+     * correctly retrieved. Then it retrieves th entire list of quer strings
+     * and checks that these (and only these) query strings are present.
+     * Afterwards, it deletes the query rules and checks that they are no longer
+     * present.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 on storing the query rules,
+     * correct retrieval of stored query rules, HTTP 200 on deleting them
+     * and an empty query rule list after deletion.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testQueryRules() throws Exception {
         
@@ -198,6 +226,29 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals(0, qrc.queryRules.size());
     }
 
+    /** Tests credential specification generation.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition Issuer set up, attribute provider
+     * has attribute "someAttribute" pf type integer, no credential specification
+     * with name "test" in database.
+     * 
+     * @fiware-unit-test-test This test installs a credential specification
+     * with name "test" containing the attribute "someAttribute" in the Issuer,
+     * retrieves it again and checks if all attributes have the correct value.
+     * 
+     * In particular, this test checks:
+     * 
+     *   * That a credential specification with the name "test" exists
+     *   * That it contains an attribute named "someAttribute"
+     *   * That this attribute is of type "xs:integer"
+     *   * That it is encoded as "urn:abc4trust:1.0:encoding:integer:signed"
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 on all requests,
+     * attribute and type and encoding as expected (see above).
+     * 
+     */
     @Test
     public void testGenCredSpec() throws Exception {
         AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
@@ -229,6 +280,17 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals("en", ad.getFriendlyAttributeName().get(0).getLang());
     }
     
+    /** Tests credential specification storage and retrieval.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition
+     * 
+     * @fiware-unit-test-test
+     * 
+     * @fiware-unit-test-expected-outcome
+     * 
+     */
     @Test
     public void testStoreGetCredSpec() throws Exception {
         CredentialSpecification orig = new CredentialSpecification();
@@ -260,6 +322,17 @@ public class TestIssuerAPI extends JerseyTest {
                 + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
     }
     
+    /** Tests credential specifications.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.SimpleIssuance
+     * 
+     * @fiware-unit-test-initial-condition
+     * 
+     * @fiware-unit-test-test
+     * 
+     * @fiware-unit-test-expected-outcome
+     * 
+     */
     @Test
     public void testDeleteAttribute() throws Exception {
         testStoreGetCredSpec();

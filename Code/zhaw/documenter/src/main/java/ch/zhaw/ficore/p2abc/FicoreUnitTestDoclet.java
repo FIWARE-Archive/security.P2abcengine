@@ -9,9 +9,21 @@
  *   -docletpath /path/to/root/of/classes/or/jar \
  *   -classpath /path/to/java/home/lib/tools.jar \
  *   path/to/your/java/files
+ *   
+ * Or, if you use maven:
+ * 
+ * 
  */
 package ch.zhaw.ficore.p2abc;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +45,8 @@ public class FicoreUnitTestDoclet {
     private static final Map<UnitTestTag, String> tagToName;
     private static final Map<UnitTestTag, String> tagToMarkdown;
     
+    private static final Charset charset = StandardCharsets.UTF_8;
+
     static {
         tagToName = new HashMap<>();
         tagToName.put(UnitTestTag.FEATURE, "fiware-unit-test-feature");
@@ -47,40 +61,64 @@ public class FicoreUnitTestDoclet {
         tagToMarkdown.put(UnitTestTag.EXPECTED_OUTCOME, "===Expected Outcome===");
     }
     
-    public static boolean start(RootDoc root){ 
+    public static boolean start(RootDoc root) throws IOException{ 
         writeContents(root.classes());
         return true;
     }
 
-    public static void writeContents(ClassDoc[] classes) {
+    private static PrintWriter openMarkdownFile(String className) throws IOException {
+        Path p = FileSystems.getDefault().getPath(className + ".md");
+        BufferedWriter w =Files.newBufferedWriter(p, charset); 
+        return new PrintWriter(w);
+    }
+    
+    public static void writeContents(ClassDoc[] classes) throws IOException {
         for (int i = 0; i < classes.length; i++) {
+            PrintWriter writer = null;
+            boolean fileOpened = false;
+            
             MethodDoc[] methods = classes[i].methods();
             for (int j = 0; j < methods.length; j++) {
                 boolean methodNamePrinted = false;
+                
                 for (UnitTestTag tag : UnitTestTag.values()) { 
                     Tag[] tags = methods[j].tags(tagToName.get(tag));
+                    
                     if (tags.length > 0) {
+                        if (!fileOpened) {
+                            writer = openMarkdownFile(classes[i].qualifiedName());
+                            fileOpened = true;
+                        }
+
                         if (!methodNamePrinted) {
-                            System.out.println("== Unit Test " + methods[j].name() + " ==\n");
+                            writer.println("== Unit Test " + methods[j].name() + " ==\n");
                             methodNamePrinted = true;
                         }
+                        
                         if (tag == UnitTestTag.FEATURE) {
-                            System.out.println(tagToMarkdown.get(tag) + "\n");
+                            writer.println(tagToMarkdown.get(tag) + "\n");
                             for (int k = 0; k < tags.length; k++) {
-                                System.out.println("* " + tags[k].text());
+                                writer.println("* " + tags[k].text());
                             }
-                            System.out.println();
+                            writer.println();
                         } else {
                             for (int k = 0; k < tags.length; k++) {
-                                System.out.println(tagToMarkdown.get(tag) + "\n\n" 
+                                writer.println(tagToMarkdown.get(tag) + "\n\n" 
                                         + tags[k].text());
                             }
+                            writer.println();
                         }
                     }
                 }
+                
                 if (methodNamePrinted) {
-                    System.out.println();
+                    writer.println();
                 }
+            }
+            
+            if (fileOpened) {
+                writer.close();
+                fileOpened = false;
             }
         }
     }
