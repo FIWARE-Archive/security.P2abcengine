@@ -104,11 +104,42 @@ public class TestVerifierAPI extends JerseyTest {
     
     
   
+    /** Tests verifier status.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Verifier set up and running.
+     * 
+     * @fiware-unit-test-test This test tests that a running verifier responds
+     * to a status request. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     */
     @Test
     public void testStatus() throws Exception {
         RESTHelper.getRequest(verificationServiceURL +"status");
     }
     
+    /** Tests creation of resources.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Verifier set up and running, no
+     * resource with name "test" registered.
+     * 
+     * @fiware-unit-test-test This test tests that resources can be correctly
+     * registered. In particular, this test creates a resource with name
+     * "test", retrieves it again and then tests if, for the retrieved resource
+     * 
+     * * The number of URIs is 1.
+     * * The URI is "test". 
+     * * The number of redirect URLs is 1.
+     * * The redirect URL is "http://localhost/foo".
+     * * The number of policy alternatives is 1.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 for all requests, correct
+     * values for all object attributes.
+     */
     @Test
     public void testCreateResource() throws Exception {
         MultivaluedMapImpl params = new MultivaluedMapImpl();
@@ -127,6 +158,23 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppac.presentationPolicyAlternatives.size(), 1);
     }
     
+    /** Tests addition of presentation policy alternatives.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Verifier set up and running, a
+     * resource with name "test" registered.
+     * 
+     * @fiware-unit-test-test This test tests that policy alternatives can be
+     * added for resources. In this case, we add a policy alternative named
+     * "urn:policy", retrieve it again and then check that
+     * 
+     * * The number of policy alternatives is 1.
+     * * The policy name is "urn:policy".
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 for all requests, correct
+     * values for all object attributes.
+     */
     @Test
     public void testAddPPA() throws Exception {
         testCreateResource();
@@ -145,6 +193,20 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppas.getPresentationPolicy().get(0).getPolicyUID().toString(),"urn:policy");
     }
     
+    /** Tests deletion of presentation policy alternatives.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Verifier set up and running, a
+     * resource with name "test" registered, having policy alternative with
+     * name "urn:policy".
+     * 
+     * @fiware-unit-test-test This test tests that policy alternatives can be
+     * deleted. In this case, we delete a policy alternative named
+     * "urn:policy".
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 for all requests.
+     */
     @Test
     public void testDeletePPA() throws Exception {
         testAddPPA();
@@ -163,6 +225,19 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppas.getPresentationPolicy().size(), 0);
     }
     
+    /** Tests deletion of resources.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Verifier set up and running, a
+     * resource with name "test" registered.
+     * 
+     * @fiware-unit-test-test This test tests that resources can be
+     * deleted. In this case, we delete a resource named "test".
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 for all requests, resource
+     * "test" gone after deletion.
+     */
     @Test
     public void testDeleteResource() throws Exception {
         testCreateResource();
