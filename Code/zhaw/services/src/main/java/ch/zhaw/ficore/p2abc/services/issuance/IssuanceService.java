@@ -1545,6 +1545,8 @@ public class IssuanceService {
             CredentialSpecification credspec = keyManager
                     .getCredentialSpecification(credentialSpecUid);
 
+            logger.info("Got credential specification " + credspec == null ? "(null)" : "non-null");
+
             if (credspec == null) {
                 return logger.exit(Response
                         .status(Response.Status.NOT_FOUND)
