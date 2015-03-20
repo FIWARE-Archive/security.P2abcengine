@@ -433,7 +433,7 @@ public class TestIssuerAPI extends JerseyTest {
      * 
      * @fiware-unit-test-expected-outcome HTTP 404.
      * 
-     */
+     *//*
     @Test
     public void testGenerateIssuerParamsInvalid() throws Exception {
         testStoreGetCredSpec();
@@ -447,7 +447,7 @@ public class TestIssuerAPI extends JerseyTest {
             assertEquals(e.getStatusCode(), 404);
         }
     }
-    
+    */
     /** Tests deletion of issuer parameters.
      * 
      * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Issuance.SimpleIssuance
