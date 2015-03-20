@@ -1541,8 +1541,11 @@ public class IssuanceService {
 
             URI credentialSpecUid = issuerParametersInput
                     .getCredentialSpecUID();
+            logger.info("Retrieving credential specification " + credentialSpecUid.toString());
             CredentialSpecification credspec = keyManager
                     .getCredentialSpecification(credentialSpecUid);
+
+            logger.info("Got credential specification " + credspec == null ? "(null)" : "non-null");
 
             if (credspec == null) {
                 return logger.exit(Response
