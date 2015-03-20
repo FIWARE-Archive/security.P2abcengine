@@ -3,6 +3,7 @@ package ch.zhaw.ficore.p2abc.services.tests;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.net.URLEncoder;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -250,5 +251,27 @@ public class TestVerifierAPI extends JerseyTest {
         assertEquals(ppac.uris.size(), 0);
     }
     
+    /** Tests adding an alias to a PresentationPolicyAlternative of a resource.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Requires a resource with name "test" and a PresentationPolicyAlternative with "urn:policy".
+     * 
+     * @fiware-unit-test-test This test tests that an alias can be added. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAddAlias() throws Exception {
+        testAddPPA();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        
+        RESTHelper.postRequest(verificationServiceURL + "presentationPolicyAlternatives/addAlias/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
     
 }
