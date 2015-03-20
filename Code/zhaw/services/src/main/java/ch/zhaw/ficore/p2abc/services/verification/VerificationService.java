@@ -406,7 +406,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addIssuerAlternative/{resource}/{policyUid}")
     public Response addIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) {
+            @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) { /* [TEST EXISTS] */
         log.entry();
         
         try {

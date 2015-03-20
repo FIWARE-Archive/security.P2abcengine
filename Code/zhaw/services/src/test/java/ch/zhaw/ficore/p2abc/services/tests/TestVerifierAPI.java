@@ -274,4 +274,29 @@ public class TestVerifierAPI extends JerseyTest {
                 params);
     }
     
+    /** Tests adding an issuer alternative.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition depends on {@link testAddPPA}.
+     * 
+     * @fiware-unit-test-test This test tests than an issuer alternative can be added.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAddIssuerAlternative() throws Exception {
+        testAddAlias();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        params.add("ip", "urn:issuer-alt");
+        
+        RESTHelper.postRequest(verificationServiceURL +
+                "presentationPolicyAlternatives/addIssuerAlternative/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
+    
 }
