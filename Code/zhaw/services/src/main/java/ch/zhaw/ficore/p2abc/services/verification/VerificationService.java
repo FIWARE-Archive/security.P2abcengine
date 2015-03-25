@@ -157,7 +157,7 @@ public class VerificationService {
      */
     @POST()
     @Path("/protected/reset")
-    public Response reset() throws Exception {
+    public Response reset() throws Exception { /* [FLOW TEST] */
         log.entry();
         VerificationHelper verficationHelper = VerificationHelper
                 .getInstance();
@@ -187,7 +187,7 @@ public class VerificationService {
      */
     @Path("/verifyTokenAgainstPolicy")
     @POST()
-    public Response verifyTokenAgainstPolicy(
+    public Response verifyTokenAgainstPolicy( /* [FLOW TEST] */
             JAXBElement<PresentationPolicyAlternativesAndPresentationToken> ppaAndpt)
             throws TokenVerificationException, CryptoEngineException {
         log.entry();
@@ -249,7 +249,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response addCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) {
+            @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) { /* [TEST EXISTS] */
         log.entry();
         
         try {
@@ -322,7 +322,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/{resource}/{policyUid}")
     public Response deleteCredentialSpecificationAlternative(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) {
+            @FormParam("cs") String credSpecUid, @PathParam("policyUid") String policyUid) { /* [TEST EXISTS] */
         log.entry();
         
         try {
@@ -481,7 +481,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deleteIssuerAlternative/{resource}/{policyUid}")
     public Response deleteIssuerAlternative(@PathParam("resource") String resource, @FormParam("al") String alias, 
-            @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) {
+            @FormParam("ip") String issuerParamsUid, @PathParam("policyUid") String policyUid) { /* [TEST EXISTS] */
         log.entry();
         
         try {
@@ -805,7 +805,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deleteAlias/{resource}/{policyUid}")
     public Response deleteAlias(@PathParam("resource") String resource, @FormParam("al") String alias,
-            @PathParam("policyUid") String policyUid) {
+            @PathParam("policyUid") String policyUid) { /* [TEST EXISTS] */
         log.entry();
         
         try {
@@ -1242,7 +1242,7 @@ public class VerificationService {
      */
     @PUT()
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [TEST EXISTS] */
     public Response storeCredentialSpecification(
             @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
             CredentialSpecification credSpec) {
@@ -1293,7 +1293,7 @@ public class VerificationService {
      * @return Response
      */
     @GET()
-    @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
+    @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}") /* [TEST EXISTS] */
     public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
         log.entry();
         
@@ -1336,7 +1336,7 @@ public class VerificationService {
      */
     @DELETE()
     @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
-    public Response deleteCredentialSpecification(
+    public Response deleteCredentialSpecification( /* [TEST EXISTS] */
             @PathParam("credentialSpecificationUid") String credSpecUid) {
         log.entry();
 
@@ -1437,7 +1437,7 @@ public class VerificationService {
     @PUT()
     @Path("/protected/presentationPolicyAlternatives/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response storePresentationPolicy(
+    public Response storePresentationPolicy( /* [FLOW TEST] */
             @PathParam("resource") String resource,
             PresentationPolicyAlternatives ppa) {
 
@@ -1567,7 +1567,7 @@ public class VerificationService {
     @Path("/protected/redirectURI/store/{resource}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response storeRedirectURI(@PathParam("resource") String resourceUri,
-            String redirectUri) {
+            String redirectUri) { /* [FLOW TEST] */
 
         log.entry();
 
@@ -1648,7 +1648,7 @@ public class VerificationService {
      */
     @GET()
     @Path("/requestResource/{resource}")
-    public Response requestResource(@PathParam("resource") String resource) {
+    public Response requestResource(@PathParam("resource") String resource) { /* [FLOW TEST] */
         log.entry();
 
         try {
@@ -1697,7 +1697,7 @@ public class VerificationService {
     @Path("/requestResource2/{resource}/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response requestResource2(@PathParam("resource") String resource,
-            PresentationToken pt) {
+            PresentationToken pt) { /* [FLOW TEST] */
 
         log.entry();
 
@@ -1787,7 +1787,7 @@ public class VerificationService {
     @GET()
     @Path("/verifyAccessToken/")
     public Response verifyAccessToken(
-            @QueryParam("accesstoken") String accessToken) {
+            @QueryParam("accesstoken") String accessToken) { /* [FLOW TEST] */
         log.info("VGet: " + accessToken);
         synchronized(accessTokens) {
             if (!accessTokens.containsKey(accessToken)) {
@@ -1835,7 +1835,7 @@ public class VerificationService {
      */
     @POST()
     @Path("/protected/loadSettings/")
-    public Response loadSettings(@QueryParam("url") String url) {
+    public Response loadSettings(@QueryParam("url") String url) { /* [FLOW TEST] */
         log.entry();
 
         try {

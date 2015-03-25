@@ -3,7 +3,9 @@ package ch.zhaw.ficore.p2abc.services.tests;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -22,6 +24,10 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
+import eu.abc4trust.xml.AttributeDescription;
+import eu.abc4trust.xml.AttributeDescriptions;
+import eu.abc4trust.xml.CredentialSpecification;
+import eu.abc4trust.xml.FriendlyDescription;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
@@ -274,11 +280,34 @@ public class TestVerifierAPI extends JerseyTest {
                 params);
     }
     
+    /** Tests deleting an alias to a PresentationPolicyAlternative of a resource.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition depends on {@link testAddAlias}
+     * 
+     * @fiware-unit-test-test This test tests that an alias can be deleted.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteAlias() throws Exception {
+        testAddAlias();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        
+        RESTHelper.postRequest(verificationServiceURL + "presentationPolicyAlternatives/deleteAlias/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
+    
     /** Tests adding an issuer alternative.
      * 
      * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
      * 
-     * @fiware-unit-test-initial-condition depends on {@link testAddPPA}.
+     * @fiware-unit-test-initial-condition depends on {@link testAddAlias}.
      * 
      * @fiware-unit-test-test This test tests than an issuer alternative can be added.
      * 
@@ -298,5 +327,151 @@ public class TestVerifierAPI extends JerseyTest {
                 "presentationPolicyAlternatives/addIssuerAlternative/test/" + URLEncoder.encode("urn:policy","UTF-8"),
                 params);
     }
+    
+    /** Tests deleting an issuer alternative.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition depends on {@link testAddIssuerAlternative}
+     * 
+     * @fiware-unit-test-test This test tests than an issuer alternative can be deleted.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteIssuerAlternative() throws Exception {
+        testAddIssuerAlternative();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        params.add("ip", "urn:issuer-alt");
+        
+        RESTHelper.postRequest(verificationServiceURL +
+                "presentationPolicyAlternatives/deleteIssuerAlternative/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
+    
+    /** Tests adding a credential specification alternative
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-inital-condition depends on {@link testAddAlias}
+     * 
+     * @fiware-unit-test-test This test tests than a credential specification alternative can be added.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAddCredSpecAlternative() throws Exception {
+        testAddAlias();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        params.add("cs", "urn:cred-alt");
+        
+        RESTHelper.postRequest(verificationServiceURL +
+                "presentationPolicyAlternatives/addCredentialSpecificationAlternative/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
+    
+    /** Tests deleting a credential specification alternative.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Securyt.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-inital-condition depends on {@link testAddCredSpeAlternative}
+     * 
+     * @fiware-unit-test-test This test tests than a credential specification alternative can be deleted.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteCredSpecAlternative() throws Exception {
+        testAddCredSpecAlternative();
+        
+        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        params.add("al", "somealias");
+        params.add("cs", "urn:cred-alt");
+        
+        RESTHelper.postRequest(verificationServiceURL +
+                "presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/test/" + URLEncoder.encode("urn:policy","UTF-8"),
+                params);
+    }
+    
+    /** Tests credential specification storage and retrieval.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition Verifier set up, no credential
+     * specification with URN "urn:fiware:cred" in the database.
+     * 
+     * @fiware-unit-test-test This test creates a new credential specification
+     * with one attribute called "someAttribute" of type "xs:integer" and
+     * encoding "urn:abc4trust:1.0:encoding:integer:signed".  It also creates
+     * a description with language "en". It then stores the credential
+     * specification and retrieves it again.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200 for all operations. After this
+     * test, there will be a credential specification with URN "urn:fiware:cred"
+     * in the database.
+     * 
+     */
+    @Test
+    public void testStoreGetCredSpec() throws Exception {
+        CredentialSpecification orig = new CredentialSpecification();
+        orig.setSpecificationUID(new URI("urn:fiware:cred"));
+        AttributeDescriptions attrDescs = new AttributeDescriptions();
+        List<AttributeDescription> lsAttrDesc = attrDescs.getAttributeDescription();
+        
+        AttributeDescription ad = new AttributeDescription();
+        ad.setDataType(new URI("xs:integer"));
+        ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
+        ad.setType(new URI("someAttribute"));
+        
+        FriendlyDescription fd = new FriendlyDescription();
+        fd.setLang("en");
+        fd.setValue("huhu");
+        
+        ad.getFriendlyAttributeName().add(fd);
+        
+        lsAttrDesc.add(ad);
+        
+        orig.setAttributeDescriptions(attrDescs);
+        
+        RESTHelper.putRequest(verificationServiceURL + "credentialSpecification/store/" 
+                    + URLEncoder.encode("urn:fiware:cred", "UTF-8"), 
+                RESTHelper.toXML(CredentialSpecification.class, 
+                        of.createCredentialSpecification(orig)));
+        
+        RESTHelper.getRequest(verificationServiceURL + "credentialSpecification/get/"
+                + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+    }
+    
+    /** Tests deletion of credential specifications.
+     * 
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.Verification.Verification
+     * 
+     * @fiware-unit-test-initial-condition depends on {@link testStoreGetCredSpec}
+     * 
+     * @fiware-unit-test-test This test tests deleting an existent
+     * credential specification. 
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     */
+    @Test
+    public void testDeleteSpec() throws Exception {
+        /* First we need to actually store one. So we call a test... */
+        testStoreGetCredSpec();
+        RESTHelper.deleteRequest(verificationServiceURL + "credentialSpecification/delete/" +
+                URLEncoder.encode("urn:fiware:cred","UTF-8"));
+    }
+    
+   
     
 }
