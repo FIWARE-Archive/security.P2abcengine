@@ -213,7 +213,7 @@ public class TestFlow extends JerseyTest {
          * actual issuance protocol can take place.
          */
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             String issuanceMessageAndBoolean = testIssuanceRequest(readTextFile("/issuanceRequest.xml"));
 
             /* Extract issuance message */
