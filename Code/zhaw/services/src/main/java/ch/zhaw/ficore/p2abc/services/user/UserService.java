@@ -109,7 +109,7 @@ public class UserService {
      */
     @GET()
     @Path("/status/")
-    public Response status() {
+    public Response status() { /* [FLOW TEST] */
         return Response.ok().build();
     }
     
@@ -129,7 +129,7 @@ public class UserService {
      */
     @POST()
     @Path("/reset")
-    public Response reset() throws Exception {
+    public Response reset() throws Exception { /* [FLOW TEST] */
         log.entry(); 
         
         this.initializeHelper();
@@ -221,7 +221,7 @@ public class UserService {
     @POST()
     @Path("/createPresentationToken/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response createPresentationToken(PresentationPolicyAlternatives p) {
+    public Response createPresentationToken(PresentationPolicyAlternatives p) { /* [FLOW TEST] */
         log.entry();
 
         
@@ -266,7 +266,7 @@ public class UserService {
      */
     @POST()
     @Path("/createPresentationTokenUi/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TEST] */
     public Response createPresentationToken(UiPresentationReturn upr) {
 
         log.entry();
@@ -321,7 +321,7 @@ public class UserService {
      */
     @POST()
     @Path("/loadSettings/")
-    public Response loadSettings(@QueryParam("url") String url) {
+    public Response loadSettings(@QueryParam("url") String url) { /* [FLOW TEST] */
         log.entry();
 
         try {
@@ -581,7 +581,7 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStep/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(JAXBElement<IssuanceMessage> jm) {
+    public Response issuanceProtocolStep(JAXBElement<IssuanceMessage> jm) { /* [FLOW TEST] */
 
         log.entry();
 
@@ -628,7 +628,7 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStepUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(UiIssuanceReturn uir) {
+    public Response issuanceProtocolStep(UiIssuanceReturn uir) { /* [FLOW TEST] */
 
         log.entry();
 
@@ -1031,7 +1031,7 @@ public class UserService {
     @Path("/extractIssuanceMessage/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response extractIssuanceMessage(
-            IssuanceMessageAndBoolean issuanceMessageAndBoolean) {
+            IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /* [FLOW TEST] */
         log.entry();
 
         try {
