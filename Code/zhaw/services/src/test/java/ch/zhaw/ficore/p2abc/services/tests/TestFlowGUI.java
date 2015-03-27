@@ -36,8 +36,14 @@ public class TestFlowGUI extends JerseyTest {
     private String issuanceServiceURL = "issuance/protected/";
     private String issuanceServiceURLUnprot = "issuance/";
     
+    static {
+        //System.setProperty("com.sun.grizzly.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "false");
+        //System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
+    }
+    
     public TestFlowGUI() throws Exception {
         super("ch.zhaw.ficore.p2abc");
+        
         userServiceURL = getBaseURI() + userServiceURL;
         verificationServiceURL = getBaseURI() + verificationServiceURL;
         verificationServiceURLUnprot = getBaseURI()
@@ -59,6 +65,9 @@ public class TestFlowGUI extends JerseyTest {
 
     @Before
     public void initJNDI() throws Exception {
+        
+        
+        
         System.out.println("init [TestFlowGUI]");
         this.setUp();
         // Create initial context
@@ -118,9 +127,13 @@ public class TestFlowGUI extends JerseyTest {
     
     @Test
     public void flow() throws InterruptedException, ClientHandlerException, UniformInterfaceException, JAXBException, UnsupportedEncodingException, NamingException {
+        
+        
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         
         params.add("n", "test");
+        
+        //RESTHelper.getRequest("http://localhost:9998/user/credential/get/IdmxCredential%2Fzzt40od4ucrgjh4");
         
         /* Obtain a credential specification through the issuance-gui and call the issuance-service
          * and check if it was created
@@ -197,8 +210,51 @@ public class TestFlowGUI extends JerseyTest {
         params.add("resource", "resource");
         RESTHelper.postRequest(verificationGUI + "protected/addAlias", params);
         
-        //while(true)
-        //    Thread.sleep(1000);
+        /*
+         * Add a credspec alternative
+         */
+        params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        params.add("al", "test");
+        params.add("resource", "resource");
+        params.add("cs", "urn:fiware:privacy:test");
+        RESTHelper.postRequest(verificationGUI + "protected/addCredSpecAlt", params);
+        
+        /*
+         * Add an issuerparams alternative
+         */
+        params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        params.add("al", "test");
+        params.add("resource", "resource");
+        params.add("ip", "urn:fiware:privacy:test:issuer-params");
+        RESTHelper.postRequest(verificationGUI + "protected/addIssuerAlt", params);
+        
+        /*
+         * Add a predicate
+         */
+        params = new MultivaluedMapImpl();
+        params.add("p", "urn:oasis:names:tc:xacml:1.0:function:integer-greater-than");
+        params.add("at", "someAttribute");
+        params.add("cv", "12");
+        params.add("puid", "urn:policy");
+        params.add("al", "test");
+        params.add("resource", "resource");
+        RESTHelper.postRequest(verificationGUI + "protected/addPredicate", params);
+        
+        /*
+         * Attempt a resource request.
+         */
+        params = new MultivaluedMapImpl();
+        params.add("r", "resource");
+        params.add("vu", verificationServiceURLUnprot.substring(0, verificationServiceURLUnprot.lastIndexOf('/')));
+        RESTHelper.postRequest(userGUI + "requestResource2", params);
+        
+        
+        /*while(true) {
+            System.out.println("GONE TO SLEEP!");
+            Thread.sleep(3000);
+        }*/
     }
     
     public String getContextString(String input) {

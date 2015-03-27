@@ -161,6 +161,9 @@ public class UserGUI {
 
             for (CredentialInUi c : tc.credentials) {
                 
+                if(c.uri.toString().startsWith("IdmxCredential/"))
+                    c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
+                
                 Credential cred = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/"
                         + URLEncoder.encode(c.uri.toString(), "UTF-8"), Credential.class);
                 

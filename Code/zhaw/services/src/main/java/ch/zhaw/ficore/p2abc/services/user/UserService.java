@@ -514,6 +514,9 @@ public class UserService {
         
         try {
             this.initializeHelper();
+            
+            if(credUid.lastIndexOf('/') == -1)
+                credUid = "IdmxCredential/" + credUid;
 
             UserHelper instance = UserHelper.getInstance();
             
