@@ -19,6 +19,7 @@ import org.sqlite.SQLiteDataSource;
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.xml.PresentationPolicyAlternativesCollection;
+import ch.zhaw.ficore.p2abc.xml.Settings;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -28,6 +29,7 @@ import eu.abc4trust.xml.AttributeDescription;
 import eu.abc4trust.xml.AttributeDescriptions;
 import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.FriendlyDescription;
+import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.ObjectFactory;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
@@ -473,5 +475,52 @@ public class TestVerifierAPI extends JerseyTest {
     }
     
    
+    /**
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.User
+     * 
+     * @fiware-unit-test-initial-condition service running.
+     * 
+     * @fiware-unit-test-test Tests storing issuer parameters
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testStoreIssuerParams() throws Exception {
+        IssuerParameters ip = new IssuerParameters();
+        ip.setParametersUID(new URI("urn:ip"));
+        ip.setAlgorithmID(new URI("urn:algo"));
+        ip.setCredentialSpecUID(new URI("urn:cs"));
+        
+        RESTHelper.putRequest(verificationServiceURL  + "issuerParameters/store/"
+                + URLEncoder.encode("urn:ip", "UTF-8"),
+                RESTHelper.toXML(IssuerParameters.class, of.createIssuerParameters(ip)));
+        
+        Settings settings = (Settings) RESTHelper.getRequest(verificationServiceURLUnprot + "getSettings", Settings.class);
+        assertEquals(settings.issuerParametersList.size(), 1);
+        assertEquals(settings.issuerParametersList.get(0).getParametersUID().toString(),"urn:ip");
+    }
+
+    /**
+     * @fiware-unit-test-feature FIWARE.Feature.Security.Privacy.User
+     * 
+     * @fiware-unit-test-initial-condition depends on {@link testDeleteSpec}
+     * 
+     * @fiware-unit-test-test Tests deleting issuer parameters.
+     * 
+     * @fiware-unit-test-expected-outcome HTTP 200.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteIssuerParams() throws Exception {
+        testStoreIssuerParams();
+        RESTHelper.deleteRequest(verificationServiceURL + "issuerParameters/delete/" +
+         URLEncoder.encode("urn:ip","UTF-8"));
+        
+        Settings settings = (Settings) RESTHelper.getRequest(verificationServiceURLUnprot + "getSettings", Settings.class);
+        assertEquals(settings.issuerParametersList.size(), 0);
+    }
     
 }

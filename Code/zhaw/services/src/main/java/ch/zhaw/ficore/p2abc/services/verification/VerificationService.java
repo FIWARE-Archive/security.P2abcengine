@@ -1086,7 +1086,7 @@ public class VerificationService {
      */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
-    public Response deleteIssuerParameters(
+    public Response deleteIssuerParameters( /* [TEST EXISTS] */
             @PathParam("issuerParametersUid") String issuerParametersUid) {
         log.entry();
 
@@ -1138,7 +1138,7 @@ public class VerificationService {
      */
     @PUT()
     @Path("/protected/issuerParameters/store/{issuerParametersUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [TEST EXISTS] */
     public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
             IssuerParameters issuerParameters) {
@@ -1189,7 +1189,7 @@ public class VerificationService {
      */
     @POST()
     @Path("/createPresentationPolicy")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TEST] */
     public Response createPresentationPolicy(
             @PathParam("applicationData") String applicationData,
             PresentationPolicyAlternatives presentationPolicy) {
@@ -1607,7 +1607,7 @@ public class VerificationService {
      */
     @GET()
     @Path("/protected/redirectURI/get/{resource}")
-    public Response getRedirectURI(@PathParam("resource") String resource) {
+    public Response getRedirectURI(@PathParam("resource") String resource) { /* [FLOW TEST] */
         log.entry();
         
         try {
@@ -1897,7 +1897,7 @@ public class VerificationService {
      */
     @GET()
     @Path("/getSettings/")
-    public Response getSettings() {
+    public Response getSettings() { /* [TEST EXISTS] */
         log.entry();
 
         try {
@@ -1933,8 +1933,13 @@ public class VerificationService {
 
             settings.credentialSpecifications = credSpecs;
             settings.issuerParametersList = issuerParams;
-            settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
-                    .getSystemParameters());
+            try {
+                settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
+                        .getSystemParameters());
+            }
+            catch(Exception e)  {
+                
+            }
 
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());

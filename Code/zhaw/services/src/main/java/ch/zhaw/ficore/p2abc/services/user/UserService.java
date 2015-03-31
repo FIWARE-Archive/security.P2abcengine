@@ -50,6 +50,7 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
+import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
@@ -383,7 +384,7 @@ public class UserService {
      */
     @GET()
     @Path("/getSettings/")
-    public Response getSettings() {
+    public Response getSettings() { /* [FLOW TEST] */
         log.entry();
 
         try {
@@ -421,8 +422,13 @@ public class UserService {
 
             settings.credentialSpecifications = credSpecs;
             settings.issuerParametersList = issuerParams;
-            settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
-                    .getSystemParameters());
+            try {
+                settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
+                        .getSystemParameters());
+            }
+            catch(Exception e) {
+                
+            }
 
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());
@@ -735,7 +741,7 @@ public class UserService {
      */
     @PUT()
     @Path("/credentialSpecification/store/{credentialSpecifationUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [TEST EXISTS] */
     public Response storeCredentialSpecification(
             @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
             CredentialSpecification credSpec) {
@@ -791,7 +797,7 @@ public class UserService {
      * @return Response
      */
     @GET()
-    @Path("/credentialSpecification/get/{credentialSpecificationUid}")
+    @Path("/credentialSpecification/get/{credentialSpecificationUid}") /* [TEST EXISTS] */
     public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
         log.entry();
         
@@ -810,6 +816,54 @@ public class UserService {
             return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
+            log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+    }
+    
+    /**
+     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid} (DELETE) <br>
+     * <br>
+     * <b>Description</b>: Deletes a credential specification. <br>
+     * <br>
+     * <b>Path parameters</b>: 
+     * <ul>
+     * <li>credentialSpecificationUid - UID of the credential specification to delete.</li>
+     * </ul>
+     * <br>
+     * <b>Response status</b>:
+     * <ul>
+     * <li>200 - OK</li>
+     * <li>500 - ERROR</li>
+     * </ul>
+     * @param credSpecUid UID of the credential specification to delete
+     * @return Response
+     */
+    @DELETE()
+    @Path("/credentialSpecification/delete/{credentialSpecificationUid}")
+    public Response deleteCredentialSpecification( /* [TEST EXISTS] */
+            @PathParam("credentialSpecificationUid") String credSpecUid) {
+        log.entry();
+
+        try {
+            this.initializeHelper();
+
+            UserHelper instance = UserHelper.getInstance();
+
+            KeyStorage keyStorage = instance.keyStorage;
+
+            // @#@#^%$ KeyStorage has no delete()
+            if (keyStorage instanceof GenericKeyStorage) {
+                GenericKeyStorage gkeyStorage = (GenericKeyStorage) keyStorage;
+                gkeyStorage.delete(new URI(credSpecUid));
+            } else {
+                return log.exit(
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                                errNotImplemented)).build();
+            }
+
+            return log.exit(Response.ok("OK").build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
@@ -889,7 +943,7 @@ public class UserService {
      */
     @PUT()
     @Path("/issuerParameters/store/{issuerParametersUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [TEST EXISTS] */
     public Response storeIssuerParameters(
             @PathParam("issuerParametersUid") URI issuerParametersUid,
             IssuerParameters issuerParameters) {
@@ -948,7 +1002,7 @@ public class UserService {
      * @return Response
      */
     @DELETE()
-    @Path("/issuerParameters/delete/{issuerParametersUid}")
+    @Path("/issuerParameters/delete/{issuerParametersUid}") /* [TEST EXISTS] */
     public Response deleteIssuerParameters(
             @PathParam("issuerParametersUid") String issuerParametersUid) {
         log.entry();
