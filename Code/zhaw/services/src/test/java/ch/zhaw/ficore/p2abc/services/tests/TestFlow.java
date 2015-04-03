@@ -1,4 +1,5 @@
 package ch.zhaw.ficore.p2abc.services.tests;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -7,11 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.xml.bind.JAXBException;
 
 import org.junit.After;
@@ -21,15 +24,19 @@ import org.sqlite.SQLiteDataSource;
 
 import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
+import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.TestConstants;
 
 import eu.abc4trust.xml.ApplicationData;
+import eu.abc4trust.xml.Credential;
 import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 public class TestFlow extends JerseyTest {
@@ -144,10 +151,13 @@ public class TestFlow extends JerseyTest {
      * @throws UnsupportedEncodingException
      * @throws InterruptedException
      * @throws JAXBException 
+     * @throws NamingException 
+     * @throws UniformInterfaceException 
+     * @throws ClientHandlerException 
      */
     @Test
     public void flowTest() throws UnsupportedEncodingException,
-            InterruptedException, JAXBException {
+            InterruptedException, JAXBException, ClientHandlerException, UniformInterfaceException, NamingException {
         System.out.println("hi there");
 
         /*
@@ -319,6 +329,24 @@ public class TestFlow extends JerseyTest {
             System.gc();
         }
         
+        /* Test user credentials */
+        CredentialCollection credCol = (CredentialCollection) RESTHelper.getRequest(userServiceURL + "credential/list", CredentialCollection.class);
+        System.out.println("Found " + credCol.credentials.size() + " credentials!");
+        List<Credential> creds = credCol.credentials;
+        assertEquals(creds.size(), 3);
+        for(Credential c : creds) {
+            String credUID = c.getCredentialDescription().getCredentialUID().toString();
+            System.out.println(credUID);
+            credUID = credUID.split("/")[1];
+            Credential c1 = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/" + credUID, Credential.class);
+            assertEquals(c1.getCredentialDescription().getCredentialUID().toString().endsWith(credUID), true);
+            RESTHelper.deleteRequest(userServiceURL + "credential/delete/" + credUID);
+        }
+        
+        credCol = (CredentialCollection) RESTHelper.getRequest(userServiceURL + "credential/list", CredentialCollection.class);
+        System.out.println("Found " + credCol.credentials.size() + " credentials!");
+        creds = credCol.credentials;
+        assertEquals(creds.size(), 0);
         
         //while(true) {
         //    Thread.sleep(100);

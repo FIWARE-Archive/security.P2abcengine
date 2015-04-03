@@ -688,7 +688,7 @@ public class UserService {
     @Path("/credential/delete/{credentialUid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response deleteCredential(
-            @PathParam("credentialUid") URI credentialUid) {
+            @PathParam("credentialUid") String credentialUid) {
         log.entry();
 
         
@@ -698,8 +698,11 @@ public class UserService {
 
             UserHelper instance = UserHelper.getInstance();
             
+            if(credentialUid.lastIndexOf('/') == -1)
+                credentialUid = "IdmxCredential/" + credentialUid;
+            
             boolean r = instance.credentialManager
-                    .deleteCredential(credentialUid);
+                    .deleteCredential(new URI(credentialUid));
 
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
