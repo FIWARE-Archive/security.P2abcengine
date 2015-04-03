@@ -1441,7 +1441,7 @@ public class IssuanceService {
      */
     @POST()
     @Path("/protected/setupSystemParameters/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* UNUSED */
     public Response setupSystemParameters(
             @QueryParam("securityLevel") int securityLevel,
             @QueryParam("cryptoMechanism") URI cryptoMechanism) {

@@ -162,7 +162,7 @@ public class UserService {
      */
     @POST()
     @Path("/canBeSatisfied/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* UNUSED */
     public Response canBeSatisfied(PresentationPolicyAlternatives p) {
         log.entry();
 
@@ -893,7 +893,7 @@ public class UserService {
      */
     @PUT()
     @Path("/systemParameters/store")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TEST] */
     public Response storeSystemParameters(SystemParameters systemParameters) {
         log.entry();
 

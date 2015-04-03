@@ -880,7 +880,7 @@ public class VerificationService {
     @POST()
     @Path("/protected/presentationPolicyAlternatives/deletePredicate/{resource}/{policyUid}")
     public Response deletePredicate(@PathParam("resource") String resource, @PathParam("policyUid") String policyUid,
-            @FormParam("index") int index) {
+            @FormParam("index") int index) { /* [GUI TEST] */
         log.entry();
         
         try {
@@ -954,7 +954,7 @@ public class VerificationService {
     @Path("/protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid}")
     public Response addPredicate(@PathParam("resource") String resource, @FormParam("cv") String constantValue,
             @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias,
-            @PathParam("policyUid") String policyUid) {
+            @PathParam("policyUid") String policyUid) { /* [GUI TEST] */
         log.entry();
         
         try {
@@ -1045,7 +1045,7 @@ public class VerificationService {
     @PUT()
     @Path("/protected/systemParameters/store")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response storeSystemParameters(SystemParameters systemParameters) {
+    public Response storeSystemParameters(SystemParameters systemParameters) { /* [FLOW TEST] */
 
         log.entry();
 

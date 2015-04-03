@@ -250,6 +250,15 @@ public class TestFlowGUI extends JerseyTest {
         params.add("vu", verificationServiceURLUnprot.substring(0, verificationServiceURLUnprot.lastIndexOf('/')));
         RESTHelper.postRequest(userGUI + "requestResource2", params);
         
+        /*
+         * Delete a predicate
+         */
+        params = new MultivaluedMapImpl();
+        params.add("puid", "urn:policy");
+        params.add("resource" , "resource");
+        params.add("index", "0");
+        RESTHelper.postRequest(verificationGUI + "protected/deletePredicate", params);
+        
         
         /*while(true) {
             System.out.println("GONE TO SLEEP!");
