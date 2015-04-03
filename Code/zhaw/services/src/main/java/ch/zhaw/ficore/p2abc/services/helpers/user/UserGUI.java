@@ -14,6 +14,7 @@ import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.B;
 import com.hp.gagawa.java.elements.Body;
+import com.hp.gagawa.java.elements.Br;
 import com.hp.gagawa.java.elements.Div;
 import com.hp.gagawa.java.elements.Form;
 import com.hp.gagawa.java.elements.H1;
@@ -23,6 +24,7 @@ import com.hp.gagawa.java.elements.H4;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Input;
+import com.hp.gagawa.java.elements.Label;
 import com.hp.gagawa.java.elements.Li;
 import com.hp.gagawa.java.elements.Link;
 import com.hp.gagawa.java.elements.Option;
@@ -185,6 +187,7 @@ public class UserGUI {
                                                 // stuff)
                         .setValue(Integer.toString(tc.candidateId)));
 
+                f.appendChild(new Label().appendChild(new Text("PseudonymID: ")));
                 Select sel = new Select();
                 sel.setName("pseudonymId");
                 for (PseudonymListCandidate pc : tc.pseudonymCandidates) {
@@ -198,7 +201,7 @@ public class UserGUI {
                     // TODO: What the hell is this pseudonym thing?
                 }
                 f.appendChild(sel);
-
+                f.appendChild(new Br());
                 f.appendChild(new Input().setType("submit").setValue(
                         "Continue using this candidate."));
 
