@@ -458,7 +458,7 @@ public class UserService {
      */
     @GET()
     @Path("/credential/list")
-    public Response credentials() {
+    public Response credentials() { /* [FLOW TEST] */
 
         log.entry();
 
@@ -515,7 +515,7 @@ public class UserService {
      */
     @GET()
     @Path("/credential/get/{credUid}")
-    public Response getCredential(@PathParam ("credUid") String credUid) {
+    public Response getCredential(@PathParam ("credUid") String credUid) { /* [FLOW TEST] */
         log.entry();
         
         try {
@@ -686,7 +686,7 @@ public class UserService {
      */
     @DELETE()
     @Path("/credential/delete/{credentialUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TESTS] */
     public Response deleteCredential(
             @PathParam("credentialUid") String credentialUid) {
         log.entry();
