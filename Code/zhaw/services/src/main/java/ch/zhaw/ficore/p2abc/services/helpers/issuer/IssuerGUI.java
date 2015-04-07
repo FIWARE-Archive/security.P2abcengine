@@ -42,7 +42,9 @@ public class IssuerGUI {
         navDiv.appendChild(new A().setHref("./profile").appendChild(
                 new Text("Profile")));
         navDiv.appendChild(new Div().setStyle("clear: both"));
-        return new Body().appendChild(containerDiv);
+        Body body = new Body().appendChild(containerDiv);
+        body.setAttribute("onload", "csrf();");
+        return body; 
     }
 
     public static Html errorPage(String msg, HttpServletRequest req) {
