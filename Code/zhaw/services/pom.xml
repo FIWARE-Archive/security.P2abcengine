@@ -127,24 +127,11 @@
 					<path>/zhaw-p2abc-webservices</path>
 				</configuration>
 			</plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.2</version>
-            <configuration>
-              <doclet>ch.zhaw.ficore.p2abc.FicoreUnitTestDoclet</doclet>
-              <docletPath>${project.parent.basedir}/documenter/target/documenter.jar</docletPath>
-              <useStandardDocletOptions>false</useStandardDocletOptions>
-              <destDir>unit-test</destDir>
-              <name>Unit Test</name>
-              <description>Unit Test Plan.</description>
-            </configuration>
-      </plugin>
 		</plugins>
 	</build>
 	<reporting>
 		<plugins>
-			<plugin>
+      <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>3.0.0</version>
@@ -155,26 +142,49 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.2</version>
+				<version>2.10.3</version>
 				<reportSets>
 					<reportSet>
 						<id>html</id>
+						<configuration>
+						  <tags>
+						    <!-- The javadoc tool interprets tags of the form "@fiware-..."
+						         as an "@fiware" tag with an argument that starts with a
+						         dash.  So telling the javadoc plugin to ignore "fiware"
+						         will ignore all tags "@fiware-...". -->
+                <tag><name>fiware</name><placement>X</placement><head/></tag>
+						  </tags>
+						</configuration>
 						<reports>
 							<report>javadoc</report>
 						</reports>
 					</reportSet>
-					<reportSet>
-						<id>test-html</id>
+          <reportSet>
+            <id>markdown</id>
+            <configuration>
+              <doclet>ch.zhaw.ficore.p2abc.FicoreUnitTestDoclet</doclet>
+              <docletPath>${project.parent.basedir}/documenter/target/documenter.jar</docletPath>
+              <useStandardDocletOptions>false</useStandardDocletOptions>
+              <destDir>rest-markdown</destDir>
+              <name>REST API documentation</name>
+              <description>REST API Documentation.</description>
+            </configuration>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+  			  <reportSet>
+						<id>test-markdown</id>
 						<configuration>
 							<doclet>ch.zhaw.ficore.p2abc.FicoreUnitTestDoclet</doclet>
 							<docletPath>${project.parent.basedir}/documenter/target/documenter.jar</docletPath>
 							<useStandardDocletOptions>false</useStandardDocletOptions>
-							<destDir>unit-test</destDir>
-							<name>Unit Test</name>
+							<destDir>test-markdown</destDir>
+							<name>Unit Test Plan</name>
 							<description>Unit Test Plan.</description>
 						</configuration>
 						<reports>
-							<report>test-javadoc</report>
+              <report>test-javadoc</report>
 						</reports>
 					</reportSet>
 				</reportSets>
