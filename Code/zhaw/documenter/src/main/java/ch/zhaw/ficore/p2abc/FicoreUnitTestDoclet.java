@@ -169,7 +169,7 @@ public class FicoreUnitTestDoclet {
         nameToTag.put("fiware-rest-path", new FicoreTag(FicoreTag.CustomTag.REST_PATH, "fiware-rest-path", makeBold("REST Path:"), false, false));
         nameToTag.put("fiware-rest-method", new FicoreTag(FicoreTag.CustomTag.REST_METHOD, "fiware-rest-method", makeBold("Method:"), false, false));
         nameToTag.put("fiware-rest-description", new FicoreTag(FicoreTag.CustomTag.REST_DESCRIPTION, "fiware-rest-description", makeBold("Description:"), false, false));
-        nameToTag.put("fiware-rest-path-param", new FicoreTag(FicoreTag.CustomTag.REST_PATH_PARAM, "fiware-rest-path-param", makeBold("Parameters:"), true, true));
+        nameToTag.put("fiware-rest-path-param", new FicoreTag(FicoreTag.CustomTag.REST_PATH_PARAM, "fiware-rest-path-param", makeBold("Path Parameters:"), true, true));
         nameToTag.put("fiware-rest-post-param", new FicoreTag(FicoreTag.CustomTag.REST_POST_PARAM, "fiware-rest-post-param", makeBold("POST Parameters:"), true, true));
         nameToTag.put("fiware-rest-response", new FicoreTag(FicoreTag.CustomTag.REST_RESPONSE, "fiware-rest-response", makeBold("HTTP responses:"), true, true));
 
