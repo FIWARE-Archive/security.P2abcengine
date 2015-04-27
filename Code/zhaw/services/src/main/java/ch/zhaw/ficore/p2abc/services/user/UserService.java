@@ -97,14 +97,10 @@ public class UserService {
     private final static String errNotFound = "The requested resource or parts of it could not be found.";
 
     /**
-     * <b>Path</b>: /status/ (GET)<br>
-     * <br>
-     * <b>Description</b>: If the service is running this method is available.<br>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK</li>
-     * </ul>
+     * @fiware-rest-path /status/
+     * @fiware-rest-method GET
+     * @fiware-rest-description If the service is running this method is available.
+     * @fiware-rest-response 200 OK
      * 
      * @return Response
      */
@@ -115,16 +111,13 @@ public class UserService {
     }
     
     /**
-     * <b>Path</b>: /protected/reset (POST)<br>
-     * <br>
-     * <b>Description</b>: This method reloads the configuration of the webservice(s) and will completely wipe
-     * all storage of the webservice(s). Use with extreme caution! <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/reset
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
+     * all storage of the webservice(s). Use with extreme caution! 
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @return Response
      * @throws Exception when something went wrong
      */
@@ -140,21 +133,16 @@ public class UserService {
     }
 
     /**
-     * <b>Path:</b> /canBeSatisfied/ (POST)<br>
-     * <br>
-     * <b>Description</b>: This method, on input of a presentation policy
+     * @fiware-rest-path /canBeSatisfied/
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method, on input of a presentation policy
      * decides whether the credentials in the User’s credential store could be
      * used to produce a valid presentation token satisfying the policy. If so,
-     * this method returns true, otherwise, it returns false. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type:</b> <tt>PresentationPolicyAlternatives</tt><br>
-     * <b>Return type:</b> <tt>ABCEBoolean</tt><br>
+     * this method returns true, otherwise, it returns false. 
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type PresentationPolicyAlternatives
+     * @fiware-rest-return-type ABCEBoolean
      * 
      * @param p
      *            PresentationPolicyAlternatives
@@ -187,9 +175,9 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /createPresentationToken/ (POST)<br>
-     * <br>
-     * <b>Description</b>: This method, on input a presentation policy
+     * @fiware-rest-path /createPresentationToken/
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method, on input a presentation policy
      * alternatives, returns an argument to be passed to the UI for choosing how
      * to satisfy the policy, or returns an error if the policy cannot be
      * satisfied (if the canBeSatisfied method would have returned false). For
@@ -204,16 +192,11 @@ public class UserService {
      * UiPresentationReturn object from a UiPresentationArguments object). The
      * return value of the UI must then be passed to the method
      * createPresentationToken(UiPresentationReturn) for creating a presentation
-     * token.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: PresentationPolicyAlternatives<br>
-     * <b>Return type</b>: UiPresentationArguments<br>
+     * token.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type PresentationPolicyAlternatives
+     * @fiware-rest-return-type UiPresentationArguments<br>
      * 
      * @param p
      *            PresentationPolicyAlternatives
@@ -246,20 +229,15 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /createPresentationTokenUi/ (POST)<br>
-     * <br>
-     * <b>Description</b>: Performs the next step to complete creation of
+     * @fiware-rest-path /createPresentationTokenUi/
+     * @fiware-rest-method POST
+     * @fiware-rest-description Performs the next step to complete creation of
      * presentation tokens. This method should be called when the user interface
-     * is done with its selection. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type:</b> <tt>UiPresentationReturn</tt><br>
-     * <b>Return type:</b> <tt>PresentationToken</tt><br>
+     * is done with its selection.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type UiPresentationReturn
+     * @fiware-rest-return-type PresentationToken
      * 
      * @param upr
      *            UiPresentationReturn
@@ -295,26 +273,18 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /loadSettings/ (POST)<br>
-     * <br>
-     * <b>Description</b>: Download and load settings from an issuer or any
+     * @fiware-rest-path /loadSettings/
+     * @fiware-rest-method POST
+     * @fiware-rest-description Download and load settings from an issuer or any
      * settings provider. This method will cause the user service to make a
      * <tt>GET</tt> request to the specified <tt>url</tt> and download the
      * contents which must be valid <tt>Settings</tt>. DO NOT use this method
      * with untrusted URLs or issuers (or any other settings providers) with
      * DIFFERENT system parameters as this method will overwrite existing system
-     * parameters. See also {@link #getSettings()}. <br>
-     * <br>
-     * <b>Query parameters</b>:
-     * <ul>
-     * <li>url - a valid URL (String)</li>
-     * </ul>
-     * <br>
-     * <b>Response Status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * parameters. See also {@link #getSettings()}. 
+     * @fiware-rest-request-param url a valid URL (String)
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
      * 
      * @param url
      *            URL to download settings from.
@@ -359,26 +329,20 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /getSettings/ (GET)<br>
-     * <br>
-     * <b>Description</b>: Returns the settings of the service as obtained
+     * @fiware-rest-path /getSettings/
+     * @fiware-rest-method GET
+     * @fiware-rest-description Returns the settings of the service as obtained
      * from an issuance service. Settings includes issuer parameters, credential
      * specifications and the system parameters. This method may thus be used to
      * retrieve all credential specifications stored at the user service and
      * their corresponding issuer parameters. The return type of this method is
-     * <tt>Settings</tt>.<br>
-     * <br>
+     * <tt>Settings</tt>.
      * The user service is capable of downloading settings from an issuer (or
      * from anything that provides settings). To download settings use
-     * <tt>/loadSetting?url=...</tt> ({@link #loadSettings(String)}). <br>
-     * <br>
-     * <b>Response Status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type:</b> <tt>Settings</tt> <br>
+     * <tt>/loadSetting?url=...</tt> ({@link #loadSettings(String)}).
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-return-type Settings
      * 
      * @return Response
      */
@@ -441,18 +405,13 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /credential/list (GET)<br>
-     * <br>
-     * <b>Description</b>: Returns all obtained credentials as a
+     * @fiware-rest-path /credential/list
+     * @fiware-rest-method GET
+     * @fiware-rest-description Returns all obtained credentials as a
      * <tt>CredentialCollection</tt>.<br>
-     * <br>
-     * <b>Response Status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>CredentialCollection</tt><br>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-return-type CredentialCollection
      * 
      * @return Response
      */
@@ -493,23 +452,15 @@ public class UserService {
     }
     
     /**
-     * <b>Path</b>: /credential/get/{credUid} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retrieve a credential. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credUid - UID of the credential</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - The credential could not be found.</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>Credential</tt><br>
+     * @fiware-rest-path /credential/get/{credUid}
+     * @fiware-rest-method GET
+     * @fiware-rest-description Retrieve a credential. 
+     * @fiware-rest-path-param credUid UID of the credential
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 The credential could not be found.
+     * @fiware-rest-return-type Credential
+     * 
      * @param credUid UID of the credential
      * @return Response
      */
@@ -543,9 +494,9 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /issuanceProtocolStep/ (POST)<br>
-     * <br>
-     * <b>Description</b>: This method performs one step in an interactive
+     * @fiware-rest-path /issuanceProtocolStep/
+     * @fiware-rest-description
+     * This method performs one step in an interactive
      * issuance protocol. On input an incoming issuance message im obtained from
      * the Issuer, it either returns the outgoing issuance message that is to be
      * sent back to the Issuer, an object that must be sent to the User
@@ -573,15 +524,10 @@ public class UserService {
      * from a UiIssuanceArguments object); the method
      * issuanceProtocolStep(UiIssuanceReturn) should then be invoked with the
      * object returned by the UI.<br>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
-     * <b>Return type</b>: <tt>IssuanceReturn</tt><br>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type IssuanceMessage
+     * @fiware-rest-return-type IssuanceReturn
      * 
      * @param jm
      *            IssuanceMessage
@@ -616,19 +562,14 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /issuanceProtocolStepUi/ (POST)<br>
-     * <br>
-     * <b>Description</b>: This method performs the next step in the issuance
+     * @fiware-rest-path /issuanceProtocolStepUi/
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method performs the next step in the issuance
      * protocol after the UI is done with its selection. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>UiIssuanceReturn</tt><br>
-     * <b>Return type</b>: <tt>IssuanceMessage</tt><br>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type UiIssuanceReturn
+     * @fiware-rest-return-type IssuanceMessage
      * 
      * @param uir
      *            UiIssuanceReturn
@@ -660,25 +601,16 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /credential/delete/{credentialUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: This method deletes the credential with the given
+     * @fiware-rest-path /credential/delete/{credentialUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description This method deletes the credential with the given
      * identifier from the credential store. If deleting is not possible (e.g.
      * if the referred credential does not exist) the method returns false, and
-     * true otherwise.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialUid - UID of the Credential</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * true otherwise.
+     * @fiware-rest-path-param credentialUid - UID of the Credential
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-return-type ABCEBoolean
      * 
      * @param credentialUid
      *            - UID of the credential
@@ -717,24 +649,15 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /credentialSpecification/store/{credentialSpecificationUid}
-     * (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores a credential specification under the given
-     * UID. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * <li>409 - <tt>credentialSpecificationUid</tt> does not match the actual
-     * UID or is invalid.</li>
-     * </ul>
+     * @fiware-rest-path /credentialSpecification/store/{credentialSpecificationUid}
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Stores a credential specification under the given
+     * UID. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not match the actual
+     * UID or is invalid.
      * 
      * @param credentialSpecificationUid
      *            UID of the credential specification.
@@ -779,23 +702,15 @@ public class UserService {
     }
     
     /**
-     * <b>Path</b>: /credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retreive a credential specification stored at this service.<br>
-     * <br>
-     * <b>Path parameters:</b>
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to retrieve.</li>
-     * </ul>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - The credential specification could not be found.</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
+     * @fiware-rest-path /credentialSpecification/get/{credentialSpecificationUid}
+     * @fiware-rest-method GET
+     * @fiware-rest-description Retreive a credential specification stored at this service.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to retrieve.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 The credential specification could not be found.
+     * @fiware-rest-return-type CredentialSpecification
+     * 
      * @param credSpecUid UID of the credential specification
      * @return Response
      */
@@ -825,20 +740,13 @@ public class UserService {
     }
     
     /**
-     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid} (DELETE) <br>
-     * <br>
-     * <b>Description</b>: Deletes a credential specification. <br>
-     * <br>
-     * <b>Path parameters</b>: 
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to delete.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes a credential specification.
+     * @fiware-rest-patha-param >credentialSpecificationUid UID of the credential specification to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @param credSpecUid UID of the credential specification to delete
      * @return Response
      */
@@ -873,19 +781,15 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /systemParameters/store (PUT)<br>
-     * <br>
-     * <b>Description</b>: Store (and overwrite existing) system parameters at
+     * @fiware-rest-path /systemParameters/store
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Store (and overwrite existing) system parameters at
      * the service. This method returns true if the system parameters were
-     * successfully stored. <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>SystemParameters</tt><br>
-     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * successfully stored.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type SystemParameters
+     * @fiware-rest-return-type ABCEBoolean
      * 
      * @param systemParameters
      *            SystemParameters
@@ -923,20 +827,16 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /issuerParameters/store/{issuerParametersUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Store (and overwrite existing) issuer parameters at
+     * @fiware-rest-path /issuerParameters/store/{issuerParametersUid}
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Store (and overwrite existing) issuer parameters at
      * the service (using the given identifier). This method returns true if the
-     * system parameters were successfully stored. <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * <li>409 - <em>issuerParametersUid</em> does not match or is invalid.
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>IssuerParameters</tt><br>
-     * <b>Return type</b>: <tt>ABCEBoolean</tt><br>
+     * system parameters were successfully stored.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-respnsoe 409 <em>issuerParametersUid</em> does not match or is invalid.
+     * @fiware-rest-input-type IssuerParameters
+     * @fiware-rest-return-type ABCEBoolean
      * 
      * @param issuerParametersUid
      *            UID of the IssuerParameters
@@ -987,20 +887,13 @@ public class UserService {
     }
     
     /**
-     * <b>Path</b>: /issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes issuer parameters.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>issuerParamateresUid - UID of the issuer parameters to delete.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /issuerParameters/delete/{issuerParametersUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes issuer parameters.
+     * @fiware-rest-path-param issuerParamateresUid UID of the issuer parameters to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @param issuerParametersUid UID of the issuer parameters
      * @return Response
      */
@@ -1069,19 +962,14 @@ public class UserService {
     }
 
     /**
-     * <b>Path</b>: /extractIssuanceMessage/ (POST)<br>
-     * <br>
-     * <b>Description</b>: This method extracts the IssuanceMessage from an
-     * IssuanceMessageAndBoolean and returns the IssuanceMessage.<br>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type:</b> <tt>IssuanceMessageAndBoolean</tt><br>
-     * <b>Return type:</b> <tt>IssuanceMessage</tt><br>
+     * @fiware-rest-path /extractIssuanceMessage/
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method extracts the IssuanceMessage from an
+     * IssuanceMessageAndBoolean and returns the IssuanceMessage.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type IssuanceMessageAndBoolean
+     * @fiware-rest-return-type IssuanceMessage
      * 
      * @param issuanceMessageAndBoolean
      *            IssuanceMessageAndBoolean
