@@ -67,6 +67,8 @@ public class FicoreUnitTestDoclet {
             REST_PATH_PARAM,
             REST_REQUEST_PARAM,
             REST_RESPONSE,
+            REST_INPUT_TYPE,
+            REST_RETURN_TYPE,
         }
 
         private CustomTag tag;
@@ -172,6 +174,8 @@ public class FicoreUnitTestDoclet {
         nameToTag.put("fiware-rest-path-param", new FicoreTag(FicoreTag.CustomTag.REST_PATH_PARAM, "fiware-rest-path-param", makeBold("Path Parameters:"), true, true));
         nameToTag.put("fiware-rest-request-param", new FicoreTag(FicoreTag.CustomTag.REST_REQUEST_PARAM, "fiware-rest-request-param", makeBold("Request Parameters:"), true, true));
         nameToTag.put("fiware-rest-response", new FicoreTag(FicoreTag.CustomTag.REST_RESPONSE, "fiware-rest-response", makeBold("HTTP responses:"), true, true));
+        nameToTag.put("fiware-rest-input-type", new FicoreTag(FicoreTag.CustomTag.REST_INPUT_TYPE, "fiware-rest-input-type", makeBold("Input type:"), false, true));
+        nameToTag.put("fiware-rest-return-type", new FicoreTag(FicoreTag.CustomTag.REST_RETURN_TYPE, "fiware-rest-return-type", makeBold("Return type:"), false, true));
 
         enumToTag = new HashMap<>();
         enumToTag.put(FicoreTag.CustomTag.TEST_FEATURE, nameToTag.get("fiware-unit-test-feature"));
@@ -184,6 +188,8 @@ public class FicoreUnitTestDoclet {
         enumToTag.put(FicoreTag.CustomTag.REST_PATH_PARAM, nameToTag.get("fiware-rest-path-param"));
         enumToTag.put(FicoreTag.CustomTag.REST_REQUEST_PARAM, nameToTag.get("fiware-rest-request-param"));
         enumToTag.put(FicoreTag.CustomTag.REST_RESPONSE, nameToTag.get("fiware-rest-response"));
+        enumToTag.put(FicoreTag.CustomTag.REST_INPUT_TYPE, nameToTag.get("fiware-rest-input-type"));
+        enumToTag.put(FicoreTag.CustomTag.REST_RETURN_TYPE, nameToTag.get("fiware-rest-return-type"));
     }
 
     public static boolean start(RootDoc root) throws IOException{

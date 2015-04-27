@@ -168,10 +168,10 @@ public class VerificationService {
      * @fiware-rest-path /verifyTokenAgainstPolicy
      * @fiware-rest-method POST
      *
-     * @fiware-rest-description This method verifies a given presentation token against a given PresentationPolicyAlternatives. <br>
+     * @fiware-rest-description This method verifies a given presentation token against a given PresentationPolicyAlternatives.
      * This method will return a PresentationTokenDescription.
      *
-     * @fiware-rest-post-param token a presentation token (of type PresentationPolicyAlternativesAndPresentationToken)
+     * @fiware-rest-request-param token a presentation token (of type PresentationPolicyAlternativesAndPresentationToken)
      *
      * @fiware-rest-response status 200 OK (PresentationTokenDescription as application/xml)
      * @fiware-rest-response 500 ERROR
@@ -222,8 +222,8 @@ public class VerificationService {
      * @fiware-rest-path-param resource Resource URI
      * @fiware-rest-path-param policyUID UID of the presentation policy
      *
-     * @fiware-rest-post-param al Alias
-     * @fiware-rest-post-param cs UID of the credential specification
+     * @fiware-rest-request-param al Alias
+     * @fiware-rest-request-param cs UID of the credential specification
      *
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
@@ -279,29 +279,22 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Deletes a credential specification alternative from a presentation policy inside a
-     * <tt>PresentationPolicyAlternatives</tt>. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>al - Alias</li>
-     * <li>cs - UID of the credential specification</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Deletes a credential specification alternative from a presentation policy inside a
+     * <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUid UID of the presentation policy
+     *
+     * @fiware-rest-request-param al Alias
+     * @fiware-rest-request-param cs UID of the credential specification
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.</li>
+     *
      * @param resource Resource URI
      * @param alias Alias
      * @param credSpecUid UID of the credential specification
@@ -363,29 +356,22 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/addIssuerAlternative/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Adds an issuer alternative to a presentation policy inside a
-     * <tt>PresentationPolicyAlternatives</tt>. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>al - Alias</li>
-     * <li>ip - UID of the issuer parameters</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/addIssuerAlternative/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Adds an issuer alternative to a presentation policy inside a
+     * <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUid UID of the presentation policy
+     *
+     * @fiware-rest-request-param al Alias
+     * @fiware-rest-request-param ip UID of the issuer parameters
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.</li>
+     *
      * @param resource Resource URI
      * @param alias Alias
      * @param issuerParamsUid UID of the issuer parameters
@@ -438,29 +424,24 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/deleteIssuerAlternative/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Deletes an issuer alternative from a presentation policy inside a
-     * <tt>PresentationPolicyAlternatives</tt>. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>al - Alias</li>
-     * <li>ip - UID of the issuer parameters</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/deleteIssuerAlternative/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Deletes an issuer alternative from a presentation policy inside a
+     * <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUid UID of the presentation policy
+     *
+     *
+     * @fiware-rest-request-param al Alias
+     * @fiware-rest-request-param ip UID of the issuer parameters
+     *
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.
+     *
      * @param resource Resource URI
      * @param alias Alias
      * @param issuerParamsUid UID of the issuer parameters
@@ -522,26 +503,19 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/addPolicyAlternative/{resource} (POST) <br>
-     * <br>
-     * <b>Description</b>: Adds a presentation policy alternative to a <tt>PresentationPolicyAlternatives</tt>.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>puid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/addPolicyAlternative/{resource}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Adds a presentation policy alternative to a <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     *
+     * @fiware-rest-request-param puid UID of the presentation policy
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.
+     *
      * @param resource Resource URI
      * @param policyUid UID of the presentation policy
      * @return Response
@@ -580,26 +554,19 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/deletePolicyAlternative/{resource} (POST)<br>
-     * <br>
-     * <b>Description</b>: Delete a presentation policy alternative from a <tt>PresentationPolicyAlternatives</tt>. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>puid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/deletePolicyAlternative/{resource}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Delete a presentation policy alternative from a <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     *
+     * @fiware-rest-request-param puid UID of the presentation policy
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.
+     *
      * @param resource Resource URI
      * @param policyUid UID of the presentation policy
      * @return Response
@@ -646,26 +613,19 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/resource/create/{resource} (PUT) <br>
-     * <br>
-     * <b>Description</b>: Creates a resource under the URI given as part of the path. This will create an
-     * empty <tt>PresentationPolicyAlternatives</tt> stored under the resource URI as the key. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * </ul>
-     * <br>
-     * <b>PUT parameters</b>:
-     * <ul>
-     * <li>redirectURI - Redirect URI (in almost all cases this will most likely be an URL of a website)</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/resource/create/{resource}
+     * @fiware-rest-method PUT
+     *
+     * @fiware-rest-description Creates a resource under the URI given as part of the path. This will create an
+     * empty <tt>PresentationPolicyAlternatives</tt> stored under the resource URI as the key.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     *
+     * @fiware-rest-request-param redirectURI Redirect URI (in almost all cases this will most likely be an URL of a website)
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * @param resource Resource URI
      * @param redirectURI Redirect URI
      * @return Response
@@ -704,7 +664,7 @@ public class VerificationService {
      * @fiware-rest-path-param resource the resource URL
      * @fiware-rest-path-param policyUid the UID of the presentation policy
      *
-     * @fiware-rest-post-param al alias (must be a valid URI)
+     * @fiware-rest-request-param al alias (must be a valid URI)
      *
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 Error
@@ -759,27 +719,20 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/deleteAlias/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Deletes an alias from a presentation policy inside a <tt>PresentationPolicyAlternatives</tt>.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>al - Alias</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the resource, the alias or the presentation policy could not be found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/deleteAlias/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Deletes an alias from a presentation policy inside a <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUid UID of the presentation policy
+     *
+     * @fiware-rest-request-param al Alias
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the resource, the alias or the presentation policy could not be found.
+     *
      * @param resource Resource URI
      * @param alias Alias
      * @param policyUid UID of the presentation policy
@@ -834,27 +787,20 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/deletePredicate/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Deletes a predicate from a <tt>PresentationPolicyAlternatives</tt>. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>index - Index of the attribute as in the list of predicates inside the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - The predicate or presentation policy does not exist.</li>
-     * </ul>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/deletePredicate/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Deletes a predicate from a <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUid UID of the presentation policy
+     *
+     * @fiware-rest-request-param index Index of the attribute as in the list of predicates inside the presentation policy
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 The predicate or presentation policy does not exist.
+     *
      * @param resource Resource URI
      * @param policyUid UID of the presentation policy
      * @param index Index of the predicate
@@ -899,32 +845,25 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Add a predicate to a presentation policy in a <tt>PresentationPolicyAlternatives</tt>.<br>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/addPredicate/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Add a predicate to a presentation policy in a <tt>PresentationPolicyAlternatives</tt>.
      * The predicate <tt>p</tt> is a function (e.g. integer-less) with two argument. An attribute <tt>at</tt> as lvalue
      * and a constant value (e.g. 123) as rvalue. This method does not allow comparing attributes with other attributes as of now.
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUid - UID of the presentation policy</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>cv - Constant Value</li>
-     * <li>at - Attribute</li>
-     * <li>p - Predicate</li>
-     * <li>al - Alias</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the resource, the attribute, the alias or the presentation policy could not be found.</li>
-     * </ul>
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUid UID of the presentation policy
+     *
+     * @fiware-rest-request-param cv Constant Value
+     * @fiware-rest-request-param at Attribute
+     * @fiware-rest-request-param p Predicate
+     * @fiware-rest-request-param al Alias
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the resource, the attribute, the alias or the presentation policy could not be found.
+     *
      * @param resource Resource URI
      * @param constantValue Constant Value
      * @param attribute Attribute
@@ -1011,17 +950,15 @@ public class VerificationService {
 
 
     /**
-     * <b>Path</b>: /protected/systemParameters/store (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores system parameters at this service.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     *  <li>200 - OK (application xml)</li>
-     *  <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>SystemParameters</tt><br>
+     * @fiware-rest-path /protected/systemParameters/store
+     * @fiware-rest-method PUT
+     *
+     * @fiware-rest-description Stores system parameters at this service.
+     *
+     * @fiware-rest-response 200 OK (application xml)</li>
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Input type</b>: <tt>SystemParameters</tt>
      * @param systemParameters SystemParameters
      * @return Response
      */
@@ -1050,20 +987,16 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes issuer parameters. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>issuerParametersUid - UID of the issuer parameters to delet.
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/issuerParameters/delete/{issuerParametersUid}
+     * @fiware-rest-method DELETE
+     *
+     * @fiware-rest-description Deletes issuer parameters.
+     *
+     * @fiware-rest-path-param issuerParametersUid UID of the issuer parameters to delete
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * @param issuerParametersUid UID of the IssuerParameters
      * @return Response
      */
@@ -1097,24 +1030,19 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/issuerParameters/store/{issuerParametersUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores issuer parameters at this service. The UID given as part of the path
-     * must match the UID of the passed issuer parameters. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>issuerParametersUid - UID of the issuer parameters to store</li>
-     * </ul>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>409 - The issuerParemetersUid does not match the actual issuer parameters' UID.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type:</b> <tt>IssuerParameters</tt> <br>
+     * @fiware-rest-path /protected/issuerParameters/store/{issuerParametersUid}
+     * @fiware-rest-method PUT
+     *
+     * @fiware-rest-description Stores issuer parameters at this service. The UID given as part of the path
+     * must match the UID of the passed issuer parameters.
+     *
+     * @fiware-rest-path-param issuerParametersUid UID of the issuer parameters to store
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 409 The issuerParemetersUid does not match the actual issuer parameters' UID.
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Input type:</b> <tt>IssuerParameters</tt>
      * @param issuerParametersUid UID of the IssuerParameters
      * @param issuerParameters IssuerParameters
      * @return Response
@@ -1154,18 +1082,16 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /createPresentationPolicy/ (POST) <br>
-     * <br>
-     * <b>Description</b>: Given a presentation policy template creates a presentation policy (while also embedding nonce bytes). <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR </li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt><br>
-     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * @fiware-rest-path /createPresentationPolicy/
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Given a presentation policy template creates a presentation policy (while also embedding nonce bytes).
+     *
+     * @fiware-rest-response 200 OK (application/xml)</li>
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt>
+     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt>
      * @param applicationData Application Data
      * @param presentationPolicy PresentationPolicy
      * @return Response
@@ -1201,24 +1127,19 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores a credential specification at this service. The UID given as part of the path
-     * must match the UID of the passed credential specification. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to store.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>409 - UID given on the path does not match the actual UID.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>CredentialSpecification</tt> <br>
+     * @fiware-rest-path /protected/credentialSpecification/store/{credentialSpecificationUid}
+     * @fiware-rest-method PUT
+     *
+     * @fiware-rest-description Stores a credential specification at this service. The UID given as part of the path
+     * must match the UID of the passed credential specification.
+     *
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to store.
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 409 UID given on the path does not match the actual UID.
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Input type</b>: <tt>CredentialSpecification</tt>
      * @param credentialSpecificationUid UID of the credential specification
      * @param credSpec Credential specification
      * @return Response
@@ -1255,23 +1176,18 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retreive a credential specification stored at this service.<br>
-     * <br>
-     * <b>Path parameters:</b>
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to retrieve.</li>
-     * </ul>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - The credential specification could not be found.</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>CredentialSpecification</tt> <br>
+     * @fiware-rest-path /protected/credentialSpecification/get/{credentialSpecificationUid}
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description Retreive a credential specification stored at this service.
+     *
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to retrieve.
+     *
+     * @fiware-rest-response 200 OK (application/xml)</li>
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 The credential specification could not be found.
+     *
+     * <b>Return type</b>: <tt>CredentialSpecification</tt>
      * @param credSpecUid UID of the credential specification
      * @return Response
      */
@@ -1300,20 +1216,16 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid} (DELETE) <br>
-     * <br>
-     * <b>Description</b>: Deletes a credential specification. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to delete.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
+     * @fiware-rest-method DELETE
+     *
+     * @fiware-rest-description Deletes a credential specification.
+     *
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to delete.
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * @param credSpecUid UID of the credential specification to delete
      * @return Response
      */
@@ -1347,21 +1259,17 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/resource/delete/{resource} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes a resource. This means, it deletes the associated redirect URI and
-     * <tt>PresentationPolicyAlternatives.</tt><br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/resource/delete/{resource}
+     * @fiware-rest-method DELETE
+     *
+     * @fiware-rest-description Deletes a resource. This means, it deletes the associated redirect URI and
+     * <tt>PresentationPolicyAlternatives.</tt>
+     *
+     * @fiware-rest-path-param resource Resource URI
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * @param resource Resource URI
      * @return Response
      */
@@ -1396,23 +1304,18 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/store/{resource} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores <tt>PresentationPolicyAlternatives</tt> using the resource URI as part of the path
-     * as the key (i.e. associates the <tt>PresentationPolicyAlternatives</tt> with the resource URI)<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/store/{resource}
+     * @fiware-rest-method PUT
+     *
+     * @fiware-rest-description Stores <tt>PresentationPolicyAlternatives</tt> using the resource URI as part of the path
+     * as the key (i.e. associates the <tt>PresentationPolicyAlternatives</tt> with the resource URI)
+     *
+     * @fiware-rest-path-param resource Resource URI
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt>
      * @param resource Resource URI
      * @param ppa PresentationPolicyAlternatives
      * @return Response
@@ -1442,23 +1345,18 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/get/{resource} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retrieves <tt>PresentationPolicyAlternatives</tt>.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI the <tt>PresentationPolicyAlternatives</tt> are associated with.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - <tt>PresentationPolicyAlternatives</tt> could not be found./<li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt><br>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/get/{resource}
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description Retrieves <tt>PresentationPolicyAlternatives</tt>.
+     *
+     * @fiware-rest-path-param resource Resource URI the <tt>PresentationPolicyAlternatives</tt> are associated with.
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 <tt>PresentationPolicyAlternatives</tt> could not be found.
+     *
+     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt>
      * @param resource Resource URI
      * @return Response
      */
@@ -1484,17 +1382,15 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/list (GET)<br>
-     * <br>
-     * <b>Description</b>: Lists all presentation policies stored at this service. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>PresentationPolicyAlternativesCollection</tt> <br>
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/list
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description Lists all presentation policies stored at this service.
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Return type</b>: <tt>PresentationPolicyAlternativesCollection</tt>
      * @return Response
      */
     @GET()
@@ -1526,22 +1422,17 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/redirectURI/store/{resource} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores a redirect URI (URL) and associates it with a resource.<br>
-     * <br>
-     * <b>PathParam</b>:
-     * <ul>
-     * <li>resource - Name/URI of the resource.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>String</tt> <br>
+     * @fiware-rest-path /protected/redirectURI/store/{resource}
+     * @fiware-rest-method PUT
+     *
+     * @fiware-rest-description Stores a redirect URI (URL) and associates it with a resource.
+     *
+     * @fiware-rest-path-param resource Name/URI of the resource.
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Input type</b>: <tt>String</tt>
      * @param resourceUri URI of the resource
      * @param redirectUri Redirect URL
      * @return Response
@@ -1569,22 +1460,17 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/redirectURI/get/{resource} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retrieves a redirect URI.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>String</tt><br>
+     * @fiware-rest-path /protected/redirectURI/get/{resource}
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description Retrieves a redirect URI.
+     *
+     * @fiware-rest-path-param resource Resource URI
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Return type</b>: <tt>String</tt>
      * @param resource Resource URI
      * @return Response
      */
@@ -1611,21 +1497,16 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /requestResource/{resource} <br>
-     * <br>
-     * <b>Description</b>: First step for a user to request a resource. This method will look-up the corresponding
-     * presentation policy alternatives and return them for the user to create presentation tokens for. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Name/URI of the resource to request access to/for.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /requestResource/{resource}
+     *
+     * @fiware-rest-description First step for a user to request a resource. This method will look-up the corresponding
+     * presentation policy alternatives and return them for the user to create presentation tokens for.
+     *
+     * @fiware-rest-path-param resource Name/URI of the resource to request access to/for.
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * @param resource URI of the resource
      * @return Response
      */
@@ -1660,18 +1541,16 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /requestResource2/{resource} (POST) <br>
-     * <br>
-     * <b>Description</b>: The second step for a user to request access to a resource. This method will verify
-     * the presentation token for the user and if successful return the redirect URI and an access token. <br>
-     * <br>
-     * <b>Path parameters:</b>
-     * <ul>
-     * <li>resource - Name/URI of the resource.</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>PresentationToken</tt><br>
-     * <b>Return type</b>: <tt>String</tt><br>
+     * @fiware-rest-path /requestResource2/{resource}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description The second step for a user to request access to a resource. This method will verify
+     * the presentation token for the user and if successful return the redirect URI and an access token.
+     *
+     * @fiware-rest-path-param resource Name/URI of the resource.
+     *
+     * <b>Input type</b>: <tt>PresentationToken</tt>
+     * <b>Return type</b>: <tt>String</tt>
      * @param resource Resource URI
      * @param pt PresentationToken
      * @return Response
@@ -1745,24 +1624,19 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /verifyAccessToken (GET) <br>
-     * <br>
-     * <b>Description</b>: Verifies that an access token is valid. This means, that a user successfully verified his
+     * @fiware-rest-path /verifyAccessToken
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description Verifies that an access token is valid. This means, that a user successfully verified his
      * credentials at this service for a resource. This method will return the name/URI of the resource the user requested.
-     * Once verified the access token is deleted. <br>
-     * <br>
-     * <b>GET parameters</b>:
-     * <ul>
-     * <li>accesstoken - The access token to verify. </li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>403 - Token not valid.</li>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
+     * Once verified the access token is deleted.
+     *
+     * @fiware-rest-request-param accesstoken The access token to verify.
+     *
+     * @fiware-rest-response 403 Token not valid.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * <b>Return type</b>: <tt>String</tt>
      * @param accessToken Access Token
      * @return Response
@@ -1791,26 +1665,21 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/loadSettings/ (POST)<br>
-     * <br>
-     * <b>Description</b>: Download and load settings from an issuer or any
+     * @fiware-rest-path /protected/loadSettings/
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description Download and load settings from an issuer or any
      * settings provider. This method will cause the user service to make a
      * <tt>GET</tt> request to the specified <tt>url</tt> and download the
      * contents which must be valid <tt>Settings</tt>. DO NOT use this method
      * with untrusted URLs or issuers (or any other settings providers) with
      * DIFFERENT system parameters as this method will overwrite existing system
-     * parameters. (see {@link #getSettings()}) <br>
-     * <br>
-     * <b>Query parameters</b>:
-     * <ul>
-     * <li>url - a valid URL (String)</li>
-     * </ul>
-     * <br>
-     * <b>Response Status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * parameters. (see {@link #getSettings()})
+     *
+     * @fiware-rest-request-param url a valid URL (String)
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
      *
      * @param url
      *            URL to download settings from.
@@ -1855,26 +1724,24 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /getSettings/ (GET)<br>
-     * <br>
-     * <b>Description</b>: Returns the settings of the service as obtained
+     * @fiware-rest-path /getSettings/
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description Returns the settings of the service as obtained
      * from an issuance service. Settings includes issuer parameters, credential
      * specifications and the system parameters. This method may thus be used to
      * retrieve all credential specifications stored at the user service and
      * their corresponding issuer parameters. The return type of this method is
-     * <tt>Settings</tt>.<br>
-     * <br>
+     * <tt>Settings</tt>.
+     *
      * The user service is capable of downloading settings from an issuer (or
      * from anything that provides settings). To download settings use
-     * <tt>/loadSettings?url=...</tt> ({@link #loadSettings(String)}). <br>
-     * <br>
-     * <b>Response Status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type:</b> <tt>Settings</tt> <br>
+     * <tt>/loadSettings?url=...</tt> ({@link #loadSettings(String)}).
+     *
+     * @fiware-rest-response 200 OK (application/xml)</li>
+     * @fiware-rest-response 500 ERROR
+     *
+     * <b>Return type:</b> <tt>Settings</tt>
      *
      * @return Response
      */
