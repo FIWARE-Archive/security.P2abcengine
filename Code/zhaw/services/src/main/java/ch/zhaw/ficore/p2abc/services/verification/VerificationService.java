@@ -125,14 +125,13 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/status/ (GET)<br>
-     * <br>
-     * <b>Description</b>: This method is available when the service is running.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * </ul>
+     * @fiware-rest-path /protected/status/
+     * @fiware-rest-method GET
+     *
+     * @fiware-rest-description This method is available when the service is running.
+     *
+     * @fiware-rest-response 200 OK
+     *
      * @return Response
      */
     @GET()
@@ -142,16 +141,15 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/reset (POST)<br>
-     * <br>
-     * <b>Description</b>: This method reloads the configuration of the webservice(s) and will completely wipe
-     * all storage of the webservice(s). Use with extreme caution! <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/reset
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description: This method reloads the configuration of the webservice(s) and will completely wipe
+     * all storage of the webservice(s). Use with extreme caution!
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
      * @return  Response
      * @throws Exception when something went wrong
      */
@@ -167,19 +165,17 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /verifyTokenAgainstPolicy (POST) <br>
-     * <br>
-     * <b>Description</b>: This method verifies a given presentation token against a given PresentationPolicyAlternatives. <br>
+     * @fiware-rest-path /verifyTokenAgainstPolicy
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description This method verifies a given presentation token against a given PresentationPolicyAlternatives. <br>
      * This method will return a PresentationTokenDescription.
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type:</b> <tt>PresentationPolicyAlternativesAndPresentationToken</tt> <br>
-     * <b>Return type:</b> <tt>PresentationTokenDescription</tt> <br>
+     *
+     * @fiware-rest-post-param token a presentation token (of type PresentationPolicyAlternativesAndPresentationToken)
+     *
+     * @fiware-rest-response status 200 OK (PresentationTokenDescription as application/xml)
+     * @fiware-rest-response 500 ERROR
+     *
      * @param ppaAndpt PresentationPolicyAlternativesAndPresentationToken
      * @return Response
      * @throws TokenVerificationException when something went wrong.
@@ -217,29 +213,22 @@ public class VerificationService {
     }
 
     /**
-     * <b>Path</b>: /protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/{resource}/{policyUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: This method adds a credential specification alternative to a presentation policy inside
+     * @fiware-rest-path /protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/{resource}/{policyUid}
+     * @fiware-rest-method POST
+     *
+     * @fiware-rest-description This method adds a credential specification alternative to a presentation policy inside
      * <tt>PresentationPolicyAlternatives</tt>.
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>resource - Resource URI</li>
-     * <li>policyUID - UID of the presentation policy.</li>
-     * </ul>
-     * <br>
-     * <b>POST parameters</b>:
-     * <ul>
-     * <li>al - Alias</li>
-     * <li>cs - UID of the credential specification</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Either the alias, the resource or the presentation policy could not be found.</li>
-     * </ul>
+     *
+     * @fiware-rest-path-param resource Resource URI
+     * @fiware-rest-path-param policyUID UID of the presentation policy
+     *
+     * @fiware-rest-post-param al Alias
+     * @fiware-rest-post-param cs UID of the credential specification
+     *
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.</li>
+     *
      * @param resource Resource URI
      * @param alias Alias
      * @param credSpecUid UID of the credential specification

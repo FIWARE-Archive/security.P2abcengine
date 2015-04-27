@@ -65,7 +65,7 @@ public class FicoreUnitTestDoclet {
             REST_METHOD,
             REST_DESCRIPTION,
             REST_PATH_PARAM,
-            REST_POST_PARAM,
+            REST_REQUEST_PARAM,
             REST_RESPONSE,
         }
 
@@ -170,7 +170,7 @@ public class FicoreUnitTestDoclet {
         nameToTag.put("fiware-rest-method", new FicoreTag(FicoreTag.CustomTag.REST_METHOD, "fiware-rest-method", makeBold("Method:"), false, false));
         nameToTag.put("fiware-rest-description", new FicoreTag(FicoreTag.CustomTag.REST_DESCRIPTION, "fiware-rest-description", makeBold("Description:"), false, false));
         nameToTag.put("fiware-rest-path-param", new FicoreTag(FicoreTag.CustomTag.REST_PATH_PARAM, "fiware-rest-path-param", makeBold("Path Parameters:"), true, true));
-        nameToTag.put("fiware-rest-post-param", new FicoreTag(FicoreTag.CustomTag.REST_POST_PARAM, "fiware-rest-post-param", makeBold("POST Parameters:"), true, true));
+        nameToTag.put("fiware-rest-request-param", new FicoreTag(FicoreTag.CustomTag.REST_REQUEST_PARAM, "fiware-rest-post-param", makeBold("POST Parameters:"), true, true));
         nameToTag.put("fiware-rest-response", new FicoreTag(FicoreTag.CustomTag.REST_RESPONSE, "fiware-rest-response", makeBold("HTTP responses:"), true, true));
 
         enumToTag = new HashMap<>();
@@ -182,7 +182,7 @@ public class FicoreUnitTestDoclet {
         enumToTag.put(FicoreTag.CustomTag.REST_METHOD, nameToTag.get("fiware-rest-method"));
         enumToTag.put(FicoreTag.CustomTag.REST_DESCRIPTION, nameToTag.get("fiware-rest-description"));
         enumToTag.put(FicoreTag.CustomTag.REST_PATH_PARAM, nameToTag.get("fiware-rest-path-param"));
-        enumToTag.put(FicoreTag.CustomTag.REST_POST_PARAM, nameToTag.get("fiware-rest-post-param"));
+        enumToTag.put(FicoreTag.CustomTag.REST_REQUEST_PARAM, nameToTag.get("fiware-rest-post-param"));
         enumToTag.put(FicoreTag.CustomTag.REST_RESPONSE, nameToTag.get("fiware-rest-response"));
     }
 
