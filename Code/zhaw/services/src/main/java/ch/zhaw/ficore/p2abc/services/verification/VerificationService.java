@@ -227,7 +227,7 @@ public class VerificationService {
      *
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.</li>
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.
      *
      * @param resource Resource URI
      * @param alias Alias
@@ -293,7 +293,7 @@ public class VerificationService {
      *
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.</li>
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.
      *
      * @param resource Resource URI
      * @param alias Alias
@@ -370,7 +370,7 @@ public class VerificationService {
      *
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.</li>
+     * @fiware-rest-response 404 Either the alias, the resource or the presentation policy could not be found.
      *
      * @param resource Resource URI
      * @param alias Alias
@@ -955,10 +955,10 @@ public class VerificationService {
      *
      * @fiware-rest-description Stores system parameters at this service.
      *
-     * @fiware-rest-response 200 OK (application xml)</li>
+     * @fiware-rest-response 200 OK (application xml)
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Input type</b>: <tt>SystemParameters</tt>
+     * @fiware-rest-input-type SystemParameters
      * @param systemParameters SystemParameters
      * @return Response
      */
@@ -1087,11 +1087,11 @@ public class VerificationService {
      *
      * @fiware-rest-description Given a presentation policy template creates a presentation policy (while also embedding nonce bytes).
      *
-     * @fiware-rest-response 200 OK (application/xml)</li>
+     * @fiware-rest-response 200 OK (application/xml)
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt>
-     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt>
+     * @fiware-rest-input-type PresentationPolicyAlternatives
+     * @fiware-rest-return-type PresentationPolicyAlternatives
      * @param applicationData Application Data
      * @param presentationPolicy PresentationPolicy
      * @return Response
@@ -1139,7 +1139,7 @@ public class VerificationService {
      * @fiware-rest-response 409 UID given on the path does not match the actual UID.
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Input type</b>: <tt>CredentialSpecification</tt>
+     * @fiware-rest-input-type CredentialSpecification
      * @param credentialSpecificationUid UID of the credential specification
      * @param credSpec Credential specification
      * @return Response
@@ -1183,11 +1183,11 @@ public class VerificationService {
      *
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to retrieve.
      *
-     * @fiware-rest-response 200 OK (application/xml)</li>
+     * @fiware-rest-response 200 OK (application/xml)
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 The credential specification could not be found.
      *
-     * <b>Return type</b>: <tt>CredentialSpecification</tt>
+     * @fiware-rest-return-type CredentialSpecification
      * @param credSpecUid UID of the credential specification
      * @return Response
      */
@@ -1315,7 +1315,7 @@ public class VerificationService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Input type</b>: <tt>PresentationPolicyAlternatives</tt>
+     * @fiware-rest-input-type PresentationPolicyAlternatives
      * @param resource Resource URI
      * @param ppa PresentationPolicyAlternatives
      * @return Response
@@ -1356,7 +1356,7 @@ public class VerificationService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 <tt>PresentationPolicyAlternatives</tt> could not be found.
      *
-     * <b>Return type</b>: <tt>PresentationPolicyAlternatives</tt>
+     * @fiware-rest-return-type PresentationPolicyAlternatives
      * @param resource Resource URI
      * @return Response
      */
@@ -1390,7 +1390,7 @@ public class VerificationService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Return type</b>: <tt>PresentationPolicyAlternativesCollection</tt>
+     * @fiware-rest-return-type PresentationPolicyAlternativesCollection
      * @return Response
      */
     @GET()
@@ -1432,7 +1432,7 @@ public class VerificationService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Input type</b>: <tt>String</tt>
+     * @fiware-rest-input-type String
      * @param resourceUri URI of the resource
      * @param redirectUri Redirect URL
      * @return Response
@@ -1470,7 +1470,7 @@ public class VerificationService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Return type</b>: <tt>String</tt>
+     * @fiware-rest-return-type String
      * @param resource Resource URI
      * @return Response
      */
@@ -1549,8 +1549,8 @@ public class VerificationService {
      *
      * @fiware-rest-path-param resource Name/URI of the resource.
      *
-     * <b>Input type</b>: <tt>PresentationToken</tt>
-     * <b>Return type</b>: <tt>String</tt>
+     * @fiware-rest-input-type PresentationToken
+     * @fiware-rest-return-type String
      * @param resource Resource URI
      * @param pt PresentationToken
      * @return Response
@@ -1637,7 +1637,8 @@ public class VerificationService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Return type</b>: <tt>String</tt>
+     * @fiware-rest-return-type String
+     *
      * @param accessToken Access Token
      * @return Response
      */
@@ -1738,7 +1739,7 @@ public class VerificationService {
      * from anything that provides settings). To download settings use
      * <tt>/loadSettings?url=...</tt> ({@link #loadSettings(String)}).
      *
-     * @fiware-rest-response 200 OK (application/xml)</li>
+     * @fiware-rest-response 200 OK (application/xml)
      * @fiware-rest-response 500 ERROR
      *
      * <b>Return type:</b> <tt>Settings</tt>
