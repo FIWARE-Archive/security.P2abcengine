@@ -118,16 +118,13 @@ public class IssuanceService {
     /* GENERAL METHODS */
 
     /**
-     * <b>Path</b>: /protected/reset (POST)<br>
-     * <br>
-     * <b>Description</b>: This method reloads the configuration of the webservice(s) and will completely wipe
-     * all storage of the webservice(s). Use with extreme caution! <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/reset
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
+     * all storage of the webservice(s). Use with extreme caution! 
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @return Response
      * @throws Exception when something went wrong
      */
@@ -150,14 +147,12 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/status (GET)<br>
-     * <br>
-     * <b>Description</b>: This method is available when the service is running. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * </ul>
+     * @fiware-rest-path /protected/status
+     * @fiware-rest-method GET
+     * @fiware-rest-description This method is available when the service is running.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @return Response
      */
     @GET()
@@ -168,18 +163,14 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /testAuthentication (GET) <br>
-     * <b>Description</b>: This method can be used to test authentication by
-     * sending an authentication request.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (Authentication successful)</li>
-     * <li>401 - Authentication was not successful.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>AuthenticationRequest</tt><br>
+     * @fiware-rest-path /testAuthentication
+     * @fiware-rest-method GET
+     * @fiware-rest-description This method can be used to test authentication by
+     * sending an authentication request.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 401 Authentication was not successful.
+     * @fiware-rest-input-type AuthenticationRequest
      * 
      * @param authReq
      *            the authentication request
@@ -217,20 +208,16 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /getSettings/ (GET)<br>
-     * <br>
-     * <b>Description</b>: Returns the settings of this issuance service.
+     * @fiware-rest-path /getSettings/
+     * @fiware-rest-method GET
+     * @fiware-rest-description Returns the settings of this issuance service.
      * Settings includes issuer parameters, credential specifications and the
      * system parameters. This method is usually called by a user service or a verification
-     * service to download the settings. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>Settings</tt><br>
+     * service to download the settings. 
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-return-type Settings
+     * 
      * @return Response
      */
     @GET()
@@ -289,37 +276,32 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /issuanceRequest/ (POST)<br>
-     * <br>
-     * <b>Description</b>: This method is called by a user to initiate an
+     * @fiware-rest-path /issuanceRequest/
+     * @fiware-rest-method POST
+     * @fiware-rest-description This method is called by a user to initiate an
      * issuance protocol. The user must provide an issuance request containing
      * his authentication information and the UID of the corresponding
      * credential specification. The issuer will then try to authenticate the
      * user by using an authentication source (e.g. LDAP) and fetch the
      * attributes required by the credential specification from an attribute
-     * source (e.g. LDAP) and initiates the round based issuance protocol.<br><br>
+     * source (e.g. LDAP) and initiates the round based issuance protocol.
      * 
      * If authentication of the user fails this method will return the status
      * code FORBIDDEN. If the issuer is missing the credential specification,
      * the issuance policy or the query rule this method will return status code
-     * NOT_FOUND.<br><br>
+     * NOT_FOUND.
      * 
      * 
      * This method will search for an issuance policy and a query rule using the
      * UID of the credential specification as the key. If the issuance policy could
      * not be found a default issuance policy will be used which asks the user
-     * to reveal nothing in particular. <br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>401 - Authentication failed</li>
-     * <li>404 - A resource needed to process the request was not found</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>IssuanceRequest</tt><br>
-     * <b>Return type</b>: <tt>IssuanceMessageAndBoolean</tt><br>
+     * to reveal nothing in particular. 
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 401 Authentication failed
+     * @fiware-rest-response 404 A resource needed to process the request was not found
+     * @fiware-rest-input-type IssuanceRequest
+     * @fiware-rest-return-type IssuanceMessageAndBoolean
      * 
      * @param request
      *            a valid IssuanceRequset
@@ -402,9 +384,9 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /issuanceProtocolStep (POST)<br>
-     * <br>
-     * <b>Description</b>:
+     * @fiware-rest-path /issuanceProtocolStep
+     * @fiware-rest-method POST
+     * @fiware-rest-description
      * This method performs one step in an interactive issuance protocol. On
      * input an incoming issuance message <tt>m</tt> received from the User, it returns
      * the outgoing issuance message that is to be sent back to the User, a
@@ -413,16 +395,11 @@ public class IssuanceService {
      * together with the attribute values provided by the issuer to keep track
      * of the issued credentials. The Context attribute of the outgoing message
      * has the same value as that of the incoming message, allowing the Issuer
-     * to link the different messages of this issuance protocol.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>IssuanceMessage</tt><br>
-     * <b>Return type:</b>: <tt>IssuanceMessageAndBoolean</tt><br>
+     * to link the different messages of this issuance protocol.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type IssuanceMessage
+     * @fiware-rest-return-type IssuanceMessageAndBoolean
      * 
      * @param issuanceMessage
      *            an IssuanceMessage.
@@ -476,23 +453,16 @@ public class IssuanceService {
     /* CREDENTIAL SPECIFICATION */
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/delete/{credentialSpecificationUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes a credential specification that was stored
-     * under the UID provided as part of the path. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to
-     * delete</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>404 - Credential specification was not found.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes a credential specification that was stored
+     * under the UID provided as part of the path. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
+     * delete
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification was not found.
+
      * 
      * @param credSpecUid
      *            UID of the credential specification
@@ -535,27 +505,16 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes an attribute from a credential specification. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to
-     * delete the attribute from.</li>
-     * </ul>
-     * <b>Delete parameters</b>:
-     * <ul>
-     * <li>i - Index of the attribute (in the credential specification) to
-     * delete.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Credential specification or attribute description was not found.</li>
-     * </ul>
+     * @fiware-rest-path /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes an attribute from a credential specification. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
+     * delete the attribute from.
+     * @fiware-rest-request-param i Index of the attribute (in the credential specification) to
+     * delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 - Credential specification or attribute description was not found.
      * 
      * @param index
      *            Index of the attribute
@@ -613,29 +572,17 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes a friendly description from an attribute of credential
-     * specification. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification.</li>
-     * </ul>
-     * <br>
-     * <b>Delete parameters</b>:
-     * <ul>
-     * <li>i - Index of the attribute the friendly description belongs to.</li>
-     * <li>language - Language identifier of the friendly description to delete.
-     * </li>
-     * </ul>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>404 - Credential specification, attribute description or friendly description could not be found.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes a friendly description from an attribute of credential
+     * specification. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
+     * @fiware-rest-request-param i Index of the attribute the friendly description belongs to.</li>
+     * @fiware-rest-request-param language Language identifier of the friendly description to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification, attribute description or friendly description could not be found.
+     * 
      * 
      * @param index
      *            Index of the attribute.
@@ -714,29 +661,17 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Adds a friendly description to an attribute of a
-     * credential specification.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification.<li>
-     * </ul>
-     * <br>
-     * <b>Put parameters</b>:
-     * <ul>
-     * <li>i - Index of the attribute to add the friendly description to.</li>
-     * <li>language - Language identifier.</li>
-     * <li>value - Value of the friendly description.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>404 - Credential specification or attribute description could not be found.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid}
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Adds a friendly description to an attribute of a
+     * credential specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
+     * @fiware-rest-request-param i Index of the attribute to add the friendly description to.
+     * @fiware-rest-request-param language Language identifier.
+     * @fiware-rest-request-param value Value of the friendly description.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification or attribute description could not be found.
      * 
      * @param index
      *            Index of the attribute.
@@ -807,25 +742,16 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/store/{credentialSpecificationUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Store a credential specification at this service. The UID given as part of the path
-     * must match the UID of the passed credential specification. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>409 - The credentialSpecificationUid given on the path does not match
-     * the actual credential specification's UID</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>CredentialSpecification</tt><br>
+     * @fiware-rest-path /protected/credentialSpecification/store/{credentialSpecificationUid}
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Store a credential specification at this service. The UID given as part of the path
+     * must match the UID of the passed credential specification. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 409 The credentialSpecificationUid given on the path does not match
+     * the actual credential specification's UID
+     * @fiware-rest-input-type CredentialSpecification
      * 
      * @param credentialSpecifationUid
      *            UID of the credential specification
@@ -872,22 +798,14 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/get/{credentialSpecificationUid} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retrieve a credential specification.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>404 - Credential specification was not found.</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>CredentialSpecification</tt><br>
+     * @fiware-rest-path /protected/credentialSpecification/get/{credentialSpecificationUid}
+     * @fiware-rest-method GET
+     * @fiware-rest-description Retrieve a credential specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification was not found.
+     * @fiware-rest-return-type CredentialSpecification
      * 
      * @param credentialSpecificationUid
      *            UID of the credential specification
@@ -927,23 +845,15 @@ public class IssuanceService {
     /* ISSUER PARAMETERS */
 
     /**
-     * <b>Path</b>: /protected/issuerParameters/generate/{credentialSpecificationUid} (POST)<br>
-     * <br>
-     * <b>Description</b>: Generates issuer parameters for a specified
+     * @fiware-rest-path /protected/issuerParameters/generate/{credentialSpecificationUid}
+     * @fiware-rest-method POST
+     * @fiware-rest-description Generates issuer parameters for a specified
      * credential specification. The generated issuer parameters will
-     * automatically be stored at this issuance service.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to
-     * generate the issuer parameters for.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * automatically be stored at this issuance service.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
+     * generate the issuer parameters for.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
      * 
      * @param credSpecUid
      *            UID of the credential specification
@@ -987,20 +897,13 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/issuerParameters/delete/{issuerParametersUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes issuer parameters.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>issuerParametersUid - UID of the issuer parameters to delete.
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/issuerParameters/delete/{issuerParametersUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes issuer parameters.
+     * @fiware-rest-path-param issuerParametersUid UID of the issuer parameters to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @param issuerParametersUid UID of the issuer parameters
      * @return Response
      */
@@ -1037,20 +940,15 @@ public class IssuanceService {
     /* QUERY RULE */
 
     /**
-     * <b>Path</b>: /protected/queryRule/store/{credentialSpecificationUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores a query rule and associates it with the
+     * @fiware-rest-path /protected/queryRule/store/{credentialSpecificationUid}
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Stores a query rule and associates it with the
      * specified credential specification. A query rule is stored at the
      * issuance service with the given credential specification UID which the
      * issuance service will use to look up the corresponding query rule. <br>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>QueryRule</tt><br>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type QueryRule
      * 
      * @param credentialSpecificationUid
      *            UID of the credential specification
@@ -1081,20 +979,13 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/queryRule/delete/{credentialSpecificationUid} (DELETE)<br>
-     * <br>
-     * <b>Description</b>: Deletes a query rule.<br>
-     * <br>
-     * <b>Path parameters:</b>
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification the query rule is associated with.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
+     * @fiware-rest-path /protected/queryRule/delete/{credentialSpecificationUid}
+     * @fiware-rest-method DELETE
+     * @fiware-rest-description Deletes a query rule.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the query rule is associated with.</li>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * 
      * @param credSpecUid UID of the credential specification.
      * @return Response
      */
@@ -1119,23 +1010,15 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/queryRule/get/{credentialSpecificationUid} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retrieves a previously stored query rule. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification the
-     * query rule is associated with.</li>
-     * </ul>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>404 - Query rule could not be found.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>QueryRule</tt><br>
+     * @fiware-rest-path /protected/queryRule/get/{credentialSpecificationUid}
+     * @fiware-rest-method GET
+     * @fiware-rest-description Retrieves a previously stored query rule. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the
+     * query rule is associated with.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Query rule could not be found.
+     * @fiware-rest-return-type QueryRule
      * 
      * @param credentialSpecificationUid
      *            UID of the credential specification
@@ -1168,18 +1051,13 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/queryRule/list (GET)<br>
-     * <br>
-     * <b>Description</b>: Lists all query rules stored at this issuance
-     * service.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>QueryRuleCollection</tt><br>
+     * @fiware-rest-path /protected/queryRule/list
+     * @fiware-rest-method GET
+     * @fiware-rest-description Lists all query rules stored at this issuance
+     * service.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-return-type QueryRuleCollection
      * 
      * @return Response
      */
@@ -1214,24 +1092,15 @@ public class IssuanceService {
     /* ISSUANCE POLICY */
 
     /**
-     * <b>Path</b>: /protected/issuancePolicy/store/{credentialSpecificationUid} (PUT)<br>
-     * <br>
-     * <b>Description</b>: Stores an issuance policy and associates it with a
-     * credential specification.<br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification to
-     * associate the issuance policy with.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>IssuancePolicy</tt><br>
+     * @fiware-rest-path /protected/issuancePolicy/store/{credentialSpecificationUid}
+     * @fiware-rest-method PUT
+     * @fiware-rest-description Stores an issuance policy and associates it with a
+     * credential specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
+     * associate the issuance policy with.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type IssuancePolicy
      * 
      * @param credentialSpecificationUid
      *            UID of the credential specification.
@@ -1262,24 +1131,16 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/issuancePolicy/get/{credentialSpecificationUid} (GET)<br>
-     * <br>
-     * <b>Description</b>: Retrieve an issuance policy that was previously
-     * stored. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>credentialSpecificationUid - UID of the credential specification the
-     * issuance policy is associated with.</li>
-     * </ul>
-     * <br>
-     * <b>Response status:</b>
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>404 - Issuance policy could not be found.</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <b>Return type</b>: <tt>IssuancePolicy</tt><br>
+     * @fiware-rest-path /protected/issuancePolicy/get/{credentialSpecificationUid}
+     * @fiware-rest-method GET
+     * @fiware-rest-description Retrieve an issuance policy that was previously
+     * stored. 
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the
+     * issuance policy is associated with.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Issuance policy could not be found.
+     * @fiware-rest-return-type IssuancePolicy
      * 
      * @param credentialSpecificationUid
      *            UID of the credential specification
@@ -1314,30 +1175,21 @@ public class IssuanceService {
     /* CREDENTIAL SPECIFICATION GENERATION */
 
     /**
-     * <b>Path</b>: /protected/attributeInfoCollection/{name} (GET)<br>
-     * <br>
-     * <b>Description</b>: This method can be used to obtain information about
+     * @fiware-rest-path /protected/attributeInfoCollection/{name}
+     * @fiware-rest-method GET
+     * @fiware-rest-description This method can be used to obtain information about
      * attributes from the attribute source (i.e. LDAP, JDBC or something else).
      * This method will return an <tt>AttributeInfoCollection</tt> that can be
      * passed to
-     * {@link #generateCredentialSpecification(AttributeInfoCollection)}. <br>
-     * <br>
-     * <b>Path parameters</b>:
-     * <ul>
-     * <li>name - Name identifies the entity from which to extract/gather
+     * {@link #generateCredentialSpecification(AttributeInfoCollection)}.
+     * @fiware-rest-path-param name - Name identifies the entity from which to extract/gather
      * attribute information. For LDAP <em>name
      *  </em> is an object class and for JDBC <em>name</em> is the name of a
      * table in a database. Please be aware that <em>name</em> is ALWAYS
-     * provider specific.</li>
-     * </ul>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>AtributeInfoCollection</tt><br>
+     * provider specific.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-return-type AtributeInfoCollection
      * 
      * @param name
      *            Name
@@ -1368,19 +1220,14 @@ public class IssuanceService {
     }
 
     /**
-     * <b>Path</b>: /protected/credentialSpecification/generate (POST)<br>
-     * <br>
-     * <b>Description</b>: Generate a credential specification based on the
-     * supplied <tt>AttributeInfoCollection</tt>.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>AttributeInfoCollection</tt><br>
-     * <b>Return type</b>: <tt>CredentialSpecification</tt><br>
+     * @fiware-rest-path /protected/credentialSpecification/generate
+     * @fiware-rest-method POST
+     * @fiware-rest-description Generate a credential specification based on the
+     * supplied <tt>AttributeInfoCollection</tt>.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-input-type AttributeInfoCollection
+     * @fiware-rest-return-type CredentialSpecification
      * 
      * @param attrInfoCol
      *            the attribute info collection
@@ -1407,8 +1254,9 @@ public class IssuanceService {
     /* SYSTEM PARAMETERS */
 
     /**
-     * <b>Path</b>: /protected/setupSystemParameters/ (POST)<br>
-     * <b>Description</b>:
+     * @fiware-rest-path /protected/setupSystemParameters/
+     * @fiware-rest-method POST
+     * @fiware-rest-description
      * 
      * This method generates a fresh set of system parameters for the given
      * security level, expressed as the bitlength of a symmetric key with
@@ -1424,14 +1272,9 @@ public class IssuanceService {
      * urn:abc4trust:1.0:algorithm:idemix for Identity Mixer
      * 
      * This method will overwrite any existing system parameters.<br>
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK</li>
-     * <li>500 - ERROR</li>
-     * </ul>
-     * <br>
-     * <b>Return type</b>: <tt>SystemParameters</tt><br>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-return-type SystemParameters
      * 
      * @param securityLevel
      *            Security level
@@ -1482,9 +1325,9 @@ public class IssuanceService {
     /* ISSUER PARAMETERS */
 
     /**
-     * <b>Path</b>: /protected/setupIssuerParameters/ (POST) <br>
-     * <br>
-     * <b>Description:</b>
+     * @fiware-rest-path /protected/setupIssuerParameters/
+     * @fiware-rest-method POST
+     * @fiware-rest-description
      * 
      * This method generates a fresh issuance key and the corresponding Issuer
      * parameters. The issuance key is stored in the Issuer's key store, the
@@ -1498,16 +1341,11 @@ public class IssuanceService {
      * Currently, the only supported hash algorithm is SHA-256 with identifier
      * urn:abc4trust:1.0:hashalgorithm:sha-256.
      * 
-     * <br>
-     * <b>Response status</b>:
-     * <ul>
-     * <li>200 - OK (application/xml)</li>
-     * <li>500 - ERROR</li>
-     * <li>404 - Credential specification could not be found.</li>
-     * </ul>
-     * <br>
-     * <b>Input type</b>: <tt>IssuerParametersInput</tt><br>
-     * <b>Return type</b>: <tt>IssuerParameters</tt><br>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification could not be found.
+     * @fiware-rest-input-type IssuerParametersInput
+     * @fiware-rest-return-type IssuerParameters
      * 
      * @param issuerParametersInput
      *            Input for issuer parameters setup.
