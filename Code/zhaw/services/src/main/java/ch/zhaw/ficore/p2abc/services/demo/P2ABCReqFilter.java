@@ -60,10 +60,17 @@ public class P2ABCReqFilter implements
 		if(path.matches(callbackRegex)) {
 			String accessToken = req.getParameter("accesstoken");
 			
+			if(accessToken == null) {
+				resp.sendError(403);
+				return;
+			}
+			
 			try {
 				String result = (String) RESTHelper
 				        .getRequest("http://localhost:8080/zhaw-p2abc-webservices/verification/verifyAccessToken?accesstoken="
 				                + URLEncoder.encode(accessToken, "UTF-8"));
+				
+				System.out.println("Resource: " + result);
 				
 				if(result.equals(resourceName)) {
 					resp.addHeader("X-P2ABC-VERIFIED", "TRUE");
