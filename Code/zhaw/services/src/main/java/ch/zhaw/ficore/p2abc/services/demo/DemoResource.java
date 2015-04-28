@@ -32,15 +32,10 @@ public class DemoResource {
     public Response resource(@QueryParam("accesstoken") String accessToken)
             throws Exception {
         try {
-            String result = (String) RESTHelper
-                    .getRequest("http://localhost:8080/zhaw-p2abc-webservices/verification/verifyAccessToken?accesstoken="
-                            + URLEncoder.encode(accessToken, "UTF-8"));
+            
 
-            if (result.equals("resource")) {
+            
                 return Response.ok(resource()).build();
-            }
-
-            return Response.ok(error()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.ok(error()).build();

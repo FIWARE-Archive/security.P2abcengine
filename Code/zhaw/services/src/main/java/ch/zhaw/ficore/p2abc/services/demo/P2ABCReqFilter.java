@@ -1,6 +1,7 @@
 package ch.zhaw.ficore.p2abc.services.demo;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -13,24 +14,29 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
 
+import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
+
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 
 public class P2ABCReqFilter implements
 	Filter {
 	
-	private static String pathRegex = null;
 	private static String callbackRegex = null;
 	private static String redirectUrl = null;
+	private static String resourceName = null;
 	
 	public P2ABCReqFilter() throws NamingException {
 		Context initCtx = new InitialContext();
         Context envCtx = (Context) initCtx.lookup("java:/comp/env");
         
-        pathRegex = (String) envCtx.lookup("cfg/filter/pathRegex");
         callbackRegex = (String) envCtx.lookup("cfg/filter/callbackRegex");
         redirectUrl = (String) envCtx.lookup("cfg/filter/redirectUrl");
+        resourceName = (String) envCtx.lookup("cfg/filter/resourceName");
 	}
 
 	
@@ -53,8 +59,25 @@ public class P2ABCReqFilter implements
 		
 		if(path.matches(callbackRegex)) {
 			String accessToken = req.getParameter("accesstoken");
-			//Contact verifier (we don't do that yet)
-			resp.addHeader("X-P2ABC-VERIFIED", "TRUE");
+			
+			try {
+				String result = (String) RESTHelper
+				        .getRequest("http://localhost:8080/zhaw-p2abc-webservices/verification/verifyAccessToken?accesstoken="
+				                + URLEncoder.encode(accessToken, "UTF-8"));
+				
+				if(result.equals(resourceName)) {
+					resp.addHeader("X-P2ABC-VERIFIED", "TRUE");
+				}
+				else {
+					resp.sendError(403);
+					return;
+				}
+			} catch (ClientHandlerException | UniformInterfaceException
+					| JAXBException | NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		
 		chain.doFilter(req_, resp_);
