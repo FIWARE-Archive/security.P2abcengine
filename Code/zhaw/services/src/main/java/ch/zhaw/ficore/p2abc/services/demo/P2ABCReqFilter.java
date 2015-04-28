@@ -74,6 +74,7 @@ public class P2ABCReqFilter implements
 				
 				if(result.equals(resourceName)) {
 					resp.addHeader("X-P2ABC-VERIFIED", "TRUE");
+					resp.sendRedirect(redirectUrl);
 				}
 				else {
 					resp.sendError(403);
