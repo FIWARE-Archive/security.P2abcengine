@@ -50,7 +50,7 @@ public class PrivacyReqFilter  implements ContainerRequestFilter{
 			/* Ok. Let's ask the verifier about this */
 			try {
 				String url = verifierURL + "/verifyAccessToken?accesstoken=" + URLEncoder.encode(accesstoken, "UTF-8");
-				String result = (String) RESTHelper.getRequest(url);
+				String result = (String) RESTHelper.getRequestUnauth(url);
 				
 				if(result.equals(resourceName)) {
 					

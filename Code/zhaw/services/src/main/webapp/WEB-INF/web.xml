@@ -166,7 +166,7 @@
 	</env-entry>
     <env-entry>
 		<env-entry-name>cfg/p2abc-filter/verifierURL</env-entry-name>
-		<env-entry-value>http://localhost:8888/zhaw-p2abc-webservices/verification</env-entry-value>
+		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/verification</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 

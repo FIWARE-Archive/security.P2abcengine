@@ -2,8 +2,11 @@ package ch.zhaw.ficore.p2abc.services.helpers;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.security.NoSuchAlgorithmException;
 
 import javax.naming.NamingException;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXB;
@@ -17,7 +20,10 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
 public class RESTHelper {
     /**
@@ -83,7 +89,7 @@ public class RESTHelper {
     public static Object postRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -102,7 +108,7 @@ public class RESTHelper {
     public static Object postRequest(String url, String xml)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -122,7 +128,7 @@ public class RESTHelper {
     public static Object postRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -140,7 +146,7 @@ public class RESTHelper {
 
     public static Object postRequest(String url) throws ClientHandlerException,
             UniformInterfaceException, JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -160,7 +166,7 @@ public class RESTHelper {
             MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -181,7 +187,7 @@ public class RESTHelper {
     public static Object putRequest(String url, String xml, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -200,7 +206,7 @@ public class RESTHelper {
     public static Object putRequest(String url, String xml)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -220,7 +226,7 @@ public class RESTHelper {
             MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -241,7 +247,7 @@ public class RESTHelper {
     public static Object getRequest(String url, Class clazz)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -258,7 +264,7 @@ public class RESTHelper {
 
     public static Object getRequest(String url) throws ClientHandlerException,
             UniformInterfaceException, JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -272,11 +278,27 @@ public class RESTHelper {
 
         return response.getEntity(String.class);
     }
+    
+    public static Object getRequestUnauth(String url) throws ClientHandlerException,
+		    UniformInterfaceException, JAXBException, NamingException {
+		Client client = getSSLClient();
+		
+		WebResource webResource = client.resource(url);
+		
+		ClientResponse response = webResource.get(ClientResponse.class);
+		
+		if (response.getStatus() != 200)
+		    throw new RESTException("gettRequest failed for: " + url
+		            + " got " + response.getStatus() + "|"
+		            + response.getEntity(String.class), response.getStatus());
+		
+		return response.getEntity(String.class);
+}
 
     public static Object deleteRequest(String url)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -296,7 +318,7 @@ public class RESTHelper {
             MultivaluedMap<String, String> params)
             throws ClientHandlerException, UniformInterfaceException,
             JAXBException, NamingException {
-        Client client = new Client();
+        Client client = getSSLClient();
         client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
         WebResource webResource = client.resource(url);
@@ -311,5 +333,54 @@ public class RESTHelper {
                     + response.getEntity(String.class), response.getStatus());
 
         return response.getEntity(String.class);
+    }
+    
+    public static Client getSSLClient() {
+    	ClientConfig config = new DefaultClientConfig();
+    	
+    	config.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties(getHostnameVerifier(), getSSLContext()));
+    	
+    	return Client.create(config);
+    }
+    
+    private static HostnameVerifier getHostnameVerifier() {
+    	return new HostnameVerifier() {
+
+    		public boolean verify(String hostname,
+    				javax.net.ssl.SSLSession sslSession) {
+    			return true;
+    		}
+    	};
+    }
+
+    private static SSLContext getSSLContext() { /* this should trust anything... */
+    	javax.net.ssl.TrustManager x509 = new javax.net.ssl.X509TrustManager() {
+
+    		public void checkClientTrusted(
+    				java.security.cert.X509Certificate[] arg0, String arg1)
+    						throws java.security.cert.CertificateException {
+    			return;
+    		}
+
+    		public void checkServerTrusted(
+    				java.security.cert.X509Certificate[] arg0, String arg1)
+    						throws java.security.cert.CertificateException {
+    			return;
+    		}
+
+    		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+    			return null;
+    		}
+    	};
+    	
+    	SSLContext ctx = null;
+    	try {
+    		ctx = SSLContext.getInstance("SSL");
+    		ctx.init(null, new javax.net.ssl.TrustManager[] { x509 }, null);
+    	} 
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return ctx;
     }
 }
