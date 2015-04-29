@@ -570,23 +570,12 @@ public class VerificationServiceGUI {
                     + URLEncoder.encode(resource, "UTF-8"), PresentationPolicyAlternatives.class);
             
             
-            mainDiv.appendChild(new H2().appendChild(new Text("Redirect URI")));
             
-            String redirectURI = (String) RESTHelper.getRequest(
-                    ServicesConfiguration.getVerificationServiceURL() + "protected/redirectURI/get/" + 
-                            URLEncoder.encode(resource, "UTF-8"));
-            
-            Form f = new Form("./changeRedirectURI");
-            f.appendChild(new Label().appendChild(new Text("Redirect URI: ")));
-            f.appendChild(new Input().setType("text").setName("uri").setValue(redirectURI));
-            f.appendChild(new Input().setType("submit").setValue("Change"));
-            f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-            mainDiv.appendChild(f);
             
             mainDiv.appendChild(new H2().appendChild(new Text("Presentation Policy Alternatives")));
             
             
-            f = new Form("./addPolicyAlt").setMethod("post");
+            Form f = new Form("./addPolicyAlt").setMethod("post");
             f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
             f.appendChild(new Label().appendChild(new Text("Policy UID: ")));
             f.appendChild(new Input().setType("text").setName("puid"));
