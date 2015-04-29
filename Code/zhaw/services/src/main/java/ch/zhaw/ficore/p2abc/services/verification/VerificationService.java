@@ -1648,6 +1648,13 @@ public class VerificationService {
             @QueryParam("accesstoken") String accessToken) { /* [FLOW TEST] */
         log.info("VGet: " + accessToken);
         synchronized(accessTokens) {
+        	
+        	if(ServicesConfiguration.getAllowFakeAccesstoken()) {
+	        	if(accessToken.equals("FAKE")) {
+	        		return Response.ok("FAKE").build();
+	        	}
+        	}
+        	
             if (!accessTokens.containsKey(accessToken)) {
                 for(String key : accessTokens.keySet()) {
                     log.warn(" atkn: " + key);

@@ -42,6 +42,12 @@ public class DemoResource {
         }
     }
     
+    @GET()
+    @Path("/status/")
+    public Response status() {
+    	return Response.ok("Hi there").build();
+    }
+    
     public String resource() {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
