@@ -1551,6 +1551,11 @@ public class VerificationService {
      *
      * @fiware-rest-input-type PresentationToken
      * @fiware-rest-return-type String
+     * 
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 403 FORBIDDEN (Access to resource denied)
+     * @fiware-rest-response 500 ERROR
+     * 
      * @param resource Resource URI
      * @param pt PresentationToken
      * @return Response
