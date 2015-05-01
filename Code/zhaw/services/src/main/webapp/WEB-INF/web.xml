@@ -35,11 +35,11 @@
 		</init-param>
 		<init-param>
    	        <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-    	    <param-value>ch.zhaw.ficore.p2abc.services.CSRFReqFilter; ch.zhaw.ficore.p2abc.filters.PrivacyReqFilter</param-value>
+    	    <param-value>ch.zhaw.ficore.p2abc.services.CSRFReqFilter</param-value>
 	    </init-param>
         <init-param>
    	        <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-    	    <param-value>ch.zhaw.ficore.p2abc.services.CSRFRespFilter; ch.zhaw.ficore.p2abc.filters.PrivacyRespFilter</param-value>
+    	    <param-value>ch.zhaw.ficore.p2abc.services.CSRFRespFilter</param-value>
 	    </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -96,7 +96,7 @@
     <env-entry>
 		<description> BindQuery </description>
 		<env-entry-name>cfg/bindQuery</env-entry-name>
-		<env-entry-value>SELECT password FROM users WHERE username='_UID_'</env-entry-value>
+		<env-entry-value>SELECT password, salt FROM users WHERE username='_UID_'</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
