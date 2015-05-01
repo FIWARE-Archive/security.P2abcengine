@@ -79,11 +79,14 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(bindQuery);
 
-            String pwHash = DigestUtils.sha1Hex(simpleAuth.password);
+            String pwHash = null;
+            String salt = null;
             String dbHash = "";
             if (rs.next()) {
                 dbHash = rs.getString(1);
+                salt = rs.getString(2);
             }
+            pwHash = DigestUtils.sha1Hex(salt + simpleAuth.password);
 
             if (pwHash.equals(dbHash)) {
                 userId = simpleAuth.username;
