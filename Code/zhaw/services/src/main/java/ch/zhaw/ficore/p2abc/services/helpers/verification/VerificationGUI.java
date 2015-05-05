@@ -13,6 +13,7 @@ import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
 import com.hp.gagawa.java.elements.Link;
 import com.hp.gagawa.java.elements.P;
+import com.hp.gagawa.java.elements.Script;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 
@@ -28,6 +29,7 @@ public class VerificationGUI {
         html.appendChild(head);
         head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
                 .setRel("stylesheet").setType("text/css"));
+        head.appendChild(new Script("").setSrc(req.getContextPath() + "/csrf.js").setType("text/javascript"));
         return html;
     }
 

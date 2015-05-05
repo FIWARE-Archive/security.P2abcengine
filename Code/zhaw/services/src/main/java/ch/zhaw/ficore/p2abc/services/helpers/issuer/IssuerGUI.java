@@ -27,7 +27,7 @@ public class IssuerGUI {
         html.appendChild(head);
         head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
                 .setRel("stylesheet").setType("text/css"));
-        head.appendChild(new Script("").setSrc(req.getContextPath() + "csrf.js").setType("text/javascript"));
+        head.appendChild(new Script("").setSrc(req.getContextPath() + "/csrf.js").setType("text/javascript"));
         return html;
     }
 
