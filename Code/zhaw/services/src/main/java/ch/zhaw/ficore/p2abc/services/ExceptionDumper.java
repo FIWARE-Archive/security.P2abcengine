@@ -31,6 +31,10 @@ public class ExceptionDumper {
             estring.append(exceptionAsString(t.getCause()));
         return estring.toString();
     }
+    
+    private static String htmlEntities(String in) {
+    	return in.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
 
     public static Response dumpException(Throwable t, Logger l) {
         String asString = exceptionAsString(t);
@@ -40,7 +44,7 @@ public class ExceptionDumper {
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("Your request could not be completed. This is most likely due to you providing malformed "
                         + "or otherwise invalid input. If you think this is a bug in the server please contact your system administrator, issuer and/or verifier "
-                        + "and include the following text: " + hash +". Details: " + t.getMessage()).build();
+                        + "and include the following text: " + hash +". Details: " + htmlEntities(t.getMessage())).build();
     }
 
     public static String dumpExceptionStr(Throwable t, Logger l) {
@@ -49,7 +53,7 @@ public class ExceptionDumper {
         l.warn("!!EXCEPTION!! " + hash + " " + asString);
         return "Your request could not be completed. This is most likely due to you providing malformed "
                 + "or otherwise invalid input. If you think this is a bug please contact your system administrator, issuer and/or verifier "
-                + "and include the following text: " + hash + ". Details: " + t.getMessage();
+                + "and include the following text: " + hash + ". Details: " + htmlEntities(t.getMessage());
     }
 
 }
