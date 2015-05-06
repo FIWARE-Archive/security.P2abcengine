@@ -24,6 +24,8 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
+import org.json.simple.*;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -31,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -38,8 +42,8 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -54,6 +58,7 @@ import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserGUI;
 import ch.zhaw.ficore.p2abc.storage.JdbcURIBytesStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
+import ch.zhaw.ficore.p2abc.xml.AuthInfoKeyrock;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationRequest;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
@@ -86,6 +91,7 @@ import com.hp.gagawa.java.elements.Tr;
 import com.hp.gagawa.java.elements.Ul;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
@@ -148,7 +154,7 @@ public class UserServiceGUI {
         uiContextToResource.put(uiContext, url);
     }
 
-    @Context
+    @javax.ws.rs.core.Context
     HttpServletRequest request;
 
     @GET()
@@ -778,19 +784,47 @@ public class UserServiceGUI {
     public Response obtainCredential2(@FormParam("un") String username,
             @FormParam("pw") String password,
             @FormParam("is") String issuerUrl,
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") String credSpecUid,
+            @FormParam("oauth") String oauth) {
         try {
             // Make an IssuanceRequest
             IssuanceRequest ir = new IssuanceRequest();
-
-            AuthInfoSimple authSimple = new AuthInfoSimple();
-            authSimple.password = password;
-            authSimple.username = username;
-
             ir.credentialSpecificationUid = credSpecUid;
-            ir.authRequest = new AuthenticationRequest(authSimple);
+
+            if(oauth == null || !oauth.equals("yes")) { //No OAuth.
+	            AuthInfoSimple authSimple = new AuthInfoSimple();
+	            authSimple.password = password;
+	            authSimple.username = username;
+	
+  
+	            ir.authRequest = new AuthenticationRequest(authSimple);
+            }
+            else { //Use OAuth.
+            	log.info("Using keyrock!");
+            	
+            	Context initCtx = new InitialContext();
+                Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+                
+                String clientId = (String) envCtx.lookup("cfg/keyrock/clientId");
+                String clientSecret = (String) envCtx.lookup("cfg/keyrock/clientSecret");
+                
+                String url = "https://account.lab.fiware.org/oauth2/token";
+                MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+                params.add("grant_type", "password");
+                params.add("password", password);
+                params.add("username", username);
+                
+                String json = RESTHelper.postRequest(url, params, clientId, clientSecret);
+                JSONObject obj = (JSONObject) JSONValue.parse(json);
+                
+                
+                String token = (String) obj.get("access_token");
+                
+                ir.authRequest = new AuthenticationRequest(new AuthInfoKeyrock(token));
+            }
 
             log.warn("issuerUrl: " + issuerUrl);
+            log.info("authReq is " + ir.authRequest.authInfo.getClass().getCanonicalName());
 
             IssuanceMessageAndBoolean issuanceMessageAndBoolean = (IssuanceMessageAndBoolean) RESTHelper
                     .postRequest(issuerUrl + "/issuanceRequest",
@@ -969,6 +1003,14 @@ public class UserServiceGUI {
             Select sel = new Select().setName("cs");
             row.appendChild(new Td().appendChild(sel));
             tbl.appendChild(row);
+            
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+            
+            boolean enabled = (Boolean) envCtx.lookup("cfg/userGui/keyrockEnabled");
+            
+            String enableString = enabled ? "yes" : "no";
+            f.appendChild(new Input().setType("hidden").setName("oauth").setValue(enableString));
 
             f.appendChild(new Input().setType("submit").setValue("Obtain"));
 

@@ -182,6 +182,27 @@ public class RESTHelper {
 
         return response.getEntity(String.class);
     }
+    
+    public static String postRequest(String url,
+            MultivaluedMap<String, String> params, String user, String password)
+            throws ClientHandlerException, UniformInterfaceException,
+            JAXBException, NamingException {
+        Client client = getSSLClient();
+        client.addFilter(new HTTPBasicAuthFilter(user, password));
+
+        WebResource webResource = client.resource(url);
+
+        ClientResponse response = webResource.type(
+                MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(
+                ClientResponse.class, params);
+
+        if (response.getStatus() != 200)
+            throw new RESTException("postRequest failed for: " + url
+                    + " got " + response.getStatus() + "|"
+                    + response.getEntity(String.class), response.getStatus());
+
+        return response.getEntity(String.class);
+    }
 
     @SuppressWarnings("rawtypes")
     public static Object putRequest(String url, String xml, Class clazz)
@@ -272,7 +293,7 @@ public class RESTHelper {
         ClientResponse response = webResource.get(ClientResponse.class);
 
         if (response.getStatus() != 200)
-            throw new RESTException("gettRequest failed for: " + url
+            throw new RESTException("getRequest failed for: " + url
                     + " got " + response.getStatus() + "|"
                     + response.getEntity(String.class), response.getStatus());
 
@@ -288,7 +309,7 @@ public class RESTHelper {
 		ClientResponse response = webResource.get(ClientResponse.class);
 		
 		if (response.getStatus() != 200)
-		    throw new RESTException("gettRequest failed for: " + url
+		    throw new RESTException("getRequest failed for: " + url
 		            + " got " + response.getStatus() + "|"
 		            + response.getEntity(String.class), response.getStatus());
 		

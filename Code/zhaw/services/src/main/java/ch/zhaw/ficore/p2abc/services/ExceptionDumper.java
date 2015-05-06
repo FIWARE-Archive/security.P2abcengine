@@ -33,6 +33,8 @@ public class ExceptionDumper {
     }
     
     private static String htmlEntities(String in) {
+    	if(in == null)
+    		return "";
     	return in.replace("&","&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 

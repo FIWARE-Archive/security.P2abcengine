@@ -40,6 +40,8 @@ public abstract class AuthenticationProvider {
             return new LdapAuthenticationProvider(configuration);
         case JDBC:
             return new JdbcAuthenticationProvider(configuration);
+        case KEYROCK:
+        	return new KeyrockAuthenticationProvider(configuration);
         default:
             throw new RuntimeException(configuration.getAttributeSource()
                     + " is not a supported AuthenticationProvider!");

@@ -44,6 +44,6 @@ public class QueryHelper {
      */
     public static String sqlSanitize(String input) {
         // TODO: Read some RFC or google how to properly sanitize this....
-        return ldapSanitize(input);
+    	return input.replaceAll("[^a-zA-Z@\\.]", "");
     }
 }
