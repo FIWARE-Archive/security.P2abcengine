@@ -61,8 +61,12 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 
         String bindQuery = ServicesConfiguration.getIssuanceConfiguration()
                 .getBindQuery();
+        
+        
+        String unameHash = DigestUtils.sha1Hex(simpleAuth.username);
+        
         bindQuery = QueryHelper.buildQuery(bindQuery,
-                QueryHelper.sqlSanitize(simpleAuth.username));
+                QueryHelper.sqlSanitize(unameHash));
 
         Connection conn = null;
         ResultSet rs = null;
@@ -89,7 +93,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             pwHash = DigestUtils.sha1Hex(salt + simpleAuth.password);
 
             if (pwHash.equals(dbHash)) {
-                userId = simpleAuth.username;
+                userId = unameHash;
                 return true;
             }
 

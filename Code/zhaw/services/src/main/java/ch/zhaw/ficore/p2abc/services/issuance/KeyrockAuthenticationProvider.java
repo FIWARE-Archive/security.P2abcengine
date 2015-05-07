@@ -75,7 +75,7 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
         	
         	logger.info(json);
 
-        	userId = (String) result.get("email");
+        	userId = DigestUtils.sha1Hex((String) result.get("email"));
         	logger.info(userId);
         	
             return true;

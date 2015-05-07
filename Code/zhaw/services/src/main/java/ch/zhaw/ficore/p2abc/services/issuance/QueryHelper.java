@@ -44,6 +44,6 @@ public class QueryHelper {
      */
     public static String sqlSanitize(String input) {
         // TODO: Read some RFC or google how to properly sanitize this....
-    	return input.replaceAll("[^a-zA-Z@\\.]", "");
+    	return input.replaceAll("[^a-zA-Z0-9]", "");
     }
 }
