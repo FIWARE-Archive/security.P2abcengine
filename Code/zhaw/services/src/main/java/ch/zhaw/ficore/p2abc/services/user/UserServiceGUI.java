@@ -327,7 +327,7 @@ public class UserServiceGUI {
             mainDiv.appendChild(p);
 
             A a = new A().setHref(redirectURI).appendChild(
-                    new Text(redirectURI));
+                    new Text(redirectURI)).setCSSClass("nocsrf");
             mainDiv.appendChild(a);
 
             return log.exit(Response.ok(html.write()).build());
