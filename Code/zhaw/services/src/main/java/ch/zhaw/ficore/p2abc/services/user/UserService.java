@@ -58,6 +58,7 @@ import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
@@ -95,6 +96,20 @@ public class UserService {
     private static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
     private static String errNoCred = "The credential could not be found!";
     private final static String errNotFound = "The requested resource or parts of it could not be found.";
+    
+    public UserService() throws KeyManagerException {
+    	this.initializeHelper();
+        UserHelper instance = UserHelper.getInstance();
+        try {
+        SystemParameters sp = instance.keyManager
+                .getSystemParameters();
+        if(sp != null)
+        	this.storeSystemParameters(sp);
+        }
+        catch(Exception ex) {
+        	//Ignore.
+        }
+    }
 
     /**
      * @fiware-rest-path /status/
@@ -161,6 +176,7 @@ public class UserService {
         try {
             this.initializeHelper();
             UserHelper instance = UserHelper.getInstance();
+
             
             boolean b = instance.getEngine().canBeSatisfied(p);
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();

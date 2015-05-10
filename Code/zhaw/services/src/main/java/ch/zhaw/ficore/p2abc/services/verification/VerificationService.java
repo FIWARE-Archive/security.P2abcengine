@@ -122,6 +122,17 @@ public class VerificationService {
                             StorageModuleFactory
                                     .getModulesForServiceConfiguration(ServiceType.VERIFICATION));
         }
+        
+        VerificationHelper instance = VerificationHelper.getInstance();
+        try {
+	        SystemParameters sp = instance.keyManager
+	                .getSystemParameters();
+	        if(sp != null)
+	        	this.storeSystemParameters(sp);
+	        }
+        catch(Exception ex) {
+        	//Ignore.
+        }
     }
 
     /**
