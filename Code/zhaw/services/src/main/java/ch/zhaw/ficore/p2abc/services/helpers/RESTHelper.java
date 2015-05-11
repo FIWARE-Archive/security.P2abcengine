@@ -300,6 +300,17 @@ public class RESTHelper {
         return response.getEntity(String.class);
     }
     
+    /**
+     * Performs a GET request without automatically adding
+     * <tt>client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));</tt>
+     * 
+     * @param url
+     * @return
+     * @throws ClientHandlerException
+     * @throws UniformInterfaceException
+     * @throws JAXBException
+     * @throws NamingException
+     */
     public static Object getRequestUnauth(String url) throws ClientHandlerException,
 		    UniformInterfaceException, JAXBException, NamingException {
 		Client client = getSSLClient();

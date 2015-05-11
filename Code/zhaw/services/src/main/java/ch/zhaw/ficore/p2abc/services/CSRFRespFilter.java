@@ -38,7 +38,7 @@ public class CSRFRespFilter implements ContainerResponseFilter {
         
         
         for(int i = 0; i < NUM_HEX_DIGITS; i++) {
-            int n = sr.nextInt(0x0F);
+            int n = sr.nextInt(0x10);
             sb.append(chars[n]);
         }
         
