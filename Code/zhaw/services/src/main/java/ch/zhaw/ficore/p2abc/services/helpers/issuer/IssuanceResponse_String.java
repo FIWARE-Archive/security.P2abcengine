@@ -28,26 +28,26 @@ package ch.zhaw.ficore.p2abc.services.helpers.issuer;
  * Helper class. Holds response From IssuerABC - marshaled to String
  */
 public class IssuanceResponse_String {
-	public final String xml;
-	public final boolean lastmessage;
-	public final String context;
+    public final String xml;
+    public final boolean lastmessage;
+    public final String context;
 
-	public IssuanceResponse_String(String xml, boolean lastmessage) {
-		this.xml = xml;
-		this.lastmessage = lastmessage;
-		this.context = null;
-	}
+    public IssuanceResponse_String(String xml, boolean lastmessage) {
+        this.xml = xml;
+        this.lastmessage = lastmessage;
+        this.context = null;
+    }
 
-	public IssuanceResponse_String(String xml, boolean lastmessage,
-	        String context) {
-		this.xml = xml;
-		this.lastmessage = lastmessage;
-		this.context = context;
-	}
+    public IssuanceResponse_String(String xml, boolean lastmessage,
+            String context) {
+        this.xml = xml;
+        this.lastmessage = lastmessage;
+        this.context = context;
+    }
 
-	public IssuanceResponse_String(String xml, String context) {
-		this.xml = xml;
-		this.lastmessage = false;
-		this.context = context;
-	}
+    public IssuanceResponse_String(String xml, String context) {
+        this.xml = xml;
+        this.lastmessage = false;
+        this.context = context;
+    }
 }

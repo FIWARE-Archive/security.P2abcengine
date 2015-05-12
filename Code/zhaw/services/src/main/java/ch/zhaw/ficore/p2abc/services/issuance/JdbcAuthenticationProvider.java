@@ -26,107 +26,107 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public class JdbcAuthenticationProvider extends AuthenticationProvider {
 
-	private static final XLogger logger = new XLogger(
-	        LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
-	private String userId;
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
+    private String userId;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param configuration
-	 *            Configuration (Issuance)
-	 */
-	public JdbcAuthenticationProvider(IssuanceConfiguration configuration) {
-		super(configuration);
-	}
+    /**
+     * Constructor
+     * 
+     * @param configuration
+     *            Configuration (Issuance)
+     */
+    public JdbcAuthenticationProvider(IssuanceConfiguration configuration) {
+        super(configuration);
+    }
 
-	/**
-	 * No operation.
-	 */
-	public void shutdown() {
+    /**
+     * No operation.
+     */
+    public void shutdown() {
 
-	}
+    }
 
-	/**
-	 * Performs the authentication. Uses a dummy hardcoded combination of a
-	 * username "CaroleKing" and "Jazzman" as the password.
-	 * 
-	 * @throws NamingException
-	 */
-	public boolean authenticate(AuthenticationInformation authInfo)
-	        throws NamingException {
-		logger.info("jdbc auth");
+    /**
+     * Performs the authentication. Uses a dummy hardcoded combination of a
+     * username "CaroleKing" and "Jazzman" as the password.
+     * 
+     * @throws NamingException
+     */
+    public boolean authenticate(AuthenticationInformation authInfo)
+            throws NamingException {
+        logger.info("jdbc auth");
 
-		if (!(authInfo instanceof AuthInfoSimple))
-			return false;
+        if (!(authInfo instanceof AuthInfoSimple))
+            return false;
 
-		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
+        AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 
-		String bindQuery = ServicesConfiguration.getIssuanceConfiguration()
-		        .getBindQuery();
+        String bindQuery = ServicesConfiguration.getIssuanceConfiguration()
+                .getBindQuery();
 
-		String unameHash = DigestUtils.sha1Hex(simpleAuth.username);
+        String unameHash = DigestUtils.sha1Hex(simpleAuth.username);
 
-		bindQuery = QueryHelper.buildQuery(bindQuery,
-		        QueryHelper.sqlSanitize(unameHash));
+        bindQuery = QueryHelper.buildQuery(bindQuery,
+                QueryHelper.sqlSanitize(unameHash));
 
-		Connection conn = null;
-		ResultSet rs = null;
-		Statement stmt = null;
+        Connection conn = null;
+        ResultSet rs = null;
+        Statement stmt = null;
 
-		try {
+        try {
 
-			ConnectionParameters connParams = ServicesConfiguration
-			        .getIssuanceConfiguration()
-			        .getAuthenticationConnectionParameters();
-			Class.forName(connParams.getDriverString());
-			conn = DriverManager
-			        .getConnection(connParams.getConnectionString());
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(bindQuery);
+            ConnectionParameters connParams = ServicesConfiguration
+                    .getIssuanceConfiguration()
+                    .getAuthenticationConnectionParameters();
+            Class.forName(connParams.getDriverString());
+            conn = DriverManager
+                    .getConnection(connParams.getConnectionString());
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(bindQuery);
 
-			String pwHash = null;
-			String salt = null;
-			String dbHash = "";
-			if (rs.next()) {
-				dbHash = rs.getString(1);
-				salt = rs.getString(2);
-			}
-			pwHash = DigestUtils.sha1Hex(salt + simpleAuth.password);
+            String pwHash = null;
+            String salt = null;
+            String dbHash = "";
+            if (rs.next()) {
+                dbHash = rs.getString(1);
+                salt = rs.getString(2);
+            }
+            pwHash = DigestUtils.sha1Hex(salt + simpleAuth.password);
 
-			if (pwHash.equals(dbHash)) {
-				userId = unameHash;
-				return true;
-			}
+            if (pwHash.equals(dbHash)) {
+                userId = unameHash;
+                return true;
+            }
 
-			return false;
+            return false;
 
-		} catch (Exception e) {
-			logger.catching(e);
-			return false;
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-			} catch (SQLException e) {
-				logger.catching(e);
-			}
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (SQLException e) {
-				logger.catching(e);
-			}
-			try {
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-				logger.catching(e);
-			}
-		}
-	}
+        } catch (Exception e) {
+            logger.catching(e);
+            return false;
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+        }
+    }
 
-	public String getUserID() {
-		return userId;
-	}
+    public String getUserID() {
+        return userId;
+    }
 }

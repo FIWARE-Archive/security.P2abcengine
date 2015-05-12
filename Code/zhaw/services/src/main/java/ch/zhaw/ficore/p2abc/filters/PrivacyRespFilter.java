@@ -10,13 +10,13 @@ import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 public class PrivacyRespFilter implements ContainerResponseFilter {
-	public ContainerResponse filter(ContainerRequest req, ContainerResponse resp) {
+    public ContainerResponse filter(ContainerRequest req, ContainerResponse resp) {
 
-		String accesstoken = req.getHeaderValue("X-P2ABC-ACCESSTOKEN");
+        String accesstoken = req.getHeaderValue("X-P2ABC-ACCESSTOKEN");
 
-		List<Object> ls = new ArrayList<Object>();
-		ls.add("x-p2abc-accesstoken=" + accesstoken);
-		resp.getHttpHeaders().put(HttpHeaders.SET_COOKIE, ls);
-		return resp;
-	}
+        List<Object> ls = new ArrayList<Object>();
+        ls.add("x-p2abc-accesstoken=" + accesstoken);
+        resp.getHttpHeaders().put(HttpHeaders.SET_COOKIE, ls);
+        return resp;
+    }
 }

@@ -7,5 +7,5 @@ package ch.zhaw.ficore.p2abc.services;
  * @version 1.0
  */
 public enum ServiceType {
-	ISSUANCE, VERIFICATION, USER
+    ISSUANCE, VERIFICATION, USER
 }

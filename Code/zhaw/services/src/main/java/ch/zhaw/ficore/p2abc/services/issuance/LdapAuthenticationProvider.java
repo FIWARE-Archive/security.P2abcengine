@@ -21,124 +21,124 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public class LdapAuthenticationProvider extends AuthenticationProvider {
 
-	private static final XLogger logger = new XLogger(
-	        LoggerFactory.getLogger(LdapAuthenticationProvider.class));
-	private boolean authenticated = false;
-	private String uid;
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(LdapAuthenticationProvider.class));
+    private boolean authenticated = false;
+    private String uid;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param configuration
-	 *            Configuration (Issuance)
-	 */
-	public LdapAuthenticationProvider(IssuanceConfiguration configuration) {
-		super(configuration);
-	}
+    /**
+     * Constructor
+     * 
+     * @param configuration
+     *            Configuration (Issuance)
+     */
+    public LdapAuthenticationProvider(IssuanceConfiguration configuration) {
+        super(configuration);
+    }
 
-	/**
-	 * No operation.
-	 */
-	public void shutdown() {
+    /**
+     * No operation.
+     */
+    public void shutdown() {
 
-	}
+    }
 
-	/**
-	 * Performs the authentication through Ldap.
-	 * 
-	 * @return true if successful, false otherwise.
-	 * @throws NamingException
-	 */
-	public boolean authenticate(AuthenticationInformation authInfo)
-	        throws NamingException {
-		boolean isGood = true;
+    /**
+     * Performs the authentication through Ldap.
+     * 
+     * @return true if successful, false otherwise.
+     * @throws NamingException
+     */
+    public boolean authenticate(AuthenticationInformation authInfo)
+            throws NamingException {
+        boolean isGood = true;
 
-		logger.entry();
+        logger.entry();
 
-		if (!(authInfo instanceof AuthInfoSimple)) {
-			logger.warn("LDAP AuthenticationInformation is not simple, can't use username/password");
-			isGood = false;
-		}
+        if (!(authInfo instanceof AuthInfoSimple)) {
+            logger.warn("LDAP AuthenticationInformation is not simple, can't use username/password");
+            isGood = false;
+        }
 
-		if (isGood) {
-			AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
-			IssuanceConfiguration configuration = ServicesConfiguration
-			        .getIssuanceConfiguration();
+        if (isGood) {
+            AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
+            IssuanceConfiguration configuration = ServicesConfiguration
+                    .getIssuanceConfiguration();
 
-			LdapConnection adminConnection = null;
-			LdapConnection userConnection = null;
+            LdapConnection adminConnection = null;
+            LdapConnection userConnection = null;
 
-			try {
-				String bindQuery = QueryHelper.buildQuery(
-				        configuration.getBindQuery(),
-				        QueryHelper.ldapSanitize(simpleAuth.username));
+            try {
+                String bindQuery = QueryHelper.buildQuery(
+                        configuration.getBindQuery(),
+                        QueryHelper.ldapSanitize(simpleAuth.username));
 
-				ConnectionParameters adminCfg = configuration
-				        .getAuthenticationConnectionParameters();
-				adminConnection = new LdapConnection(adminCfg);
+                ConnectionParameters adminCfg = configuration
+                        .getAuthenticationConnectionParameters();
+                adminConnection = new LdapConnection(adminCfg);
 
-				NamingEnumeration<SearchResult> results = adminConnection
-				        .newSearch().search("", bindQuery);
-				String binddn = null;
-				if (results.hasMore()) {
-					SearchResult sr = (SearchResult) results.next();
-					binddn = sr.getName();
-				}
+                NamingEnumeration<SearchResult> results = adminConnection
+                        .newSearch().search("", bindQuery);
+                String binddn = null;
+                if (results.hasMore()) {
+                    SearchResult sr = (SearchResult) results.next();
+                    binddn = sr.getName();
+                }
 
-				if (binddn == null) {
-					logger.warn("Couldn't find DN for user "
-					        + simpleAuth.username);
-					isGood = false;
-				}
+                if (binddn == null) {
+                    logger.warn("Couldn't find DN for user "
+                            + simpleAuth.username);
+                    isGood = false;
+                }
 
-				if (isGood) {
-					ConnectionParameters userCfg = new ConnectionParameters(
-					        adminCfg.getServerName(), adminCfg.getServerPort(),
-					        adminCfg.getServerPort(), adminCfg.getServerPort(),
-					        binddn, simpleAuth.password, adminCfg.usesTls());
-					// Implicit authentication
-					userConnection = new LdapConnection(userCfg);
+                if (isGood) {
+                    ConnectionParameters userCfg = new ConnectionParameters(
+                            adminCfg.getServerName(), adminCfg.getServerPort(),
+                            adminCfg.getServerPort(), adminCfg.getServerPort(),
+                            binddn, simpleAuth.password, adminCfg.usesTls());
+                    // Implicit authentication
+                    userConnection = new LdapConnection(userCfg);
 
-					// If no exception thrown above, then user is authenticated
-					authenticated = true;
-					uid = simpleAuth.username;
+                    // If no exception thrown above, then user is authenticated
+                    authenticated = true;
+                    uid = simpleAuth.username;
 
-					userConnection.close();
-					adminConnection.close();
-				}
-			} catch (Exception e) {
-				logger.catching(e);
-				return logger.exit(false);
-			} finally {
-				try {
-					if (adminConnection != null)
-						adminConnection.close();
-				} catch (Exception e) {
-					logger.catching(e);
-					isGood = false;
-				}
-				try {
-					if (userConnection != null)
-						userConnection.close();
-				} catch (Exception e) {
-					logger.catching(e);
-					isGood = false;
-				}
-			}
-		}
+                    userConnection.close();
+                    adminConnection.close();
+                }
+            } catch (Exception e) {
+                logger.catching(e);
+                return logger.exit(false);
+            } finally {
+                try {
+                    if (adminConnection != null)
+                        adminConnection.close();
+                } catch (Exception e) {
+                    logger.catching(e);
+                    isGood = false;
+                }
+                try {
+                    if (userConnection != null)
+                        userConnection.close();
+                } catch (Exception e) {
+                    logger.catching(e);
+                    isGood = false;
+                }
+            }
+        }
 
-		/*
-		 * N.B.: !isGood && authenticated is possible, so we must return
-		 * authenticated here, not isGood.
-		 */
-		return logger.exit(authenticated);
-	}
+        /*
+         * N.B.: !isGood && authenticated is possible, so we must return
+         * authenticated here, not isGood.
+         */
+        return logger.exit(authenticated);
+    }
 
-	public String getUserID() {
-		if (!authenticated)
-			throw new IllegalStateException(
-			        "Must successfully authenticate prior to calling this method!");
+    public String getUserID() {
+        if (!authenticated)
+            throw new IllegalStateException(
+                    "Must successfully authenticate prior to calling this method!");
 
-		return uid;
-	}
+        return uid;
+    }
 }
