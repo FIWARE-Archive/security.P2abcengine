@@ -97,14 +97,14 @@ public class VerificationService {
 
     private static final XLogger log = new XLogger(
             LoggerFactory.getLogger(VerificationService.class));
-    private final static String errMagicCookie = "Magic cookie is not correct!";
+    private static final String errMagicCookie = "Magic cookie is not correct!";
     private static Map<String, String> accessTokens = new HashMap<String, String>();
     private static Map<String, byte[]> nonces = new HashMap<String, byte[]>();
 
-    private final static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
-    private final static String errNoAttrib = "The attribute was not found in any credential specification alternative.";
-    private final static String errUid = "The given UID in the path does not match the actual UID.";
-    private final static String errNotFound = "The requested resource or parts of it could not be found.";
+    private static final String ERR_NOT_IMPLEMENTED = "The requested operation is not supported and/or not implemented.";
+    private static final String ERR_NO_ATTRIB = "The attribute was not found in any credential specification alternative.";
+    private static final String ERR_UID = "The given UID in the path does not match the actual UID.";
+    private static final String ERR_NOT_FOUND = "The requested resource or parts of it could not be found.";
 
     ObjectFactory of = new ObjectFactory();
 
@@ -284,7 +284,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -307,7 +307,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -369,7 +369,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -403,7 +403,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -465,7 +465,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -489,7 +489,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -553,7 +553,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -587,7 +587,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -641,7 +641,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             PresentationPolicy pp = new PresentationPolicy();
@@ -704,7 +704,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -722,7 +722,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             ppa.getPresentationPolicy().remove(toDelete);
@@ -832,7 +832,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -853,7 +853,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -910,7 +910,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -936,7 +936,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -994,7 +994,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -1010,7 +1010,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             verificationHelper.verificationStorage
@@ -1084,7 +1084,7 @@ public class VerificationService {
 
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             boolean found = false;
@@ -1127,7 +1127,7 @@ public class VerificationService {
 
             if (!found) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNoAttrib).build());
+                        .entity(ERR_NO_ATTRIB).build());
             }
 
             verificationHelper.verificationStorage
@@ -1236,7 +1236,7 @@ public class VerificationService {
             } else {
                 return log.exit(
                         Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                                .entity(errNotImplemented)).build();
+                                .entity(ERR_NOT_IMPLEMENTED)).build();
             }
 
             return log.exit(Response.ok("OK").build());
@@ -1402,7 +1402,7 @@ public class VerificationService {
             if (!credentialSpecificationUid.toString().equals(
                     credSpec.getSpecificationUID().toString())) {
                 return log.exit(Response.status(Response.Status.CONFLICT)
-                        .entity(errUid).build());
+                        .entity(ERR_UID).build());
             }
 
             boolean r = keyManager.storeCredentialSpecification(
@@ -1460,7 +1460,7 @@ public class VerificationService {
 
             if (credSpec == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             return log.exit(Response.ok(
@@ -1509,7 +1509,7 @@ public class VerificationService {
             } else {
                 return log.exit(
                         Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                                .entity(errNotImplemented)).build();
+                                .entity(ERR_NOT_IMPLEMENTED)).build();
             }
 
             return log.exit(Response.ok("OK").build());
@@ -1655,7 +1655,7 @@ public class VerificationService {
                     .getPresentationPolicyAlternatives(new URI(resource));
             if (ppa == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             return log.exit(Response.ok(
@@ -1790,7 +1790,7 @@ public class VerificationService {
 
             if (uri == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
-                        .entity(errNotFound).build());
+                        .entity(ERR_NOT_FOUND).build());
             }
 
             return log.exit(Response.ok(uri.toString()).build());
