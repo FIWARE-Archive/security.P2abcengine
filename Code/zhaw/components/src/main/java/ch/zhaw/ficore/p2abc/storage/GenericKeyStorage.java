@@ -10,33 +10,33 @@ import eu.abc4trust.keyManager.KeyStorage;
 
 public class GenericKeyStorage implements KeyStorage {
 
-    private URIBytesStorage storage;
+    private final URIBytesStorage storage;
 
     @Inject
-    public GenericKeyStorage(@Named("keyStorage") URIBytesStorage storage) {
+    public GenericKeyStorage(@Named("keyStorage") final URIBytesStorage storage) {
         this.storage = storage;
     }
 
-    public void addValueAndOverwrite(URI uri, byte[] key) throws IOException {
+    public void addValueAndOverwrite(final URI uri, final byte[] key) throws IOException {
         try {
             storage.put(uri, key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void addValue(URI uri, byte[] key) throws IOException {
+    public void addValue(final URI uri, final byte[] key) throws IOException {
         try {
             storage.put(uri, key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public byte[] getValue(URI uri) throws IOException {
+    public byte[] getValue(final URI uri) throws IOException {
         try {
             return storage.get(uri);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
@@ -44,15 +44,15 @@ public class GenericKeyStorage implements KeyStorage {
     public URI[] listUris() throws IOException {
         try {
             return storage.keys().toArray(new URI[] {});
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void delete(URI uri) throws IOException {
+    public void delete(final URI uri) throws IOException {
         try {
             storage.delete(uri);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }

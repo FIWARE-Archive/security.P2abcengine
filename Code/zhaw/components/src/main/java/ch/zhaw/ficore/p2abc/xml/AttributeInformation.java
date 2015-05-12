@@ -11,12 +11,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AttributeInformation {
 
     @XmlElement(name = "name", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(
+            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification="Field is read from another project")
     public String name;
 
     @XmlElement(name = "mapping", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(
+            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification="Field is read from another project")
     public String mapping;
 
     @XmlElement(name = "encoding", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(
+            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification="Field is read from another project")
     public String encoding;
 
     @XmlElementWrapper(name = "friendly-descriptions", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
@@ -26,13 +35,13 @@ public class AttributeInformation {
     public AttributeInformation() {
     }
 
-    public AttributeInformation(String name, String mapping, String encoding) {
+    public AttributeInformation(final String name, final String mapping, final String encoding) {
         this.name = name;
         this.mapping = mapping;
         this.encoding = encoding;
     }
 
-    public void addFriendlyDescription(String language, String value) {
+    public void addFriendlyDescription(final String language, final String value) {
         friendlyDescriptions.add(new LanguageValuePair(language, value));
     }
 }

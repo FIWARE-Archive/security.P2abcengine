@@ -17,74 +17,74 @@ import eu.abc4trust.xml.IssuanceToken;
 import eu.abc4trust.xml.PseudonymInToken;
 
 public class GenericTokenStorageIssuer implements TokenStorageIssuer {
-    private URIBytesStorage tokensStorageIssuer;
-    private URIBytesStorage pseudonymsStorageIssuer;
-    private URIBytesStorage logStorageIssuer;
+    private final URIBytesStorage tokensStorageIssuer;
+    private final URIBytesStorage pseudonymsStorageIssuer;
+    private final URIBytesStorage logStorageIssuer;
 
     @Inject
     public GenericTokenStorageIssuer(
-            @Named("tokensStorageIssuer") URIBytesStorage tokensStorageIssuer,
-            @Named("pseudonymsStorageIssuer") URIBytesStorage pseudonymsStorageIssuer,
-            @Named("logStorageIssuer") URIBytesStorage logStorageIssuer) {
+            @Named("tokensStorageIssuer") final URIBytesStorage tokensStorageIssuer,
+            @Named("pseudonymsStorageIssuer") final URIBytesStorage pseudonymsStorageIssuer,
+            @Named("logStorageIssuer") final URIBytesStorage logStorageIssuer) {
 
         this.tokensStorageIssuer = tokensStorageIssuer;
         this.pseudonymsStorageIssuer = pseudonymsStorageIssuer;
         this.logStorageIssuer = logStorageIssuer;
     }
 
-    public boolean checkForPseudonym(String primaryKey) throws IOException {
+    public boolean checkForPseudonym(final String primaryKey) throws IOException {
         try {
             return pseudonymsStorageIssuer.containsKey(primaryKey);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void addPseudonymPrimaryKey(String primaryKey) throws IOException {
+    public void addPseudonymPrimaryKey(final String primaryKey) throws IOException {
         try {
             pseudonymsStorageIssuer.put(primaryKey, new byte[] { (byte) 0 });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void deletePseudonym(String primaryKey) throws Exception {
+    public void deletePseudonym(final String primaryKey) throws Exception {
         pseudonymsStorageIssuer.delete(primaryKey);
     }
 
-    public byte[] getToken(URI tokenuid) throws Exception {
+    public byte[] getToken(final URI tokenuid) throws Exception {
         return tokensStorageIssuer.get(tokenuid);
     }
 
-    public void addToken(URI tokenuid, byte[] token) throws IOException {
+    public void addToken(final URI tokenuid, final byte[] token) throws IOException {
         try {
             tokensStorageIssuer.put(tokenuid, token);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public boolean deleteToken(URI tokenuid) throws Exception {
+    public boolean deleteToken(final URI tokenuid) throws Exception {
 
         // first remove stored pseudonyms for this token
 
-        byte[] result = getToken(tokenuid);
+        final byte[] result = getToken(tokenuid);
 
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
                 result);
-        ObjectInput objectInput = new ObjectInputStream(byteArrayInputStream);
-        IssuanceToken tokenResult = (IssuanceToken) objectInput.readObject();
+        final ObjectInput objectInput = new ObjectInputStream(byteArrayInputStream);
+        final IssuanceToken tokenResult = (IssuanceToken) objectInput.readObject();
 
         // Close the streams..
         objectInput.close();
         byteArrayInputStream.close();
 
-        List<PseudonymInToken> pseudonyms = tokenResult
+        final List<PseudonymInToken> pseudonyms = tokenResult
                 .getIssuanceTokenDescription()
                 .getPresentationTokenDescription().getPseudonym();
 
-        for (PseudonymInToken p : pseudonyms) {
-            String primaryKey = DatatypeConverter.printBase64Binary(p
+        for (final PseudonymInToken p : pseudonyms) {
+            final String primaryKey = DatatypeConverter.printBase64Binary(p
                     .getPseudonymValue());
             deletePseudonym(primaryKey);
         }
@@ -95,24 +95,24 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         return true;
     }
 
-    public void addIssuanceLogEntry(URI entryUID, byte[] bytes)
+    public void addIssuanceLogEntry(final URI entryUID, final byte[] bytes)
             throws IOException {
         try {
             logStorageIssuer.put(entryUID, bytes);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public byte[] getIssuanceLogEntry(URI entryUID) throws Exception {
+    public byte[] getIssuanceLogEntry(final URI entryUID) throws Exception {
         try {
             return logStorageIssuer.get(entryUID);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public boolean deleteIssuanceLogEntry(URI entryUID) throws Exception {
+    public boolean deleteIssuanceLogEntry(final URI entryUID) throws Exception {
         logStorageIssuer.delete(entryUID);
         return true;
     }

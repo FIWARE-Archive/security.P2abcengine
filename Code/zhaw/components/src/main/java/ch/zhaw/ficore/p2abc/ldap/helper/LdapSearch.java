@@ -2,63 +2,70 @@ package ch.zhaw.ficore.p2abc.ldap.helper;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 /**
  * Helper class for doing searches.
- * 
+ *
  * @author mroman
- * 
+ *
  */
 public class LdapSearch {
-    private LdapConnection connection;
+    /** The connection to the LDAP server. */
+    private final LdapConnection connection;
+
+    /** The default LDAP object to use in a search. */
     private String name;
 
     /**
-     * Create a new LdapSearch-Object
-     * 
+     * Create a new LdapSearch-Object.
+     *
      * @param connection
      *            An LdapConnection
      */
-    public LdapSearch(LdapConnection connection) {
+    public LdapSearch(final LdapConnection connection) {
         this.connection = connection;
     }
 
     /**
      * Sets the default name.
-     * 
+     *
      * @param name
      *            (Name of an ldap object/context)
      * @return an LdapSearch
      */
-    public LdapSearch setName(String name) {
+    public final LdapSearch setName(final String name) {
         this.name = name;
         return this;
     }
 
-    public String getName() {
+    /**
+     * Gets the default name.
+     *
+     * @return name of default LDAP object
+     */
+    public final String getName() {
         return name;
     }
 
     /**
-     * Perform a search using a specified filter-Expression
-     * 
+     * Performs a search using a specified filter-Expression.
+     *
      * @param filter
      *            the filter expression to use
      * @return NamingEnumeration
      * @throws NamingException
      *             on an LDAP error
      */
-    public NamingEnumeration<SearchResult> search(String filter)
+    public final NamingEnumeration<SearchResult> search(final String filter)
             throws NamingException {
         return search(name, filter);
     }
 
     /**
      * Ask for an attribute.
-     * 
+     *
      * @param filter
      *            the filter to use
      * @param attr
@@ -69,14 +76,14 @@ public class LdapSearch {
      * @throws NamingException
      *             on an LDAP error
      */
-    public Object getAttribute(String filter, String attr)
+    public final Object getAttribute(final String filter, final String attr)
             throws LdapException, NamingException {
         return getAttribute(name, filter, attr);
     }
 
     /**
      * Returs true if an object matches the filter-Expression.
-     * 
+     *
      * @param filter
      *            the filter to use
      * @return true if an object exists that matches the filter expression,
@@ -86,15 +93,15 @@ public class LdapSearch {
      * @throws NamingException
      *             on an LDAP error
      */
-    public boolean doesExist(String filter) throws LdapException,
+    public final boolean doesExist(final String filter) throws LdapException,
             NamingException {
         return doesExist(name, filter);
     }
 
     /**
      * Perform a search using a specified filter-Expression.
-     * 
-     * @param name
+     *
+     * @param contextName
      *            (context)
      * @param filter
      *            the filter expression to use
@@ -102,18 +109,22 @@ public class LdapSearch {
      * @throws NamingException
      *             on an LDAP error
      */
-    public NamingEnumeration<SearchResult> search(String name, String filter)
+    public final NamingEnumeration<SearchResult> search(
+                final String contextName,
+                final String filter)
             throws NamingException {
-        SearchControls ctls = new SearchControls();
+        final SearchControls ctls = new SearchControls();
         ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        return connection.getInitialDirContext().search(name, filter, ctls);
+        return connection
+                .getInitialDirContext()
+                .search(contextName, filter, ctls);
     }
 
     /**
      * Ask for an attribute of an object that matches the specified
      * filter-Expression.
-     * 
-     * @param name
+     *
+     * @param objectName
      *            the name of the object
      * @param filter
      *            the filter expression to use
@@ -125,12 +136,19 @@ public class LdapSearch {
      * @throws NamingException
      *             on an LDAP error
      */
-    public Object getAttribute(String name, String filter, String attr)
+    public final Object getAttribute(
+                final String objectName,
+                final String filter,
+                final String attr)
             throws LdapException, NamingException {
-        NamingEnumeration<SearchResult> answer = this.search(name, filter);
-        if (!answer.hasMore())
+        final NamingEnumeration<SearchResult> answer
+            = search(objectName, filter);
+        if (!answer.hasMore()) {
             throw new LdapException("Result set was empty!");
-        Object val = ((SearchResult) answer.next()).getAttributes().get(attr)
+        }
+        final Object val = ((SearchResult) answer.next())
+                .getAttributes()
+                .get(attr)
                 .get();
         answer.close();
         return val;
@@ -138,8 +156,8 @@ public class LdapSearch {
 
     /**
      * Returns true if the specified filter-Expression matches something.
-     * 
-     * @param name
+     *
+     * @param objectName
      *            the name of the object
      * @param filter
      *            the filter expression to use
@@ -149,35 +167,14 @@ public class LdapSearch {
      * @throws NamingException
      *             on an LDAP error
      */
-    public boolean doesExist(String name, String filter) throws LdapException,
-            NamingException {
-        NamingEnumeration<SearchResult> answer = this.search(name, filter);
-        if (!answer.hasMore())
+    public final boolean doesExist(final String objectName, final String filter)
+            throws LdapException, NamingException {
+        final NamingEnumeration<SearchResult> answer
+            = search(objectName, filter);
+        if (!answer.hasMore()) {
             return false;
+        }
         answer.close();
         return true;
-    }
-
-    public void dumpSearch(String name, String filter) throws NamingException {
-        NamingEnumeration<SearchResult> answer = this.search(name, filter);
-        while (answer.hasMore()) {
-            SearchResult sr = (SearchResult) answer.next();
-            System.out.println(sr);
-        }
-        answer.close();
-    }
-
-    public void dumpAttributes(String name, String filter)
-            throws NamingException {
-        NamingEnumeration<SearchResult> answer = this.search(name, filter);
-        while (answer.hasMore()) {
-            SearchResult sr = (SearchResult) answer.next();
-            NamingEnumeration<? extends Attribute> attrs = sr.getAttributes()
-                    .getAll();
-            while (attrs.hasMoreElements()) {
-                System.out.println(attrs.next());
-            }
-        }
-        answer.close();
     }
 }

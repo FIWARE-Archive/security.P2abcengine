@@ -11,27 +11,27 @@ import eu.abc4trust.abce.internal.issuer.credentialManager.CredentialStorage;
 
 public class GenericIssuerCredentialStorage implements CredentialStorage {
 
-    private URIBytesStorage storage;
+    private final URIBytesStorage storage;
 
     @Inject
     public GenericIssuerCredentialStorage(
-            @Named("issuerSecretKeyStorage") URIBytesStorage storage) {
+            @Named("issuerSecretKeyStorage") final URIBytesStorage storage) {
         this.storage = storage;
     }
 
-    public void addIssuerSecret(URI issuerParamsUid, byte[] bytes)
+    public void addIssuerSecret(final URI issuerParamsUid, final byte[] bytes)
             throws IOException {
         try {
             storage.put(issuerParamsUid, bytes);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public byte[] getIssuerSecretKey(URI issuerParamsUid) throws IOException {
+    public byte[] getIssuerSecretKey(final URI issuerParamsUid) throws IOException {
         try {
             return storage.get(issuerParamsUid);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
@@ -39,7 +39,7 @@ public class GenericIssuerCredentialStorage implements CredentialStorage {
     public List<URI> listIssuerSecretKeys() throws IOException {
         try {
             return storage.keys();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }

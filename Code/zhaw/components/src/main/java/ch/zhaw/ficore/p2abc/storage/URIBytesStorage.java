@@ -7,27 +7,28 @@ import java.util.List;
 /**
  * Interface for storage with a KeyValue-Structure where the Key is an URI (or a
  * String) and Value is byte[].
- * 
+ *
  * @author mroman
  */
 public abstract class URIBytesStorage {
-    
-    
+
+
     private static List<URIBytesStorage> instances = new ArrayList<URIBytesStorage>();
-    
+
     public URIBytesStorage() {
         instances.add(this);
     }
-    
+
     public static void clearEverything() throws Exception {
-        for(URIBytesStorage instance : instances)
+        for(final URIBytesStorage instance : instances) {
             instance.deleteAll();
+        }
     }
-    
+
     /**
      * Put data into storage possibly overwriting an existing entry in the
      * storage.
-     * 
+     *
      * @param uri
      *            the uri (key)
      * @param bytes
@@ -35,7 +36,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public void put(URI uri, byte[] bytes) throws Exception {
+    public void put(final URI uri, final byte[] bytes) throws Exception {
         put(uri.toString(), bytes);
     }
 
@@ -44,7 +45,7 @@ public abstract class URIBytesStorage {
     /**
      * Put data into storage if and only if no such entry exists yet in the
      * storage.
-     * 
+     *
      * @param uri
      *            the uri (key)
      * @param bytes
@@ -53,7 +54,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public boolean putNew(URI uri, byte[] bytes) throws Exception {
+    public boolean putNew(final URI uri, final byte[] bytes) throws Exception {
         return putNew(uri.toString(), bytes);
     }
 
@@ -61,14 +62,14 @@ public abstract class URIBytesStorage {
 
     /**
      * Retreive a value from the Storage.
-     * 
+     *
      * @param uri
      *            the uri (key)
      * @return the bytes (value)
      * @throws Exception
      *             on any error
      */
-    public byte[] get(URI uri) throws Exception {
+    public byte[] get(final URI uri) throws Exception {
         return get(uri.toString());
     }
 
@@ -77,17 +78,17 @@ public abstract class URIBytesStorage {
     /**
      * Return a list of all keys (URIs). Please use keysAsStrings if you plan on
      * using raw strings as keys.
-     * 
+     *
      * @return List of URIs.
      * @throws Exception
      *             on any error
      */
     public List<URI> keys() throws Exception {
-        List<URI> uris = new ArrayList<URI>();
-        for (String key : keysAsStrings()) {
+        final List<URI> uris = new ArrayList<URI>();
+        for (final String key : keysAsStrings()) {
             try {
                 uris.add(new URI(key));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 /*
                  * key wasn't an URI. Since this storage is also capable of
                  * using raw Strings as key (due to compatibility with the rest
@@ -102,16 +103,16 @@ public abstract class URIBytesStorage {
 
     /**
      * Returns a list of all values.
-     * 
+     *
      * @return list of all values
      * @throws Exception
      *             on any error
-     * 
+     *
      */
     public List<byte[]> values() throws Exception {
-        List<String> keys = keysAsStrings();
-        List<byte[]> values = new ArrayList<byte[]>();
-        for (String key : keys) {
+        final List<String> keys = keysAsStrings();
+        final List<byte[]> values = new ArrayList<byte[]>();
+        for (final String key : keys) {
             values.add(get(key));
         }
         return values;
@@ -121,14 +122,14 @@ public abstract class URIBytesStorage {
 
     /**
      * Checks whether an entry with a given key exists in the storage.
-     * 
+     *
      * @param uri
      *            the uri (key)
      * @return true if exists, false otherwise
      * @throws Exception
      *             on any error
      */
-    public boolean containsKey(URI uri) throws Exception {
+    public boolean containsKey(final URI uri) throws Exception {
         return containsKey(uri.toString());
     }
 
@@ -136,13 +137,13 @@ public abstract class URIBytesStorage {
 
     /**
      * Deletes an entry with a given key from the storage.
-     * 
+     *
      * @param uri
      *            the uri (key)
      * @throws Exception
      *             on any error
      */
-    public void delete(URI uri) throws Exception {
+    public void delete(final URI uri) throws Exception {
         delete(uri.toString());
     }
 
@@ -150,7 +151,7 @@ public abstract class URIBytesStorage {
 
     /**
      * Deletes all entries in the storage.
-     * 
+     *
      * @throws Exception
      *             on any error
      * @throws Exception

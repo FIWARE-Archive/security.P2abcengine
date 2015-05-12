@@ -121,10 +121,10 @@ public class IssuanceService {
      * @fiware-rest-path /protected/reset
      * @fiware-rest-method POST
      * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
-     * all storage of the webservice(s). Use with extreme caution! 
+     * all storage of the webservice(s). Use with extreme caution!
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @return Response
      * @throws Exception when something went wrong
      */
@@ -134,9 +134,9 @@ public class IssuanceService {
         logger.entry();
         try {
             this.initializeHelper(CryptoEngine.IDEMIX);
-    
+
             IssuanceHelper.getInstance();
-    
+
             URIBytesStorage.clearEverything();
             return logger.exit(Response.ok().build());
         }
@@ -152,7 +152,7 @@ public class IssuanceService {
      * @fiware-rest-description This method is available when the service is running.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @return Response
      */
     @GET()
@@ -171,7 +171,7 @@ public class IssuanceService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 401 Authentication was not successful.
      * @fiware-rest-input-type AuthenticationRequest
-     * 
+     *
      * @param authReq
      *            the authentication request
      * @return Response
@@ -180,7 +180,7 @@ public class IssuanceService {
     @Path("/testAuthentication")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response testAuthentication(AuthenticationRequest authReq) { /* [TEST EXISTS] */
-        
+
         logger.entry();
 
         AuthenticationProvider authProvider = null;
@@ -213,11 +213,11 @@ public class IssuanceService {
      * @fiware-rest-description Returns the settings of this issuance service.
      * Settings includes issuer parameters, credential specifications and the
      * system parameters. This method is usually called by a user service or a verification
-     * service to download the settings. 
+     * service to download the settings.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type Settings
-     * 
+     *
      * @return Response
      */
     @GET()
@@ -285,24 +285,24 @@ public class IssuanceService {
      * user by using an authentication source (e.g. LDAP) and fetch the
      * attributes required by the credential specification from an attribute
      * source (e.g. LDAP) and initiates the round based issuance protocol.
-     * 
+     *
      * If authentication of the user fails this method will return the status
      * code FORBIDDEN. If the issuer is missing the credential specification,
      * the issuance policy or the query rule this method will return status code
      * NOT_FOUND.
-     * 
-     * 
+     *
+     *
      * This method will search for an issuance policy and a query rule using the
      * UID of the credential specification as the key. If the issuance policy could
      * not be found a default issuance policy will be used which asks the user
-     * to reveal nothing in particular. 
+     * to reveal nothing in particular.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 401 Authentication failed
      * @fiware-rest-response 404 A resource needed to process the request was not found
      * @fiware-rest-input-type IssuanceRequest
      * @fiware-rest-return-type IssuanceMessageAndBoolean
-     * 
+     *
      * @param request
      *            a valid IssuanceRequset
      * @return Response (IssuanceMessageAndBoolean)
@@ -400,7 +400,7 @@ public class IssuanceService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessage
      * @fiware-rest-return-type IssuanceMessageAndBoolean
-     * 
+     *
      * @param issuanceMessage
      *            an IssuanceMessage.
      * @return Response
@@ -456,14 +456,14 @@ public class IssuanceService {
      * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a credential specification that was stored
-     * under the UID provided as part of the path. 
+     * under the UID provided as part of the path.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
      * delete
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification was not found.
 
-     * 
+     *
      * @param credSpecUid
      *            UID of the credential specification
      * @return Response
@@ -507,7 +507,7 @@ public class IssuanceService {
     /**
      * @fiware-rest-path /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}
      * @fiware-rest-method DELETE
-     * @fiware-rest-description Deletes an attribute from a credential specification. 
+     * @fiware-rest-description Deletes an attribute from a credential specification.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
      * delete the attribute from.
      * @fiware-rest-request-param i Index of the attribute (in the credential specification) to
@@ -515,7 +515,7 @@ public class IssuanceService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 - Credential specification or attribute description was not found.
-     * 
+     *
      * @param index
      *            Index of the attribute
      * @param credSpecUid
@@ -575,15 +575,15 @@ public class IssuanceService {
      * @fiware-rest-path /protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a friendly description from an attribute of credential
-     * specification. 
+     * specification.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
-     * @fiware-rest-request-param i Index of the attribute the friendly description belongs to.</li>
+     * @fiware-rest-request-param i Index of the attribute the friendly description belongs to.
      * @fiware-rest-request-param language Language identifier of the friendly description to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification, attribute description or friendly description could not be found.
-     * 
-     * 
+     *
+     *
      * @param index
      *            Index of the attribute.
      * @param credSpecUid
@@ -672,7 +672,7 @@ public class IssuanceService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification or attribute description could not be found.
-     * 
+     *
      * @param index
      *            Index of the attribute.
      * @param credSpecUid
@@ -745,14 +745,14 @@ public class IssuanceService {
      * @fiware-rest-path /protected/credentialSpecification/store/{credentialSpecificationUid}
      * @fiware-rest-method PUT
      * @fiware-rest-description Store a credential specification at this service. The UID given as part of the path
-     * must match the UID of the passed credential specification. 
+     * must match the UID of the passed credential specification.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 409 The credentialSpecificationUid given on the path does not match
      * the actual credential specification's UID
      * @fiware-rest-input-type CredentialSpecification
-     * 
+     *
      * @param credentialSpecifationUid
      *            UID of the credential specification
      * @param credSpec
@@ -806,7 +806,7 @@ public class IssuanceService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification was not found.
      * @fiware-rest-return-type CredentialSpecification
-     * 
+     *
      * @param credentialSpecificationUid
      *            UID of the credential specification
      * @return Response
@@ -854,7 +854,7 @@ public class IssuanceService {
      * generate the issuer parameters for.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @param credSpecUid
      *            UID of the credential specification
      * @return Response
@@ -903,7 +903,7 @@ public class IssuanceService {
      * @fiware-rest-path-param issuerParametersUid UID of the issuer parameters to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @param issuerParametersUid UID of the issuer parameters
      * @return Response
      */
@@ -949,7 +949,7 @@ public class IssuanceService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type QueryRule
-     * 
+     *
      * @param credentialSpecificationUid
      *            UID of the credential specification
      * @param rule
@@ -982,10 +982,10 @@ public class IssuanceService {
      * @fiware-rest-path /protected/queryRule/delete/{credentialSpecificationUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a query rule.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the query rule is associated with.</li>
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the query rule is associated with.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @param credSpecUid UID of the credential specification.
      * @return Response
      */
@@ -1005,21 +1005,21 @@ public class IssuanceService {
         }
         catch(Exception e) {
             logger.catching( e);
-            return logger.exit(ExceptionDumper.dumpException(e, logger)); 
+            return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
     /**
      * @fiware-rest-path /protected/queryRule/get/{credentialSpecificationUid}
      * @fiware-rest-method GET
-     * @fiware-rest-description Retrieves a previously stored query rule. 
+     * @fiware-rest-description Retrieves a previously stored query rule.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the
      * query rule is associated with.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Query rule could not be found.
      * @fiware-rest-return-type QueryRule
-     * 
+     *
      * @param credentialSpecificationUid
      *            UID of the credential specification
      * @return Response
@@ -1058,7 +1058,7 @@ public class IssuanceService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type QueryRuleCollection
-     * 
+     *
      * @return Response
      */
     @GET()
@@ -1101,7 +1101,7 @@ public class IssuanceService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuancePolicy
-     * 
+     *
      * @param credentialSpecificationUid
      *            UID of the credential specification.
      * @param policy
@@ -1134,14 +1134,14 @@ public class IssuanceService {
      * @fiware-rest-path /protected/issuancePolicy/get/{credentialSpecificationUid}
      * @fiware-rest-method GET
      * @fiware-rest-description Retrieve an issuance policy that was previously
-     * stored. 
+     * stored.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the
      * issuance policy is associated with.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Issuance policy could not be found.
      * @fiware-rest-return-type IssuancePolicy
-     * 
+     *
      * @param credentialSpecificationUid
      *            UID of the credential specification
      * @return Response
@@ -1190,7 +1190,7 @@ public class IssuanceService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type AtributeInfoCollection
-     * 
+     *
      * @param name
      *            Name
      * @return Response
@@ -1199,7 +1199,7 @@ public class IssuanceService {
     @Path("/protected/attributeInfoCollection/{name}")
     public Response attributeInfoCollection(@PathParam("name") String name) { /* [TEST EXISTS] */
         logger.entry();
-        
+
         AttributeInfoProvider attribInfoProvider = null;
 
         try {
@@ -1228,7 +1228,7 @@ public class IssuanceService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type AttributeInfoCollection
      * @fiware-rest-return-type CredentialSpecification
-     * 
+     *
      * @param attrInfoCol
      *            the attribute info collection
      * @return Response
@@ -1257,7 +1257,7 @@ public class IssuanceService {
      * @fiware-rest-path /protected/setupSystemParameters/
      * @fiware-rest-method POST
      * @fiware-rest-description
-     * 
+     *
      * This method generates a fresh set of system parameters for the given
      * security level, expressed as the bitlength of a symmetric key with
      * comparable security, and cryptographic mechanism. Issuers can generate
@@ -1267,15 +1267,15 @@ public class IssuanceService {
      * number of different key lengths that will be used by many Issuers.
      * Security levels 80 and 128 MUST be supported; other values MAY also be
      * supported.
-     * 
+     *
      * Currently, the supported mechanism URIs are
      * urn:abc4trust:1.0:algorithm:idemix for Identity Mixer
-     * 
+     *
      * This method will overwrite any existing system parameters.<br>
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-return-type SystemParameters
-     * 
+     *
      * @param securityLevel
      *            Security level
      * @param cryptoMechanism
@@ -1328,7 +1328,7 @@ public class IssuanceService {
      * @fiware-rest-path /protected/setupIssuerParameters/
      * @fiware-rest-method POST
      * @fiware-rest-description
-     * 
+     *
      * This method generates a fresh issuance key and the corresponding Issuer
      * parameters. The issuance key is stored in the Issuer's key store, the
      * Issuer parameters are returned as output of the method. The input to this
@@ -1337,16 +1337,16 @@ public class IssuanceService {
      * the unique identifier uid of the generated parameters, the hash algorithm
      * identifier hash, and, optionally, the parameters identifier for any
      * Issuer-driven Revocation Authority.
-     * 
+     *
      * Currently, the only supported hash algorithm is SHA-256 with identifier
      * urn:abc4trust:1.0:hashalgorithm:sha-256.
-     * 
+     *
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification could not be found.
      * @fiware-rest-input-type IssuerParametersInput
      * @fiware-rest-return-type IssuerParameters
-     * 
+     *
      * @param issuerParametersInput
      *            Input for issuer parameters setup.
      * @return Response
@@ -1521,14 +1521,14 @@ public class IssuanceService {
      * contains a Context attribute that will be the same for all message
      * exchanges in this issuance protocol, to facilitate linking the different
      * flows of the protocol.
-     * 
+     *
      * In case of an issuance “from scratch”, i.e., for which the User does not
      * have to prove ownership of existing credentials or established
      * pseudonyms, the given issuance policy ip merely specifies the credential
      * specification and the issuer parameters for the credential to be issued.
      * In this case, the returned issuance message is the first message in the
      * actual cryptographic issuance protocol.
-     * 
+     *
      * In case of an “advanced” issuance, i.e., where the User has to prove
      * ownership of existing credentials or pseudonyms to carry over attributes,
      * a user secret, or a device secret, the returned IssuanceMessage is simply

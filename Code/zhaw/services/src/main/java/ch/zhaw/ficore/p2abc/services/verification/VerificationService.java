@@ -1042,7 +1042,7 @@ public class VerificationService {
      * @fiware-rest-response 409 The issuerParemetersUid does not match the actual issuer parameters' UID.
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Input type:</b> <tt>IssuerParameters</tt>
+     * @fiware-rest-input-type IssuerParameters
      * @param issuerParametersUid UID of the IssuerParameters
      * @param issuerParameters IssuerParameters
      * @return Response
@@ -1742,7 +1742,7 @@ public class VerificationService {
      * @fiware-rest-response 200 OK (application/xml)
      * @fiware-rest-response 500 ERROR
      *
-     * <b>Return type:</b> <tt>Settings</tt>
+     * @fiware-rest-return-type Settings
      *
      * @return Response
      */

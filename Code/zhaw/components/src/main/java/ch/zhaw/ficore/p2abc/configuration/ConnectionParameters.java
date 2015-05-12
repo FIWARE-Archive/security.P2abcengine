@@ -4,11 +4,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Parameters for connections to attribute or authentication sources.
- * 
+ *
  * This class holds parameters to use when connecting to a standard TCP or UDP
  * service such as LDAP or a SQL database. It is assumed that the information in
  * this class is sufficient to connect.
- * 
+ *
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
@@ -31,9 +31,9 @@ public class ConnectionParameters {
 
     /**
      * Creates connection parameters.
-     * 
+     *
      * Uses authentication method "simple" by default.
-     * 
+     *
      * @param serverName
      *            the server to connect to
      * @param serverPort
@@ -49,15 +49,16 @@ public class ConnectionParameters {
      * @param useTls
      *            whether or not to use TLS
      */
-    public ConnectionParameters(String serverName, int serverPort,
-            int normalDefaultPort, int tlsDefaultPort, String user,
-            String password, boolean useTls) {
+    public ConnectionParameters(final String serverName, final int serverPort,
+            final int normalDefaultPort, final int tlsDefaultPort, final String user,
+            final String password, final boolean useTls) {
         super();
         this.serverName = serverName;
-        if (serverPort > 0 && serverPort <= MAX_PORT)
+        if (serverPort > 0 && serverPort <= MAX_PORT) {
             this.serverPort = serverPort;
-        else
+        } else {
             this.serverPort = useTls ? tlsDefaultPort : normalDefaultPort;
+        }
         this.authenticationMethod = "simple";
         this.user = user;
         this.password = password;
@@ -68,7 +69,7 @@ public class ConnectionParameters {
         return serverName;
     }
 
-    public void setServerName(String serverName) {
+    public void setServerName(final String serverName) {
         this.serverName = serverName;
     }
 
@@ -76,7 +77,7 @@ public class ConnectionParameters {
         return serverPort;
     }
 
-    public void setServerPort(int serverPort) {
+    public void setServerPort(final int serverPort) {
         this.serverPort = serverPort;
     }
 
@@ -84,7 +85,7 @@ public class ConnectionParameters {
         return authenticationMethod;
     }
 
-    public void setAuthenticationMethod(String authenticationMethod) {
+    public void setAuthenticationMethod(final String authenticationMethod) {
         this.authenticationMethod = authenticationMethod;
     }
 
@@ -92,7 +93,7 @@ public class ConnectionParameters {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(final String user) {
         this.user = user;
     }
 
@@ -100,7 +101,7 @@ public class ConnectionParameters {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -108,7 +109,7 @@ public class ConnectionParameters {
         return useTls;
     }
 
-    public void setUseTls(boolean useTls) {
+    public void setUseTls(final boolean useTls) {
         this.useTls = useTls;
     }
 
@@ -116,7 +117,7 @@ public class ConnectionParameters {
         return useTls;
     }
 
-    public void setConnectionString(String connectionString) {
+    public void setConnectionString(final String connectionString) {
         this.connectionString = connectionString;
     }
 
@@ -124,7 +125,7 @@ public class ConnectionParameters {
         return connectionString;
     }
 
-    public void setDriverString(String driverString) {
+    public void setDriverString(final String driverString) {
         this.driverString = driverString;
     }
 

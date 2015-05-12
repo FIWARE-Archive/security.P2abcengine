@@ -11,23 +11,23 @@ import eu.abc4trust.abce.internal.user.credentialManager.CredentialStorage;
 
 public class GenericUserCredentialStorage implements CredentialStorage {
 
-    private URIBytesStorage credentialStorage;
-    private URIBytesStorage pseudonymStorage;
+    private final URIBytesStorage credentialStorage;
+    private final URIBytesStorage pseudonymStorage;
 
     @Inject
     public GenericUserCredentialStorage(
-            @Named("credentialStorage") URIBytesStorage credentialStorage,
-            @Named("pseudonymStorage") URIBytesStorage pseudonymStorage) {
+            @Named("credentialStorage") final URIBytesStorage credentialStorage,
+            @Named("pseudonymStorage") final URIBytesStorage pseudonymStorage) {
 
         this.credentialStorage = credentialStorage;
         this.pseudonymStorage = pseudonymStorage;
     }
 
-    public byte[] getCredential(URI creduid) throws Exception {
+    public byte[] getCredential(final URI creduid) throws Exception {
         return credentialStorage.get(creduid);
     }
 
-    public byte[] getPseudonymWithData(URI pseudonymUid) throws Exception {
+    public byte[] getPseudonymWithData(final URI pseudonymUid) throws Exception {
         return pseudonymStorage.get(pseudonymUid);
     }
 
@@ -35,28 +35,28 @@ public class GenericUserCredentialStorage implements CredentialStorage {
         return credentialStorage.keys();
     }
 
-    public void addCredential(URI creduid, byte[] data) throws IOException {
+    public void addCredential(final URI creduid, final byte[] data) throws IOException {
         try {
             credentialStorage.put(creduid, data);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void addPseudonymWithMetadata(URI puid, byte[] data)
+    public void addPseudonymWithMetadata(final URI puid, final byte[] data)
             throws IOException {
         try {
             pseudonymStorage.put(puid, data);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void deletePseudonymWithMetadata(URI puid) throws Exception {
+    public void deletePseudonymWithMetadata(final URI puid) throws Exception {
         pseudonymStorage.delete(puid);
     }
 
-    public void deleteCredential(URI credui) throws Exception {
+    public void deleteCredential(final URI credui) throws Exception {
         credentialStorage.delete(credui);
     }
 

@@ -14,14 +14,23 @@ public class PresentationPolicyAlternativesCollection {
 
     @XmlElementWrapper(name = "presentation-policy-alternatives-list", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     @XmlElement(name = "presentation-policy-alternatives", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(
+            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification="Field is read from another project")
     public List<PresentationPolicyAlternatives> presentationPolicyAlternatives = new ArrayList<PresentationPolicyAlternatives>();
 
     @XmlElement(name = "uris", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(
+            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification="Field is read from another project")
     public List<String> uris = new ArrayList<String>();
-    
+
     @XmlElement(name = "redirect-uris", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(
+            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification="Field is read from another project")
     public List<String> redirectURIs = new ArrayList<String>();
-    
+
     public PresentationPolicyAlternativesCollection() {
 
     }

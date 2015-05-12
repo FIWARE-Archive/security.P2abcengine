@@ -50,7 +50,6 @@ import ch.zhaw.ficore.p2abc.services.ServiceType;
 import ch.zhaw.ficore.p2abc.services.StorageModuleFactory;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.services.helpers.user.UserHelper;
-import ch.zhaw.ficore.p2abc.services.helpers.verification.VerificationHelper;
 import ch.zhaw.ficore.p2abc.storage.GenericKeyStorage;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
 import ch.zhaw.ficore.p2abc.xml.CredentialCollection;
@@ -101,7 +100,7 @@ public class UserService {
      * @fiware-rest-method GET
      * @fiware-rest-description If the service is running this method is available.
      * @fiware-rest-response 200 OK
-     * 
+     *
      * @return Response
      */
     @GET()
@@ -109,25 +108,25 @@ public class UserService {
     public Response status() { /* [FLOW TEST] */
         return Response.ok().build();
     }
-    
+
     /**
      * @fiware-rest-path /protected/reset
      * @fiware-rest-method POST
      * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
-     * all storage of the webservice(s). Use with extreme caution! 
+     * all storage of the webservice(s). Use with extreme caution!
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @return Response
      * @throws Exception when something went wrong
      */
     @POST()
     @Path("/reset")
     public Response reset() throws Exception { /* [FLOW TEST] */
-        log.entry(); 
-        
+        log.entry();
+
         this.initializeHelper();
-        
+
         URIBytesStorage.clearEverything();
         return log.exit(Response.ok().build());
     }
@@ -138,12 +137,12 @@ public class UserService {
      * @fiware-rest-description This method, on input of a presentation policy
      * decides whether the credentials in the User’s credential store could be
      * used to produce a valid presentation token satisfying the policy. If so,
-     * this method returns true, otherwise, it returns false. 
+     * this method returns true, otherwise, it returns false.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type PresentationPolicyAlternatives
      * @fiware-rest-return-type ABCEBoolean
-     * 
+     *
      * @param p
      *            PresentationPolicyAlternatives
      * @return Response
@@ -154,14 +153,14 @@ public class UserService {
     public Response canBeSatisfied(PresentationPolicyAlternatives p) {
         log.entry();
 
-        
 
-        
+
+
 
         try {
             this.initializeHelper();
             UserHelper instance = UserHelper.getInstance();
-            
+
             boolean b = instance.getEngine().canBeSatisfied(p);
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(b);
@@ -186,7 +185,7 @@ public class UserService {
      * or more (e.g., by satisfying different alternatives in the policy, or by
      * using different sets of credentials to satisfy one alternative)
      * presentation tokens that satisfiy the policy.
-     * 
+     *
      * The return value of this method should be passed to the User Interface
      * (or to some other component that is capable of rendering a
      * UiPresentationReturn object from a UiPresentationArguments object). The
@@ -196,8 +195,8 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type PresentationPolicyAlternatives
-     * @fiware-rest-return-type UiPresentationArguments<br>
-     * 
+     * @fiware-rest-return-type UiPresentationArguments
+     *
      * @param p
      *            PresentationPolicyAlternatives
      * @return Response
@@ -208,14 +207,14 @@ public class UserService {
     public Response createPresentationToken(PresentationPolicyAlternatives p) { /* [FLOW TEST] */
         log.entry();
 
-        
+
 
         DummyForNewABCEInterfaces d = null;
         try {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             UiPresentationArguments uiPresentationArguments = instance
                     .getEngine().createPresentationToken(p, d);
             return log.exit(Response.ok(
@@ -238,7 +237,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type UiPresentationReturn
      * @fiware-rest-return-type PresentationToken
-     * 
+     *
      * @param upr
      *            UiPresentationReturn
      * @return Response
@@ -254,7 +253,7 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             PresentationToken presentationToken = instance.getEngine()
                     .createPresentationToken(upr);
             /*VerifierIdentity vi = presentationToken.getPresentationTokenDescription().getMessage().getVerifierIdentity();
@@ -281,11 +280,11 @@ public class UserService {
      * contents which must be valid <tt>Settings</tt>. DO NOT use this method
      * with untrusted URLs or issuers (or any other settings providers) with
      * DIFFERENT system parameters as this method will overwrite existing system
-     * parameters. See also {@link #getSettings()}. 
+     * parameters. See also {@link #getSettings()}.
      * @fiware-rest-request-param url a valid URL (String)
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @param url
      *            URL to download settings from.
      * @return Response
@@ -343,7 +342,7 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type Settings
-     * 
+     *
      * @return Response
      */
     @GET()
@@ -391,7 +390,7 @@ public class UserService {
                         .getSystemParameters());
             }
             catch(Exception e) {
-                
+
             }
 
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
@@ -412,7 +411,7 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type CredentialCollection
-     * 
+     *
      * @return Response
      */
     @GET()
@@ -450,17 +449,17 @@ public class UserService {
                             ExceptionDumper.dumpExceptionStr(e, log))).build();
         }
     }
-    
+
     /**
      * @fiware-rest-path /credential/get/{credUid}
      * @fiware-rest-method GET
-     * @fiware-rest-description Retrieve a credential. 
+     * @fiware-rest-description Retrieve a credential.
      * @fiware-rest-path-param credUid UID of the credential
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 The credential could not be found.
      * @fiware-rest-return-type Credential
-     * 
+     *
      * @param credUid UID of the credential
      * @return Response
      */
@@ -468,21 +467,21 @@ public class UserService {
     @Path("/credential/get/{credUid}")
     public Response getCredential(@PathParam ("credUid") String credUid) { /* [FLOW TEST] */
         log.entry();
-        
+
         try {
             this.initializeHelper();
-            
+
             if(credUid.lastIndexOf('/') == -1)
                 credUid = "IdmxCredential/" + credUid;
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             Credential cred = instance.credentialManager.getCredential(new URI(credUid));
-            
+
             if(cred == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCred).build());
             }
-            
+
             return log.exit(Response.ok(of.createCredential(cred), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
@@ -506,16 +505,16 @@ public class UserService {
      * the Context attribute of the outgoing message has the same value as that
      * of the incoming message, allowing the Issuer to link the different
      * messages of this issuance protocol.
-     * 
+     *
      * If this is the first time this method is called for a given context, the
      * method expects the issuance message to contain an issuance policy, and
      * returns an object that is to be sent to the UI (allowing the user to
      * chose his preferred way of generating the presentation token, or to
      * confirm the only possible choice).
-     * 
+     *
      * This method throws an exception if the policy cannot be satisfied with
      * the user's current credentials.
-     * 
+     *
      * If this method returns an IssuanceMessage, that message should be
      * forwarded to the Issuer. If this method returns a CredentialDescription,
      * then the issuance protocol was successful. If this method returns a
@@ -528,7 +527,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessage
      * @fiware-rest-return-type IssuanceReturn
-     * 
+     *
      * @param jm
      *            IssuanceMessage
      * @return Response
@@ -540,7 +539,7 @@ public class UserService {
 
         log.entry();
 
-        
+
         try {
             this.initializeHelper();
 
@@ -549,7 +548,7 @@ public class UserService {
             IssuanceMessage m = jm.getValue();
 
             DummyForNewABCEInterfaces d = null;
-            
+
             IssuanceReturn issuanceReturn = instance.getEngine()
                     .issuanceProtocolStep(m, d);
             return log.exit(Response.ok(
@@ -570,7 +569,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type UiIssuanceReturn
      * @fiware-rest-return-type IssuanceMessage
-     * 
+     *
      * @param uir
      *            UiIssuanceReturn
      * @return Response
@@ -582,13 +581,13 @@ public class UserService {
 
         log.entry();
 
-        
+
 
         try {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             IssuanceMessage issuanceMessage = instance.getEngine()
                     .issuanceProtocolStep(uir);
             return log.exit(Response.ok(
@@ -611,7 +610,7 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type ABCEBoolean
-     * 
+     *
      * @param credentialUid
      *            - UID of the credential
      * @return Response
@@ -623,16 +622,16 @@ public class UserService {
             @PathParam("credentialUid") String credentialUid) {
         log.entry();
 
-        
+
 
         try {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             if(credentialUid.lastIndexOf('/') == -1)
                 credentialUid = "IdmxCredential/" + credentialUid;
-            
+
             boolean r = instance.credentialManager
                     .deleteCredential(new URI(credentialUid));
 
@@ -652,13 +651,13 @@ public class UserService {
      * @fiware-rest-path /credentialSpecification/store/{credentialSpecificationUid}
      * @fiware-rest-method PUT
      * @fiware-rest-description Stores a credential specification under the given
-     * UID. 
+     * UID.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not match the actual
      * UID or is invalid.
-     * 
+     *
      * @param credentialSpecificationUid
      *            UID of the credential specification.
      * @param credSpec
@@ -700,7 +699,7 @@ public class UserService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     /**
      * @fiware-rest-path /credentialSpecification/get/{credentialSpecificationUid}
      * @fiware-rest-method GET
@@ -710,7 +709,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 The credential specification could not be found.
      * @fiware-rest-return-type CredentialSpecification
-     * 
+     *
      * @param credSpecUid UID of the credential specification
      * @return Response
      */
@@ -718,19 +717,19 @@ public class UserService {
     @Path("/credentialSpecification/get/{credentialSpecificationUid}") /* [TEST EXISTS] */
     public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
         log.entry();
-        
+
         try {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
 
             KeyManager keyManager = instance.keyManager;
-            
+
             CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credSpecUid));
-            
+
             if(credSpec == null)
                 return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
-            
+
             return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
         }
         catch(Exception e) {
@@ -738,15 +737,15 @@ public class UserService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     /**
      * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a credential specification.
-     * @fiware-rest-patha-param >credentialSpecificationUid UID of the credential specification to delete.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @param credSpecUid UID of the credential specification to delete
      * @return Response
      */
@@ -790,7 +789,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type SystemParameters
      * @fiware-rest-return-type ABCEBoolean
-     * 
+     *
      * @param systemParameters
      *            SystemParameters
      * @return Response
@@ -837,7 +836,7 @@ public class UserService {
      * @fiware-rest-respnsoe 409 <em>issuerParametersUid</em> does not match or is invalid.
      * @fiware-rest-input-type IssuerParameters
      * @fiware-rest-return-type ABCEBoolean
-     * 
+     *
      * @param issuerParametersUid
      *            UID of the IssuerParameters
      * @param issuerParameters
@@ -885,7 +884,7 @@ public class UserService {
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
-    
+
     /**
      * @fiware-rest-path /issuerParameters/delete/{issuerParametersUid}
      * @fiware-rest-method DELETE
@@ -893,7 +892,7 @@ public class UserService {
      * @fiware-rest-path-param issuerParamateresUid UID of the issuer parameters to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * 
+     *
      * @param issuerParametersUid UID of the issuer parameters
      * @return Response
      */
@@ -907,7 +906,7 @@ public class UserService {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
-            
+
             KeyStorage keyStorage = instance.keyStorage;
 
             // @#@#^%$ KeyStorage has no delete()
@@ -935,7 +934,7 @@ public class UserService {
 
             if (UserHelper.isInit()) {
                 log.info("UserHelper is initialized");
-                
+
                 // AbstractHelper.verifyFiles(false, this.fileStoragePrefix);
             } else {
                 log.info("Initializing UserHelper");
@@ -950,7 +949,7 @@ public class UserService {
                 log.info("UserHelper is initialized");
             }
             UserHelper instance = UserHelper.getInstance();
-            
+
             Set<URI> keySet = instance.cardStorage.getSmartcards().keySet();
             for (URI uri : keySet) {
                 log.info("Smartcards: " + uri);
@@ -970,7 +969,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessageAndBoolean
      * @fiware-rest-return-type IssuanceMessage
-     * 
+     *
      * @param issuanceMessageAndBoolean
      *            IssuanceMessageAndBoolean
      * @return Response

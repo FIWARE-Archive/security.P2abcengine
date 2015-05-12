@@ -7,11 +7,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Data container for issuance service configuration.
- * 
+ *
  * At the moment, the issuance service offers two identity sources, LDAP and
  * Keyrock. For LDAP, no transport protocol can be configured, so it's up to the
  * LDAP issuer to decide what transport protocol to use.
- * 
+ *
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
@@ -50,11 +50,11 @@ public class IssuanceConfiguration {
         super();
     }
 
-    public IssuanceConfiguration(IdentitySource attributeSource,
-            ConnectionParameters attributeConnectionParameters,
-            IdentitySource authenticationSource,
-            ConnectionParameters authenticationConnectionParameters,
-            String bindQuery) {
+    public IssuanceConfiguration(final IdentitySource attributeSource,
+            final ConnectionParameters attributeConnectionParameters,
+            final IdentitySource authenticationSource,
+            final ConnectionParameters authenticationConnectionParameters,
+            final String bindQuery) {
         super();
         this.attributeSource = attributeSource;
         this.attributeConnectionParameters = attributeConnectionParameters;

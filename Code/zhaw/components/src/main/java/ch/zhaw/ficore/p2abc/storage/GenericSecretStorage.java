@@ -11,25 +11,25 @@ import eu.abc4trust.abce.internal.user.credentialManager.SecretStorage;
 
 public class GenericSecretStorage implements SecretStorage {
 
-    private URIBytesStorage storage;
+    private final URIBytesStorage storage;
 
     @Inject
-    public GenericSecretStorage(@Named("secretStorage") URIBytesStorage storage) {
+    public GenericSecretStorage(@Named("secretStorage") final URIBytesStorage storage) {
         this.storage = storage;
     }
 
-    public void addSecret(URI key, byte[] bytes) throws IOException {
+    public void addSecret(final URI key, final byte[] bytes) throws IOException {
         try {
             storage.put(key, bytes);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public byte[] getSecret(URI key) throws IOException {
+    public byte[] getSecret(final URI key) throws IOException {
         try {
             return storage.get(key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
@@ -37,15 +37,15 @@ public class GenericSecretStorage implements SecretStorage {
     public List<URI> listSecrets() throws IOException {
         try {
             return storage.keys();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void deleteSecret(URI key) throws IOException {
+    public void deleteSecret(final URI key) throws IOException {
         try {
             storage.delete(key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
