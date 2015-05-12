@@ -65,7 +65,7 @@ public class IssuanceGUI {
     @Context
     HttpServletRequest request;
 
-    private ObjectFactory of = new ObjectFactory();
+    private final ObjectFactory of = new ObjectFactory();
 
     private static final XLogger logger = new XLogger(
             LoggerFactory.getLogger(IssuanceGUI.class));

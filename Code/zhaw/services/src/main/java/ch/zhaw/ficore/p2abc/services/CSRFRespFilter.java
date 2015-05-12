@@ -1,8 +1,8 @@
 package ch.zhaw.ficore.p2abc.services;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.security.SecureRandom;
 
 import javax.ws.rs.core.HttpHeaders;
 

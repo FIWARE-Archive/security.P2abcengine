@@ -24,8 +24,6 @@
 
 package ch.zhaw.ficore.p2abc.services.user;
 
-import org.json.simple.*;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -49,6 +47,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
 

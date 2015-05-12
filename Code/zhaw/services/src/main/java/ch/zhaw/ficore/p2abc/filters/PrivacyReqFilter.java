@@ -1,11 +1,8 @@
 package ch.zhaw.ficore.p2abc.filters;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -27,7 +24,7 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
     private String resourceName = null;
     private String verifierURL = null;
     private String pathRegex = null;
-    private List<String> tokens = new ArrayList<String>();
+    private final List<String> tokens = new ArrayList<String>();
     private static final int MAX_TOKENS = 4096;
 
     @Override
@@ -42,8 +39,8 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
                 return denyRequest(req);
             }
 
-            String accesstoken = (String) req.getQueryParameters()
-                    .get("accesstoken").get(0);
+            String accesstoken = req.getQueryParameters().get("accesstoken")
+                    .get(0);
             if (accesstoken == null) {
                 return denyRequest(req);
             }

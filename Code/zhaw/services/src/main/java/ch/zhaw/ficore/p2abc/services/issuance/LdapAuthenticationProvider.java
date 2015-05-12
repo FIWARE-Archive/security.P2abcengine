@@ -81,7 +81,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                         .newSearch().search("", bindQuery);
                 String binddn = null;
                 if (results.hasMore()) {
-                    SearchResult sr = (SearchResult) results.next();
+                    SearchResult sr = results.next();
                     binddn = sr.getName();
                 }
 

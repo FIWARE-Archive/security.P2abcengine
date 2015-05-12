@@ -18,7 +18,7 @@ import eu.abc4trust.xml.ObjectFactory;
 
 public class LdapAttributeValueProvider extends AttributeValueProvider {
 
-    private ObjectFactory of;
+    private final ObjectFactory of;
 
     public LdapAttributeValueProvider(IssuanceConfiguration config) {
         super(config);
@@ -73,7 +73,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
                                 .getEncoding()
                                 .toString()
                                 .equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
-                    value = (String) value.toString();
+                    value = value.toString();
                 } else {
                     throw new RuntimeException(
                             "Unsupported combination of encoding and dataType!");

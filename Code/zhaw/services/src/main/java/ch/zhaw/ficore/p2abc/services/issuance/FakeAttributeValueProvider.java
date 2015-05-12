@@ -15,7 +15,7 @@ import eu.abc4trust.xml.ObjectFactory;
 
 public class FakeAttributeValueProvider extends AttributeValueProvider {
 
-    private ObjectFactory of;
+    private final ObjectFactory of;
 
     public FakeAttributeValueProvider(IssuanceConfiguration config) {
         super(config);

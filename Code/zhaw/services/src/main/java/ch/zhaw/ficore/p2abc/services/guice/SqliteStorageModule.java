@@ -24,7 +24,7 @@ import com.google.inject.name.Names;
 
 public class SqliteStorageModule extends AbstractModule {
 
-    private ServiceType type;
+    private final ServiceType type;
 
     public SqliteStorageModule(ServiceType type) {
         this.type = type;

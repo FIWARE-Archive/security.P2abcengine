@@ -27,7 +27,6 @@ package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -166,7 +165,7 @@ public class IssuanceHelper extends AbstractHelper {
     }
 
     private IssuerAbcEngine singleEngine = null;
-    private IssuerAbcEngine idemixEngine = null;
+    private final IssuerAbcEngine idemixEngine = null;
 
     private final List<TokenStorageIssuer> issuerStorageManagerList = new ArrayList<TokenStorageIssuer>();
     private KeyManager idemixKeyManager;

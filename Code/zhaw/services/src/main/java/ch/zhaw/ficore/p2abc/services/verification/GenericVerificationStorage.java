@@ -16,8 +16,8 @@ import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 public class GenericVerificationStorage implements VerificationStorage {
 
-    private URIBytesStorage presentationPolicyStorage;
-    private URIBytesStorage redirectURIStorage;
+    private final URIBytesStorage presentationPolicyStorage;
+    private final URIBytesStorage redirectURIStorage;
 
     @Inject
     public GenericVerificationStorage(

@@ -26,7 +26,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
     private static final XLogger logger = new XLogger(
             LoggerFactory.getLogger(JdbcAttributeValueProvider.class));
 
-    private ObjectFactory of;
+    private final ObjectFactory of;
 
     public JdbcAttributeValueProvider(IssuanceConfiguration config) {
         super(config);
@@ -89,7 +89,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
                                     .getEncoding()
                                     .toString()
                                     .equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
-                        value = (String) value.toString();
+                        value = value.toString();
                     } else {
                         throw new RuntimeException(
                                 "Unsupported combination of encoding and dataType!");

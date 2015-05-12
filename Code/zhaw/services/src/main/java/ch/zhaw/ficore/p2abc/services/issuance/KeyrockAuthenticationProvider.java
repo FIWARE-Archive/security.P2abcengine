@@ -1,11 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.naming.NamingException;
 
@@ -15,12 +10,9 @@ import org.json.simple.JSONValue;
 import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
 
-import ch.zhaw.ficore.p2abc.configuration.ConnectionParameters;
 import ch.zhaw.ficore.p2abc.configuration.IssuanceConfiguration;
-import ch.zhaw.ficore.p2abc.configuration.ServicesConfiguration;
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 import ch.zhaw.ficore.p2abc.xml.AuthInfoKeyrock;
-import ch.zhaw.ficore.p2abc.xml.AuthInfoSimple;
 import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 
 /**

@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
 
-import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -16,8 +16,8 @@ import eu.abc4trust.xml.IssuancePolicy;
 
 public class GenericIssuanceStorage implements IssuanceStorage {
 
-    private URIBytesStorage issuancePolicyStorage;
-    private URIBytesStorage queryRuleStorage;
+    private final URIBytesStorage issuancePolicyStorage;
+    private final URIBytesStorage queryRuleStorage;
 
     @Inject
     public GenericIssuanceStorage(

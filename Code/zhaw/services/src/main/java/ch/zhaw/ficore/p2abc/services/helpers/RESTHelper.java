@@ -2,7 +2,6 @@ package ch.zhaw.ficore.p2abc.services.helpers;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
 
 import javax.naming.NamingException;
 import javax.net.ssl.HostnameVerifier;

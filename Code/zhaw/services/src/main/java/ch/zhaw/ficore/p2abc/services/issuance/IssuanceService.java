@@ -81,7 +81,7 @@ public class IssuanceService {
     private static final int sysParamsSecurityLevel = 80;
     private static final String sysParamsCryptoMechanism = "urn:abc4trust:1.0:algorithm:idemix";
 
-    private ObjectFactory of = new ObjectFactory();
+    private final ObjectFactory of = new ObjectFactory();
 
     private static final XLogger logger = new XLogger(
             LoggerFactory.getLogger(IssuanceService.class));

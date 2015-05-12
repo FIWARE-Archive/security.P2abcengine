@@ -1,6 +1,6 @@
 package ch.zhaw.ficore.p2abc.services.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.net.URI;
