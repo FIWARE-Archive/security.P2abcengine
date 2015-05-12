@@ -16,71 +16,70 @@ import eu.abc4trust.xml.IssuancePolicy;
 
 public class GenericIssuanceStorage implements IssuanceStorage {
 
-    private URIBytesStorage issuancePolicyStorage;
-    private URIBytesStorage queryRuleStorage;
+	private URIBytesStorage issuancePolicyStorage;
+	private URIBytesStorage queryRuleStorage;
 
-    @Inject
-    public GenericIssuanceStorage(
-            @Named("issuancePolicyStorage") URIBytesStorage issuancePolicyStorage,
-            @Named("queryRuleStorage") URIBytesStorage queryRuleStorage) {
+	@Inject
+	public GenericIssuanceStorage(
+			@Named("issuancePolicyStorage") URIBytesStorage issuancePolicyStorage,
+			@Named("queryRuleStorage") URIBytesStorage queryRuleStorage) {
 
-        this.issuancePolicyStorage = issuancePolicyStorage;
-        this.queryRuleStorage = queryRuleStorage;
-    }
+		this.issuancePolicyStorage = issuancePolicyStorage;
+		this.queryRuleStorage = queryRuleStorage;
+	}
 
-    public void addQueryRule(URI uri, QueryRule rule) throws IOException {
-        try {
-            byte[] data = SerializationUtils.serialize(rule);
-            queryRuleStorage.put(uri, data);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
+	public void addQueryRule(URI uri, QueryRule rule) throws IOException {
+		try {
+			byte[] data = SerializationUtils.serialize(rule);
+			queryRuleStorage.put(uri, data);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 
-    public void addIssuancePolicy(URI uri, IssuancePolicy policy)
-            throws IOException {
-        try {
-            byte[] data = SerializationUtils.serialize(policy);
-            issuancePolicyStorage.put(uri, data);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
+	public void addIssuancePolicy(URI uri, IssuancePolicy policy)
+			throws IOException {
+		try {
+			byte[] data = SerializationUtils.serialize(policy);
+			issuancePolicyStorage.put(uri, data);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 
-    public QueryRule getQueryRule(URI uri) throws IOException {
-        try {
-            if (!queryRuleStorage.containsKey(uri))
-                return null;
+	public QueryRule getQueryRule(URI uri) throws IOException {
+		try {
+			if (!queryRuleStorage.containsKey(uri))
+				return null;
 
-            byte[] data = queryRuleStorage.get(uri);
-            return (QueryRule) SerializationUtils.deserialize(data);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
+			byte[] data = queryRuleStorage.get(uri);
+			return (QueryRule) SerializationUtils.deserialize(data);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 
-    public IssuancePolicy getIssuancePolicy(URI uri) throws IOException {
-        try {
-            if (!issuancePolicyStorage.containsKey(uri))
-                return null;
+	public IssuancePolicy getIssuancePolicy(URI uri) throws IOException {
+		try {
+			if (!issuancePolicyStorage.containsKey(uri))
+				return null;
 
-            byte[] data = issuancePolicyStorage.get(uri);
-            return (IssuancePolicy) SerializationUtils.deserialize(data);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
+			byte[] data = issuancePolicyStorage.get(uri);
+			return (IssuancePolicy) SerializationUtils.deserialize(data);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 
-    public List<URI> listQueryRules() throws Exception {
-        return queryRuleStorage.keys();
-    }
-    
-    public void deleteQueryRule(URI uri) throws IOException {
-        try {
-            queryRuleStorage.delete(uri);
-        }
-        catch(Exception e) {
-            throw new IOException(e);
-        }
-    }
+	public List<URI> listQueryRules() throws Exception {
+		return queryRuleStorage.keys();
+	}
+
+	public void deleteQueryRule(URI uri) throws IOException {
+		try {
+			queryRuleStorage.delete(uri);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+	}
 }

@@ -54,196 +54,206 @@ import eu.abc4trust.xml.FriendlyDescription;
 
 public class UserGUI {
 
-    private static String cssURL = "/css/style.css";
+	private static String cssURL = "/css/style.css";
 
-    public static Html getHtmlPramble(String title, HttpServletRequest req) {
-        Html html = new Html();
-        Head head = new Head().appendChild(new Title().appendChild(new Text(
-                title)));
-        html.appendChild(head);
-        head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
-                .setRel("stylesheet").setType("text/css"));
-        head.appendChild(new Script("").setSrc(req.getContextPath() + "/csrf.js").setType("text/javascript"));
-        return html;
-    }
+	public static Html getHtmlPramble(String title, HttpServletRequest req) {
+		Html html = new Html();
+		Head head = new Head().appendChild(new Title().appendChild(new Text(
+				title)));
+		html.appendChild(head);
+		head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
+				.setRel("stylesheet").setType("text/css"));
+		head.appendChild(new Script("").setSrc(
+				req.getContextPath() + "/csrf.js").setType("text/javascript"));
+		return html;
+	}
 
-    public static Body getBody(Div mainDiv) {
-        Div containerDiv = new Div().setCSSClass("containerDiv");
-        containerDiv.appendChild(new H1().appendChild(new Text("User")));
-        Div navDiv = new Div().setCSSClass("navDiv");
-        containerDiv.appendChild(navDiv);
-        containerDiv.appendChild(mainDiv);
-        navDiv.appendChild(new A().setHref("./obtainCredential").appendChild(
-                new Text("Obtain Credential")));
-        navDiv.appendChild(new A().setHref("./requestResource").appendChild(
-                new Text("Request Resource")));
-        navDiv.appendChild(new A().setHref("./profile").appendChild(
-                new Text("Profile")));
-        navDiv.appendChild(new A().setHref("./loadSettings").appendChild(
-                new Text("Load Settings")));
-        navDiv.appendChild(new Div().setStyle("clear: both"));
-        Body body = new Body().appendChild(containerDiv);
-        body.setAttribute("onload", "csrf();");
-        return body; 
-    }
+	public static Body getBody(Div mainDiv) {
+		Div containerDiv = new Div().setCSSClass("containerDiv");
+		containerDiv.appendChild(new H1().appendChild(new Text("User")));
+		Div navDiv = new Div().setCSSClass("navDiv");
+		containerDiv.appendChild(navDiv);
+		containerDiv.appendChild(mainDiv);
+		navDiv.appendChild(new A().setHref("./obtainCredential").appendChild(
+				new Text("Obtain Credential")));
+		navDiv.appendChild(new A().setHref("./requestResource").appendChild(
+				new Text("Request Resource")));
+		navDiv.appendChild(new A().setHref("./profile").appendChild(
+				new Text("Profile")));
+		navDiv.appendChild(new A().setHref("./loadSettings").appendChild(
+				new Text("Load Settings")));
+		navDiv.appendChild(new Div().setStyle("clear: both"));
+		Body body = new Body().appendChild(containerDiv);
+		body.setAttribute("onload", "csrf();");
+		return body;
+	}
 
-    public static Html errorPage(String msg, HttpServletRequest req) {
-        Html html = getHtmlPramble("ERROR", req);
-        Div mainDiv = new Div().setCSSClass("mainDiv");
-        html.appendChild(getBody(mainDiv));
-        mainDiv.appendChild(new H2().appendChild(new Text("Error")));
-        mainDiv.appendChild(new P().setCSSClass("error").appendChild(
-                new Text(msg)));
-        return html;
-    }
-    
-    public static Div getDivForCredential(Credential cred) {
-        URI uri = cred.getCredentialDescription().getCredentialUID();
-        Div credDiv = new Div().setCSSClass("credDiv");
-        CredentialDescription credDesc = cred
-                .getCredentialDescription();
-        String credSpec = credDesc.getCredentialSpecificationUID()
-                .toString();
-        credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                + " (" + uri.toString() + ")")));
-        List<Attribute> attribs = credDesc.getAttribute();
-        Table tbl = new Table();
-        credDiv.appendChild(tbl);
-        Tr tr = null;
-        tr = new Tr().setCSSClass("heading")
-                .appendChild(new Td().appendChild(new Text("Name")))
-                .appendChild(new Td().appendChild(new Text("Value")));
-        tbl.appendChild(tr);
-        for (Attribute attrib : attribs) {
-            AttributeDescription attribDesc = attrib
-                    .getAttributeDescription();
-            String name = attribDesc.getFriendlyAttributeName().get(0)
-                    .getValue();
-            tr = new Tr().appendChild(
-                    new Td().appendChild(new Text(name))).appendChild(
-                    new Td().appendChild(new Text(attrib
-                            .getAttributeValue().toString())));
-            tbl.appendChild(tr);
-        }
-        return credDiv;
-    }
+	public static Html errorPage(String msg, HttpServletRequest req) {
+		Html html = getHtmlPramble("ERROR", req);
+		Div mainDiv = new Div().setCSSClass("mainDiv");
+		html.appendChild(getBody(mainDiv));
+		mainDiv.appendChild(new H2().appendChild(new Text("Error")));
+		mainDiv.appendChild(new P().setCSSClass("error").appendChild(
+				new Text(msg)));
+		return html;
+	}
 
-    /**
-     * Helper function that generates HTML for the UI. Specifically it generates
-     * the HTML for the identity selection.
-     * 
-     * @param tcs
-     *            A list of TokenCandidates
-     * @param policyId
-     *            Id of the policy used by the TokenCandidates
-     * @param uiContext
-     *            Context string
-     * @param backURL URL to go back.
-     * @param applicationData ApplicationData
-     * @param userServiceURL URL of the user service
-     * @return Div (HTML)
-     * @throws JAXBException on error
-     * @throws UnsupportedEncodingException on error 
-     * @throws UniformInterfaceException  on error
-     * @throws ClientHandlerException on error
-     * @throws NamingException 
-     */
-    public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext, String applicationData, String backURL, String userServiceURL) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException, NamingException {
-        Div enclosing = new Div();
+	public static Div getDivForCredential(Credential cred) {
+		URI uri = cred.getCredentialDescription().getCredentialUID();
+		Div credDiv = new Div().setCSSClass("credDiv");
+		CredentialDescription credDesc = cred.getCredentialDescription();
+		String credSpec = credDesc.getCredentialSpecificationUID().toString();
+		credDiv.appendChild(new H4().appendChild(new Text(credSpec + " ("
+				+ uri.toString() + ")")));
+		List<Attribute> attribs = credDesc.getAttribute();
+		Table tbl = new Table();
+		credDiv.appendChild(tbl);
+		Tr tr = null;
+		tr = new Tr().setCSSClass("heading")
+				.appendChild(new Td().appendChild(new Text("Name")))
+				.appendChild(new Td().appendChild(new Text("Value")));
+		tbl.appendChild(tr);
+		for (Attribute attrib : attribs) {
+			AttributeDescription attribDesc = attrib.getAttributeDescription();
+			String name = attribDesc.getFriendlyAttributeName().get(0)
+					.getValue();
+			tr = new Tr().appendChild(new Td().appendChild(new Text(name)))
+					.appendChild(
+							new Td().appendChild(new Text(attrib
+									.getAttributeValue().toString())));
+			tbl.appendChild(tr);
+		}
+		return credDiv;
+	}
 
-        for (TokenCandidate tc : tcs) {
-            Div div = new Div();
-            div.setCSSClass("tokenCandidate");
-            div.appendChild(new H3().appendChild(new Text("Candidate")));
-            enclosing.appendChild(div);
+	/**
+	 * Helper function that generates HTML for the UI. Specifically it generates
+	 * the HTML for the identity selection.
+	 * 
+	 * @param tcs
+	 *            A list of TokenCandidates
+	 * @param policyId
+	 *            Id of the policy used by the TokenCandidates
+	 * @param uiContext
+	 *            Context string
+	 * @param backURL
+	 *            URL to go back.
+	 * @param applicationData
+	 *            ApplicationData
+	 * @param userServiceURL
+	 *            URL of the user service
+	 * @return Div (HTML)
+	 * @throws JAXBException
+	 *             on error
+	 * @throws UnsupportedEncodingException
+	 *             on error
+	 * @throws UniformInterfaceException
+	 *             on error
+	 * @throws ClientHandlerException
+	 *             on error
+	 * @throws NamingException
+	 */
+	public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
+			int policyId, String uiContext, String applicationData,
+			String backURL, String userServiceURL)
+			throws ClientHandlerException, UniformInterfaceException,
+			UnsupportedEncodingException, JAXBException, NamingException {
+		Div enclosing = new Div();
 
-            div.appendChild(new H4().appendChild(new Text("Credentials "
-                    + tc.credentials.size())));
+		for (TokenCandidate tc : tcs) {
+			Div div = new Div();
+			div.setCSSClass("tokenCandidate");
+			div.appendChild(new H3().appendChild(new Text("Candidate")));
+			enclosing.appendChild(div);
 
-            for (CredentialInUi c : tc.credentials) {
-                
-                if(c.uri.toString().startsWith("IdmxCredential/"))
-                    c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
-                
-                Credential cred = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/"
-                        + URLEncoder.encode(c.uri.toString(), "UTF-8"), Credential.class);
-                
-                enclosing.appendChild(getDivForCredential(cred));
-                
-                Form f = new Form(backURL).setMethod("post");
+			div.appendChild(new H4().appendChild(new Text("Credentials "
+					+ tc.credentials.size())));
 
-                
+			for (CredentialInUi c : tc.credentials) {
 
-                f.appendChild(new Input().setType("hidden").setName("apdata")
-                        .setValue(applicationData));
-                f.appendChild(new Input().setType("hidden").setName("uic")
-                        .setValue(uiContext));
-                f.appendChild(new Input().setType("hidden").setName("policyId") // chosenPolicy
-                        .setValue(Integer.toString(policyId)));
-                f.appendChild(new Input().setType("hidden")
-                        .setName("candidateId") // chosenPresentationToken or
-                                                // chosenIssuanceToken (weird
-                                                // stuff)
-                        .setValue(Integer.toString(tc.candidateId)));
+				if (c.uri.toString().startsWith("IdmxCredential/"))
+					c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
 
-                f.appendChild(new Label().appendChild(new Text("PseudonymID: ")));
-                Select sel = new Select();
-                sel.setName("pseudonymId");
-                for (PseudonymListCandidate pc : tc.pseudonymCandidates) {
-                    sel.appendChild(new Option().appendChild(new Text(Integer
-                            .toString(pc.candidateId)))); // chosenPseudonymList
-                    System.out.println("____P_____");
-                    for(PseudonymInUi p : pc.pseudonyms) {
-                        System.out.println(p.uri.toString());
-                        System.out.println(p.pseudonym.getPseudonymUID().toString());
-                    }
-                    // TODO: What the hell is this pseudonym thing?
-                }
-                f.appendChild(sel);
-                f.appendChild(new Br());
-                f.appendChild(new Input().setType("submit").setValue(
-                        "Continue using this candidate."));
+				Credential cred = (Credential) RESTHelper.getRequest(
+						userServiceURL + "credential/get/"
+								+ URLEncoder.encode(c.uri.toString(), "UTF-8"),
+						Credential.class);
 
-                enclosing.appendChild(f);
-            }
-        }
-        P p = new P().appendChild(new B().appendChild(new Text(
-                "Revealed attributes")));
-        enclosing.appendChild(p);
+				enclosing.appendChild(getDivForCredential(cred));
 
-        Ul ul = new Ul();
+				Form f = new Form(backURL).setMethod("post");
 
-        for (TokenCandidate tc : tcs) {
-            List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
-            for (RevealedAttributeValue reveal : reveals) {
-                for (FriendlyDescription desc : reveal.descriptions) {
-                    ul.appendChild(new Li().appendChild(new Text(desc
-                            .getValue())));
-                }
-            }
-        }
+				f.appendChild(new Input().setType("hidden").setName("apdata")
+						.setValue(applicationData));
+				f.appendChild(new Input().setType("hidden").setName("uic")
+						.setValue(uiContext));
+				f.appendChild(new Input().setType("hidden").setName("policyId") // chosenPolicy
+						.setValue(Integer.toString(policyId)));
+				f.appendChild(new Input().setType("hidden")
+						.setName("candidateId") // chosenPresentationToken or
+												// chosenIssuanceToken (weird
+												// stuff)
+						.setValue(Integer.toString(tc.candidateId)));
 
-        enclosing.appendChild(ul);
+				f.appendChild(new Label()
+						.appendChild(new Text("PseudonymID: ")));
+				Select sel = new Select();
+				sel.setName("pseudonymId");
+				for (PseudonymListCandidate pc : tc.pseudonymCandidates) {
+					sel.appendChild(new Option().appendChild(new Text(Integer
+							.toString(pc.candidateId)))); // chosenPseudonymList
+					System.out.println("____P_____");
+					for (PseudonymInUi p : pc.pseudonyms) {
+						System.out.println(p.uri.toString());
+						System.out.println(p.pseudonym.getPseudonymUID()
+								.toString());
+					}
+					// TODO: What the hell is this pseudonym thing?
+				}
+				f.appendChild(sel);
+				f.appendChild(new Br());
+				f.appendChild(new Input().setType("submit").setValue(
+						"Continue using this candidate."));
 
-        ul = new Ul();
+				enclosing.appendChild(f);
+			}
+		}
+		P p = new P().appendChild(new B().appendChild(new Text(
+				"Revealed attributes")));
+		enclosing.appendChild(p);
 
-        p = new P()
-                .appendChild(new B().appendChild(new Text("Revealed facts")));
-        enclosing.appendChild(p);
+		Ul ul = new Ul();
 
-        for (TokenCandidate tc : tcs) {
-            List<RevealedFact> facts = tc.revealedFacts;
-            for (RevealedFact fact : facts) {
-                for (FriendlyDescription desc : fact.descriptions) {
-                    ul.appendChild(new Li().appendChild(new Text(desc
-                            .getValue())));
-                }
-            }
-        }
+		for (TokenCandidate tc : tcs) {
+			List<RevealedAttributeValue> reveals = tc.revealedAttributeValues;
+			for (RevealedAttributeValue reveal : reveals) {
+				for (FriendlyDescription desc : reveal.descriptions) {
+					ul.appendChild(new Li().appendChild(new Text(desc
+							.getValue())));
+				}
+			}
+		}
 
-        enclosing.appendChild(ul);
+		enclosing.appendChild(ul);
 
-        return enclosing;
-    }
+		ul = new Ul();
+
+		p = new P()
+				.appendChild(new B().appendChild(new Text("Revealed facts")));
+		enclosing.appendChild(p);
+
+		for (TokenCandidate tc : tcs) {
+			List<RevealedFact> facts = tc.revealedFacts;
+			for (RevealedFact fact : facts) {
+				for (FriendlyDescription desc : fact.descriptions) {
+					ul.appendChild(new Li().appendChild(new Text(desc
+							.getValue())));
+				}
+			}
+		}
+
+		enclosing.appendChild(ul);
+
+		return enclosing;
+	}
 }

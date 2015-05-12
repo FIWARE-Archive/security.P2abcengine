@@ -49,93 +49,95 @@ import eu.abc4trust.smartcardManager.AbcSmartcardManager;
 
 public class UserHelper extends AbstractHelper {
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(UserHelper.class));
+	private static final XLogger logger = new XLogger(
+			LoggerFactory.getLogger(UserHelper.class));
 
-    public ReloadTokensCommunicationStrategy reloadTokens = null;
-    static UserHelper instance;
-    public KeyStorage keyStorage;
+	public ReloadTokensCommunicationStrategy reloadTokens = null;
+	static UserHelper instance;
+	public KeyStorage keyStorage;
 
-    public static synchronized UserHelper initInstanceForService(
-            CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+	public static synchronized UserHelper initInstanceForService(
+			CryptoEngine cryptoEngine, String fileStoragePrefix,
+			Module... modules) throws URISyntaxException {
 
-        initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
+		initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
-        logger.info("UserHelper.initInstance : DONE");
+		logger.info("UserHelper.initInstance : DONE");
 
-        return instance;
-    }
+		return instance;
+	}
 
-    public static synchronized void loadSystemParameters() {
-        instance.checkIfSystemParametersAreLoaded();
-    }
+	public static synchronized void loadSystemParameters() {
+		instance.checkIfSystemParametersAreLoaded();
+	}
 
-    private static synchronized void initializeInstanceField(
-            CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
-        if (instance != null) {
-            throw new IllegalStateException(
-                    "initInstance can only be called once!");
-        }
-        logger.info("UserHelper.initInstance");
-        instance = new UserHelper(cryptoEngine, fileStoragePrefix, modules);
-    }
+	private static synchronized void initializeInstanceField(
+			CryptoEngine cryptoEngine, String fileStoragePrefix,
+			Module... modules) throws URISyntaxException {
+		if (instance != null) {
+			throw new IllegalStateException(
+					"initInstance can only be called once!");
+		}
+		logger.info("UserHelper.initInstance");
+		instance = new UserHelper(cryptoEngine, fileStoragePrefix, modules);
+	}
 
-    public static synchronized boolean isInit() {
-        return instance != null;
-    }
+	public static synchronized boolean isInit() {
+		return instance != null;
+	}
 
-    public static synchronized UserHelper getInstance() throws KeyManagerException {
-        if (instance == null) {
-            throw new IllegalStateException(
-                    "initInstance not called before using UserHelper!");
-        }
-        return instance;
-    }
+	public static synchronized UserHelper getInstance()
+			throws KeyManagerException {
+		if (instance == null) {
+			throw new IllegalStateException(
+					"initInstance not called before using UserHelper!");
+		}
+		return instance;
+	}
 
-    private UserAbcEngine engine;
-    public AbcSmartcardManager smartcardManager;
-    public CardStorage cardStorage;
-    public CredentialManager credentialManager;
+	private UserAbcEngine engine;
+	public AbcSmartcardManager smartcardManager;
+	public CardStorage cardStorage;
+	public CredentialManager credentialManager;
 
-    private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
-        logger.info("UserHelper : : create instance " + cryptoEngine + " : "
-                + fileStoragePrefix);
-        this.cryptoEngine = cryptoEngine;
-        try {
-            Module m = ProductionModuleFactory.newModule(cryptoEngine);
-            Module combinedModule = Modules.override(m).with(modules);
-            Injector injector = Guice.createInjector(combinedModule);
+	private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
+			Module... modules) throws URISyntaxException {
+		logger.info("UserHelper : : create instance " + cryptoEngine + " : "
+				+ fileStoragePrefix);
+		this.cryptoEngine = cryptoEngine;
+		try {
+			Module m = ProductionModuleFactory.newModule(cryptoEngine);
+			Module combinedModule = Modules.override(m).with(modules);
+			Injector injector = Guice.createInjector(combinedModule);
 
-            this.keyManager = injector.getInstance(KeyManager.class);
-            this.keyStorage = injector.getInstance(KeyStorage.class);
-            this.credentialManager = injector
-                    .getInstance(CredentialManager.class);
-            this.smartcardManager = injector
-                    .getInstance(AbcSmartcardManager.class);
-            this.cardStorage = injector.getInstance(CardStorage.class);
-            this.reloadTokens = injector
-                    .getInstance(ReloadTokensCommunicationStrategy.class);
-            //
-            UserAbcEngine e = injector.getInstance(UserAbcEngine.class);
-            this.engine = new SynchronizedUserAbcEngineImpl(e);
+			this.keyManager = injector.getInstance(KeyManager.class);
+			this.keyStorage = injector.getInstance(KeyStorage.class);
+			this.credentialManager = injector
+					.getInstance(CredentialManager.class);
+			this.smartcardManager = injector
+					.getInstance(AbcSmartcardManager.class);
+			this.cardStorage = injector.getInstance(CardStorage.class);
+			this.reloadTokens = injector
+					.getInstance(ReloadTokensCommunicationStrategy.class);
+			//
+			UserAbcEngine e = injector.getInstance(UserAbcEngine.class);
+			this.engine = new SynchronizedUserAbcEngineImpl(e);
 
-            if ((cryptoEngine == CryptoEngine.UPROVE)
-                    || (cryptoEngine == CryptoEngine.BRIDGED)) {
-                throw new RuntimeException("We only support Idemix. Sorry :(");
-            }
+			if ((cryptoEngine == CryptoEngine.UPROVE)
+					|| (cryptoEngine == CryptoEngine.BRIDGED)) {
+				throw new RuntimeException("We only support Idemix. Sorry :(");
+			}
 
-        } catch (Exception e) {
-            logger.catching( e);
-            System.err.println("Init Failed");
-            e.printStackTrace();
-            throw new IllegalStateException("Could not setup user !", e);
-        }
-    }
+		} catch (Exception e) {
+			logger.catching(e);
+			System.err.println("Init Failed");
+			e.printStackTrace();
+			throw new IllegalStateException("Could not setup user !", e);
+		}
+	}
 
-    public UserAbcEngine getEngine() {
-        return this.engine;
-    }
+	public UserAbcEngine getEngine() {
+		return this.engine;
+	}
 
 }

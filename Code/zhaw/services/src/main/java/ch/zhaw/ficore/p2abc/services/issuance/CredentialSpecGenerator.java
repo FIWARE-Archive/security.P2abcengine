@@ -21,64 +21,64 @@ import eu.abc4trust.xml.ObjectFactory;
  */
 public class CredentialSpecGenerator {
 
-    /**
-     * Creates a CredentialSpecification from an AttributeInfoCollection. As of
-     * now this method DOES NOT perform any sanity check and assumes that all
-     * mappings, encodings etc. of attributes in the AttributeInfoCollection are
-     * sane and correct.
-     * 
-     * @param attrInfoCol
-     *            an AttributeInfoCollectin
-     * @return corresponding CredentialSpecification
-     */
-    public CredentialSpecification generateCredentialSpecification(
-            AttributeInfoCollection attrInfoCol) {
-        ObjectFactory of = new ObjectFactory();
-        try {
-            CredentialSpecification credSpec = of
-                    .createCredentialSpecification();
-            credSpec.setSpecificationUID(new URI(ServicesConfiguration
-                    .getURIBase() + attrInfoCol.name));
+	/**
+	 * Creates a CredentialSpecification from an AttributeInfoCollection. As of
+	 * now this method DOES NOT perform any sanity check and assumes that all
+	 * mappings, encodings etc. of attributes in the AttributeInfoCollection are
+	 * sane and correct.
+	 * 
+	 * @param attrInfoCol
+	 *            an AttributeInfoCollectin
+	 * @return corresponding CredentialSpecification
+	 */
+	public CredentialSpecification generateCredentialSpecification(
+			AttributeInfoCollection attrInfoCol) {
+		ObjectFactory of = new ObjectFactory();
+		try {
+			CredentialSpecification credSpec = of
+					.createCredentialSpecification();
+			credSpec.setSpecificationUID(new URI(ServicesConfiguration
+					.getURIBase() + attrInfoCol.name));
 
-            credSpec.setVersion("1.0");
-            credSpec.setKeyBinding(true);
-            credSpec.setRevocable(false);
+			credSpec.setVersion("1.0");
+			credSpec.setKeyBinding(true);
+			credSpec.setRevocable(false);
 
-            AttributeDescriptions attrDescs = of.createAttributeDescriptions();
-            attrDescs.setMaxLength(256);
-            List<AttributeDescription> descriptions = attrDescs
-                    .getAttributeDescription();
+			AttributeDescriptions attrDescs = of.createAttributeDescriptions();
+			attrDescs.setMaxLength(256);
+			List<AttributeDescription> descriptions = attrDescs
+					.getAttributeDescription();
 
-            for (AttributeInformation attrInfo : attrInfoCol.attributes) {
+			for (AttributeInformation attrInfo : attrInfoCol.attributes) {
 
-                AttributeDescription attr = of.createAttributeDescription();
-                attr.setType(new URI(attrInfo.name));
-                attr.setDataType(new URI(attrInfo.mapping));
-                attr.setEncoding(new URI(attrInfo.encoding));
-                descriptions.add(attr);
+				AttributeDescription attr = of.createAttributeDescription();
+				attr.setType(new URI(attrInfo.name));
+				attr.setDataType(new URI(attrInfo.mapping));
+				attr.setEncoding(new URI(attrInfo.encoding));
+				descriptions.add(attr);
 
-                List<FriendlyDescription> friendlies = attr
-                        .getFriendlyAttributeName();
-                for (LanguageValuePair lvp : attrInfo.friendlyDescriptions) {
-                    FriendlyDescription friendlyDesc = of
-                            .createFriendlyDescription();
-                    friendlyDesc.setLang(lvp.language);
-                    friendlyDesc.setValue(lvp.value);
-                    friendlies.add(friendlyDesc);
-                }
+				List<FriendlyDescription> friendlies = attr
+						.getFriendlyAttributeName();
+				for (LanguageValuePair lvp : attrInfo.friendlyDescriptions) {
+					FriendlyDescription friendlyDesc = of
+							.createFriendlyDescription();
+					friendlyDesc.setLang(lvp.language);
+					friendlyDesc.setValue(lvp.value);
+					friendlies.add(friendlyDesc);
+				}
 
-            }
+			}
 
-            credSpec.setAttributeDescriptions(attrDescs);
-            FriendlyDescription fd = new FriendlyDescription();
-            fd.setLang("en");
-            fd.setValue(attrInfoCol.name + " credential specification");
-            credSpec.getFriendlyCredentialName().add(fd);
+			credSpec.setAttributeDescriptions(attrDescs);
+			FriendlyDescription fd = new FriendlyDescription();
+			fd.setLang("en");
+			fd.setValue(attrInfoCol.name + " credential specification");
+			credSpec.getFriendlyCredentialName().add(fd);
 
-            return credSpec;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+			return credSpec;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

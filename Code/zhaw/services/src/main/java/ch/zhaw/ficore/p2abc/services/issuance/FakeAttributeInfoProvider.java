@@ -11,32 +11,32 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
  */
 public class FakeAttributeInfoProvider extends AttributeInfoProvider {
 
-    /**
-     * Constructor
-     * 
-     * @param configuration
-     *            Configuration (Issuance)
-     */
-    public FakeAttributeInfoProvider(IssuanceConfiguration configuration) {
-        super(configuration);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param configuration
+	 *            Configuration (Issuance)
+	 */
+	public FakeAttributeInfoProvider(IssuanceConfiguration configuration) {
+		super(configuration);
+	}
 
-    /**
-     * No Operation.
-     */
-    public void shutdown() {
+	/**
+	 * No Operation.
+	 */
+	public void shutdown() {
 
-    }
+	}
 
-    /**
-     * Returns a AttributeInfoCollection filled with dummy attributes.
-     * 
-     * @return an AttributeInfoCollection
-     */
-    public AttributeInfoCollection getAttributes(String name) {
-        AttributeInfoCollection aiCol = new AttributeInfoCollection(name);
-        aiCol.addAttribute("someAttribute", "xs:integer",
-                "urn:abc4trust:1.0:encoding:integer:signed");
-        return aiCol;
-    }
+	/**
+	 * Returns a AttributeInfoCollection filled with dummy attributes.
+	 * 
+	 * @return an AttributeInfoCollection
+	 */
+	public AttributeInfoCollection getAttributes(String name) {
+		AttributeInfoCollection aiCol = new AttributeInfoCollection(name);
+		aiCol.addAttribute("someAttribute", "xs:integer",
+				"urn:abc4trust:1.0:encoding:integer:signed");
+		return aiCol;
+	}
 }

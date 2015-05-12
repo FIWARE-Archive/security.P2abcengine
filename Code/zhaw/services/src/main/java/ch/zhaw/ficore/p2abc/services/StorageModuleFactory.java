@@ -15,21 +15,21 @@ import com.google.inject.Module;
  */
 public class StorageModuleFactory {
 
-    private static final XLogger logger = new XLogger(LoggerFactory
-            .getLogger(StorageModuleFactory.class.getName()));
+	private static final XLogger logger = new XLogger(
+			LoggerFactory.getLogger(StorageModuleFactory.class.getName()));
 
-    /**
-     * Factory method. Returns an array of Modules.
-     * 
-     * @param type
-     *            Type of the service.
-     * @return Array of Modules that shall be used to overwrite existing guice
-     *         bindings.
-     */
-    public static synchronized Module[] getModulesForServiceConfiguration(
-            ServiceType type) {
-        logger.entry();
+	/**
+	 * Factory method. Returns an array of Modules.
+	 * 
+	 * @param type
+	 *            Type of the service.
+	 * @return Array of Modules that shall be used to overwrite existing guice
+	 *         bindings.
+	 */
+	public static synchronized Module[] getModulesForServiceConfiguration(
+			ServiceType type) {
+		logger.entry();
 
-        return logger.exit(new Module[] { new SqliteStorageModule(type) });
-    }
+		return logger.exit(new Module[] { new SqliteStorageModule(type) });
+	}
 }
