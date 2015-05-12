@@ -25,7 +25,7 @@ public class DemoResource {
 
     @GET()
     @Path("/page/")
-    public Response resource(@QueryParam("accesstoken") String accessToken)
+    public Response resource(@QueryParam("accesstoken") final String accessToken)
             throws Exception {
         try {
 

@@ -17,7 +17,7 @@ public class FakeAttributeInfoProvider extends AttributeInfoProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public FakeAttributeInfoProvider(IssuanceConfiguration configuration) {
+    public FakeAttributeInfoProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -33,7 +33,7 @@ public class FakeAttributeInfoProvider extends AttributeInfoProvider {
      * 
      * @return an AttributeInfoCollection
      */
-    public AttributeInfoCollection getAttributes(String name) {
+    public AttributeInfoCollection getAttributes(final String name) {
         AttributeInfoCollection aiCol = new AttributeInfoCollection(name);
         aiCol.addAttribute("someAttribute", "xs:integer",
                 "urn:abc4trust:1.0:encoding:integer:signed");

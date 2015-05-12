@@ -55,11 +55,11 @@ public class TestUserAPI extends JerseyTest {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-        InitialContext ic = new InitialContext();
+        final InitialContext ic = new InitialContext();
 
         try {
             ic.destroySubcontext("java:");
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
 
         ic.createSubcontext("java:");
@@ -70,7 +70,7 @@ public class TestUserAPI extends JerseyTest {
         ic.createSubcontext("java:/comp/env/cfg/Source");
         ic.createSubcontext("java:/comp/env/cfg/ConnectionParameters");
 
-        ConnectionParameters cp = new ConnectionParameters();
+        final ConnectionParameters cp = new ConnectionParameters();
         ic.bind("java:/comp/env/cfg/ConnectionParameters/attributes", cp);
         ic.bind("java:/comp/env/cfg/ConnectionParameters/authentication", cp);
         ic.bind("java:/comp/env/cfg/Source/attributes", "FAKE");
@@ -83,7 +83,7 @@ public class TestUserAPI extends JerseyTest {
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
         ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
-        SQLiteDataSource ds = new SQLiteDataSource();
+        final SQLiteDataSource ds = new SQLiteDataSource();
 
         storageFile = File.createTempFile("test", "sql");
 
@@ -150,18 +150,18 @@ public class TestUserAPI extends JerseyTest {
      */
     @Test
     public void testStoreGetCredSpec() throws Exception {
-        CredentialSpecification orig = new CredentialSpecification();
+        final CredentialSpecification orig = new CredentialSpecification();
         orig.setSpecificationUID(new URI("urn:fiware:cred"));
-        AttributeDescriptions attrDescs = new AttributeDescriptions();
-        List<AttributeDescription> lsAttrDesc = attrDescs
+        final AttributeDescriptions attrDescs = new AttributeDescriptions();
+        final List<AttributeDescription> lsAttrDesc = attrDescs
                 .getAttributeDescription();
 
-        AttributeDescription ad = new AttributeDescription();
+        final AttributeDescription ad = new AttributeDescription();
         ad.setDataType(new URI("xs:integer"));
         ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
         ad.setType(new URI("someAttribute"));
 
-        FriendlyDescription fd = new FriendlyDescription();
+        final FriendlyDescription fd = new FriendlyDescription();
         fd.setLang("en");
         fd.setValue("huhu");
 
@@ -217,7 +217,7 @@ public class TestUserAPI extends JerseyTest {
      */
     @Test
     public void testStoreIssuerParams() throws Exception {
-        IssuerParameters ip = new IssuerParameters();
+        final IssuerParameters ip = new IssuerParameters();
         ip.setParametersUID(new URI("urn:ip"));
         ip.setAlgorithmID(new URI("urn:algo"));
         ip.setCredentialSpecUID(new URI("urn:cs"));
@@ -228,8 +228,8 @@ public class TestUserAPI extends JerseyTest {
                 RESTHelper.toXML(IssuerParameters.class,
                         of.createIssuerParameters(ip)));
 
-        Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
-                + "getSettings", Settings.class);
+        final Settings settings = (Settings) RESTHelper.getRequest(
+                userServiceURL + "getSettings", Settings.class);
         assertEquals(settings.issuerParametersList.size(), 1);
         assertEquals(settings.issuerParametersList.get(0).getParametersUID()
                 .toString(), "urn:ip");
@@ -252,8 +252,8 @@ public class TestUserAPI extends JerseyTest {
         RESTHelper.deleteRequest(userServiceURL + "issuerParameters/delete/"
                 + URLEncoder.encode("urn:ip", "UTF-8"));
 
-        Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
-                + "getSettings", Settings.class);
+        final Settings settings = (Settings) RESTHelper.getRequest(
+                userServiceURL + "getSettings", Settings.class);
         assertEquals(settings.issuerParametersList.size(), 0);
     }
 }

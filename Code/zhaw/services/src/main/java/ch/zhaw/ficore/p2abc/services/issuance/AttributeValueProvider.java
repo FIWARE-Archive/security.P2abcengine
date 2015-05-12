@@ -29,7 +29,7 @@ public abstract class AttributeValueProvider {
      * @param configuration
      *            Configuration.
      */
-    public AttributeValueProvider(IssuanceConfiguration configuration) {
+    public AttributeValueProvider(final IssuanceConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -43,7 +43,7 @@ public abstract class AttributeValueProvider {
      * @return an implementation of an AttributeValueProvider
      */
     public static AttributeValueProvider getAttributeValueProvider(
-            IssuanceConfiguration configuration) {
+            final IssuanceConfiguration configuration) {
         switch (configuration.getAttributeSource()) {
         case LDAP:
             return new LdapAttributeValueProvider(configuration);

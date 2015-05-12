@@ -83,8 +83,9 @@ public class VerificationHelper extends AbstractHelper {
             LoggerFactory.getLogger(VerificationHelper.class));
 
     public static synchronized VerificationHelper initInstance(
-            CryptoEngine cryptoEngine, Module[] modules,
-            String... presentationPolicyResourceList) throws URISyntaxException {
+            final CryptoEngine cryptoEngine, final Module[] modules,
+            final String... presentationPolicyResourceList)
+            throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
@@ -133,8 +134,8 @@ public class VerificationHelper extends AbstractHelper {
      * @param fileStoragePrefix
      * @throws URISyntaxException
      */
-    private VerificationHelper(CryptoEngine cryptoEngine, Module... modules)
-            throws URISyntaxException {
+    private VerificationHelper(final CryptoEngine cryptoEngine,
+            final Module... modules) throws URISyntaxException {
         logger.info("VerificationHelper : create instance " + cryptoEngine);
         this.cryptoEngine = cryptoEngine;
         try {
@@ -179,8 +180,9 @@ public class VerificationHelper extends AbstractHelper {
      *             when something went wrong.
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
-            PresentationPolicyAlternatives presentationPolicyAlternatives,
-            String applicationData, Map<URI, URI> revInfoUIDs) throws Exception {
+            final PresentationPolicyAlternatives presentationPolicyAlternatives,
+            final String applicationData, final Map<URI, URI> revInfoUIDs)
+            throws Exception {
 
         this.nonce = this.generateNonce();
 
@@ -202,8 +204,8 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong.
      */
-    public String createPresentationPolicy_String(String policyName,
-            byte[] nonce, String applicationData) throws Exception {
+    public String createPresentationPolicy_String(final String policyName,
+            final byte[] nonce, final String applicationData) throws Exception {
         logger.info("VerificationHelper - create policy String : " + policyName
                 + " - data : " + applicationData);
 
@@ -222,8 +224,9 @@ public class VerificationHelper extends AbstractHelper {
     }
 
     public PresentationPolicyAlternatives modifyPresentationPolicy(
-            PresentationPolicyAlternatives ppa, byte[] nonce,
-            String applicationData, Map<URI, URI> revInfoUIDs) throws Exception {
+            final PresentationPolicyAlternatives ppa, final byte[] nonce,
+            final String applicationData, final Map<URI, URI> revInfoUIDs)
+            throws Exception {
         this.modifyPPA(ppa, applicationData, nonce, revInfoUIDs);
         return ppa;
     }
@@ -243,8 +246,9 @@ public class VerificationHelper extends AbstractHelper {
      *             when something went wrong
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
-            String policyName, byte[] nonce, String applicationData,
-            Map<URI, URI> revInfoUIDs) throws Exception {
+            final String policyName, final byte[] nonce,
+            final String applicationData, final Map<URI, URI> revInfoUIDs)
+            throws Exception {
         logger.info("VerificationHelper - create policy : " + policyName
                 + " - data : " + applicationData);
 
@@ -279,8 +283,9 @@ public class VerificationHelper extends AbstractHelper {
     private static Map<URI, RevocationInformation> revocationInformationCache = new HashMap<URI, RevocationInformation>();
 
     public PresentationPolicyAlternatives modifyPPA(
-            PresentationPolicyAlternatives ppa, String applicationData,
-            byte[] nonce, String verifierIdentity) {
+            final PresentationPolicyAlternatives ppa,
+            final String applicationData, final byte[] nonce,
+            final String verifierIdentity) {
         logger.entry();
 
         for (PresentationPolicy pp : ppa.getPresentationPolicy()) {
@@ -302,9 +307,9 @@ public class VerificationHelper extends AbstractHelper {
     }
 
     private PresentationPolicyAlternatives modifyPPA(
-            PresentationPolicyAlternatives pp_alternatives,
-            String applicationData, byte[] nonce, Map<URI, URI> revInfoUIDs)
-            throws Exception {
+            final PresentationPolicyAlternatives pp_alternatives,
+            final String applicationData, final byte[] nonce,
+            final Map<URI, URI> revInfoUIDs) throws Exception {
 
         logger.info("Modify PPA");
 
@@ -474,7 +479,7 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong
      */
-    private PresentationToken getPatchedPresetationToken(String orig)
+    private PresentationToken getPatchedPresetationToken(final String orig)
             throws Exception {
         /**
          * FIXME: What the hell is this doing and what the hell is it doing it
@@ -508,8 +513,8 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong
      */
-    public boolean verifyToken(String policyName, byte[] nonce,
-            String applicationData, PresentationToken presentationToken)
+    public boolean verifyToken(final String policyName, final byte[] nonce,
+            final String applicationData, PresentationToken presentationToken)
             throws Exception {
         logger.info("VerificationHelper - verify token : " + policyName
                 + " - applicationData : " + applicationData);
@@ -526,7 +531,7 @@ public class VerificationHelper extends AbstractHelper {
         return this.verifyToken(pp, presentationToken);
     }
 
-    private Map<URI, URI> extractRevInfoUIDs(PresentationToken pt) {
+    private Map<URI, URI> extractRevInfoUIDs(final PresentationToken pt) {
         Map<URI, URI> revInfoUIDs = null;
         for (CredentialInToken cred : pt.getPresentationTokenDescription()
                 .getCredential()) {
@@ -559,8 +564,8 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong
      */
-    public boolean verifyToken(PresentationPolicyAlternatives ppa,
-            PresentationToken presentationToken) throws Exception {
+    public boolean verifyToken(final PresentationPolicyAlternatives ppa,
+            final PresentationToken presentationToken) throws Exception {
         try {
             // verify in ABCE
             this.engine.verifyTokenAgainstPolicy(ppa, presentationToken, true);

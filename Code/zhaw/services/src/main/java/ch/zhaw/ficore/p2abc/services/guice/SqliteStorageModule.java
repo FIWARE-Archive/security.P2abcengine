@@ -26,7 +26,7 @@ public class SqliteStorageModule extends AbstractModule {
 
     private final ServiceType type;
 
-    public SqliteStorageModule(ServiceType type) {
+    public SqliteStorageModule(final ServiceType type) {
         this.type = type;
     }
 

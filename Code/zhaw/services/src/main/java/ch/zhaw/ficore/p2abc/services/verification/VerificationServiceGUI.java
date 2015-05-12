@@ -204,7 +204,7 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/deleteIssuerParameters")
     public Response deleteIssuerParameters(
-            @FormParam("is") String issuerParamsUid) {
+            @FormParam("is") final String issuerParamsUid) {
         log.entry();
 
         try {
@@ -233,7 +233,7 @@ public class VerificationServiceGUI {
     @POST()
     @Path("/protected/deleteCredentialSpecification")
     public Response deleteCredentialSpecification(
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") final String credSpecUid) {
         log.entry();
 
         try {
@@ -322,9 +322,11 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/addCredSpecAlt/")
-    public Response addCredSpecAlt(@FormParam("resource") String resource,
-            @FormParam("al") String alias, @FormParam("cs") String credSpecUid,
-            @FormParam("puid") String puid) {
+    public Response addCredSpecAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -353,9 +355,11 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/deleteCredSpecAlt/")
-    public Response deleteCredSpecAlt(@FormParam("resource") String resource,
-            @FormParam("al") String alias, @FormParam("cs") String credSpecUid,
-            @FormParam("puid") String puid) {
+    public Response deleteCredSpecAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -384,10 +388,10 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/addIssuerAlt/")
-    public Response addIssuerAlt(@FormParam("resource") String resource,
-            @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid,
-            @FormParam("puid") String puid) {
+    public Response addIssuerAlt(@FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("ip") final String issuerParamsUid,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -416,10 +420,11 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/deleteIssuerAlt/")
-    public Response deleteIssuerAlt(@FormParam("resource") String resource,
-            @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid,
-            @FormParam("puid") String puid) {
+    public Response deleteIssuerAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("ip") final String issuerParamsUid,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -448,8 +453,9 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/deleteAlias/")
-    public Response deleteAlias(@FormParam("resource") String resource,
-            @FormParam("al") String alias, @FormParam("puid") String puid) {
+    public Response deleteAlias(@FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -477,8 +483,9 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/addAlias/")
-    public Response addAlias(@FormParam("resource") String resource,
-            @FormParam("al") String alias, @FormParam("puid") String puid) {
+    public Response addAlias(@FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -506,8 +513,8 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/addPolicyAlt")
-    public Response addPolicyAlt(@FormParam("resource") String resource,
-            @FormParam("puid") String puid) {
+    public Response addPolicyAlt(@FormParam("resource") final String resource,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -534,8 +541,9 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/deletePolicyAlt")
-    public Response deletePolicyAlt(@FormParam("resource") String resource,
-            @FormParam("puid") String puid) {
+    public Response deletePolicyAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -562,8 +570,9 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/createResource")
-    public Response createResource(@FormParam("rs") String resourceString,
-            @FormParam("ru") String redirectURI) {
+    public Response createResource(
+            @FormParam("rs") final String resourceString,
+            @FormParam("ru") final String redirectURI) {
         log.entry();
 
         try {
@@ -589,11 +598,12 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/addPredicate/")
-    public Response addPredicate(@FormParam("resource") String resource,
-            @FormParam("cv") String constantValue,
-            @FormParam("at") String attribute,
-            @FormParam("p") String predicate, @FormParam("al") String alias,
-            @FormParam("puid") String puid) {
+    public Response addPredicate(@FormParam("resource") final String resource,
+            @FormParam("cv") final String constantValue,
+            @FormParam("at") final String attribute,
+            @FormParam("p") final String predicate,
+            @FormParam("al") final String alias,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -623,8 +633,10 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/deletePredicate/")
-    public Response deletePredicate(@FormParam("resource") String resource,
-            @FormParam("index") int index, @FormParam("puid") String puid) {
+    public Response deletePredicate(
+            @FormParam("resource") final String resource,
+            @FormParam("index") final int index,
+            @FormParam("puid") final String puid) {
         log.entry();
 
         try {
@@ -651,7 +663,8 @@ public class VerificationServiceGUI {
 
     @GET()
     @Path("/protected/resource")
-    public Response presentationPolicy(@QueryParam("resource") String resource) {
+    public Response presentationPolicy(
+            @QueryParam("resource") final String resource) {
         log.entry();
 
         try {
@@ -843,17 +856,18 @@ public class VerificationServiceGUI {
                                 .setValue(pp.getPolicyUID().toString()));
                         f.appendChild(new Input().setType("submit").setValue(
                                 "Delete"));
-                        if (uid.getRevocationInformationUID() != null)
+                        if (uid.getRevocationInformationUID() != null) {
                             ul.appendChild(new Li().appendChild(
                                     new Text(uid.getValue().toString()
                                             + " ("
                                             + uid.getRevocationInformationUID()
                                                     .toString() + ")"))
                                     .appendChild(f));
-                        else
+                        } else {
                             ul.appendChild(new Li().appendChild(
                                     new Text(uid.getValue().toString()))
                                     .appendChild(f));
+                        }
                     }
                     subGroupDiv.appendChild(ul);
 
@@ -975,7 +989,8 @@ public class VerificationServiceGUI {
 
     @GET()
     @Path("/protected/credentialSpecification/")
-    public Response credentialSpecification(@QueryParam("cs") String credSpecUid) {
+    public Response credentialSpecification(
+            @QueryParam("cs") final String credSpecUid) {
         log.entry();
 
         try {
@@ -1075,7 +1090,7 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/deleteResource")
-    public Response deleteResource(@FormParam("resource") String resource) {
+    public Response deleteResource(@FormParam("resource") final String resource) {
         log.entry();
 
         try {
@@ -1203,7 +1218,7 @@ public class VerificationServiceGUI {
 
     @POST()
     @Path("/protected/loadSettings2")
-    public Response loadSettings2(@FormParam("url") String url) {
+    public Response loadSettings2(@FormParam("url") final String url) {
         log.entry();
 
         try {
@@ -1260,8 +1275,9 @@ public class VerificationServiceGUI {
                         .getFriendlyCredentialName();
 
                 String friendlyDesc = "n/a";
-                if (friendlies.size() > 0)
+                if (friendlies.size() > 0) {
                     friendlyDesc = friendlies.get(0).getValue();
+                }
 
                 String href = "./credentialSpecification?cs="
                         + URLEncoder.encode(credSpec.getSpecificationUID()

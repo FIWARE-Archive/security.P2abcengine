@@ -71,7 +71,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public LdapAttributeInfoProvider(IssuanceConfiguration configuration) {
+    public LdapAttributeInfoProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -88,7 +88,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      * 
      * @return an AttributeInfoCollection, null if something went wrong
      */
-    public AttributeInfoCollection getAttributes(String name) {
+    public AttributeInfoCollection getAttributes(final String name) {
         logger.entry();
 
         LdapConnection con = null;
@@ -132,12 +132,13 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
             logger.catching(e);
             return logger.exit(null);
         } finally {
-            if (con != null)
+            if (con != null) {
                 try {
                     con.close();
                 } catch (NamingException e) {
                     logger.catching(e);
                 }
+            }
         }
     }
 
@@ -153,10 +154,11 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
     private String getMapping(String syntax) {
         syntax = syntax.replaceAll("\\{\\d+\\}$", ""); // Strip away length
                                                        // restrictions
-        if (syntaxMappings.containsKey(syntax))
+        if (syntaxMappings.containsKey(syntax)) {
             return syntaxMappings.get(syntax).get(0);
-        else
+        } else {
             return "xs:string"; // use string as default mapping
+        }
     }
 
     /**
@@ -167,11 +169,12 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      *            An mapping as returned by getMapping.
      * @return the recommended encoding
      */
-    private String getEncoding(String mapping) {
-        if (mappingEncodings.containsKey(mapping))
+    private String getEncoding(final String mapping) {
+        if (mappingEncodings.containsKey(mapping)) {
             return mappingEncodings.get(mapping).get(0);
-        else
+        } else {
             throw new RuntimeException(
                     "Can not determine encoding for mapping: " + mapping);
+        }
     }
 }

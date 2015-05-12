@@ -102,8 +102,9 @@ public class UserService {
         UserHelper instance = UserHelper.getInstance();
         try {
             SystemParameters sp = instance.keyManager.getSystemParameters();
-            if (sp != null)
+            if (sp != null) {
                 this.storeSystemParameters(sp);
+            }
         } catch (Exception ex) {
             // Ignore.
         }
@@ -171,7 +172,7 @@ public class UserService {
     @Path("/canBeSatisfied/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     /* UNUSED */
-    public Response canBeSatisfied(PresentationPolicyAlternatives p) {
+    public Response canBeSatisfied(final PresentationPolicyAlternatives p) {
         log.entry();
 
         try {
@@ -228,12 +229,10 @@ public class UserService {
     @POST()
     @Path("/createPresentationToken/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response createPresentationToken(PresentationPolicyAlternatives p) { /*
-                                                                                 * [
-                                                                                 * FLOW
-                                                                                 * TEST
-                                                                                 * ]
-                                                                                 */
+    public Response createPresentationToken(
+            final PresentationPolicyAlternatives p) { /*
+                                                       * [ FLOW TEST ]
+                                                       */
         log.entry();
 
         DummyForNewABCEInterfaces d = null;
@@ -274,7 +273,7 @@ public class UserService {
     @Path("/createPresentationTokenUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     /* [FLOW TEST] */
-    public Response createPresentationToken(UiPresentationReturn upr) {
+    public Response createPresentationToken(final UiPresentationReturn upr) {
 
         log.entry();
 
@@ -327,7 +326,10 @@ public class UserService {
      */
     @POST()
     @Path("/loadSettings/")
-    public Response loadSettings(@QueryParam("url") String url) { /* [FLOW TEST] */
+    public Response loadSettings(@QueryParam("url") final String url) { /*
+                                                                         * [FLOW
+                                                                         * TEST]
+                                                                         */
         log.entry();
 
         try {
@@ -337,24 +339,27 @@ public class UserService {
             for (IssuerParameters ip : settings.issuerParametersList) {
                 Response r = this.storeIssuerParameters(ip.getParametersUID(),
                         ip);
-                if (r.getStatus() != 200)
+                if (r.getStatus() != 200) {
                     throw new RuntimeException(
                             "Could not load issuer parameters!");
+                }
             }
 
             for (CredentialSpecification cs : settings.credentialSpecifications) {
                 Response r = this.storeCredentialSpecification(
                         cs.getSpecificationUID(), cs);
-                if (r.getStatus() != 200)
+                if (r.getStatus() != 200) {
                     throw new RuntimeException(
                             "Could not load credential specification!");
+                }
             }
 
             Response r = this.storeSystemParameters(settings.systemParameters);
             log.info(settings.systemParameters + "|"
                     + settings.systemParameters.toString());
-            if (r.getStatus() != 200)
+            if (r.getStatus() != 200) {
                 throw new RuntimeException("Could not load system parameters!");
+            }
 
             return log.exit(Response.ok().build());
         } catch (Exception e) {
@@ -517,8 +522,9 @@ public class UserService {
         try {
             this.initializeHelper();
 
-            if (credUid.lastIndexOf('/') == -1)
+            if (credUid.lastIndexOf('/') == -1) {
                 credUid = "IdmxCredential/" + credUid;
+            }
 
             UserHelper instance = UserHelper.getInstance();
 
@@ -595,11 +601,12 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStep/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(JAXBElement<IssuanceMessage> jm) { /*
-                                                                             * [FLOW
-                                                                             * TEST
-                                                                             * ]
-                                                                             */
+    public Response issuanceProtocolStep(final JAXBElement<IssuanceMessage> jm) { /*
+                                                                                   * [
+                                                                                   * FLOW
+                                                                                   * TEST
+                                                                                   * ]
+                                                                                   */
 
         log.entry();
 
@@ -641,7 +648,10 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStepUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(UiIssuanceReturn uir) { /* [FLOW TEST] */
+    public Response issuanceProtocolStep(final UiIssuanceReturn uir) { /*
+                                                                        * [FLOW
+                                                                        * TEST]
+                                                                        */
 
         log.entry();
 
@@ -691,8 +701,9 @@ public class UserService {
 
             UserHelper instance = UserHelper.getInstance();
 
-            if (credentialUid.lastIndexOf('/') == -1)
+            if (credentialUid.lastIndexOf('/') == -1) {
                 credentialUid = "IdmxCredential/" + credentialUid;
+            }
 
             boolean r = instance.credentialManager.deleteCredential(new URI(
                     credentialUid));
@@ -734,16 +745,17 @@ public class UserService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     /* [TEST EXISTS] */
     public Response storeCredentialSpecification(
-            @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
-            CredentialSpecification credSpec) {
+            @PathParam("credentialSpecifationUid") final URI credentialSpecificationUid,
+            final CredentialSpecification credSpec) {
         log.entry();
 
         try {
 
             if (!credentialSpecificationUid.toString().equals(
-                    credSpec.getSpecificationUID().toString()))
+                    credSpec.getSpecificationUID().toString())) {
                 return log.exit(Response.status(Response.Status.CONFLICT)
                         .entity(errCredSpecUid).build());
+            }
 
             this.initializeHelper();
 
@@ -789,7 +801,7 @@ public class UserService {
     @Path("/credentialSpecification/get/{credentialSpecificationUid}")
     /* [TEST EXISTS] */
     public Response getCredentialSpecification(
-            @PathParam("credentialSpecificationUid") String credSpecUid) {
+            @PathParam("credentialSpecificationUid") final String credSpecUid) {
         log.entry();
 
         try {
@@ -802,9 +814,10 @@ public class UserService {
             CredentialSpecification credSpec = keyManager
                     .getCredentialSpecification(new URI(credSpecUid));
 
-            if (credSpec == null)
+            if (credSpec == null) {
                 return log.exit(Response.status(Response.Status.NOT_FOUND)
                         .entity(errNotFound).build());
+            }
 
             return log.exit(Response.ok(
                     of.createCredentialSpecification(credSpec),
@@ -833,7 +846,7 @@ public class UserService {
     @DELETE()
     @Path("/credentialSpecification/delete/{credentialSpecificationUid}")
     public Response deleteCredentialSpecification( /* [TEST EXISTS] */
-    @PathParam("credentialSpecificationUid") String credSpecUid) {
+    @PathParam("credentialSpecificationUid") final String credSpecUid) {
         log.entry();
 
         try {
@@ -879,7 +892,8 @@ public class UserService {
     @Path("/systemParameters/store")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     /* [FLOW TEST] */
-    public Response storeSystemParameters(SystemParameters systemParameters) {
+    public Response storeSystemParameters(
+            final SystemParameters systemParameters) {
         log.entry();
 
         try {
@@ -932,8 +946,8 @@ public class UserService {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     /* [TEST EXISTS] */
     public Response storeIssuerParameters(
-            @PathParam("issuerParametersUid") URI issuerParametersUid,
-            IssuerParameters issuerParameters) {
+            @PathParam("issuerParametersUid") final URI issuerParametersUid,
+            final IssuerParameters issuerParameters) {
 
         log.entry();
 
@@ -946,9 +960,10 @@ public class UserService {
             UserHelper instance = UserHelper.getInstance();
 
             if (!(issuerParametersUid.toString().equals(issuerParameters
-                    .getParametersUID().toString())))
+                    .getParametersUID().toString()))) {
                 return log.exit(Response.status(Response.Status.CONFLICT)
                         .entity(errIssParamsUid).build());
+            }
 
             KeyManager keyManager = instance.keyManager;
 
@@ -986,7 +1001,7 @@ public class UserService {
     @Path("/issuerParameters/delete/{issuerParametersUid}")
     /* [TEST EXISTS] */
     public Response deleteIssuerParameters(
-            @PathParam("issuerParametersUid") String issuerParametersUid) {
+            @PathParam("issuerParametersUid") final String issuerParametersUid) {
         log.entry();
 
         try {
@@ -1066,10 +1081,11 @@ public class UserService {
     @Path("/extractIssuanceMessage/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response extractIssuanceMessage(
-            IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /*
-                                                                    * [FLOW
-                                                                    * TEST]
-                                                                    */
+            final IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /*
+                                                                          * [FLOW
+                                                                          * TEST
+                                                                          * ]
+                                                                          */
         log.entry();
 
         try {

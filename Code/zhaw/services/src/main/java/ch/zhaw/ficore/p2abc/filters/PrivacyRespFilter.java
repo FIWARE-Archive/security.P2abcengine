@@ -10,7 +10,8 @@ import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 public class PrivacyRespFilter implements ContainerResponseFilter {
-    public ContainerResponse filter(ContainerRequest req, ContainerResponse resp) {
+    public ContainerResponse filter(final ContainerRequest req,
+            final ContainerResponse resp) {
 
         String accesstoken = req.getHeaderValue("X-P2ABC-ACCESSTOKEN");
 

@@ -31,7 +31,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public JdbcAttributeInfoProvider(IssuanceConfiguration configuration) {
+    public JdbcAttributeInfoProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -48,7 +48,7 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
      * @return an AttributeInfoCollection
      */
     @SuppressWarnings("resource")
-    public AttributeInfoCollection getAttributes(String name) {
+    public AttributeInfoCollection getAttributes(final String name) {
         AttributeInfoCollection aiCol = new AttributeInfoCollection(name);
 
         Connection conn = null;
@@ -97,13 +97,14 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
             logger.catching(e);
             throw new RuntimeException(e);
         } finally {
-            if (conn != null)
+            if (conn != null) {
                 try {
                     rs.close();
                     conn.close();
                 } catch (SQLException e) {
                     logger.catching(e);
                 }
+            }
         }
     }
 }

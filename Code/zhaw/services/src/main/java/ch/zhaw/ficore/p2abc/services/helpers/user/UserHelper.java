@@ -57,8 +57,8 @@ public class UserHelper extends AbstractHelper {
     public KeyStorage keyStorage;
 
     public static synchronized UserHelper initInstanceForService(
-            CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+            final CryptoEngine cryptoEngine, final String fileStoragePrefix,
+            final Module... modules) throws URISyntaxException {
 
         initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
@@ -72,8 +72,8 @@ public class UserHelper extends AbstractHelper {
     }
 
     private static synchronized void initializeInstanceField(
-            CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+            final CryptoEngine cryptoEngine, final String fileStoragePrefix,
+            final Module... modules) throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
@@ -100,8 +100,9 @@ public class UserHelper extends AbstractHelper {
     public CardStorage cardStorage;
     public CredentialManager credentialManager;
 
-    private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+    private UserHelper(final CryptoEngine cryptoEngine,
+            final String fileStoragePrefix, final Module... modules)
+            throws URISyntaxException {
         logger.info("UserHelper : : create instance " + cryptoEngine + " : "
                 + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;

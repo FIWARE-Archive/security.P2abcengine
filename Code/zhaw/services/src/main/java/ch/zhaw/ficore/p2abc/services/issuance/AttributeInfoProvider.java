@@ -21,7 +21,7 @@ public abstract class AttributeInfoProvider {
 
     protected IssuanceConfiguration configuration;
 
-    public AttributeInfoProvider(IssuanceConfiguration configuration) {
+    public AttributeInfoProvider(final IssuanceConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -35,7 +35,7 @@ public abstract class AttributeInfoProvider {
      * @return an implementation of an AttributeInfoProvider
      */
     public static AttributeInfoProvider getAttributeInfoProvider(
-            IssuanceConfiguration configuration) {
+            final IssuanceConfiguration configuration) {
         logger.entry();
 
         switch (configuration.getAttributeSource()) {

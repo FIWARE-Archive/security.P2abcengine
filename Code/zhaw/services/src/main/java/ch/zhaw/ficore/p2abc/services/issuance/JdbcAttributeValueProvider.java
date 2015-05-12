@@ -28,7 +28,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
 
     private final ObjectFactory of;
 
-    public JdbcAttributeValueProvider(IssuanceConfiguration config) {
+    public JdbcAttributeValueProvider(final IssuanceConfiguration config) {
         super(config);
         of = new ObjectFactory();
     }
@@ -38,8 +38,9 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
     }
 
     @SuppressWarnings("resource")
-    public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
-            String uid, CredentialSpecification credSpec) throws Exception {
+    public List<eu.abc4trust.xml.Attribute> getAttributes(final String query,
+            final String uid, final CredentialSpecification credSpec)
+            throws Exception {
 
         Connection conn = null;
         ResultSet rs = null;
@@ -120,20 +121,23 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
             throw new RuntimeException(e);
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
+                }
             } catch (SQLException e) {
                 logger.catching(e);
             }
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
                 logger.catching(e);
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException e) {
                 logger.catching(e);
             }

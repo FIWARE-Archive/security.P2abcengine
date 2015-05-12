@@ -75,11 +75,11 @@ public class TestFlowGUI extends JerseyTest {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-        InitialContext ic = new InitialContext();
+        final InitialContext ic = new InitialContext();
 
         try {
             ic.destroySubcontext("java:");
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
 
         ic.createSubcontext("java:");
@@ -90,7 +90,7 @@ public class TestFlowGUI extends JerseyTest {
         ic.createSubcontext("java:/comp/env/cfg/Source");
         ic.createSubcontext("java:/comp/env/cfg/ConnectionParameters");
 
-        ConnectionParameters cp = new ConnectionParameters();
+        final ConnectionParameters cp = new ConnectionParameters();
         ic.bind("java:/comp/env/cfg/ConnectionParameters/attributes", cp);
         ic.bind("java:/comp/env/cfg/ConnectionParameters/authentication", cp);
 
@@ -106,7 +106,7 @@ public class TestFlowGUI extends JerseyTest {
                 + "verification/");
         ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
-        SQLiteDataSource ds = new SQLiteDataSource();
+        final SQLiteDataSource ds = new SQLiteDataSource();
 
         storageFile = File.createTempFile("test", "sql");
 
@@ -170,7 +170,7 @@ public class TestFlowGUI extends JerseyTest {
         /*
          * Load settings from issuer onto the other services
          */
-        String url = issuanceServiceURLUnprot + "getSettings";
+        final String url = issuanceServiceURLUnprot + "getSettings";
         params = new MultivaluedMapImpl();
         params.add("url", url);
         RESTHelper.postRequest(userGUI + "loadSettings2", params);
@@ -188,7 +188,7 @@ public class TestFlowGUI extends JerseyTest {
                 issuanceServiceURLUnprot.substring(0,
                         issuanceServiceURLUnprot.lastIndexOf("/")));
         params.add("cs", "urn:fiware:privacy:test");
-        String result = (String) RESTHelper.postRequest(userGUI
+        final String result = (String) RESTHelper.postRequest(userGUI
                 + "obtainCredential2", params);
         System.out.println("CTX: " + getContextString(result));
 
@@ -287,9 +287,9 @@ public class TestFlowGUI extends JerseyTest {
          */
     }
 
-    public String getContextString(String input) {
-        Pattern pattern = Pattern.compile("ui-context-(.*?)\">");
-        Matcher m = pattern.matcher(input);
+    public String getContextString(final String input) {
+        final Pattern pattern = Pattern.compile("ui-context-(.*?)\">");
+        final Matcher m = pattern.matcher(input);
         m.find();
         return "ui-context-" + m.group(1);
     }

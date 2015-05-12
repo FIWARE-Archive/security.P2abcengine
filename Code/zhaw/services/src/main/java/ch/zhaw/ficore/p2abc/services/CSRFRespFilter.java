@@ -15,8 +15,8 @@ public class CSRFRespFilter implements ContainerResponseFilter {
     private final static int NUM_HEX_DIGITS = 16;
 
     @Override
-    public ContainerResponse filter(ContainerRequest arg0,
-            ContainerResponse arg1) {
+    public ContainerResponse filter(final ContainerRequest arg0,
+            final ContainerResponse arg1) {
         List<Object> ls = new ArrayList<Object>();
         ls.add("csrf=" + randomString());
         arg1.getHttpHeaders().put(HttpHeaders.SET_COOKIE, ls);

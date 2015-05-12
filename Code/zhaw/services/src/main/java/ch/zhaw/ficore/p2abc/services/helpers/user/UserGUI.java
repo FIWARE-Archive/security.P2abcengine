@@ -56,7 +56,8 @@ public class UserGUI {
 
     private static String cssURL = "/css/style.css";
 
-    public static Html getHtmlPramble(String title, HttpServletRequest req) {
+    public static Html getHtmlPramble(final String title,
+            final HttpServletRequest req) {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
@@ -68,7 +69,7 @@ public class UserGUI {
         return html;
     }
 
-    public static Body getBody(Div mainDiv) {
+    public static Body getBody(final Div mainDiv) {
         Div containerDiv = new Div().setCSSClass("containerDiv");
         containerDiv.appendChild(new H1().appendChild(new Text("User")));
         Div navDiv = new Div().setCSSClass("navDiv");
@@ -88,7 +89,7 @@ public class UserGUI {
         return body;
     }
 
-    public static Html errorPage(String msg, HttpServletRequest req) {
+    public static Html errorPage(final String msg, final HttpServletRequest req) {
         Html html = getHtmlPramble("ERROR", req);
         Div mainDiv = new Div().setCSSClass("mainDiv");
         html.appendChild(getBody(mainDiv));
@@ -98,7 +99,7 @@ public class UserGUI {
         return html;
     }
 
-    public static Div getDivForCredential(Credential cred) {
+    public static Div getDivForCredential(final Credential cred) {
         URI uri = cred.getCredentialDescription().getCredentialUID();
         Div credDiv = new Div().setCSSClass("credDiv");
         CredentialDescription credDesc = cred.getCredentialDescription();
@@ -153,11 +154,12 @@ public class UserGUI {
      *             on error
      * @throws NamingException
      */
-    public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext, String applicationData,
-            String backURL, String userServiceURL)
-            throws ClientHandlerException, UniformInterfaceException,
-            UnsupportedEncodingException, JAXBException, NamingException {
+    public static Div getDivForTokenCandidates(final List<TokenCandidate> tcs,
+            final int policyId, final String uiContext,
+            final String applicationData, final String backURL,
+            final String userServiceURL) throws ClientHandlerException,
+            UniformInterfaceException, UnsupportedEncodingException,
+            JAXBException, NamingException {
         Div enclosing = new Div();
 
         for (TokenCandidate tc : tcs) {
@@ -171,8 +173,9 @@ public class UserGUI {
 
             for (CredentialInUi c : tc.credentials) {
 
-                if (c.uri.toString().startsWith("IdmxCredential/"))
+                if (c.uri.toString().startsWith("IdmxCredential/")) {
                     c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
+                }
 
                 Credential cred = (Credential) RESTHelper.getRequest(
                         userServiceURL + "credential/get/"

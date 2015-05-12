@@ -36,7 +36,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public JdbcAuthenticationProvider(IssuanceConfiguration configuration) {
+    public JdbcAuthenticationProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -53,12 +53,13 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
      * 
      * @throws NamingException
      */
-    public boolean authenticate(AuthenticationInformation authInfo)
+    public boolean authenticate(final AuthenticationInformation authInfo)
             throws NamingException {
         logger.info("jdbc auth");
 
-        if (!(authInfo instanceof AuthInfoSimple))
+        if (!(authInfo instanceof AuthInfoSimple)) {
             return false;
+        }
 
         AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 
@@ -106,20 +107,23 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             return false;
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
+                }
             } catch (SQLException e) {
                 logger.catching(e);
             }
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
                 logger.catching(e);
             }
             try {
-                if (conn != null)
+                if (conn != null) {
                     conn.close();
+                }
             } catch (SQLException e) {
                 logger.catching(e);
             }

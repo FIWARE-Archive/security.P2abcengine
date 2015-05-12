@@ -35,7 +35,7 @@ import javax.xml.bind.DatatypeConverter;
 
 public class AttributeValueConverter {
 
-    public Object convertValue(String dataType, Object value) {
+    public Object convertValue(final String dataType, final Object value) {
         try {
             if ("xs:string".equals(dataType)) {
                 return value.toString();
@@ -96,7 +96,7 @@ public class AttributeValueConverter {
                 "Attributes dataType not supported (yet) : " + dataType);
     }
 
-    public Calendar valueToCalendar(Object value) {
+    public Calendar valueToCalendar(final Object value) {
         if (value instanceof Date) {
             Calendar cal = Calendar.getInstance();
             cal.setTime((Date) value);

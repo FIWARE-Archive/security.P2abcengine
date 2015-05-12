@@ -138,19 +138,21 @@ public class UserServiceGUI {
         }
     }
 
-    public static synchronized String getURL(String uiContext) {
+    public static synchronized String getURL(final String uiContext) {
         return uiContextToURL.get(uiContext);
     }
 
-    public static synchronized void putURL(String uiContext, String url) {
+    public static synchronized void putURL(final String uiContext,
+            final String url) {
         uiContextToURL.put(uiContext, url);
     }
 
-    public static synchronized String getResource(String uiContext) {
+    public static synchronized String getResource(final String uiContext) {
         return uiContextToResource.get(uiContext);
     }
 
-    public static synchronized void putResource(String uiContext, String url) {
+    public static synchronized void putResource(final String uiContext,
+            final String url) {
         uiContextToResource.put(uiContext, url);
     }
 
@@ -274,7 +276,7 @@ public class UserServiceGUI {
     @POST()
     @Path("/deleteIssuerParameters")
     public Response deleteIssuerParameters(
-            @FormParam("is") String issuerParamsUid) {
+            @FormParam("is") final String issuerParamsUid) {
         log.entry();
 
         try {
@@ -294,11 +296,12 @@ public class UserServiceGUI {
 
     @POST()
     @Path("/requestResource3/")
-    public Response requestResource3(@FormParam("policyId") String policyId,
-            @FormParam("candidateId") String candidateId,
-            @FormParam("pseudonymId") String pseudonymId,
-            @FormParam("uic") String uiContext,
-            @FormParam("apdata") String applicationData) {
+    public Response requestResource3(
+            @FormParam("policyId") final String policyId,
+            @FormParam("candidateId") final String candidateId,
+            @FormParam("pseudonymId") final String pseudonymId,
+            @FormParam("uic") final String uiContext,
+            @FormParam("apdata") final String applicationData) {
         log.entry();
 
         try {
@@ -363,8 +366,9 @@ public class UserServiceGUI {
 
     @POST()
     @Path("/requestResource2")
-    public Response requestResource(@FormParam("vu") String verificationURL,
-            @FormParam("r") String resource) {
+    public Response requestResource(
+            @FormParam("vu") final String verificationURL,
+            @FormParam("r") final String resource) {
         log.entry();
 
         try {
@@ -479,7 +483,7 @@ public class UserServiceGUI {
 
     @POST()
     @Path("/deleteURL")
-    public Response deleteURL(@FormParam("name") String name) {
+    public Response deleteURL(@FormParam("name") final String name) {
         log.entry();
 
         try {
@@ -497,8 +501,8 @@ public class UserServiceGUI {
 
     @POST()
     @Path("/addURL")
-    public Response addURL(@FormParam("name") String name,
-            @FormParam("url") String url) {
+    public Response addURL(@FormParam("name") final String name,
+            @FormParam("url") final String url) {
         log.entry();
 
         try {
@@ -713,7 +717,7 @@ public class UserServiceGUI {
 
     @POST()
     @Path("/deleteCredential/")
-    public Response deleteCredential(@FormParam("credUid") String credUid) {
+    public Response deleteCredential(@FormParam("credUid") final String credUid) {
         try {
 
             RESTHelper.deleteRequest(ServicesConfiguration.getUserServiceURL()
@@ -747,7 +751,7 @@ public class UserServiceGUI {
     @POST()
     @Path("/issuanceArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceArguments(JAXBElement<IssuanceReturn> args_)
+    public Response issuanceArguments(final JAXBElement<IssuanceReturn> args_)
             throws ClientHandlerException, UniformInterfaceException,
             UnsupportedEncodingException, JAXBException, NamingException {
         UiIssuanceArguments args = args_.getValue().uia;
@@ -820,11 +824,11 @@ public class UserServiceGUI {
      */
     @POST
     @Path("/obtainCredential2")
-    public Response obtainCredential2(@FormParam("un") String username,
-            @FormParam("pw") String password,
-            @FormParam("is") String issuerUrl,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("oauth") String oauth) {
+    public Response obtainCredential2(@FormParam("un") final String username,
+            @FormParam("pw") final String password,
+            @FormParam("is") final String issuerUrl,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("oauth") final String oauth) {
         try {
             // Make an IssuanceRequest
             IssuanceRequest ir = new IssuanceRequest();
@@ -920,10 +924,11 @@ public class UserServiceGUI {
      */
     @POST
     @Path("/obtainCredential3")
-    public Response obtainCredential3(@FormParam("policyId") String policyId,
-            @FormParam("candidateId") String candidateId,
-            @FormParam("pseudonymId") String pseudonymId,
-            @FormParam("uic") String uiContext) {
+    public Response obtainCredential3(
+            @FormParam("policyId") final String policyId,
+            @FormParam("candidateId") final String candidateId,
+            @FormParam("pseudonymId") final String pseudonymId,
+            @FormParam("uic") final String uiContext) {
         try {
             UiIssuanceReturn uir = new UiIssuanceReturn();
             uir.uiContext = new URI(uiContext);
@@ -1097,7 +1102,7 @@ public class UserServiceGUI {
     @Path("/presentationArguments/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response presentationArguments(
-            JAXBElement<UiPresentationArguments> args_)
+            final JAXBElement<UiPresentationArguments> args_)
             throws ClientHandlerException, UniformInterfaceException,
             UnsupportedEncodingException, JAXBException, NamingException {
         UiPresentationArguments args = args_.getValue();
@@ -1108,12 +1113,14 @@ public class UserServiceGUI {
         for (TokenCandidatePerPolicy tcpp : args.tokenCandidatesPerPolicy) {
             List<Object> content = tcpp.policy.getMessage()
                     .getApplicationData().getContent();
-            if (content == null || content.size() < 1)
+            if (content == null || content.size() < 1) {
                 throw new RuntimeException("Expecting application data!");
+            }
             content = tcpp.policy.getMessage().getVerifierIdentity()
                     .getContent();
-            if (content == null || content.size() < 1)
+            if (content == null || content.size() < 1) {
                 throw new RuntimeException("Expecting verifier identity!");
+            }
             String vi = (String) content.get(0);
 
             mainDiv.appendChild(new H2().appendChild(new Text(tcpp.policy
@@ -1135,7 +1142,7 @@ public class UserServiceGUI {
 
     @POST()
     @Path("/loadSettings2")
-    public Response loadSettings2(@FormParam("url") String url) {
+    public Response loadSettings2(@FormParam("url") final String url) {
         log.entry();
 
         try {

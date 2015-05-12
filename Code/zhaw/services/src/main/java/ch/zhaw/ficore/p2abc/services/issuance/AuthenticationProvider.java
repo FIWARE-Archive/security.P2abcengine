@@ -16,7 +16,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public abstract class AuthenticationProvider {
 
-    public AuthenticationProvider(IssuanceConfiguration configuration) {
+    public AuthenticationProvider(final IssuanceConfiguration configuration) {
     }
 
     /**
@@ -29,7 +29,7 @@ public abstract class AuthenticationProvider {
      * @return an implementation of an AuthenticationProvider
      */
     public static AuthenticationProvider getAuthenticationProvider(
-            IssuanceConfiguration configuration) {
+            final IssuanceConfiguration configuration) {
         switch (configuration.getAuthenticationSource()) {
         case FAKE:
             return new FakeAuthenticationProvider(configuration);

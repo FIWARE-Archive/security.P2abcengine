@@ -20,7 +20,7 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 
     private final ObjectFactory of;
 
-    public LdapAttributeValueProvider(IssuanceConfiguration config) {
+    public LdapAttributeValueProvider(final IssuanceConfiguration config) {
         super(config);
         of = new ObjectFactory();
     }
@@ -30,7 +30,8 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
     }
 
     public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
-            String uid, CredentialSpecification credSpec) throws Exception {
+            final String uid, final CredentialSpecification credSpec)
+            throws Exception {
 
         LdapConnection connection = null;
 
@@ -91,8 +92,9 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            if (connection != null)
+            if (connection != null) {
                 connection.close();
+            }
         }
     }
 }

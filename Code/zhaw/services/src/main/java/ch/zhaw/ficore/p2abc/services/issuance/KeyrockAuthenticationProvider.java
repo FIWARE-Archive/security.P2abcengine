@@ -33,7 +33,8 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public KeyrockAuthenticationProvider(IssuanceConfiguration configuration) {
+    public KeyrockAuthenticationProvider(
+            final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -50,12 +51,13 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
      * 
      * @throws NamingException
      */
-    public boolean authenticate(AuthenticationInformation authInfo)
+    public boolean authenticate(final AuthenticationInformation authInfo)
             throws NamingException {
         logger.info("keyrock auth");
 
-        if (!(authInfo instanceof AuthInfoKeyrock))
+        if (!(authInfo instanceof AuthInfoKeyrock)) {
             return false;
+        }
 
         AuthInfoKeyrock keyrockAuth = (AuthInfoKeyrock) authInfo;
 

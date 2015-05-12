@@ -18,7 +18,7 @@ public class FakeAuthenticationProvider extends AuthenticationProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public FakeAuthenticationProvider(IssuanceConfiguration configuration) {
+    public FakeAuthenticationProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -33,15 +33,17 @@ public class FakeAuthenticationProvider extends AuthenticationProvider {
      * Performs the authentication. Uses a dummy hardcoded combination of a
      * username "CaroleKing" and "Jazzman" as the password.
      */
-    public boolean authenticate(AuthenticationInformation authInfo) {
-        if (!(authInfo instanceof AuthInfoSimple))
+    public boolean authenticate(final AuthenticationInformation authInfo) {
+        if (!(authInfo instanceof AuthInfoSimple)) {
             return false;
+        }
 
         AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 
         if (simpleAuth.username.equals("CaroleKing")
-                && simpleAuth.password.equals("Jazzman"))
+                && simpleAuth.password.equals("Jazzman")) {
             return true;
+        }
 
         return false;
     }

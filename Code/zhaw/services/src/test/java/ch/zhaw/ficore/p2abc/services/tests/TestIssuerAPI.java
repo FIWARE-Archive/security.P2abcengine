@@ -71,11 +71,11 @@ public class TestIssuerAPI extends JerseyTest {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-        InitialContext ic = new InitialContext();
+        final InitialContext ic = new InitialContext();
 
         try {
             ic.destroySubcontext("java:");
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
 
         ic.createSubcontext("java:");
@@ -86,7 +86,7 @@ public class TestIssuerAPI extends JerseyTest {
         ic.createSubcontext("java:/comp/env/cfg/Source");
         ic.createSubcontext("java:/comp/env/cfg/ConnectionParameters");
 
-        ConnectionParameters cp = new ConnectionParameters();
+        final ConnectionParameters cp = new ConnectionParameters();
         ic.bind("java:/comp/env/cfg/ConnectionParameters/attributes", cp);
         ic.bind("java:/comp/env/cfg/ConnectionParameters/authentication", cp);
         ic.bind("java:/comp/env/cfg/Source/attributes", "FAKE");
@@ -99,7 +99,7 @@ public class TestIssuerAPI extends JerseyTest {
         ic.bind("java:/comp/env/cfg/verificationServiceURL", "");
         ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
-        SQLiteDataSource ds = new SQLiteDataSource();
+        final SQLiteDataSource ds = new SQLiteDataSource();
 
         storageFile = File.createTempFile("test", "sql");
 
@@ -189,7 +189,7 @@ public class TestIssuerAPI extends JerseyTest {
     @Test
     public void testQueryRules() throws Exception {
 
-        QueryRule qr = new QueryRule();
+        final QueryRule qr = new QueryRule();
         qr.queryString = "string1";
 
         RESTHelper.putRequest(
@@ -216,16 +216,16 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals(qrc.queryRules.size(), qrc.uris.size());
         assertEquals(2, qrc.queryRules.size());
 
-        for (String s : new String[] { "urn:foo1", "urn:foo2" }) {
+        for (final String s : new String[] { "urn:foo1", "urn:foo2" }) {
             assertEquals(qrc.uris.contains(s), true);
         }
 
-        Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<String, String>();
         m.put("string1", "urn:foo1");
         m.put("string2", "urn:foo2");
 
         for (int i = 0; i < qrc.queryRules.size(); i++) {
-            QueryRule q = qrc.queryRules.get(i);
+            final QueryRule q = qrc.queryRules.get(i);
             assertEquals(qrc.uris.get(i), m.get(q.queryString));
         }
 
@@ -272,7 +272,7 @@ public class TestIssuerAPI extends JerseyTest {
      */
     @Test
     public void testGenCredSpec() throws Exception {
-        AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
+        final AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
                 .getRequest(
                         issuanceServiceURL + "attributeInfoCollection/test",
                         AttributeInfoCollection.class);
@@ -281,7 +281,7 @@ public class TestIssuerAPI extends JerseyTest {
         assertTrue(aic.attributes.size() == 1);
         assertEquals(aic.attributes.get(0).name, "someAttribute");
 
-        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
+        final CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
                 .postRequest(issuanceServiceURL
                         + "credentialSpecification/generate",
                         RESTHelper.toXML(AttributeInfoCollection.class, aic),
@@ -298,7 +298,7 @@ public class TestIssuerAPI extends JerseyTest {
         assertEquals("urn:abc4trust:1.0:encoding:integer:signed",
                 aic.attributes.get(0).encoding);
 
-        AttributeDescription ad = credSpec.getAttributeDescriptions()
+        final AttributeDescription ad = credSpec.getAttributeDescriptions()
                 .getAttributeDescription().get(0);
         assertEquals("xs:integer", ad.getDataType().toString());
         assertEquals("urn:abc4trust:1.0:encoding:integer:signed", ad
@@ -334,18 +334,18 @@ public class TestIssuerAPI extends JerseyTest {
      */
     @Test
     public void testStoreGetCredSpec() throws Exception {
-        CredentialSpecification orig = new CredentialSpecification();
+        final CredentialSpecification orig = new CredentialSpecification();
         orig.setSpecificationUID(new URI("urn:fiware:cred"));
-        AttributeDescriptions attrDescs = new AttributeDescriptions();
-        List<AttributeDescription> lsAttrDesc = attrDescs
+        final AttributeDescriptions attrDescs = new AttributeDescriptions();
+        final List<AttributeDescription> lsAttrDesc = attrDescs
                 .getAttributeDescription();
 
-        AttributeDescription ad = new AttributeDescription();
+        final AttributeDescription ad = new AttributeDescription();
         ad.setDataType(new URI("xs:integer"));
         ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
         ad.setType(new URI("someAttribute"));
 
-        FriendlyDescription fd = new FriendlyDescription();
+        final FriendlyDescription fd = new FriendlyDescription();
         fd.setLang("en");
         fd.setValue("huhu");
 
@@ -392,7 +392,7 @@ public class TestIssuerAPI extends JerseyTest {
     public void testDeleteAttribute() throws Exception {
         testStoreGetCredSpec();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("i", "0");
 
         RESTHelper
@@ -400,7 +400,7 @@ public class TestIssuerAPI extends JerseyTest {
                         + "credentialSpecification/deleteAttribute/"
                         + URLEncoder.encode("urn:fiware:cred", "UTF-8"), params);
 
-        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
+        final CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
                 .getRequest(issuanceServiceURL + "credentialSpecification/get/"
                         + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
                         CredentialSpecification.class);
@@ -438,7 +438,7 @@ public class TestIssuerAPI extends JerseyTest {
         testStoreGetCredSpec();
 
         try {
-            MultivaluedMapImpl params = new MultivaluedMapImpl();
+            final MultivaluedMapImpl params = new MultivaluedMapImpl();
             params.add("i", "2");
 
             RESTHelper.deleteRequest(
@@ -447,7 +447,7 @@ public class TestIssuerAPI extends JerseyTest {
                             + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
                     params);
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 404);
         }
     }
@@ -508,7 +508,7 @@ public class TestIssuerAPI extends JerseyTest {
                     + "issuerParameters/generate/"
                     + URLEncoder.encode("urn:fiware:crad", "UTF-8"));
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 404);
         }
     }
@@ -555,7 +555,7 @@ public class TestIssuerAPI extends JerseyTest {
      */
     @Test
     public void testStoreIssuancePolicy() throws Exception {
-        IssuancePolicy ip = new IssuancePolicy();
+        final IssuancePolicy ip = new IssuancePolicy();
 
         RESTHelper.putRequest(
                 issuanceServiceURL + "issuancePolicy/store/ip",
@@ -609,7 +609,7 @@ public class TestIssuerAPI extends JerseyTest {
     public void testAddFriendlyDescription() throws Exception {
         testStoreGetCredSpec();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("language", "ch");
         params.add("value", "chuchichäschtli");
         params.add("i", "0");
@@ -618,13 +618,14 @@ public class TestIssuerAPI extends JerseyTest {
                 + "credentialSpecification/addFriendlyDescriptionAttribute/"
                 + URLEncoder.encode("urn:fiware:cred", "UTF-8"), params);
 
-        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
+        final CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
                 .getRequest(issuanceServiceURL + "credentialSpecification/get/"
                         + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
                         CredentialSpecification.class);
 
-        List<FriendlyDescription> fds = credSpec.getAttributeDescriptions()
-                .getAttributeDescription().get(0).getFriendlyAttributeName();
+        final List<FriendlyDescription> fds = credSpec
+                .getAttributeDescriptions().getAttributeDescription().get(0)
+                .getFriendlyAttributeName();
         assertEquals(fds.get(1).getLang(), "ch");
         assertEquals(fds.get(1).getValue(), "chuchichäschtli");
     }
@@ -653,20 +654,21 @@ public class TestIssuerAPI extends JerseyTest {
     public void testDeleteFriendlyDescription() throws Exception {
         testAddFriendlyDescription();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("language", "ch");
         params.add("i", "0");
         RESTHelper.deleteRequest(issuanceServiceURL
                 + "credentialSpecification/deleteFriendlyDescriptionAttribute/"
                 + URLEncoder.encode("urn:fiware:cred", "UTF-8"), params);
 
-        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
+        final CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
                 .getRequest(issuanceServiceURL + "credentialSpecification/get/"
                         + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
                         CredentialSpecification.class);
 
-        List<FriendlyDescription> fds = credSpec.getAttributeDescriptions()
-                .getAttributeDescription().get(0).getFriendlyAttributeName();
+        final List<FriendlyDescription> fds = credSpec
+                .getAttributeDescriptions().getAttributeDescription().get(0)
+                .getFriendlyAttributeName();
 
         assertEquals(fds.size(), 1);
     }
@@ -695,7 +697,7 @@ public class TestIssuerAPI extends JerseyTest {
         testAddFriendlyDescription();
 
         try {
-            MultivaluedMapImpl params = new MultivaluedMapImpl();
+            final MultivaluedMapImpl params = new MultivaluedMapImpl();
             params.add("language", "de");
             params.add("i", "0");
             RESTHelper
@@ -706,7 +708,7 @@ public class TestIssuerAPI extends JerseyTest {
                                             "UTF-8"), params);
             throw new RuntimeException("Expected exception!");
 
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 404);
         }
     }
@@ -735,7 +737,7 @@ public class TestIssuerAPI extends JerseyTest {
     public void testAddFriendlyDescriptionInvalid() throws Exception {
         testStoreGetCredSpec();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("language", "ch");
         params.add("value", "chuchichäschtli");
         params.add("i", "5");
@@ -750,7 +752,7 @@ public class TestIssuerAPI extends JerseyTest {
                                             "UTF-8"), params);
 
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 404);
         }
     }
@@ -777,18 +779,18 @@ public class TestIssuerAPI extends JerseyTest {
      */
     @Test
     public void testStoreSpecInvalid() throws Exception {
-        CredentialSpecification orig = new CredentialSpecification();
+        final CredentialSpecification orig = new CredentialSpecification();
         orig.setSpecificationUID(new URI("urn:fiware:cred"));
-        AttributeDescriptions attrDescs = new AttributeDescriptions();
-        List<AttributeDescription> lsAttrDesc = attrDescs
+        final AttributeDescriptions attrDescs = new AttributeDescriptions();
+        final List<AttributeDescription> lsAttrDesc = attrDescs
                 .getAttributeDescription();
 
-        AttributeDescription ad = new AttributeDescription();
+        final AttributeDescription ad = new AttributeDescription();
         ad.setDataType(new URI("xs:integer"));
         ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
         ad.setType(new URI("someAttribute"));
 
-        FriendlyDescription fd = new FriendlyDescription();
+        final FriendlyDescription fd = new FriendlyDescription();
         fd.setLang("en");
         fd.setValue("huhu");
 
@@ -805,7 +807,7 @@ public class TestIssuerAPI extends JerseyTest {
                     RESTHelper.toXML(CredentialSpecification.class,
                             of.createCredentialSpecification(orig)));
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 409);
         }
     }
@@ -834,7 +836,7 @@ public class TestIssuerAPI extends JerseyTest {
                     + "credentialSpecification/delete/"
                     + URLEncoder.encode("urn:non-existing", "UTF-8"));
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 404);
         }
     }
@@ -883,9 +885,9 @@ public class TestIssuerAPI extends JerseyTest {
      */
     @Test
     public void testTestAuthentication() throws Exception {
-        AuthenticationRequest authReq = new AuthenticationRequest();
-        AuthenticationInformation authInfo = new AuthInfoSimple("CaroleKing",
-                "Jazzman");
+        final AuthenticationRequest authReq = new AuthenticationRequest();
+        final AuthenticationInformation authInfo = new AuthInfoSimple(
+                "CaroleKing", "Jazzman");
         authReq.authInfo = authInfo;
         RESTHelper.postRequest(issuanceServiceURLUnprot + "testAuthentication",
                 RESTHelper.toXML(AuthenticationRequest.class, authReq));
@@ -909,16 +911,16 @@ public class TestIssuerAPI extends JerseyTest {
      */
     @Test
     public void testTestAuthenticationInvalid() throws Exception {
-        AuthenticationRequest authReq = new AuthenticationRequest();
-        AuthenticationInformation authInfo = new AuthInfoSimple("CaröléKing",
-                "Jazzman");
+        final AuthenticationRequest authReq = new AuthenticationRequest();
+        final AuthenticationInformation authInfo = new AuthInfoSimple(
+                "CaröléKing", "Jazzman");
         authReq.authInfo = authInfo;
         try {
             RESTHelper.postRequest(issuanceServiceURLUnprot
                     + "testAuthentication",
                     RESTHelper.toXML(AuthenticationRequest.class, authReq));
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 403);
         }
     }
@@ -944,11 +946,11 @@ public class TestIssuerAPI extends JerseyTest {
     @Test
     public void testIssuanceRequestInvalid() throws Exception {
 
-        AuthenticationRequest authReq = new AuthenticationRequest();
-        AuthenticationInformation authInfo = new AuthInfoSimple("CaröléKing",
-                "Jazzman");
+        final AuthenticationRequest authReq = new AuthenticationRequest();
+        final AuthenticationInformation authInfo = new AuthInfoSimple(
+                "CaröléKing", "Jazzman");
         authReq.authInfo = authInfo;
-        IssuanceRequest isReq = new IssuanceRequest();
+        final IssuanceRequest isReq = new IssuanceRequest();
         isReq.authRequest = authReq;
         isReq.credentialSpecificationUid = "urn:fiware:cred";
         try {
@@ -956,7 +958,7 @@ public class TestIssuerAPI extends JerseyTest {
                     issuanceServiceURLUnprot + "issuanceRequest",
                     RESTHelper.toXML(IssuanceRequest.class, isReq));
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 403);
         }
     }
@@ -984,11 +986,11 @@ public class TestIssuerAPI extends JerseyTest {
     @Test
     public void testIssuanceRequestInvalid_NoCred() throws Exception {
 
-        AuthenticationRequest authReq = new AuthenticationRequest();
-        AuthenticationInformation authInfo = new AuthInfoSimple("CaroleKing",
-                "Jazzman");
+        final AuthenticationRequest authReq = new AuthenticationRequest();
+        final AuthenticationInformation authInfo = new AuthInfoSimple(
+                "CaroleKing", "Jazzman");
         authReq.authInfo = authInfo;
-        IssuanceRequest isReq = new IssuanceRequest();
+        final IssuanceRequest isReq = new IssuanceRequest();
         isReq.authRequest = authReq;
         isReq.credentialSpecificationUid = "urn:fiware:cred";
         try {
@@ -996,12 +998,12 @@ public class TestIssuerAPI extends JerseyTest {
                     issuanceServiceURLUnprot + "issuanceRequest",
                     RESTHelper.toXML(IssuanceRequest.class, isReq));
             throw new RuntimeException("Expected exception!");
-        } catch (RESTException e) {
+        } catch (final RESTException e) {
             assertEquals(e.getStatusCode(), 404);
         }
     }
 
-    public void assertOk(Response r) {
+    public void assertOk(final Response r) {
         assertEquals(r.getStatus(), 200);
     }
 }

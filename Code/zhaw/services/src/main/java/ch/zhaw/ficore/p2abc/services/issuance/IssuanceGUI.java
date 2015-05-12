@@ -75,8 +75,8 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/deleteAttribute")
-    public Response deleteAttribute(@FormParam("cs") String credSpecUid,
-            @FormParam("i") int index) {
+    public Response deleteAttribute(@FormParam("cs") final String credSpecUid,
+            @FormParam("i") final int index) {
         logger.entry();
 
         try {
@@ -104,7 +104,7 @@ public class IssuanceGUI {
     @POST()
     @Path("/protected/deleteCredentialSpecification/")
     public Response deleteCredentialSpecification(
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") final String credSpecUid) {
         logger.entry();
 
         try {
@@ -126,10 +126,10 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/addFriendlyDescription/")
-    public Response addFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language,
-            @FormParam("value") String value) {
+    public Response addFriendlyDescription(@FormParam("i") final int index,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("language") final String language,
+            @FormParam("value") final String value) {
         logger.entry();
 
         try {
@@ -158,9 +158,9 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/deleteFriendlyDescription/")
-    public Response deleteFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language) {
+    public Response deleteFriendlyDescription(@FormParam("i") final int index,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("language") final String language) {
         logger.entry();
 
         try {
@@ -188,7 +188,8 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/generateIssuerParameters/")
-    public Response generateIssuerParameters(@FormParam("cs") String credSpecUid) {
+    public Response generateIssuerParameters(
+            @FormParam("cs") final String credSpecUid) {
         logger.entry();
 
         try {
@@ -210,8 +211,8 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/addQueryRule")
-    public Response addQueryRule(@FormParam("cs") String credSpecUid,
-            @FormParam("qr") String query) {
+    public Response addQueryRule(@FormParam("cs") final String credSpecUid,
+            @FormParam("qr") final String query) {
         logger.entry();
 
         try {
@@ -338,7 +339,8 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/obtainCredentialSpecification2")
-    public Response obtainCredentialSpecification2(@FormParam("n") String name) {
+    public Response obtainCredentialSpecification2(
+            @FormParam("n") final String name) {
         logger.entry();
 
         try {
@@ -424,7 +426,7 @@ public class IssuanceGUI {
     @POST()
     @Path("/protected/deleteIssuerParameters")
     public Response deleteIssuerParameters(
-            @FormParam("is") String issuerParamsUid) {
+            @FormParam("is") final String issuerParamsUid) {
         logger.entry();
 
         try {
@@ -445,7 +447,7 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/deleteQueryRule")
-    public Response deleteQueryRule(@FormParam("cs") String credSpecUid) {
+    public Response deleteQueryRule(@FormParam("cs") final String credSpecUid) {
         logger.entry();
 
         try {

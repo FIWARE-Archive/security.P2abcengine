@@ -32,7 +32,7 @@ public class CredentialSpecGenerator {
      * @return corresponding CredentialSpecification
      */
     public CredentialSpecification generateCredentialSpecification(
-            AttributeInfoCollection attrInfoCol) {
+            final AttributeInfoCollection attrInfoCol) {
         ObjectFactory of = new ObjectFactory();
         try {
             CredentialSpecification credSpec = of

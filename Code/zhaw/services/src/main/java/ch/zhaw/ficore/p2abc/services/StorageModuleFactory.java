@@ -27,7 +27,7 @@ public class StorageModuleFactory {
      *         bindings.
      */
     public static synchronized Module[] getModulesForServiceConfiguration(
-            ServiceType type) {
+            final ServiceType type) {
         logger.entry();
 
         return logger.exit(new Module[] { new SqliteStorageModule(type) });

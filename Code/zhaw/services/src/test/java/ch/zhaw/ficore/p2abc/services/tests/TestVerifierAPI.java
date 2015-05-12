@@ -60,11 +60,11 @@ public class TestVerifierAPI extends JerseyTest {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
         System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-        InitialContext ic = new InitialContext();
+        final InitialContext ic = new InitialContext();
 
         try {
             ic.destroySubcontext("java:");
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
 
         ic.createSubcontext("java:");
@@ -75,7 +75,7 @@ public class TestVerifierAPI extends JerseyTest {
         ic.createSubcontext("java:/comp/env/cfg/Source");
         ic.createSubcontext("java:/comp/env/cfg/ConnectionParameters");
 
-        ConnectionParameters cp = new ConnectionParameters();
+        final ConnectionParameters cp = new ConnectionParameters();
         ic.bind("java:/comp/env/cfg/ConnectionParameters/attributes", cp);
         ic.bind("java:/comp/env/cfg/ConnectionParameters/authentication", cp);
         ic.bind("java:/comp/env/cfg/Source/attributes", "FAKE");
@@ -88,7 +88,7 @@ public class TestVerifierAPI extends JerseyTest {
         ic.bind("java:/comp/env/cfg/issuanceServiceURL", "");
         ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
-        SQLiteDataSource ds = new SQLiteDataSource();
+        final SQLiteDataSource ds = new SQLiteDataSource();
 
         storageFile = File.createTempFile("test", "sql");
 
@@ -160,13 +160,13 @@ public class TestVerifierAPI extends JerseyTest {
      */
     @Test
     public void testCreateResource() throws Exception {
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("redirectURI", "http://localhost/foo");
 
         RESTHelper.putRequest(verificationServiceURL + "resource/create/test",
                 params);
 
-        PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
+        final PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
                 .getRequest(verificationServiceURL
                         + "presentationPolicyAlternatives/list",
                         PresentationPolicyAlternativesCollection.class);
@@ -202,14 +202,14 @@ public class TestVerifierAPI extends JerseyTest {
     public void testAddPPA() throws Exception {
         testCreateResource();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("puid", "urn:policy");
 
         RESTHelper.postRequest(verificationServiceURL
                 + "presentationPolicyAlternatives/addPolicyAlternative/test",
                 params);
 
-        PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper
+        final PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper
                 .getRequest(verificationServiceURL
                         + "presentationPolicyAlternatives/get/test",
                         PresentationPolicyAlternatives.class);
@@ -240,7 +240,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testDeletePPA() throws Exception {
         testAddPPA();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("puid", "urn:policy");
 
         RESTHelper
@@ -249,7 +249,7 @@ public class TestVerifierAPI extends JerseyTest {
                                 + "presentationPolicyAlternatives/deletePolicyAlternative/test",
                         params);
 
-        PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper
+        final PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper
                 .getRequest(verificationServiceURL
                         + "presentationPolicyAlternatives/get/test",
                         PresentationPolicyAlternatives.class);
@@ -279,7 +279,7 @@ public class TestVerifierAPI extends JerseyTest {
         RESTHelper.deleteRequest(verificationServiceURL
                 + "resource/delete/test");
 
-        PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
+        final PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
                 .getRequest(verificationServiceURL
                         + "presentationPolicyAlternatives/list",
                         PresentationPolicyAlternativesCollection.class);
@@ -307,7 +307,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testAddAlias() throws Exception {
         testAddPPA();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("al", "somealias");
 
         RESTHelper.postRequest(
@@ -334,7 +334,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testDeleteAlias() throws Exception {
         testAddAlias();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("al", "somealias");
 
         RESTHelper.postRequest(verificationServiceURL
@@ -361,7 +361,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testAddIssuerAlternative() throws Exception {
         testAddAlias();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("al", "somealias");
         params.add("ip", "urn:issuer-alt");
 
@@ -390,7 +390,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testDeleteIssuerAlternative() throws Exception {
         testAddIssuerAlternative();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("al", "somealias");
         params.add("ip", "urn:issuer-alt");
 
@@ -421,7 +421,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testAddCredSpecAlternative() throws Exception {
         testAddAlias();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("al", "somealias");
         params.add("cs", "urn:cred-alt");
 
@@ -453,7 +453,7 @@ public class TestVerifierAPI extends JerseyTest {
     public void testDeleteCredSpecAlternative() throws Exception {
         testAddCredSpecAlternative();
 
-        MultivaluedMapImpl params = new MultivaluedMapImpl();
+        final MultivaluedMapImpl params = new MultivaluedMapImpl();
         params.add("al", "somealias");
         params.add("cs", "urn:cred-alt");
 
@@ -491,18 +491,18 @@ public class TestVerifierAPI extends JerseyTest {
      */
     @Test
     public void testStoreGetCredSpec() throws Exception {
-        CredentialSpecification orig = new CredentialSpecification();
+        final CredentialSpecification orig = new CredentialSpecification();
         orig.setSpecificationUID(new URI("urn:fiware:cred"));
-        AttributeDescriptions attrDescs = new AttributeDescriptions();
-        List<AttributeDescription> lsAttrDesc = attrDescs
+        final AttributeDescriptions attrDescs = new AttributeDescriptions();
+        final List<AttributeDescription> lsAttrDesc = attrDescs
                 .getAttributeDescription();
 
-        AttributeDescription ad = new AttributeDescription();
+        final AttributeDescription ad = new AttributeDescription();
         ad.setDataType(new URI("xs:integer"));
         ad.setEncoding(new URI("urn:abc4trust:1.0:encoding:integer:signed"));
         ad.setType(new URI("someAttribute"));
 
-        FriendlyDescription fd = new FriendlyDescription();
+        final FriendlyDescription fd = new FriendlyDescription();
         fd.setLang("en");
         fd.setValue("huhu");
 
@@ -560,7 +560,7 @@ public class TestVerifierAPI extends JerseyTest {
      */
     @Test
     public void testStoreIssuerParams() throws Exception {
-        IssuerParameters ip = new IssuerParameters();
+        final IssuerParameters ip = new IssuerParameters();
         ip.setParametersUID(new URI("urn:ip"));
         ip.setAlgorithmID(new URI("urn:algo"));
         ip.setCredentialSpecUID(new URI("urn:cs"));
@@ -571,7 +571,7 @@ public class TestVerifierAPI extends JerseyTest {
                 RESTHelper.toXML(IssuerParameters.class,
                         of.createIssuerParameters(ip)));
 
-        Settings settings = (Settings) RESTHelper.getRequest(
+        final Settings settings = (Settings) RESTHelper.getRequest(
                 verificationServiceURLUnprot + "getSettings", Settings.class);
         assertEquals(settings.issuerParametersList.size(), 1);
         assertEquals(settings.issuerParametersList.get(0).getParametersUID()
@@ -596,7 +596,7 @@ public class TestVerifierAPI extends JerseyTest {
                 + "issuerParameters/delete/"
                 + URLEncoder.encode("urn:ip", "UTF-8"));
 
-        Settings settings = (Settings) RESTHelper.getRequest(
+        final Settings settings = (Settings) RESTHelper.getRequest(
                 verificationServiceURLUnprot + "getSettings", Settings.class);
         assertEquals(settings.issuerParametersList.size(), 0);
     }

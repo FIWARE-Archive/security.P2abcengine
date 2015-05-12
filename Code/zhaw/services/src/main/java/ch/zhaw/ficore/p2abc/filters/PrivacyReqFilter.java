@@ -28,7 +28,7 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
     private static final int MAX_TOKENS = 4096;
 
     @Override
-    public ContainerRequest filter(ContainerRequest req) {
+    public ContainerRequest filter(final ContainerRequest req) {
         String path = req.getPath(false);
 
         if (path.matches(callbackRegex)) {
@@ -76,17 +76,19 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
             }
         } else if (path.matches(pathRegex)) {
             Cookie cookie = req.getCookies().get("x-p2abc-accesstoken");
-            if (cookie == null)
+            if (cookie == null) {
                 return denyRequest(req);
+            }
             String token = cookie.getValue();
-            if (!tokens.contains(token))
+            if (!tokens.contains(token)) {
                 return denyRequest(req);
+            }
         }
 
         return req;
     }
 
-    public ContainerRequest denyRequest(ContainerRequest req) {
+    public ContainerRequest denyRequest(final ContainerRequest req) {
         throw new WebApplicationException(Response
                 .status(Response.Status.FORBIDDEN).entity("Request denied!")
                 .build());
