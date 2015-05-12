@@ -543,6 +543,7 @@ public class VerificationHelper extends AbstractHelper {
                     containsRevoceableCredential = true;
                 }
             } catch (KeyManagerException ignore) {
+                ignore.printStackTrace();
             }
             if (containsRevoceableCredential) {
                 if (revInfoUIDs == null) {

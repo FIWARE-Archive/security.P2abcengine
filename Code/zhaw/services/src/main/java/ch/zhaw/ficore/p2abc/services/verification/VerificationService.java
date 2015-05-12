@@ -111,6 +111,7 @@ public class VerificationService {
     public VerificationService() throws Exception {
 
         if (VerificationHelper.isInit()) {
+            log.info("init already done");
         } else {
             if (System.getProperty("PathToUProveExe", null) == null) {
                 String uprovePath = "./../uprove/UProveWSDLService/ABC4Trust-UProve/bin/Release";
@@ -131,7 +132,7 @@ public class VerificationService {
                 this.storeSystemParameters(sp);
             }
         } catch (Exception ex) {
-            // Ignore.
+            log.catching(ex);
         }
     }
 
@@ -1554,13 +1555,13 @@ public class VerificationService {
                 verificationHelper.verificationStorage
                         .deleteRedirectURI(new URI(resource));
             } catch (Exception e) {
-
+                log.catching(e);
             }
             try {
                 verificationHelper.verificationStorage
                         .deletePresentationPolicyAlternatives(new URI(resource));
             } catch (Exception e) {
-
+                log.catching(e);
             }
 
             return log.exit(Response.ok("OK").build());
@@ -2148,7 +2149,7 @@ public class VerificationService {
                 settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
                         .getSystemParameters());
             } catch (Exception e) {
-
+                log.catching(e);
             }
 
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)

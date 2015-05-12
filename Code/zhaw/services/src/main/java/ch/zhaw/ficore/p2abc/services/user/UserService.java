@@ -106,7 +106,7 @@ public class UserService {
                 this.storeSystemParameters(sp);
             }
         } catch (Exception ex) {
-            // Ignore.
+            log.catching(ex);
         }
     }
 
@@ -434,7 +434,7 @@ public class UserService {
                 settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
                         .getSystemParameters());
             } catch (Exception e) {
-
+                log.catching(e);
             }
 
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
