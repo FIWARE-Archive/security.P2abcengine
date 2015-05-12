@@ -48,6 +48,22 @@ public class ServicesConfiguration {
      * generation of CredentialSpecifications.
      */
     private static String uriBase = "urn:fiware:privacy:";
+    
+    public static synchronized Boolean getAllowFakeAccesstoken() {
+    	try {
+	    	Context envCtx = ServicesConfiguration.getEnvContext();
+	    	
+	    	try {
+	    		return (Boolean) envCtx.lookup("cfg/allowFakeAccesstoken");
+	    	}
+	    	catch(Exception ex) {
+	    		return false;
+	    	}
+    	}
+    	catch(Exception ex) {
+    		return false;
+    	}
+    }
 
     public static synchronized String getIssuanceServiceURL() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();

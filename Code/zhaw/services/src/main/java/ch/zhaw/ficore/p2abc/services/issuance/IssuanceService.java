@@ -81,9 +81,10 @@ public class IssuanceService {
     private static final int sysParamsSecurityLevel = 80;
     private static final String sysParamsCryptoMechanism = "urn:abc4trust:1.0:algorithm:idemix";
 
-    private ObjectFactory of = new ObjectFactory();
+    private final ObjectFactory of = new ObjectFactory();
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(IssuanceService.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(IssuanceService.class));
 
     public IssuanceService() throws ClassNotFoundException, SQLException,
             UnsafeTableNameException {
@@ -107,9 +108,10 @@ public class IssuanceService {
             instance.issuanceStorage.addIssuancePolicy(new URI(defaultIPUid),
                     ip);
 
-            if (!instance.keyManager.hasSystemParameters())
+            if (!instance.keyManager.hasSystemParameters()) {
                 this.setupSystemParameters(sysParamsSecurityLevel, new URI(
                         sysParamsCryptoMechanism));
+            }
         } catch (Exception e) {
             ExceptionDumper.dumpExceptionStr(e, logger);
         }
@@ -120,13 +122,21 @@ public class IssuanceService {
     /**
      * @fiware-rest-path /protected/reset
      * @fiware-rest-method POST
+<<<<<<< HEAD
      * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
      * all storage of the webservice(s). Use with extreme caution!
+=======
+     * @fiware-rest-description This method reloads the configuration of the
+     *                          webservice(s) and will completely wipe all
+     *                          storage of the webservice(s). Use with extreme
+     *                          caution!
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
      * @return Response
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     @POST()
     @Path("/protected/reset")
@@ -139,9 +149,8 @@ public class IssuanceService {
 
             URIBytesStorage.clearEverything();
             return logger.exit(Response.ok().build());
-        }
-        catch(Exception e) {
-            logger.catching( e);
+        } catch (Exception e) {
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -149,7 +158,8 @@ public class IssuanceService {
     /**
      * @fiware-rest-path /protected/status
      * @fiware-rest-method GET
-     * @fiware-rest-description This method is available when the service is running.
+     * @fiware-rest-description This method is available when the service is
+     *                          running.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
@@ -165,8 +175,8 @@ public class IssuanceService {
     /**
      * @fiware-rest-path /testAuthentication
      * @fiware-rest-method GET
-     * @fiware-rest-description This method can be used to test authentication by
-     * sending an authentication request.
+     * @fiware-rest-description This method can be used to test authentication
+     *                          by sending an authentication request.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 401 Authentication was not successful.
@@ -199,11 +209,12 @@ public class IssuanceService {
                         .build();
             }
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         } finally {
-            if (authProvider != null)
+            if (authProvider != null) {
                 authProvider.shutdown();
+            }
         }
     }
 
@@ -211,9 +222,16 @@ public class IssuanceService {
      * @fiware-rest-path /getSettings/
      * @fiware-rest-method GET
      * @fiware-rest-description Returns the settings of this issuance service.
+<<<<<<< HEAD
      * Settings includes issuer parameters, credential specifications and the
      * system parameters. This method is usually called by a user service or a verification
      * service to download the settings.
+=======
+     *                          Settings includes issuer parameters, credential
+     *                          specifications and the system parameters. This
+     *                          method is usually called by a user service or a
+     *                          verification service to download the settings.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type Settings
@@ -267,11 +285,12 @@ public class IssuanceService {
             return logger.exit(Response.ok(settings, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            logger.catching( e);
-            return logger.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, logger)))
-                            .build();
+            logger.catching(e);
+            return logger
+                    .exit(Response
+                            .status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+                    .build();
         }
     }
 
@@ -279,6 +298,7 @@ public class IssuanceService {
      * @fiware-rest-path /issuanceRequest/
      * @fiware-rest-method POST
      * @fiware-rest-description This method is called by a user to initiate an
+<<<<<<< HEAD
      * issuance protocol. The user must provide an issuance request containing
      * his authentication information and the UID of the corresponding
      * credential specification. The issuer will then try to authenticate the
@@ -296,10 +316,37 @@ public class IssuanceService {
      * UID of the credential specification as the key. If the issuance policy could
      * not be found a default issuance policy will be used which asks the user
      * to reveal nothing in particular.
+=======
+     *                          issuance protocol. The user must provide an
+     *                          issuance request containing his authentication
+     *                          information and the UID of the corresponding
+     *                          credential specification. The issuer will then
+     *                          try to authenticate the user by using an
+     *                          authentication source (e.g. LDAP) and fetch the
+     *                          attributes required by the credential
+     *                          specification from an attribute source (e.g.
+     *                          LDAP) and initiates the round based issuance
+     *                          protocol.
+     *
+     *                          If authentication of the user fails this method
+     *                          will return the status code FORBIDDEN. If the
+     *                          issuer is missing the credential specification,
+     *                          the issuance policy or the query rule this
+     *                          method will return status code NOT_FOUND.
+     *
+     *
+     *                          This method will search for an issuance policy
+     *                          and a query rule using the UID of the credential
+     *                          specification as the key. If the issuance policy
+     *                          could not be found a default issuance policy
+     *                          will be used which asks the user to reveal
+     *                          nothing in particular.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 401 Authentication failed
-     * @fiware-rest-response 404 A resource needed to process the request was not found
+     * @fiware-rest-response 404 A resource needed to process the request was
+     *                       not found
      * @fiware-rest-input-type IssuanceRequest
      * @fiware-rest-return-type IssuanceMessageAndBoolean
      *
@@ -310,7 +357,12 @@ public class IssuanceService {
     @POST()
     @Path("/issuanceRequest/")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response issuanceRequest(IssuanceRequest request) { /* [TEST EXISTS, FLOW TEST] */
+    public Response issuanceRequest(final IssuanceRequest request) { /*
+                                                                      * [TEST
+                                                                      * EXISTS,
+                                                                      * FLOW
+                                                                      * TEST]
+                                                                      */
 
         AttributeValueProvider attrValProvider = null;
         AuthenticationProvider authProvider = null;
@@ -323,8 +375,9 @@ public class IssuanceService {
             authProvider = AuthenticationProvider
                     .getAuthenticationProvider(configuration);
 
-            if (!authProvider.authenticate(request.authRequest.authInfo))
+            if (!authProvider.authenticate(request.authRequest.authInfo)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
+            }
 
             this.initializeHelper(CryptoEngine.IDEMIX);
             IssuanceHelper instance = IssuanceHelper.getInstance();
@@ -352,16 +405,20 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null)
-                return Response.status(Response.Status.NOT_FOUND)
+            if (credSpec == null) {
+                return Response
+                        .status(Response.Status.NOT_FOUND)
                         .entity(errNoCredSpec + ": "
                                 + request.credentialSpecificationUid).build();
-            if (ip == null)
+            }
+            if (ip == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(errNoIssuancePolicy).build();
-            if (qr == null)
+            }
+            if (qr == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(errNoQueryRule).build();
+            }
 
             IssuancePolicyAndAttributes ipa = of
                     .createIssuancePolicyAndAttributes();
@@ -373,29 +430,35 @@ public class IssuanceService {
 
             return logger.exit(initIssuanceProtocol(ipa));
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         } finally {
-            if (attrValProvider != null)
+            if (attrValProvider != null) {
                 attrValProvider.shutdown();
-            if (authProvider != null)
+            }
+            if (authProvider != null) {
                 authProvider.shutdown();
+            }
         }
     }
 
     /**
      * @fiware-rest-path /issuanceProtocolStep
      * @fiware-rest-method POST
-     * @fiware-rest-description
-     * This method performs one step in an interactive issuance protocol. On
-     * input an incoming issuance message <tt>m</tt> received from the User, it returns
-     * the outgoing issuance message that is to be sent back to the User, a
-     * boolean indicating whether this is the last message in the protocol, and
-     * the UID of the stored issuance log entry that contains an issuance token
-     * together with the attribute values provided by the issuer to keep track
-     * of the issued credentials. The Context attribute of the outgoing message
-     * has the same value as that of the incoming message, allowing the Issuer
-     * to link the different messages of this issuance protocol.
+     * @fiware-rest-description This method performs one step in an interactive
+     *                          issuance protocol. On input an incoming issuance
+     *                          message <tt>m</tt> received from the User, it
+     *                          returns the outgoing issuance message that is to
+     *                          be sent back to the User, a boolean indicating
+     *                          whether this is the last message in the
+     *                          protocol, and the UID of the stored issuance log
+     *                          entry that contains an issuance token together
+     *                          with the attribute values provided by the issuer
+     *                          to keep track of the issued credentials. The
+     *                          Context attribute of the outgoing message has
+     *                          the same value as that of the incoming message,
+     *                          allowing the Issuer to link the different
+     *                          messages of this issuance protocol.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessage
@@ -408,7 +471,12 @@ public class IssuanceService {
     @POST()
     @Path("/issuanceProtocolStep")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(final IssuanceMessage issuanceMessage) { /* [FLOW TEST] */
+    public Response issuanceProtocolStep(final IssuanceMessage issuanceMessage) { /*
+                                                                                   * [
+                                                                                   * FLOW
+                                                                                   * TEST
+                                                                                   * ]
+                                                                                   */
 
         logger.entry();
 
@@ -445,7 +513,7 @@ public class IssuanceService {
                     this.of.createIssuanceMessageAndBoolean(response),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -453,8 +521,11 @@ public class IssuanceService {
     /* CREDENTIAL SPECIFICATION */
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/credentialSpecification/delete/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method DELETE
+<<<<<<< HEAD
      * @fiware-rest-description Deletes a credential specification that was stored
      * under the UID provided as part of the path.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
@@ -464,6 +535,18 @@ public class IssuanceService {
      * @fiware-rest-response 404 Credential specification was not found.
 
      *
+=======
+     * @fiware-rest-description Deletes a credential specification that was
+     *                          stored under the UID provided as part of the
+     *                          path.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification to delete
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification was not found.
+     *
+     *
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @param credSpecUid
      *            UID of the credential specification
      * @return Response
@@ -471,7 +554,7 @@ public class IssuanceService {
     @DELETE()
     @Path("/protected/credentialSpecification/delete/{credentialSpecificationUid}")
     public Response deleteCredentialSpecification( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid) {
+    @PathParam("credentialSpecificationUid") final String credSpecUid) {
         logger.entry();
 
         try {
@@ -480,10 +563,11 @@ public class IssuanceService {
             IssuanceHelper instance = IssuanceHelper.getInstance();
 
             if (instance.keyManager.getCredentialSpecification(new URI(
-                    credSpecUid)) == null)
+                    credSpecUid)) == null) {
                 return logger.exit(
                         Response.status(Response.Status.NOT_FOUND).entity(
                                 errNoCredSpec)).build();
+            }
 
             // @#@#^%$ KeyStorage has no delete()
             if (instance.keyStorage instanceof GenericKeyStorage) {
@@ -491,22 +575,25 @@ public class IssuanceService {
                 keyStorage.delete(new URI(credSpecUid));
             } else {
                 return logger.exit(
-                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                                errNotImplemented)).build();
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                                .entity(errNotImplemented)).build();
             }
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            return logger.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, logger)))
-                            .build();
+            return logger
+                    .exit(Response
+                            .status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+                    .build();
         }
     }
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}
+     * @fiware-rest-path /protected/credentialSpecification/deleteAttribute/{
+     *                   credentialSpecificationUid}
      * @fiware-rest-method DELETE
+<<<<<<< HEAD
      * @fiware-rest-description Deletes an attribute from a credential specification.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
      * delete the attribute from.
@@ -516,6 +603,19 @@ public class IssuanceService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 - Credential specification or attribute description was not found.
      *
+=======
+     * @fiware-rest-description Deletes an attribute from a credential
+     *                          specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification to delete the attribute from.
+     * @fiware-rest-request-param i Index of the attribute (in the credential
+     *                            specification) to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 - Credential specification or attribute
+     *                       description was not found.
+     *
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @param index
      *            Index of the attribute
      * @param credSpecUid
@@ -524,8 +624,11 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}")
-    public Response deleteAttribute(@FormParam("i") int index, /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid) {
+    public Response deleteAttribute(@FormParam("i") final int index, /*
+                                                                      * [TEST
+                                                                      * EXISTS]
+                                                                      */
+            @PathParam("credentialSpecificationUid") final String credSpecUid) {
 
         logger.entry();
 
@@ -547,33 +650,39 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null || index >= credSpec.getAttributeDescriptions().getAttributeDescription().size()) {
+            if (credSpec == null
+                    || index >= credSpec.getAttributeDescriptions()
+                            .getAttributeDescription().size()) {
                 return logger
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
                                 .entity("Credential specification or attribute description could not be found!"))
-                                .build();
+                        .build();
             }
 
             credSpec.getAttributeDescriptions().getAttributeDescription()
-            .remove(index);
+                    .remove(index);
 
             instance.keyManager.storeCredentialSpecification(new URI(
                     credSpecUid), credSpec);
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.catching( e);
-            return logger.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, logger)))
-                            .build();
+            logger.catching(e);
+            return logger
+                    .exit(Response
+                            .status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+                    .build();
         }
     }
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/credentialSpecification/deleteFriendlyDescriptionAttribute
+     *                   /{credentialSpecificationUid}
      * @fiware-rest-method DELETE
+<<<<<<< HEAD
      * @fiware-rest-description Deletes a friendly description from an attribute of credential
      * specification.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
@@ -584,6 +693,22 @@ public class IssuanceService {
      * @fiware-rest-response 404 Credential specification, attribute description or friendly description could not be found.
      *
      *
+=======
+     * @fiware-rest-description Deletes a friendly description from an attribute
+     *                          of credential specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification.
+     * @fiware-rest-request-param i Index of the attribute the friendly
+     *                            description belongs to.</li>
+     * @fiware-rest-request-param language Language identifier of the friendly
+     *                            description to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 404 Credential specification, attribute description
+     *                       or friendly description could not be found.
+     *
+     *
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @param index
      *            Index of the attribute.
      * @param credSpecUid
@@ -594,9 +719,14 @@ public class IssuanceService {
      */
     @DELETE()
     @Path("/protected/credentialSpecification/deleteFriendlyDescriptionAttribute/{credentialSpecificationUid}")
-    public Response deleteFriendlyDescription(@FormParam("i") int index, /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid,
-            @FormParam("language") String language) {
+    public Response deleteFriendlyDescription(@FormParam("i") final int index, /*
+                                                                                * [
+                                                                                * TEST
+                                                                                * EXISTS
+                                                                                * ]
+                                                                                */
+            @PathParam("credentialSpecificationUid") final String credSpecUid,
+            @FormParam("language") final String language) {
 
         logger.entry();
 
@@ -618,13 +748,14 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null || index >= credSpec.getAttributeDescriptions().
-                    getAttributeDescription().size()) {
+            if (credSpec == null
+                    || index >= credSpec.getAttributeDescriptions()
+                            .getAttributeDescription().size()) {
                 return logger
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
                                 .entity("Credential specification or attribute description could not be found!"))
-                                .build();
+                        .build();
             }
 
             AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
@@ -632,47 +763,59 @@ public class IssuanceService {
 
             FriendlyDescription fd = null;
 
-            for (FriendlyDescription fc : attrDesc.getFriendlyAttributeName())
+            for (FriendlyDescription fc : attrDesc.getFriendlyAttributeName()) {
                 if (fc.getLang().equals(language)) {
                     fd = fc;
                     break;
                 }
+            }
 
-            if (fd != null)
+            if (fd != null) {
                 attrDesc.getFriendlyAttributeName().remove(fd);
-            else
-                return logger
-                        .exit(Response
-                                .status(Response.Status.NOT_FOUND)
-                                .entity("Friendly description could not be found!"))
-                                .build();
+            } else {
+                return logger.exit(
+                        Response.status(Response.Status.NOT_FOUND).entity(
+                                "Friendly description could not be found!"))
+                        .build();
+            }
 
             instance.keyManager.storeCredentialSpecification(new URI(
                     credSpecUid), credSpec);
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.catching( e);
-            return logger.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, logger)))
-                            .build();
+            logger.catching(e);
+            return logger
+                    .exit(Response
+                            .status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+                    .build();
         }
     }
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/credentialSpecification/addFriendlyDescriptionAttribute
+     *                   /{credentialSpecificationUid}
      * @fiware-rest-method PUT
      * @fiware-rest-description Adds a friendly description to an attribute of a
-     * credential specification.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
-     * @fiware-rest-request-param i Index of the attribute to add the friendly description to.
+     *                          credential specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification.
+     * @fiware-rest-request-param i Index of the attribute to add the friendly
+     *                            description to.
      * @fiware-rest-request-param language Language identifier.
      * @fiware-rest-request-param value Value of the friendly description.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
+<<<<<<< HEAD
      * @fiware-rest-response 404 Credential specification or attribute description could not be found.
      *
+=======
+     * @fiware-rest-response 404 Credential specification or attribute
+     *                       description could not be found.
+     *
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @param index
      *            Index of the attribute.
      * @param credSpecUid
@@ -685,10 +828,13 @@ public class IssuanceService {
      */
     @PUT()
     @Path("/protected/credentialSpecification/addFriendlyDescriptionAttribute/{credentialSpecificationUid}")
-    public Response addFriendlyDescriptionAttribute(@FormParam("i") int index, /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid,
-            @FormParam("language") String language,
-            @FormParam("value") String value) {
+    public Response addFriendlyDescriptionAttribute(
+            @FormParam("i") final int index, /*
+                                              * [ TEST EXISTS ]
+                                              */
+            @PathParam("credentialSpecificationUid") final String credSpecUid,
+            @FormParam("language") final String language,
+            @FormParam("value") final String value) {
 
         logger.entry();
 
@@ -710,13 +856,14 @@ public class IssuanceService {
                 }
             }
 
-            if (credSpec == null || credSpec.getAttributeDescriptions().getAttributeDescription().size()
-                    <= index) {
+            if (credSpec == null
+                    || credSpec.getAttributeDescriptions()
+                            .getAttributeDescription().size() <= index) {
                 return logger
                         .exit(Response
                                 .status(Response.Status.NOT_FOUND)
                                 .entity("Credential specification or attribute description could not be found!"))
-                                .build();
+                        .build();
             }
 
             AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
@@ -733,24 +880,37 @@ public class IssuanceService {
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.catching( e);
-            return logger.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, logger)))
-                            .build();
+            logger.catching(e);
+            return logger
+                    .exit(Response
+                            .status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+                    .build();
         }
     }
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/store/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/credentialSpecification/store/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method PUT
+<<<<<<< HEAD
      * @fiware-rest-description Store a credential specification at this service. The UID given as part of the path
      * must match the UID of the passed credential specification.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification.
+=======
+     * @fiware-rest-description Store a credential specification at this
+     *                          service. The UID given as part of the path must
+     *                          match the UID of the passed credential
+     *                          specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * @fiware-rest-response 409 The credentialSpecificationUid given on the path does not match
-     * the actual credential specification's UID
+     * @fiware-rest-response 409 The credentialSpecificationUid given on the
+     *                       path does not match the actual credential
+     *                       specification's UID
      * @fiware-rest-input-type CredentialSpecification
      *
      * @param credentialSpecifationUid
@@ -763,8 +923,8 @@ public class IssuanceService {
     @Path("/protected/credentialSpecification/store/{credentialSpecifationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response storeCredentialSpecification( /* [TEST EXISTS] */
-            @PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
-            CredentialSpecification credSpec) {
+    @PathParam("credentialSpecifationUid") final URI credentialSpecifationUid,
+            final CredentialSpecification credSpec) {
 
         logger.entry();
 
@@ -787,21 +947,26 @@ public class IssuanceService {
             boolean r1 = keyManager.storeCredentialSpecification(
                     credentialSpecifationUid, credSpec);
 
-            if(!r1)
-                throw new RuntimeException("Could not store the credential specification.");
+            if (!r1) {
+                throw new RuntimeException(
+                        "Could not store the credential specification.");
+            }
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception ex) {
-            logger.catching( ex);
+            logger.catching(ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
         }
     }
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/get/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/credentialSpecification/get/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method GET
      * @fiware-rest-description Retrieve a credential specification.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification was not found.
@@ -813,8 +978,9 @@ public class IssuanceService {
      */
     @GET()
     @Path("/protected/credentialSpecification/get/{credentialSpecificationUid}")
-    public Response getCredentialSpecification( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
+    public Response getCredentialSpecification(
+            /* [TEST EXISTS] */
+            @PathParam("credentialSpecificationUid") final String credentialSpecificationUid) {
         logger.entry();
 
         logger.info("IssuanceService - getCredentialSpecification: "
@@ -832,12 +998,13 @@ public class IssuanceService {
             if (credSpec == null) {
                 return logger.exit(Response.status(Response.Status.NOT_FOUND)
                         .entity(errNoCredSpec).build());
-            } else
+            } else {
                 return logger.exit(Response.ok(
                         of.createCredentialSpecification(credSpec),
                         MediaType.APPLICATION_XML).build());
+            }
         } catch (Exception ex) {
-            logger.catching( ex);
+            logger.catching(ex);
             return logger.exit(ExceptionDumper.dumpException(ex, logger));
         }
     }
@@ -845,13 +1012,17 @@ public class IssuanceService {
     /* ISSUER PARAMETERS */
 
     /**
-     * @fiware-rest-path /protected/issuerParameters/generate/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/issuerParameters/generate/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method POST
      * @fiware-rest-description Generates issuer parameters for a specified
-     * credential specification. The generated issuer parameters will
-     * automatically be stored at this issuance service.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
-     * generate the issuer parameters for.
+     *                          credential specification. The generated issuer
+     *                          parameters will automatically be stored at this
+     *                          issuance service.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification to generate the issuer parameters
+     *                         for.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
@@ -862,7 +1033,7 @@ public class IssuanceService {
     @POST()
     @Path("/protected/issuerParameters/generate/{credentialSpecificationUid}")
     public Response generateIssuerParameters( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid) {
+    @PathParam("credentialSpecificationUid") final String credSpecUid) {
         logger.entry();
 
         try {
@@ -888,29 +1059,38 @@ public class IssuanceService {
             return Response.ok("OK").build();
 
         } catch (Exception e) {
-            logger.catching( e);
-            return logger.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, logger)))
-                            .build();
+            logger.catching(e);
+            return logger
+                    .exit(Response
+                            .status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+                    .build();
         }
     }
 
     /**
-     * @fiware-rest-path /protected/issuerParameters/delete/{issuerParametersUid}
+     * @fiware-rest-path
+     *                   /protected/issuerParameters/delete/{issuerParametersUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes issuer parameters.
-     * @fiware-rest-path-param issuerParametersUid UID of the issuer parameters to delete.
+     * @fiware-rest-path-param issuerParametersUid UID of the issuer parameters
+     *                         to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
+<<<<<<< HEAD
      *
      * @param issuerParametersUid UID of the issuer parameters
+=======
+     *
+     * @param issuerParametersUid
+     *            UID of the issuer parameters
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @DELETE()
     @Path("/protected/issuerParameters/delete/{issuerParametersUid}")
     public Response deleteIssuerParameters( /* [TEST EXISTS] */
-            @PathParam("issuerParametersUid") String issuerParametersUid) {
+    @PathParam("issuerParametersUid") final String issuerParametersUid) {
         logger.entry();
 
         try {
@@ -926,13 +1106,13 @@ public class IssuanceService {
                 gkeyStorage.delete(new URI(issuerParametersUid));
             } else {
                 return logger.exit(
-                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                                errNotImplemented)).build();
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                                .entity(errNotImplemented)).build();
             }
 
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -943,9 +1123,11 @@ public class IssuanceService {
      * @fiware-rest-path /protected/queryRule/store/{credentialSpecificationUid}
      * @fiware-rest-method PUT
      * @fiware-rest-description Stores a query rule and associates it with the
-     * specified credential specification. A query rule is stored at the
-     * issuance service with the given credential specification UID which the
-     * issuance service will use to look up the corresponding query rule. <br>
+     *                          specified credential specification. A query rule
+     *                          is stored at the issuance service with the given
+     *                          credential specification UID which the issuance
+     *                          service will use to look up the corresponding
+     *                          query rule. <br>
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type QueryRule
@@ -959,9 +1141,10 @@ public class IssuanceService {
     @PUT()
     @Path("/protected/queryRule/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response storeQueryRule( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
-            QueryRule rule) {
+    public Response storeQueryRule(
+            /* [TEST EXISTS] */
+            @PathParam("credentialSpecificationUid") final String credentialSpecificationUid,
+            final QueryRule rule) {
 
         logger.entry();
 
@@ -973,26 +1156,38 @@ public class IssuanceService {
                     credentialSpecificationUid), rule);
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
     /**
-     * @fiware-rest-path /protected/queryRule/delete/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/queryRule/delete/{credentialSpecificationUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a query rule.
+<<<<<<< HEAD
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the query rule is associated with.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
      * @param credSpecUid UID of the credential specification.
+=======
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification the query rule is associated
+     *                         with.</li>
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
+     * @param credSpecUid
+     *            UID of the credential specification.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @DELETE()
     @Path("/protected/queryRule/delete/{credentialSpecificationUid}")
     public Response deleteQueryRule( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid) {
+    @PathParam("credentialSpecificationUid") final String credSpecUid) {
         logger.entry();
 
         try {
@@ -1002,9 +1197,8 @@ public class IssuanceService {
             instance.issuanceStorage.deleteQueryRule(new URI(credSpecUid));
 
             return logger.exit(Response.ok("OK").build());
-        }
-        catch(Exception e) {
-            logger.catching( e);
+        } catch (Exception e) {
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1013,8 +1207,13 @@ public class IssuanceService {
      * @fiware-rest-path /protected/queryRule/get/{credentialSpecificationUid}
      * @fiware-rest-method GET
      * @fiware-rest-description Retrieves a previously stored query rule.
+<<<<<<< HEAD
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the
      * query rule is associated with.
+=======
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification the query rule is associated with.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Query rule could not be found.
@@ -1027,8 +1226,9 @@ public class IssuanceService {
     @GET()
     @Path("/protected/queryRule/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response getQueryRule( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
+    public Response getQueryRule(
+            /* [TEST EXISTS] */
+            @PathParam("credentialSpecificationUid") final String credentialSpecificationUid) {
 
         logger.entry();
 
@@ -1038,14 +1238,15 @@ public class IssuanceService {
 
             QueryRule rule = instance.issuanceStorage.getQueryRule(new URI(
                     credentialSpecificationUid));
-            if (rule == null)
+            if (rule == null) {
                 return logger.exit(Response.status(Response.Status.NOT_FOUND)
                         .build());
-            else
+            } else {
                 return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML)
                         .build());
+            }
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1054,7 +1255,7 @@ public class IssuanceService {
      * @fiware-rest-path /protected/queryRule/list
      * @fiware-rest-method GET
      * @fiware-rest-description Lists all query rules stored at this issuance
-     * service.
+     *                          service.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type QueryRuleCollection
@@ -1084,7 +1285,7 @@ public class IssuanceService {
             return logger.exit(Response.ok(qrc, MediaType.APPLICATION_XML)
                     .build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1092,12 +1293,15 @@ public class IssuanceService {
     /* ISSUANCE POLICY */
 
     /**
-     * @fiware-rest-path /protected/issuancePolicy/store/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/issuancePolicy/store/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method PUT
-     * @fiware-rest-description Stores an issuance policy and associates it with a
-     * credential specification.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to
-     * associate the issuance policy with.
+     * @fiware-rest-description Stores an issuance policy and associates it with
+     *                          a credential specification.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification to associate the issuance policy
+     *                         with.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuancePolicy
@@ -1111,9 +1315,10 @@ public class IssuanceService {
     @PUT()
     @Path("/protected/issuancePolicy/store/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response storeIssuancePolicy( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credentialSpecificationUid,
-            IssuancePolicy policy) {
+    public Response storeIssuancePolicy(
+            /* [TEST EXISTS] */
+            @PathParam("credentialSpecificationUid") final String credentialSpecificationUid,
+            final IssuancePolicy policy) {
 
         logger.entry();
 
@@ -1125,18 +1330,27 @@ public class IssuanceService {
                     credentialSpecificationUid), policy);
             return logger.exit(Response.ok("OK").build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
     /**
-     * @fiware-rest-path /protected/issuancePolicy/get/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/issuancePolicy/get/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method GET
      * @fiware-rest-description Retrieve an issuance policy that was previously
+<<<<<<< HEAD
      * stored.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification the
      * issuance policy is associated with.
+=======
+     *                          stored.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification the issuance policy is associated
+     *                         with.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Issuance policy could not be found.
@@ -1149,8 +1363,9 @@ public class IssuanceService {
     @GET()
     @Path("/protected/issuancePolicy/get/{credentialSpecificationUid}")
     @Consumes({ MediaType.APPLICATION_XML })
-    public Response getIssuancePolicy( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credentialSpecificationUid) {
+    public Response getIssuancePolicy(
+            /* [TEST EXISTS] */
+            @PathParam("credentialSpecificationUid") final String credentialSpecificationUid) {
 
         logger.entry();
 
@@ -1160,14 +1375,15 @@ public class IssuanceService {
 
             IssuancePolicy policy = instance.issuanceStorage
                     .getIssuancePolicy(new URI(credentialSpecificationUid));
-            if (policy == null)
+            if (policy == null) {
                 return logger.exit(Response.status(Response.Status.NOT_FOUND)
                         .build());
-            else
+            } else {
                 return logger.exit(Response.ok(of.createIssuancePolicy(policy),
                         MediaType.APPLICATION_XML).build());
+            }
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1177,16 +1393,19 @@ public class IssuanceService {
     /**
      * @fiware-rest-path /protected/attributeInfoCollection/{name}
      * @fiware-rest-method GET
-     * @fiware-rest-description This method can be used to obtain information about
-     * attributes from the attribute source (i.e. LDAP, JDBC or something else).
-     * This method will return an <tt>AttributeInfoCollection</tt> that can be
-     * passed to
-     * {@link #generateCredentialSpecification(AttributeInfoCollection)}.
-     * @fiware-rest-path-param name - Name identifies the entity from which to extract/gather
-     * attribute information. For LDAP <em>name
+     * @fiware-rest-description This method can be used to obtain information
+     *                          about attributes from the attribute source (i.e.
+     *                          LDAP, JDBC or something else). This method will
+     *                          return an <tt>AttributeInfoCollection</tt> that
+     *                          can be passed to
+     *                          {@link #generateCredentialSpecification(AttributeInfoCollection)}
+     *                          .
+     * @fiware-rest-path-param name - Name identifies the entity from which to
+     *                         extract/gather attribute information. For LDAP
+     *                         <em>name
      *  </em> is an object class and for JDBC <em>name</em> is the name of a
-     * table in a database. Please be aware that <em>name</em> is ALWAYS
-     * provider specific.
+     *                         table in a database. Please be aware that
+     *                         <em>name</em> is ALWAYS provider specific.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type AtributeInfoCollection
@@ -1197,7 +1416,12 @@ public class IssuanceService {
      */
     @GET()
     @Path("/protected/attributeInfoCollection/{name}")
-    public Response attributeInfoCollection(@PathParam("name") String name) { /* [TEST EXISTS] */
+    public Response attributeInfoCollection(@PathParam("name") final String name) { /*
+                                                                                     * [
+                                                                                     * TEST
+                                                                                     * EXISTS
+                                                                                     * ]
+                                                                                     */
         logger.entry();
 
         AttributeInfoProvider attribInfoProvider = null;
@@ -1211,11 +1435,12 @@ public class IssuanceService {
             return Response.ok(attribInfoProvider.getAttributes(name),
                     MediaType.APPLICATION_XML).build();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         } finally {
-            if (attribInfoProvider != null)
+            if (attribInfoProvider != null) {
                 attribInfoProvider.shutdown();
+            }
         }
     }
 
@@ -1223,7 +1448,7 @@ public class IssuanceService {
      * @fiware-rest-path /protected/credentialSpecification/generate
      * @fiware-rest-method POST
      * @fiware-rest-description Generate a credential specification based on the
-     * supplied <tt>AttributeInfoCollection</tt>.
+     *                          supplied <tt>AttributeInfoCollection</tt>.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type AttributeInfoCollection
@@ -1237,16 +1462,16 @@ public class IssuanceService {
     @Path("/protected/credentialSpecification/generate")
     @Consumes({ MediaType.APPLICATION_XML })
     public Response generateCredentialSpecification( /* [TEST EXISTS] */
-            AttributeInfoCollection attrInfoCol) {
+    final AttributeInfoCollection attrInfoCol) {
 
         try {
 
             return Response
                     .ok(of.createCredentialSpecification(new CredentialSpecGenerator()
-                    .generateCredentialSpecification(attrInfoCol)),
-                    MediaType.APPLICATION_XML).build();
+                            .generateCredentialSpecification(attrInfoCol)),
+                            MediaType.APPLICATION_XML).build();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1257,6 +1482,7 @@ public class IssuanceService {
      * @fiware-rest-path /protected/setupSystemParameters/
      * @fiware-rest-method POST
      * @fiware-rest-description
+<<<<<<< HEAD
      *
      * This method generates a fresh set of system parameters for the given
      * security level, expressed as the bitlength of a symmetric key with
@@ -1272,6 +1498,29 @@ public class IssuanceService {
      * urn:abc4trust:1.0:algorithm:idemix for Identity Mixer
      *
      * This method will overwrite any existing system parameters.<br>
+=======
+     *
+     *                          This method generates a fresh set of system
+     *                          parameters for the given security level,
+     *                          expressed as the bitlength of a symmetric key
+     *                          with comparable security, and cryptographic
+     *                          mechanism. Issuers can generate their own system
+     *                          parameters, but can also reuse system parameters
+     *                          generated by a different entity. More typically,
+     *                          a central party (e.g., a standardization body)
+     *                          will generate and publish system parameters for
+     *                          a number of different key lengths that will be
+     *                          used by many Issuers. Security levels 80 and 128
+     *                          MUST be supported; other values MAY also be
+     *                          supported.
+     *
+     *                          Currently, the supported mechanism URIs are
+     *                          urn:abc4trust:1.0:algorithm:idemix for Identity
+     *                          Mixer
+     *
+     *                          This method will overwrite any existing system
+     *                          parameters.<br>
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-return-type SystemParameters
@@ -1284,10 +1533,11 @@ public class IssuanceService {
      */
     @POST()
     @Path("/protected/setupSystemParameters/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* UNUSED */
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* UNUSED */
     public Response setupSystemParameters(
-            @QueryParam("securityLevel") int securityLevel,
-            @QueryParam("cryptoMechanism") URI cryptoMechanism) {
+            @QueryParam("securityLevel") final int securityLevel,
+            @QueryParam("cryptoMechanism") final URI cryptoMechanism) {
 
         logger.entry();
 
@@ -1317,7 +1567,7 @@ public class IssuanceService {
                     this.of.createSystemParameters(serializeSp),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
@@ -1328,6 +1578,7 @@ public class IssuanceService {
      * @fiware-rest-path /protected/setupIssuerParameters/
      * @fiware-rest-method POST
      * @fiware-rest-description
+<<<<<<< HEAD
      *
      * This method generates a fresh issuance key and the corresponding Issuer
      * parameters. The issuance key is stored in the Issuer's key store, the
@@ -1341,6 +1592,26 @@ public class IssuanceService {
      * Currently, the only supported hash algorithm is SHA-256 with identifier
      * urn:abc4trust:1.0:hashalgorithm:sha-256.
      *
+=======
+     *
+     *                          This method generates a fresh issuance key and
+     *                          the corresponding Issuer parameters. The
+     *                          issuance key is stored in the Issuer's key
+     *                          store, the Issuer parameters are returned as
+     *                          output of the method. The input to this method
+     *                          specify the credential specification credspec of
+     *                          the credentials that will be issued with these
+     *                          parameters, the system parameters syspars, the
+     *                          unique identifier uid of the generated
+     *                          parameters, the hash algorithm identifier hash,
+     *                          and, optionally, the parameters identifier for
+     *                          any Issuer-driven Revocation Authority.
+     *
+     *                          Currently, the only supported hash algorithm is
+     *                          SHA-256 with identifier
+     *                          urn:abc4trust:1.0:hashalgorithm:sha-256.
+     *
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 Credential specification could not be found.
@@ -1355,7 +1626,7 @@ public class IssuanceService {
     @Path("/protected/setupIssuerParameters/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response setupIssuerParameters( /* [FLOW TEST] */
-            IssuerParametersInput issuerParametersInput) {
+    final IssuerParametersInput issuerParametersInput) {
 
         logger.entry();
 
@@ -1379,11 +1650,13 @@ public class IssuanceService {
 
             URI credentialSpecUid = issuerParametersInput
                     .getCredentialSpecUID();
-            logger.info("Retrieving credential specification " + credentialSpecUid.toString());
+            logger.info("Retrieving credential specification "
+                    + credentialSpecUid.toString());
             CredentialSpecification credspec = keyManager
                     .getCredentialSpecification(credentialSpecUid);
 
-            logger.info("Got credential specification " + credspec == null ? "(null)" : "non-null");
+            logger.info("Got credential specification "
+                    + ((credspec == null) ? "(null)" : "non-null"));
 
             if (credspec == null) {
                 return logger.exit(Response
@@ -1406,8 +1679,9 @@ public class IssuanceService {
             logger.info("IssuanceService - issuerParameters generated");
 
             List<Object> objs = systemParameters.getAny();
-            for (Object obj : objs)
+            for (Object obj : objs) {
                 logger.info(obj + "-" + obj.getClass());
+            }
 
             SystemParameters serializeSp = SystemParametersUtil
                     .serialize(systemParameters);
@@ -1417,14 +1691,14 @@ public class IssuanceService {
                     this.of.createIssuerParameters(issuerParameters),
                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
     }
 
     /* NON-REST METHODS */
 
-    private void initializeHelper(CryptoEngine cryptoEngine) {
+    private void initializeHelper(final CryptoEngine cryptoEngine) {
         logger.info("IssuanceService loading");
 
         try {
@@ -1435,12 +1709,12 @@ public class IssuanceService {
                 logger.info("Initializing IssuanceHelper");
 
                 IssuanceHelper
-                .initInstanceForService(
-                        cryptoEngine,
-                        "",
-                        "",
-                        StorageModuleFactory
-                        .getModulesForServiceConfiguration(ServiceType.ISSUANCE));
+                        .initInstanceForService(
+                                cryptoEngine,
+                                "",
+                                "",
+                                StorageModuleFactory
+                                        .getModulesForServiceConfiguration(ServiceType.ISSUANCE));
 
                 logger.info("IssuanceHelper is initialized");
             }
@@ -1450,7 +1724,7 @@ public class IssuanceService {
         }
     }
 
-    private int parseIdemixSecurityLevel(int securityLevel) {
+    private int parseIdemixSecurityLevel(final int securityLevel) {
         if (securityLevel == 80) {
             return 1024;
         }
@@ -1458,7 +1732,7 @@ public class IssuanceService {
                 .equivalentRsaLength(securityLevel);
     }
 
-    private int parseUProveSecurityLevel(int securityLevel) {
+    private int parseUProveSecurityLevel(final int securityLevel) {
         switch (securityLevel) {
         case 80:
             return 2048;
@@ -1469,7 +1743,7 @@ public class IssuanceService {
                 + securityLevel + "\"");
     }
 
-    private CryptoEngine parseCryptoMechanism(URI cryptoMechanism) {
+    private CryptoEngine parseCryptoMechanism(final URI cryptoMechanism) {
         if (cryptoMechanism == null) {
             throw new RuntimeException("No cryptographic mechanism specified");
         }
@@ -1480,7 +1754,8 @@ public class IssuanceService {
                 + cryptoMechanism + "\"");
     }
 
-    private void validateInput(IssuerParametersInput issuerParametersTemplate) {
+    private void validateInput(
+            final IssuerParametersInput issuerParametersTemplate) {
         if (issuerParametersTemplate == null) {
             throw new IllegalArgumentException(
                     "issuer paramters input is required");
@@ -1545,8 +1820,8 @@ public class IssuanceService {
     // @Path("/protected/initIssuanceProtocol/")
     // @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     private Response initIssuanceProtocol(
-            IssuancePolicyAndAttributes issuancePolicyAndAttributes)
-                    throws Exception {
+            final IssuancePolicyAndAttributes issuancePolicyAndAttributes)
+            throws Exception {
 
         logger.entry();
 
@@ -1576,13 +1851,13 @@ public class IssuanceService {
                                     .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean),
                                     MediaType.APPLICATION_XML).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(ExceptionDumper.dumpException(e, logger));
         }
 
     }
 
-    private CryptoEngine getCryptoEngine(URI issuerParametersUid) {
+    private CryptoEngine getCryptoEngine(final URI issuerParametersUid) {
         /*
          * there was some endsWith check on the Uid actually. We only support
          * Idemix for now. -- munt
@@ -1591,7 +1866,7 @@ public class IssuanceService {
     }
 
     private void initIssuanceProtocolValidateInput(
-            IssuancePolicyAndAttributes issuancePolicyAndAttributes) {
+            final IssuancePolicyAndAttributes issuancePolicyAndAttributes) {
         if (issuancePolicyAndAttributes == null) {
             throw new IllegalArgumentException(
                     "\"issuancePolicyAndAttributes\" is required.");

@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.SerializationUtils;
 
-import ch.zhaw.ficore.p2abc.xml.QueryRule;
 import ch.zhaw.ficore.p2abc.storage.URIBytesStorage;
+import ch.zhaw.ficore.p2abc.xml.QueryRule;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -16,19 +16,20 @@ import eu.abc4trust.xml.IssuancePolicy;
 
 public class GenericIssuanceStorage implements IssuanceStorage {
 
-    private URIBytesStorage issuancePolicyStorage;
-    private URIBytesStorage queryRuleStorage;
+    private final URIBytesStorage issuancePolicyStorage;
+    private final URIBytesStorage queryRuleStorage;
 
     @Inject
     public GenericIssuanceStorage(
-            @Named("issuancePolicyStorage") URIBytesStorage issuancePolicyStorage,
-            @Named("queryRuleStorage") URIBytesStorage queryRuleStorage) {
+            @Named("issuancePolicyStorage") final URIBytesStorage issuancePolicyStorage,
+            @Named("queryRuleStorage") final URIBytesStorage queryRuleStorage) {
 
         this.issuancePolicyStorage = issuancePolicyStorage;
         this.queryRuleStorage = queryRuleStorage;
     }
 
-    public void addQueryRule(URI uri, QueryRule rule) throws IOException {
+    public void addQueryRule(final URI uri, final QueryRule rule)
+            throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(rule);
             queryRuleStorage.put(uri, data);
@@ -37,7 +38,7 @@ public class GenericIssuanceStorage implements IssuanceStorage {
         }
     }
 
-    public void addIssuancePolicy(URI uri, IssuancePolicy policy)
+    public void addIssuancePolicy(final URI uri, final IssuancePolicy policy)
             throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(policy);
@@ -47,10 +48,11 @@ public class GenericIssuanceStorage implements IssuanceStorage {
         }
     }
 
-    public QueryRule getQueryRule(URI uri) throws IOException {
+    public QueryRule getQueryRule(final URI uri) throws IOException {
         try {
-            if (!queryRuleStorage.containsKey(uri))
+            if (!queryRuleStorage.containsKey(uri)) {
                 return null;
+            }
 
             byte[] data = queryRuleStorage.get(uri);
             return (QueryRule) SerializationUtils.deserialize(data);
@@ -59,10 +61,11 @@ public class GenericIssuanceStorage implements IssuanceStorage {
         }
     }
 
-    public IssuancePolicy getIssuancePolicy(URI uri) throws IOException {
+    public IssuancePolicy getIssuancePolicy(final URI uri) throws IOException {
         try {
-            if (!issuancePolicyStorage.containsKey(uri))
+            if (!issuancePolicyStorage.containsKey(uri)) {
                 return null;
+            }
 
             byte[] data = issuancePolicyStorage.get(uri);
             return (IssuancePolicy) SerializationUtils.deserialize(data);
@@ -74,12 +77,11 @@ public class GenericIssuanceStorage implements IssuanceStorage {
     public List<URI> listQueryRules() throws Exception {
         return queryRuleStorage.keys();
     }
-    
-    public void deleteQueryRule(URI uri) throws IOException {
+
+    public void deleteQueryRule(final URI uri) throws IOException {
         try {
             queryRuleStorage.delete(uri);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }

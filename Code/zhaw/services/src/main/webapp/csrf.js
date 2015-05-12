@@ -2,6 +2,8 @@ function csrf() {
 	var links = document.getElementsByTagName('a');
     var cv = readCookie('csrf');
     for(i = 0; i < links.length; i++) {
+		if(links[i].className == "nocsrf")
+			continue;        
 		links[i].href += "?csrf=" + cv;
 	}
 	var forms = document.getElementsByTagName('form');

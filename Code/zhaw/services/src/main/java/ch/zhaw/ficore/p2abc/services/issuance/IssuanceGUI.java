@@ -65,30 +65,34 @@ public class IssuanceGUI {
     @Context
     HttpServletRequest request;
 
-    private ObjectFactory of = new ObjectFactory();
+    private final ObjectFactory of = new ObjectFactory();
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(IssuanceGUI.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(IssuanceGUI.class));
 
     public IssuanceGUI() {
     }
 
     @POST()
     @Path("/protected/deleteAttribute")
-    public Response deleteAttribute(@FormParam("cs") String credSpecUid,
-            @FormParam("i") int index) {
+    public Response deleteAttribute(@FormParam("cs") final String credSpecUid,
+            @FormParam("i") final int index) {
         logger.entry();
 
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("i", Integer.toString(index));
 
-            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL()
-                    + "protected/credentialSpecification/deleteAttribute/"
-                    + URLEncoder.encode(credSpecUid, "UTF-8"), params);
+            RESTHelper
+                    .deleteRequest(
+                            ServicesConfiguration.getIssuanceServiceURL()
+                                    + "protected/credentialSpecification/deleteAttribute/"
+                                    + URLEncoder.encode(credSpecUid, "UTF-8"),
+                            params);
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -100,17 +104,18 @@ public class IssuanceGUI {
     @POST()
     @Path("/protected/deleteCredentialSpecification/")
     public Response deleteCredentialSpecification(
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") final String credSpecUid) {
         logger.entry();
 
         try {
-            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL()
+            RESTHelper.deleteRequest(ServicesConfiguration
+                    .getIssuanceServiceURL()
                     + "protected/credentialSpecification/delete/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -121,10 +126,10 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/addFriendlyDescription/")
-    public Response addFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language,
-            @FormParam("value") String value) {
+    public Response addFriendlyDescription(@FormParam("i") final int index,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("language") final String language,
+            @FormParam("value") final String value) {
         logger.entry();
 
         try {
@@ -142,7 +147,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -153,9 +158,9 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/deleteFriendlyDescription/")
-    public Response deleteFriendlyDescription(@FormParam("i") int index,
-            @FormParam("cs") String credSpecUid,
-            @FormParam("language") String language) {
+    public Response deleteFriendlyDescription(@FormParam("i") final int index,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("language") final String language) {
         logger.entry();
 
         try {
@@ -172,7 +177,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -183,17 +188,19 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/generateIssuerParameters/")
-    public Response generateIssuerParameters(@FormParam("cs") String credSpecUid) {
+    public Response generateIssuerParameters(
+            @FormParam("cs") final String credSpecUid) {
         logger.entry();
 
         try {
-            RESTHelper.postRequest(ServicesConfiguration.getIssuanceServiceURL()
+            RESTHelper.postRequest(ServicesConfiguration
+                    .getIssuanceServiceURL()
                     + "protected/issuerParameters/generate/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
 
             return issuerParameters();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -204,8 +211,8 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/addQueryRule")
-    public Response addQueryRule(@FormParam("cs") String credSpecUid,
-            @FormParam("qr") String query) {
+    public Response addQueryRule(@FormParam("cs") final String credSpecUid,
+            @FormParam("qr") final String query) {
         logger.entry();
 
         try {
@@ -213,13 +220,14 @@ public class IssuanceGUI {
             qr.queryString = query;
 
             RESTHelper.putRequest(
-                    ServicesConfiguration.getIssuanceServiceURL() + "protected/queryRule/store/"
+                    ServicesConfiguration.getIssuanceServiceURL()
+                            + "protected/queryRule/store/"
                             + URLEncoder.encode(credSpecUid, "UTF-8"),
                     RESTHelper.toXML(QueryRule.class, qr));
 
             return queryRules();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -235,8 +243,8 @@ public class IssuanceGUI {
 
         try {
             QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper
-                    .getRequest(
-                            ServicesConfiguration.getIssuanceServiceURL() + "protected/queryRule/list",
+                    .getRequest(ServicesConfiguration.getIssuanceServiceURL()
+                            + "protected/queryRule/list",
                             QueryRuleCollection.class);
 
             Html html = IssuerGUI.getHtmlPramble("Query Rules", request);
@@ -278,7 +286,8 @@ public class IssuanceGUI {
             mainDiv.appendChild(tbl);
 
             Settings settings = (Settings) RESTHelper.getRequest(
-                    ServicesConfiguration.getIssuanceServiceURL() + "getSettings/", Settings.class);
+                    ServicesConfiguration.getIssuanceServiceURL()
+                            + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
@@ -311,8 +320,15 @@ public class IssuanceGUI {
             mainDiv.appendChild(f);
 
             return Response.ok(html.write()).build();
+        } catch (RuntimeException e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -323,7 +339,8 @@ public class IssuanceGUI {
 
     @POST()
     @Path("/protected/obtainCredentialSpecification2")
-    public Response obtainCredentialSpecification2(@FormParam("n") String name) {
+    public Response obtainCredentialSpecification2(
+            @FormParam("n") final String name) {
         logger.entry();
 
         try {
@@ -351,7 +368,7 @@ public class IssuanceGUI {
 
             return credentialSpecifications();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -397,7 +414,7 @@ public class IssuanceGUI {
 
             return Response.ok(html.write()).build();
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -405,46 +422,47 @@ public class IssuanceGUI {
                             request).write()).build());
         }
     }
-    
+
     @POST()
-    @Path("/protected/deleteIssuerParameters") 
+    @Path("/protected/deleteIssuerParameters")
     public Response deleteIssuerParameters(
-            @FormParam("is") String issuerParamsUid) {
+            @FormParam("is") final String issuerParamsUid) {
         logger.entry();
-        
+
         try {
-            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL() + "protected/issuerParameters/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration
+                    .getIssuanceServiceURL()
+                    + "protected/issuerParameters/delete/"
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
-        }
-        catch(Exception e) {
-            logger.catching( e);
+        } catch (Exception e) {
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger), request)
-                            .write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
         }
     }
-    
+
     @POST()
-    @Path("/protected/deleteQueryRule") 
-    public Response deleteQueryRule(
-            @FormParam("cs") String credSpecUid) {
+    @Path("/protected/deleteQueryRule")
+    public Response deleteQueryRule(@FormParam("cs") final String credSpecUid) {
         logger.entry();
-        
+
         try {
-            RESTHelper.deleteRequest(ServicesConfiguration.getIssuanceServiceURL() + "protected/queryRule/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration
+                    .getIssuanceServiceURL()
+                    + "protected/queryRule/delete/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
             return queryRules();
-        }
-        catch(Exception e) {
-            logger.catching( e);
+        } catch (Exception e) {
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, logger), request)
-                            .write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
         }
     }
 
@@ -455,7 +473,8 @@ public class IssuanceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    ServicesConfiguration.getIssuanceServiceURL() + "getSettings/", Settings.class);
+                    ServicesConfiguration.getIssuanceServiceURL()
+                            + "getSettings/", Settings.class);
 
             Html html = IssuerGUI.getHtmlPramble("Issuer Parameters", request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -497,8 +516,15 @@ public class IssuanceGUI {
             mainDiv.appendChild(tbl);
 
             return Response.ok(html.write()).build();
+        } catch (RuntimeException e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -514,7 +540,8 @@ public class IssuanceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    ServicesConfiguration.getIssuanceServiceURL() + "getSettings/", Settings.class);
+                    ServicesConfiguration.getIssuanceServiceURL()
+                            + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
@@ -668,8 +695,15 @@ public class IssuanceGUI {
 
             return logger.exit(Response.ok(html.write()).build());
 
+        } catch (RuntimeException e) {
+            logger.catching(e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(
@@ -712,7 +746,7 @@ public class IssuanceGUI {
             return logger.exit(Response.ok(html.write()).build());
 
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(

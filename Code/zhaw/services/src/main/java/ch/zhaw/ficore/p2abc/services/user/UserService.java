@@ -57,6 +57,7 @@ import ch.zhaw.ficore.p2abc.xml.Settings;
 import eu.abc4trust.abce.internal.user.policyCredentialMatcher.PolicyCredentialMatcherImpl;
 import eu.abc4trust.guice.ProductionModuleFactory.CryptoEngine;
 import eu.abc4trust.keyManager.KeyManager;
+import eu.abc4trust.keyManager.KeyManagerException;
 import eu.abc4trust.keyManager.KeyStorage;
 import eu.abc4trust.returnTypes.IssuanceReturn;
 import eu.abc4trust.returnTypes.ObjectFactoryReturnTypes;
@@ -85,7 +86,8 @@ public class UserService {
                                                                            // munt
 
     private final ObjectFactory of = new ObjectFactory();
-    private static final XLogger log = new XLogger(LoggerFactory.getLogger(UserService.class));
+    private static final XLogger log = new XLogger(
+            LoggerFactory.getLogger(UserService.class));
 
     private final String fileStoragePrefix = ""; // no prefix -- munt
 
@@ -95,10 +97,24 @@ public class UserService {
     private static String errNoCred = "The credential could not be found!";
     private final static String errNotFound = "The requested resource or parts of it could not be found.";
 
+    public UserService() throws KeyManagerException {
+        this.initializeHelper();
+        UserHelper instance = UserHelper.getInstance();
+        try {
+            SystemParameters sp = instance.keyManager.getSystemParameters();
+            if (sp != null) {
+                this.storeSystemParameters(sp);
+            }
+        } catch (Exception ex) {
+            log.catching(ex);
+        }
+    }
+
     /**
      * @fiware-rest-path /status/
      * @fiware-rest-method GET
-     * @fiware-rest-description If the service is running this method is available.
+     * @fiware-rest-description If the service is running this method is
+     *                          available.
      * @fiware-rest-response 200 OK
      *
      * @return Response
@@ -112,13 +128,21 @@ public class UserService {
     /**
      * @fiware-rest-path /protected/reset
      * @fiware-rest-method POST
+<<<<<<< HEAD
      * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
      * all storage of the webservice(s). Use with extreme caution!
+=======
+     * @fiware-rest-description This method reloads the configuration of the
+     *                          webservice(s) and will completely wipe all
+     *                          storage of the webservice(s). Use with extreme
+     *                          caution!
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
      * @return Response
-     * @throws Exception when something went wrong
+     * @throws Exception
+     *             when something went wrong
      */
     @POST()
     @Path("/reset")
@@ -135,9 +159,11 @@ public class UserService {
      * @fiware-rest-path /canBeSatisfied/
      * @fiware-rest-method POST
      * @fiware-rest-description This method, on input of a presentation policy
-     * decides whether the credentials in the User’s credential store could be
-     * used to produce a valid presentation token satisfying the policy. If so,
-     * this method returns true, otherwise, it returns false.
+     *                          decides whether the credentials in the User’s
+     *                          credential store could be used to produce a
+     *                          valid presentation token satisfying the policy.
+     *                          If so, this method returns true, otherwise, it
+     *                          returns false.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type PresentationPolicyAlternatives
@@ -149,13 +175,10 @@ public class UserService {
      */
     @POST()
     @Path("/canBeSatisfied/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* UNUSED */
-    public Response canBeSatisfied(PresentationPolicyAlternatives p) {
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* UNUSED */
+    public Response canBeSatisfied(final PresentationPolicyAlternatives p) {
         log.entry();
-
-
-
-
 
         try {
             this.initializeHelper();
@@ -177,21 +200,28 @@ public class UserService {
      * @fiware-rest-path /createPresentationToken/
      * @fiware-rest-method POST
      * @fiware-rest-description This method, on input a presentation policy
-     * alternatives, returns an argument to be passed to the UI for choosing how
-     * to satisfy the policy, or returns an error if the policy cannot be
-     * satisfied (if the canBeSatisfied method would have returned false). For
-     * returning such an argument, this method will investigate whether the User
-     * has the necessary credentials and/or established pseudonyms to create one
-     * or more (e.g., by satisfying different alternatives in the policy, or by
-     * using different sets of credentials to satisfy one alternative)
-     * presentation tokens that satisfiy the policy.
+     *                          alternatives, returns an argument to be passed
+     *                          to the UI for choosing how to satisfy the
+     *                          policy, or returns an error if the policy cannot
+     *                          be satisfied (if the canBeSatisfied method would
+     *                          have returned false). For returning such an
+     *                          argument, this method will investigate whether
+     *                          the User has the necessary credentials and/or
+     *                          established pseudonyms to create one or more
+     *                          (e.g., by satisfying different alternatives in
+     *                          the policy, or by using different sets of
+     *                          credentials to satisfy one alternative)
+     *                          presentation tokens that satisfiy the policy.
      *
-     * The return value of this method should be passed to the User Interface
-     * (or to some other component that is capable of rendering a
-     * UiPresentationReturn object from a UiPresentationArguments object). The
-     * return value of the UI must then be passed to the method
-     * createPresentationToken(UiPresentationReturn) for creating a presentation
-     * token.
+     *                          The return value of this method should be passed
+     *                          to the User Interface (or to some other
+     *                          component that is capable of rendering a
+     *                          UiPresentationReturn object from a
+     *                          UiPresentationArguments object). The return
+     *                          value of the UI must then be passed to the
+     *                          method
+     *                          createPresentationToken(UiPresentationReturn)
+     *                          for creating a presentation token.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type PresentationPolicyAlternatives
@@ -204,10 +234,11 @@ public class UserService {
     @POST()
     @Path("/createPresentationToken/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response createPresentationToken(PresentationPolicyAlternatives p) { /* [FLOW TEST] */
+    public Response createPresentationToken(
+            final PresentationPolicyAlternatives p) { /*
+                                                       * [ FLOW TEST ]
+                                                       */
         log.entry();
-
-
 
         DummyForNewABCEInterfaces d = null;
         try {
@@ -231,8 +262,9 @@ public class UserService {
      * @fiware-rest-path /createPresentationTokenUi/
      * @fiware-rest-method POST
      * @fiware-rest-description Performs the next step to complete creation of
-     * presentation tokens. This method should be called when the user interface
-     * is done with its selection.
+     *                          presentation tokens. This method should be
+     *                          called when the user interface is done with its
+     *                          selection.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type UiPresentationReturn
@@ -244,8 +276,9 @@ public class UserService {
      */
     @POST()
     @Path("/createPresentationTokenUi/")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TEST] */
-    public Response createPresentationToken(UiPresentationReturn upr) {
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* [FLOW TEST] */
+    public Response createPresentationToken(final UiPresentationReturn upr) {
 
         log.entry();
 
@@ -256,12 +289,16 @@ public class UserService {
 
             PresentationToken presentationToken = instance.getEngine()
                     .createPresentationToken(upr);
-            /*VerifierIdentity vi = presentationToken.getPresentationTokenDescription().getMessage().getVerifierIdentity();
-            if(vi == null) {
-                presentationToken.getPresentationTokenDescription().getMessage().setVerifierIdentity(new VerifierIdentity());
-                vi = presentationToken.getPresentationTokenDescription().getMessage().getVerifierIdentity();
-                vi.getContent().clear();
-            }*/
+            /*
+             * VerifierIdentity vi =
+             * presentationToken.getPresentationTokenDescription
+             * ().getMessage().getVerifierIdentity(); if(vi == null) {
+             * presentationToken
+             * .getPresentationTokenDescription().getMessage().
+             * setVerifierIdentity (new VerifierIdentity()); vi =
+             * presentationToken.getPresentationTokenDescription
+             * ().getMessage().getVerifierIdentity(); vi.getContent().clear(); }
+             */
             return log.exit(Response.ok(
                     of.createPresentationToken(presentationToken),
                     MediaType.APPLICATION_XML).build());
@@ -275,12 +312,24 @@ public class UserService {
      * @fiware-rest-path /loadSettings/
      * @fiware-rest-method POST
      * @fiware-rest-description Download and load settings from an issuer or any
+<<<<<<< HEAD
      * settings provider. This method will cause the user service to make a
      * <tt>GET</tt> request to the specified <tt>url</tt> and download the
      * contents which must be valid <tt>Settings</tt>. DO NOT use this method
      * with untrusted URLs or issuers (or any other settings providers) with
      * DIFFERENT system parameters as this method will overwrite existing system
      * parameters. See also {@link #getSettings()}.
+=======
+     *                          settings provider. This method will cause the
+     *                          user service to make a <tt>GET</tt> request to
+     *                          the specified <tt>url</tt> and download the
+     *                          contents which must be valid <tt>Settings</tt>.
+     *                          DO NOT use this method with untrusted URLs or
+     *                          issuers (or any other settings providers) with
+     *                          DIFFERENT system parameters as this method will
+     *                          overwrite existing system parameters. See also
+     *                          {@link #getSettings()}.
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-request-param url a valid URL (String)
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
@@ -291,7 +340,10 @@ public class UserService {
      */
     @POST()
     @Path("/loadSettings/")
-    public Response loadSettings(@QueryParam("url") String url) { /* [FLOW TEST] */
+    public Response loadSettings(@QueryParam("url") final String url) { /*
+                                                                         * [FLOW
+                                                                         * TEST]
+                                                                         */
         log.entry();
 
         try {
@@ -301,24 +353,27 @@ public class UserService {
             for (IssuerParameters ip : settings.issuerParametersList) {
                 Response r = this.storeIssuerParameters(ip.getParametersUID(),
                         ip);
-                if (r.getStatus() != 200)
+                if (r.getStatus() != 200) {
                     throw new RuntimeException(
                             "Could not load issuer parameters!");
+                }
             }
 
             for (CredentialSpecification cs : settings.credentialSpecifications) {
                 Response r = this.storeCredentialSpecification(
                         cs.getSpecificationUID(), cs);
-                if (r.getStatus() != 200)
+                if (r.getStatus() != 200) {
                     throw new RuntimeException(
                             "Could not load credential specification!");
+                }
             }
 
             Response r = this.storeSystemParameters(settings.systemParameters);
             log.info(settings.systemParameters + "|"
                     + settings.systemParameters.toString());
-            if (r.getStatus() != 200)
+            if (r.getStatus() != 200) {
                 throw new RuntimeException("Could not load system parameters!");
+            }
 
             return log.exit(Response.ok().build());
         } catch (Exception e) {
@@ -331,14 +386,18 @@ public class UserService {
      * @fiware-rest-path /getSettings/
      * @fiware-rest-method GET
      * @fiware-rest-description Returns the settings of the service as obtained
-     * from an issuance service. Settings includes issuer parameters, credential
-     * specifications and the system parameters. This method may thus be used to
-     * retrieve all credential specifications stored at the user service and
-     * their corresponding issuer parameters. The return type of this method is
-     * <tt>Settings</tt>.
-     * The user service is capable of downloading settings from an issuer (or
-     * from anything that provides settings). To download settings use
-     * <tt>/loadSetting?url=...</tt> ({@link #loadSettings(String)}).
+     *                          from an issuance service. Settings includes
+     *                          issuer parameters, credential specifications and
+     *                          the system parameters. This method may thus be
+     *                          used to retrieve all credential specifications
+     *                          stored at the user service and their
+     *                          corresponding issuer parameters. The return type
+     *                          of this method is <tt>Settings</tt>. The user
+     *                          service is capable of downloading settings from
+     *                          an issuer (or from anything that provides
+     *                          settings). To download settings use
+     *                          <tt>/loadSetting?url=...</tt> (
+     *                          {@link #loadSettings(String)}).
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type Settings
@@ -388,9 +447,8 @@ public class UserService {
             try {
                 settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
                         .getSystemParameters());
-            }
-            catch(Exception e) {
-
+            } catch (Exception e) {
+                log.catching(e);
             }
 
             return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
@@ -398,8 +456,9 @@ public class UserService {
         } catch (Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, log))).build();
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, log)))
+                    .build();
         }
     }
 
@@ -407,7 +466,7 @@ public class UserService {
      * @fiware-rest-path /credential/list
      * @fiware-rest-method GET
      * @fiware-rest-description Returns all obtained credentials as a
-     * <tt>CredentialCollection</tt>.<br>
+     *                          <tt>CredentialCollection</tt>.<br>
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type CredentialCollection
@@ -445,8 +504,9 @@ public class UserService {
         } catch (Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, log))).build();
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, log)))
+                    .build();
         }
     }
 
@@ -459,41 +519,56 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 The credential could not be found.
      * @fiware-rest-return-type Credential
+<<<<<<< HEAD
      *
      * @param credUid UID of the credential
+=======
+     *
+     * @param credUid
+     *            UID of the credential
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @GET()
     @Path("/credential/get/{credUid}")
-    public Response getCredential(@PathParam ("credUid") String credUid) { /* [FLOW TEST] */
+    public Response getCredential(@PathParam("credUid") String credUid) { /*
+                                                                           * [FLOW
+                                                                           * TEST
+                                                                           * ]
+                                                                           */
         log.entry();
 
         try {
             this.initializeHelper();
 
-            if(credUid.lastIndexOf('/') == -1)
+            if (credUid.lastIndexOf('/') == -1) {
                 credUid = "IdmxCredential/" + credUid;
+            }
 
             UserHelper instance = UserHelper.getInstance();
 
-            Credential cred = instance.credentialManager.getCredential(new URI(credUid));
+            Credential cred = instance.credentialManager.getCredential(new URI(
+                    credUid));
 
-            if(cred == null) {
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNoCred).build());
+            if (cred == null) {
+                return log.exit(Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNoCred).build());
             }
 
-            return log.exit(Response.ok(of.createCredential(cred), MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+            return log.exit(Response.ok(of.createCredential(cred),
+                    MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                            ExceptionDumper.dumpExceptionStr(e, log))).build();
+                    Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity(ExceptionDumper.dumpExceptionStr(e, log)))
+                    .build();
         }
     }
 
     /**
      * @fiware-rest-path /issuanceProtocolStep/
+<<<<<<< HEAD
      * @fiware-rest-description
      * This method performs one step in an interactive
      * issuance protocol. On input an incoming issuance message im obtained from
@@ -523,6 +598,48 @@ public class UserService {
      * from a UiIssuanceArguments object); the method
      * issuanceProtocolStep(UiIssuanceReturn) should then be invoked with the
      * object returned by the UI.<br>
+=======
+     * @fiware-rest-description This method performs one step in an interactive
+     *                          issuance protocol. On input an incoming issuance
+     *                          message im obtained from the Issuer, it either
+     *                          returns the outgoing issuance message that is to
+     *                          be sent back to the Issuer, an object that must
+     *                          be sent to the User Interface (UI) to allow the
+     *                          user to decide how to satisfy a policy (or
+     *                          confirm the only choice), or returns a
+     *                          description of the newly issued credential at
+     *                          successful completion of the protocol. In the
+     *                          first case, the Context attribute of the
+     *                          outgoing message has the same value as that of
+     *                          the incoming message, allowing the Issuer to
+     *                          link the different messages of this issuance
+     *                          protocol.
+     *
+     *                          If this is the first time this method is called
+     *                          for a given context, the method expects the
+     *                          issuance message to contain an issuance policy,
+     *                          and returns an object that is to be sent to the
+     *                          UI (allowing the user to chose his preferred way
+     *                          of generating the presentation token, or to
+     *                          confirm the only possible choice).
+     *
+     *                          This method throws an exception if the policy
+     *                          cannot be satisfied with the user's current
+     *                          credentials.
+     *
+     *                          If this method returns an IssuanceMessage, that
+     *                          message should be forwarded to the Issuer. If
+     *                          this method returns a CredentialDescription,
+     *                          then the issuance protocol was successful. If
+     *                          this method returns a UiIssuanceArguments, that
+     *                          object must be forwarded to the UI (or to some
+     *                          other component that is capable of rendering a
+     *                          UiIssuanceReturn object from a
+     *                          UiIssuanceArguments object); the method
+     *                          issuanceProtocolStep(UiIssuanceReturn) should
+     *                          then be invoked with the object returned by the
+     *                          UI.<br>
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessage
@@ -535,10 +652,14 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStep/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(JAXBElement<IssuanceMessage> jm) { /* [FLOW TEST] */
+    public Response issuanceProtocolStep(final JAXBElement<IssuanceMessage> jm) { /*
+                                                                                   * [
+                                                                                   * FLOW
+                                                                                   * TEST
+                                                                                   * ]
+                                                                                   */
 
         log.entry();
-
 
         try {
             this.initializeHelper();
@@ -563,8 +684,9 @@ public class UserService {
     /**
      * @fiware-rest-path /issuanceProtocolStepUi/
      * @fiware-rest-method POST
-     * @fiware-rest-description This method performs the next step in the issuance
-     * protocol after the UI is done with its selection. <br>
+     * @fiware-rest-description This method performs the next step in the
+     *                          issuance protocol after the UI is done with its
+     *                          selection. <br>
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type UiIssuanceReturn
@@ -577,11 +699,12 @@ public class UserService {
     @POST()
     @Path("/issuanceProtocolStepUi/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Response issuanceProtocolStep(UiIssuanceReturn uir) { /* [FLOW TEST] */
+    public Response issuanceProtocolStep(final UiIssuanceReturn uir) { /*
+                                                                        * [FLOW
+                                                                        * TEST]
+                                                                        */
 
         log.entry();
-
-
 
         try {
             this.initializeHelper();
@@ -602,10 +725,11 @@ public class UserService {
     /**
      * @fiware-rest-path /credential/delete/{credentialUid}
      * @fiware-rest-method DELETE
-     * @fiware-rest-description This method deletes the credential with the given
-     * identifier from the credential store. If deleting is not possible (e.g.
-     * if the referred credential does not exist) the method returns false, and
-     * true otherwise.
+     * @fiware-rest-description This method deletes the credential with the
+     *                          given identifier from the credential store. If
+     *                          deleting is not possible (e.g. if the referred
+     *                          credential does not exist) the method returns
+     *                          false, and true otherwise.
      * @fiware-rest-path-param credentialUid - UID of the Credential
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
@@ -617,23 +741,23 @@ public class UserService {
      */
     @DELETE()
     @Path("/credential/delete/{credentialUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TESTS] */
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* [FLOW TESTS] */
     public Response deleteCredential(
             @PathParam("credentialUid") String credentialUid) {
         log.entry();
-
-
 
         try {
             this.initializeHelper();
 
             UserHelper instance = UserHelper.getInstance();
 
-            if(credentialUid.lastIndexOf('/') == -1)
+            if (credentialUid.lastIndexOf('/') == -1) {
                 credentialUid = "IdmxCredential/" + credentialUid;
+            }
 
-            boolean r = instance.credentialManager
-                    .deleteCredential(new URI(credentialUid));
+            boolean r = instance.credentialManager.deleteCredential(new URI(
+                    credentialUid));
 
             ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
             createABCEBoolean.setValue(r);
@@ -648,8 +772,11 @@ public class UserService {
     }
 
     /**
-     * @fiware-rest-path /credentialSpecification/store/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /credentialSpecification/store/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method PUT
+<<<<<<< HEAD
      * @fiware-rest-description Stores a credential specification under the given
      * UID.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification
@@ -658,6 +785,17 @@ public class UserService {
      * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not match the actual
      * UID or is invalid.
      *
+=======
+     * @fiware-rest-description Stores a credential specification under the
+     *                          given UID.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not
+     *                       match the actual UID or is invalid.
+     *
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @param credentialSpecificationUid
      *            UID of the credential specification.
      * @param credSpec
@@ -666,18 +804,20 @@ public class UserService {
      */
     @PUT()
     @Path("/credentialSpecification/store/{credentialSpecifationUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [TEST EXISTS] */
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* [TEST EXISTS] */
     public Response storeCredentialSpecification(
-            @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
-            CredentialSpecification credSpec) {
+            @PathParam("credentialSpecifationUid") final URI credentialSpecificationUid,
+            final CredentialSpecification credSpec) {
         log.entry();
 
         try {
 
             if (!credentialSpecificationUid.toString().equals(
-                    credSpec.getSpecificationUID().toString()))
+                    credSpec.getSpecificationUID().toString())) {
                 return log.exit(Response.status(Response.Status.CONFLICT)
                         .entity(errCredSpecUid).build());
+            }
 
             this.initializeHelper();
 
@@ -701,21 +841,34 @@ public class UserService {
     }
 
     /**
-     * @fiware-rest-path /credentialSpecification/get/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /credentialSpecification/get/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method GET
-     * @fiware-rest-description Retreive a credential specification stored at this service.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to retrieve.
+     * @fiware-rest-description Retreive a credential specification stored at
+     *                          this service.
+     * @fiware-rest-path-param credentialSpecificationUid UID of the credential
+     *                         specification to retrieve.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * @fiware-rest-response 404 The credential specification could not be found.
+     * @fiware-rest-response 404 The credential specification could not be
+     *                       found.
      * @fiware-rest-return-type CredentialSpecification
+<<<<<<< HEAD
      *
      * @param credSpecUid UID of the credential specification
+=======
+     *
+     * @param credSpecUid
+     *            UID of the credential specification
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @GET()
-    @Path("/credentialSpecification/get/{credentialSpecificationUid}") /* [TEST EXISTS] */
-    public Response getCredentialSpecification(@PathParam("credentialSpecificationUid") String credSpecUid) {
+    @Path("/credentialSpecification/get/{credentialSpecificationUid}")
+    /* [TEST EXISTS] */
+    public Response getCredentialSpecification(
+            @PathParam("credentialSpecificationUid") final String credSpecUid) {
         log.entry();
 
         try {
@@ -725,34 +878,50 @@ public class UserService {
 
             KeyManager keyManager = instance.keyManager;
 
-            CredentialSpecification credSpec = keyManager.getCredentialSpecification(new URI(credSpecUid));
+            CredentialSpecification credSpec = keyManager
+                    .getCredentialSpecification(new URI(credSpecUid));
 
-            if(credSpec == null)
-                return log.exit(Response.status(Response.Status.NOT_FOUND).entity(errNotFound).build());
+            if (credSpec == null) {
+                return log.exit(Response.status(Response.Status.NOT_FOUND)
+                        .entity(errNotFound).build());
+            }
 
-            return log.exit(Response.ok(of.createCredentialSpecification(credSpec), MediaType.APPLICATION_XML).build());
-        }
-        catch(Exception e) {
+            return log.exit(Response.ok(
+                    of.createCredentialSpecification(credSpec),
+                    MediaType.APPLICATION_XML).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }
     }
 
     /**
-     * @fiware-rest-path /protected/credentialSpecification/delete/{credentialSpecificationUid}
+     * @fiware-rest-path
+     *                   /protected/credentialSpecification/delete/{credentialSpecificationUid
+     *                   }
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a credential specification.
+<<<<<<< HEAD
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
      * @param credSpecUid UID of the credential specification to delete
+=======
+     * @fiware-rest-patha-param >credentialSpecificationUid UID of the
+     *                          credential specification to delete.
+     * @fiware-rest-response 200 OK
+     * @fiware-rest-response 500 ERROR
+     *
+     * @param credSpecUid
+     *            UID of the credential specification to delete
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @DELETE()
     @Path("/credentialSpecification/delete/{credentialSpecificationUid}")
     public Response deleteCredentialSpecification( /* [TEST EXISTS] */
-            @PathParam("credentialSpecificationUid") String credSpecUid) {
+    @PathParam("credentialSpecificationUid") final String credSpecUid) {
         log.entry();
 
         try {
@@ -768,8 +937,8 @@ public class UserService {
                 gkeyStorage.delete(new URI(credSpecUid));
             } else {
                 return log.exit(
-                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                                errNotImplemented)).build();
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                                .entity(errNotImplemented)).build();
             }
 
             return log.exit(Response.ok("OK").build());
@@ -782,9 +951,9 @@ public class UserService {
     /**
      * @fiware-rest-path /systemParameters/store
      * @fiware-rest-method PUT
-     * @fiware-rest-description Store (and overwrite existing) system parameters at
-     * the service. This method returns true if the system parameters were
-     * successfully stored.
+     * @fiware-rest-description Store (and overwrite existing) system parameters
+     *                          at the service. This method returns true if the
+     *                          system parameters were successfully stored.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type SystemParameters
@@ -796,8 +965,10 @@ public class UserService {
      */
     @PUT()
     @Path("/systemParameters/store")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [FLOW TEST] */
-    public Response storeSystemParameters(SystemParameters systemParameters) {
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* [FLOW TEST] */
+    public Response storeSystemParameters(
+            final SystemParameters systemParameters) {
         log.entry();
 
         try {
@@ -828,12 +999,14 @@ public class UserService {
     /**
      * @fiware-rest-path /issuerParameters/store/{issuerParametersUid}
      * @fiware-rest-method PUT
-     * @fiware-rest-description Store (and overwrite existing) issuer parameters at
-     * the service (using the given identifier). This method returns true if the
-     * system parameters were successfully stored.
+     * @fiware-rest-description Store (and overwrite existing) issuer parameters
+     *                          at the service (using the given identifier).
+     *                          This method returns true if the system
+     *                          parameters were successfully stored.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     * @fiware-rest-respnsoe 409 <em>issuerParametersUid</em> does not match or is invalid.
+     * @fiware-rest-respnsoe 409 <em>issuerParametersUid</em> does not match or
+     *                       is invalid.
      * @fiware-rest-input-type IssuerParameters
      * @fiware-rest-return-type ABCEBoolean
      *
@@ -845,16 +1018,16 @@ public class UserService {
      */
     @PUT()
     @Path("/issuerParameters/store/{issuerParametersUid}")
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML }) /* [TEST EXISTS] */
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    /* [TEST EXISTS] */
     public Response storeIssuerParameters(
-            @PathParam("issuerParametersUid") URI issuerParametersUid,
-            IssuerParameters issuerParameters) {
+            @PathParam("issuerParametersUid") final URI issuerParametersUid,
+            final IssuerParameters issuerParameters) {
 
         log.entry();
 
         log.info("UserService - storeIssuerParameters - issuerParametersUid: "
-                + issuerParametersUid
-                + ", "
+                + issuerParametersUid + ", "
                 + issuerParameters.getParametersUID());
         try {
             this.initializeHelper();
@@ -862,9 +1035,10 @@ public class UserService {
             UserHelper instance = UserHelper.getInstance();
 
             if (!(issuerParametersUid.toString().equals(issuerParameters
-                    .getParametersUID().toString())))
+                    .getParametersUID().toString()))) {
                 return log.exit(Response.status(Response.Status.CONFLICT)
                         .entity(errIssParamsUid).build());
+            }
 
             KeyManager keyManager = instance.keyManager;
 
@@ -889,17 +1063,25 @@ public class UserService {
      * @fiware-rest-path /issuerParameters/delete/{issuerParametersUid}
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes issuer parameters.
-     * @fiware-rest-path-param issuerParamateresUid UID of the issuer parameters to delete.
+     * @fiware-rest-path-param issuerParamateresUid UID of the issuer parameters
+     *                         to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
+<<<<<<< HEAD
      *
      * @param issuerParametersUid UID of the issuer parameters
+=======
+     *
+     * @param issuerParametersUid
+     *            UID of the issuer parameters
+>>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @DELETE()
-    @Path("/issuerParameters/delete/{issuerParametersUid}") /* [TEST EXISTS] */
+    @Path("/issuerParameters/delete/{issuerParametersUid}")
+    /* [TEST EXISTS] */
     public Response deleteIssuerParameters(
-            @PathParam("issuerParametersUid") String issuerParametersUid) {
+            @PathParam("issuerParametersUid") final String issuerParametersUid) {
         log.entry();
 
         try {
@@ -915,8 +1097,8 @@ public class UserService {
                 gkeyStorage.delete(new URI(issuerParametersUid));
             } else {
                 return log.exit(
-                        Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                                errNotImplemented)).build();
+                        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                                .entity(errNotImplemented)).build();
             }
 
             return log.exit(Response.ok("OK").build());
@@ -964,7 +1146,8 @@ public class UserService {
      * @fiware-rest-path /extractIssuanceMessage/
      * @fiware-rest-method POST
      * @fiware-rest-description This method extracts the IssuanceMessage from an
-     * IssuanceMessageAndBoolean and returns the IssuanceMessage.
+     *                          IssuanceMessageAndBoolean and returns the
+     *                          IssuanceMessage.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessageAndBoolean
@@ -978,7 +1161,11 @@ public class UserService {
     @Path("/extractIssuanceMessage/")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Response extractIssuanceMessage(
-            IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /* [FLOW TEST] */
+            final IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /*
+                                                                          * [FLOW
+                                                                          * TEST
+                                                                          * ]
+                                                                          */
         log.entry();
 
         try {

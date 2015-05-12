@@ -42,7 +42,7 @@ public class UserStorageManager {
 
     private static final boolean WIPE_STOARAGE_FILES = false;
 
-    public static KeyManager getKeyManager(String fileStoragePrefix)
+    public static KeyManager getKeyManager(final String fileStoragePrefix)
             throws Exception {
 
         AbceConfigurationImpl configuration = setupStorageFilesForConfiguration(
@@ -54,7 +54,7 @@ public class UserStorageManager {
     }
 
     protected static AbceConfigurationImpl setupStorageFilesForConfiguration(
-            String fileStoragePrefix, boolean wipe_existing_storage)
+            final String fileStoragePrefix, final boolean wipe_existing_storage)
             throws Exception {
         AbceConfigurationImpl configuration = new AbceConfigurationImpl();
         configuration.setKeyStorageFile(FileSystem.getFile(fileStoragePrefix

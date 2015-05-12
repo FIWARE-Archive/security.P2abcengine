@@ -49,15 +49,16 @@ import eu.abc4trust.smartcardManager.AbcSmartcardManager;
 
 public class UserHelper extends AbstractHelper {
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(UserHelper.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(UserHelper.class));
 
     public ReloadTokensCommunicationStrategy reloadTokens = null;
     static UserHelper instance;
     public KeyStorage keyStorage;
 
     public static synchronized UserHelper initInstanceForService(
-            CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+            final CryptoEngine cryptoEngine, final String fileStoragePrefix,
+            final Module... modules) throws URISyntaxException {
 
         initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
@@ -71,8 +72,8 @@ public class UserHelper extends AbstractHelper {
     }
 
     private static synchronized void initializeInstanceField(
-            CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+            final CryptoEngine cryptoEngine, final String fileStoragePrefix,
+            final Module... modules) throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
@@ -85,7 +86,8 @@ public class UserHelper extends AbstractHelper {
         return instance != null;
     }
 
-    public static synchronized UserHelper getInstance() throws KeyManagerException {
+    public static synchronized UserHelper getInstance()
+            throws KeyManagerException {
         if (instance == null) {
             throw new IllegalStateException(
                     "initInstance not called before using UserHelper!");
@@ -98,8 +100,9 @@ public class UserHelper extends AbstractHelper {
     public CardStorage cardStorage;
     public CredentialManager credentialManager;
 
-    private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
-            Module... modules) throws URISyntaxException {
+    private UserHelper(final CryptoEngine cryptoEngine,
+            final String fileStoragePrefix, final Module... modules)
+            throws URISyntaxException {
         logger.info("UserHelper : : create instance " + cryptoEngine + " : "
                 + fileStoragePrefix);
         this.cryptoEngine = cryptoEngine;
@@ -127,7 +130,7 @@ public class UserHelper extends AbstractHelper {
             }
 
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             System.err.println("Init Failed");
             e.printStackTrace();
             throw new IllegalStateException("Could not setup user !", e);

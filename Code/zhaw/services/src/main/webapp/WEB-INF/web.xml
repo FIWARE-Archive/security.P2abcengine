@@ -96,25 +96,25 @@
     <env-entry>
 		<description> BindQuery </description>
 		<env-entry-name>cfg/bindQuery</env-entry-name>
-		<env-entry-value>SELECT password FROM users WHERE username='_UID_'</env-entry-value>
+		<env-entry-value>SELECT password, salt FROM users WHERE username='_UID_'</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> IssuanceServiceURL </description>
 		<env-entry-name>cfg/issuanceServiceURL</env-entry-name>
-		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/issuance/</env-entry-value>
+		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/issuance/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> UserServiceURL </description>
 		<env-entry-name>cfg/userServiceURL</env-entry-name>
-		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/user/</env-entry-value>
+		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/user/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> VerificationServiceURL </description>
 		<env-entry-name>cfg/verificationServiceURL</env-entry-name>
-		<env-entry-value>http://srv-lab-t-425.zhaw.ch:8080/zhaw-p2abc-webservices/verification/</env-entry-value>
+		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/verification/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
@@ -138,9 +138,54 @@
 	<env-entry>
 		<description> AuthenticationSource </description>
 		<env-entry-name>cfg/Source/authentication</env-entry-name>
-		<env-entry-value> JDBC </env-entry-value>
+		<env-entry-value> KEYROCK </env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
+
+    <env-entry>
+		<env-entry-name>cfg/allowFakeAccesstoken</env-entry-name>
+		<env-entry-value> true </env-entry-value>
+		<env-entry-type> java.lang.Boolean </env-entry-type>
+	</env-entry>
+
+
+	<env-entry>
+		<env-entry-name>cfg/p2abc-filter/callbackRegex</env-entry-name>
+		<env-entry-value>^demo-resource/page$</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>cfg/p2abc-filter/pathRegex</env-entry-name>
+		<env-entry-value>^demo-resource(.*)$</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>cfg/p2abc-filter/resourceName</env-entry-name>
+		<env-entry-value>FAKE</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+    <env-entry>
+		<env-entry-name>cfg/p2abc-filter/verifierURL</env-entry-name>
+		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/verification</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+
+	<env-entry>
+		<env-entry-name>cfg/keyrock/clientId</env-entry-name>
+		<env-entry-value>1000</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>      
+	</env-entry>
+	<env-entry>
+		<env-entry-name>cfg/keyrock/clientSecret</env-entry-name>
+		<env-entry-value>407d3c6a1f3740f2b56d6371b00767a6b977dbf5ea34efdc527c3e85ab1cb9a38e9b250a327ddeb5184220e9a0329ed6fb064bc97086f6b180335861a7418573</env-entry-value>
+		<env-entry-type> java.lang.String </env-entry-type>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>cfg/userGui/keyrockEnabled</env-entry-name>
+		<env-entry-value> true </env-entry-value>
+		<env-entry-type> java.lang.Boolean </env-entry-type>
+	</env-entry>
+
 	<resource-env-ref>
 		<description>ConnectionParameters factory</description>
 		<resource-env-ref-name>cfg/ConnectionParameters/attributes</resource-env-ref-name>

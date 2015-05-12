@@ -15,9 +15,9 @@ import eu.abc4trust.xml.ObjectFactory;
 
 public class FakeAttributeValueProvider extends AttributeValueProvider {
 
-    private ObjectFactory of;
+    private final ObjectFactory of;
 
-    public FakeAttributeValueProvider(IssuanceConfiguration config) {
+    public FakeAttributeValueProvider(final IssuanceConfiguration config) {
         super(config);
         of = new ObjectFactory();
     }
@@ -26,8 +26,9 @@ public class FakeAttributeValueProvider extends AttributeValueProvider {
 
     }
 
-    public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
-            String uid, CredentialSpecification credSpec) throws Exception {
+    public List<eu.abc4trust.xml.Attribute> getAttributes(final String query,
+            final String uid, final CredentialSpecification credSpec)
+            throws Exception {
 
         try {
             AttributeDescriptions attrDescs = credSpec

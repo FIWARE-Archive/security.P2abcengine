@@ -79,19 +79,19 @@ public class VerificationHelper extends AbstractHelper {
     private Random random;
     public VerificationStorage verificationStorage;
     public KeyStorage keyStorage;
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(VerificationHelper.class));
-
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(VerificationHelper.class));
 
     public static synchronized VerificationHelper initInstance(
-            CryptoEngine cryptoEngine, Module[] modules,
-            String... presentationPolicyResourceList) throws URISyntaxException {
+            final CryptoEngine cryptoEngine, final Module[] modules,
+            final String... presentationPolicyResourceList)
+            throws URISyntaxException {
         if (instance != null) {
             throw new IllegalStateException(
                     "initInstance can only be called once!");
         }
 
         instance = new VerificationHelper(cryptoEngine, modules);
-
 
         return instance;
     }
@@ -114,7 +114,7 @@ public class VerificationHelper extends AbstractHelper {
         }
         return instance;
     }
-    
+
     /**
      * holds map resources by filename (without path) and the bytes of resource
      */
@@ -134,10 +134,9 @@ public class VerificationHelper extends AbstractHelper {
      * @param fileStoragePrefix
      * @throws URISyntaxException
      */
-    private VerificationHelper(CryptoEngine cryptoEngine, Module... modules)
-            throws URISyntaxException {
-        logger.info("VerificationHelper : create instance "
-                + cryptoEngine);
+    private VerificationHelper(final CryptoEngine cryptoEngine,
+            final Module... modules) throws URISyntaxException {
+        logger.info("VerificationHelper : create instance " + cryptoEngine);
         this.cryptoEngine = cryptoEngine;
         try {
 
@@ -181,8 +180,9 @@ public class VerificationHelper extends AbstractHelper {
      *             when something went wrong.
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
-            PresentationPolicyAlternatives presentationPolicyAlternatives,
-            String applicationData, Map<URI, URI> revInfoUIDs) throws Exception {
+            final PresentationPolicyAlternatives presentationPolicyAlternatives,
+            final String applicationData, final Map<URI, URI> revInfoUIDs)
+            throws Exception {
 
         this.nonce = this.generateNonce();
 
@@ -204,10 +204,10 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong.
      */
-    public String createPresentationPolicy_String(String policyName,
-            byte[] nonce, String applicationData) throws Exception {
-        logger.info("VerificationHelper - create policy String : "
-                + policyName + " - data : " + applicationData);
+    public String createPresentationPolicy_String(final String policyName,
+            final byte[] nonce, final String applicationData) throws Exception {
+        logger.info("VerificationHelper - create policy String : " + policyName
+                + " - data : " + applicationData);
 
         PresentationPolicyAlternatives pp_alternatives = this
                 .createPresentationPolicy(policyName, nonce, applicationData,
@@ -224,8 +224,9 @@ public class VerificationHelper extends AbstractHelper {
     }
 
     public PresentationPolicyAlternatives modifyPresentationPolicy(
-            PresentationPolicyAlternatives ppa, byte[] nonce,
-            String applicationData, Map<URI, URI> revInfoUIDs) throws Exception {
+            final PresentationPolicyAlternatives ppa, final byte[] nonce,
+            final String applicationData, final Map<URI, URI> revInfoUIDs)
+            throws Exception {
         this.modifyPPA(ppa, applicationData, nonce, revInfoUIDs);
         return ppa;
     }
@@ -245,8 +246,9 @@ public class VerificationHelper extends AbstractHelper {
      *             when something went wrong
      */
     public PresentationPolicyAlternatives createPresentationPolicy(
-            String policyName, byte[] nonce, String applicationData,
-            Map<URI, URI> revInfoUIDs) throws Exception {
+            final String policyName, final byte[] nonce,
+            final String applicationData, final Map<URI, URI> revInfoUIDs)
+            throws Exception {
         logger.info("VerificationHelper - create policy : " + policyName
                 + " - data : " + applicationData);
 
@@ -276,36 +278,38 @@ public class VerificationHelper extends AbstractHelper {
         return pp_alternatives;
     }
 
-    public static boolean cacheRevocationInformation = false;
-    public static long REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES = 60;
+    public final static boolean cacheRevocationInformation = false;
+    public final static long REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES = 60;
     private static Map<URI, RevocationInformation> revocationInformationCache = new HashMap<URI, RevocationInformation>();
-    
+
     public PresentationPolicyAlternatives modifyPPA(
-            PresentationPolicyAlternatives ppa, String applicationData, byte[] nonce, String verifierIdentity) {
+            final PresentationPolicyAlternatives ppa,
+            final String applicationData, final byte[] nonce,
+            final String verifierIdentity) {
         logger.entry();
-        
-        for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+
+        for (PresentationPolicy pp : ppa.getPresentationPolicy()) {
             Message m = pp.getMessage();
             m.setNonce(nonce);
             ApplicationData apd = m.getApplicationData();
             apd.getContent().clear();
             apd.getContent().add(applicationData);
             VerifierIdentity vi = m.getVerifierIdentity();
-            if(vi == null) {
+            if (vi == null) {
                 m.setVerifierIdentity(new VerifierIdentity());
                 vi = m.getVerifierIdentity();
             }
             vi.getContent().clear();
             vi.getContent().add(verifierIdentity);
         }
-        
+
         return logger.exit(ppa);
     }
 
     private PresentationPolicyAlternatives modifyPPA(
-            PresentationPolicyAlternatives pp_alternatives,
-            String applicationData, byte[] nonce, Map<URI, URI> revInfoUIDs)
-            throws Exception {
+            final PresentationPolicyAlternatives pp_alternatives,
+            final String applicationData, final byte[] nonce,
+            final Map<URI, URI> revInfoUIDs) throws Exception {
 
         logger.info("Modify PPA");
 
@@ -322,8 +326,7 @@ public class VerificationHelper extends AbstractHelper {
             // set application data
             if (applicationData != null) {
 
-                logger.info("- SET APPLICATION DATA : "
-                        + applicationData);
+                logger.info("- SET APPLICATION DATA : " + applicationData);
                 // message.setApplicationData(applicationData.getBytes());
                 ApplicationData a = message.getApplicationData();
                 a.getContent().clear();
@@ -344,16 +347,15 @@ public class VerificationHelper extends AbstractHelper {
                                 .getCredentialSpecification(uri);
                         if (credSpec.isRevocable()) {
                             logger.info(" - credentialSpecification is Revocable : "
-                                            + uri);
+                                    + uri);
                             containsRevoceableCredential = true;
                             break;
                         } else {
                             logger.info(" - credentialSpecification is NOT Revocable : "
-                                            + uri);
+                                    + uri);
                         }
                     } catch (KeyManagerException ignore) {
-                        logger.info(" - ERROR credspec not registed : "
-                                + uri);
+                        logger.info(" - ERROR credspec not registed : " + uri);
                     }
                 }
                 if (containsRevoceableCredential) {
@@ -371,8 +373,7 @@ public class VerificationHelper extends AbstractHelper {
                             RevocationInformation ri;
                             if (revInfoUIDs != null) {
                                 logger.info("Trying to get revInfo under "
-                                                + credSpec
-                                                        .getSpecificationUID());
+                                        + credSpec.getSpecificationUID());
                                 URI revInformationUid = revInfoUIDs
                                         .get(credSpec.getSpecificationUID());
                                 ri = this.revocationInformationStore
@@ -400,43 +401,37 @@ public class VerificationHelper extends AbstractHelper {
                                     if (now.getTimeInMillis() > ri.getExpires()
                                             .getTimeInMillis()) {
                                         logger.info(" - revocationInformation has expired! - now : "
-                                                        + now.getTime()
-                                                        + " - created : "
-                                                        + ri.getCreated()
-                                                                .getTime()
-                                                        + " : - expires : "
-                                                        + ri.getExpires()
-                                                                .getTime());
+                                                + now.getTime()
+                                                + " - created : "
+                                                + ri.getCreated().getTime()
+                                                + " : - expires : "
+                                                + ri.getExpires().getTime());
                                     } else if (now.getTimeInMillis() > (ri
                                             .getExpires().getTimeInMillis() - (REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES * 60 * 1000))) {
                                         long millis_to_expiration = (ri
                                                 .getExpires().getTimeInMillis() - (REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES * 60 * 1000))
                                                 - now.getTimeInMillis();
                                         logger.info(" - revocationInformation was invalidated ! - now : "
-                                                        + now.getTime()
-                                                        + " - created : "
-                                                        + ri.getCreated()
-                                                                .getTime()
-                                                        + " : - expires : "
-                                                        + ri.getExpires()
-                                                                .getTime()
-                                                        + " MILLIS TO EXPIRE "
-                                                        + millis_to_expiration);
+                                                + now.getTime()
+                                                + " - created : "
+                                                + ri.getCreated().getTime()
+                                                + " : - expires : "
+                                                + ri.getExpires().getTime()
+                                                + " MILLIS TO EXPIRE "
+                                                + millis_to_expiration);
                                         ri = null;
                                     } else {
                                         long millis_to_expiration = (ri
                                                 .getExpires().getTimeInMillis() - (REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES * 60 * 1000))
                                                 - now.getTimeInMillis();
                                         logger.info(" - valid revocationInformation found in Cache - now : "
-                                                        + now.getTime()
-                                                        + " - created : "
-                                                        + ri.getCreated()
-                                                                .getTime()
-                                                        + " : - expires : "
-                                                        + ri.getExpires()
-                                                                .getTime()
-                                                        + " MILLES TO EXPIRE : "
-                                                        + millis_to_expiration);
+                                                + now.getTime()
+                                                + " - created : "
+                                                + ri.getCreated().getTime()
+                                                + " : - expires : "
+                                                + ri.getExpires().getTime()
+                                                + " MILLES TO EXPIRE : "
+                                                + millis_to_expiration);
                                         revocationInformationMap
                                                 .put(ip.getRevocationParametersUID(),
                                                         ri);
@@ -445,7 +440,7 @@ public class VerificationHelper extends AbstractHelper {
                             }
                             if (ri == null) {
                                 logger.info(" - get latest information from RevocationAuthority - uid : "
-                                                + ip.getRevocationParametersUID());
+                                        + ip.getRevocationParametersUID());
                                 ri = this.keyManager
                                         .getLatestRevocationInformation(ip
                                                 .getRevocationParametersUID());
@@ -455,7 +450,7 @@ public class VerificationHelper extends AbstractHelper {
                                         ri.getInformationUID(), ri);
                                 if (cacheRevocationInformation) {
                                     logger.info(" - storege RevocationInformation in cache : "
-                                                    + ip.getRevocationParametersUID());
+                                            + ip.getRevocationParametersUID());
                                     revocationInformationCache
                                             .put(ip.getRevocationParametersUID(),
                                                     ri);
@@ -484,7 +479,7 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong
      */
-    private PresentationToken getPatchedPresetationToken(String orig)
+    private PresentationToken getPatchedPresetationToken(final String orig)
             throws Exception {
         /**
          * FIXME: What the hell is this doing and what the hell is it doing it
@@ -518,8 +513,8 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong
      */
-    public boolean verifyToken(String policyName, byte[] nonce,
-            String applicationData, PresentationToken presentationToken)
+    public boolean verifyToken(final String policyName, final byte[] nonce,
+            final String applicationData, PresentationToken presentationToken)
             throws Exception {
         logger.info("VerificationHelper - verify token : " + policyName
                 + " - applicationData : " + applicationData);
@@ -536,7 +531,7 @@ public class VerificationHelper extends AbstractHelper {
         return this.verifyToken(pp, presentationToken);
     }
 
-    private Map<URI, URI> extractRevInfoUIDs(PresentationToken pt) {
+    private Map<URI, URI> extractRevInfoUIDs(final PresentationToken pt) {
         Map<URI, URI> revInfoUIDs = null;
         for (CredentialInToken cred : pt.getPresentationTokenDescription()
                 .getCredential()) {
@@ -548,6 +543,7 @@ public class VerificationHelper extends AbstractHelper {
                     containsRevoceableCredential = true;
                 }
             } catch (KeyManagerException ignore) {
+                ignore.printStackTrace();
             }
             if (containsRevoceableCredential) {
                 if (revInfoUIDs == null) {
@@ -569,8 +565,8 @@ public class VerificationHelper extends AbstractHelper {
      * @throws Exception
      *             when something went wrong
      */
-    public boolean verifyToken(PresentationPolicyAlternatives ppa,
-            PresentationToken presentationToken) throws Exception {
+    public boolean verifyToken(final PresentationPolicyAlternatives ppa,
+            final PresentationToken presentationToken) throws Exception {
         try {
             // verify in ABCE
             this.engine.verifyTokenAgainstPolicy(ppa, presentationToken, true);

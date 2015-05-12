@@ -87,34 +87,54 @@ import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 @Path("/verification-gui")
 public class VerificationServiceGUI {
-    
+
     @Context
     HttpServletRequest request;
-    
-    private static final XLogger log = new XLogger(LoggerFactory.getLogger(VerificationServiceGUI.class));
+
+    private static final XLogger log = new XLogger(
+            LoggerFactory.getLogger(VerificationServiceGUI.class));
     private static List<String> predicateFunctions;
-    
+
     static {
         predicateFunctions = new ArrayList<String>();
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:string-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:boolean-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:time-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:anyURI-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than-or-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-less-than");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:integer-less-than-or-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-greater-than");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-greater-than-or-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-less-than");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:date-less-than-or-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than-or-equal");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than");
-        predicateFunctions.add("urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than-or-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:string-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:boolean-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:integer-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:date-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:time-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:dateTime-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:anyURI-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than-or-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:integer-less-than");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:integer-less-than-or-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:date-greater-than");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:date-greater-than-or-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:date-less-than");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:date-less-than-or-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:dateTime-greater-than-or-equal");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than");
+        predicateFunctions
+                .add("urn:oasis:names:tc:xacml:1.0:function:dateTime-less-than-or-equal");
         predicateFunctions.add("urn:abc4trust:1.0:function:string-not-equal");
         predicateFunctions.add("urn:abc4trust:1.0:function:boolean-not-equal");
         predicateFunctions.add("urn:abc4trust:1.0:function:integer-not-equal");
@@ -123,14 +143,17 @@ public class VerificationServiceGUI {
         predicateFunctions.add("urn:abc4trust:1.0:function:dateTime-not-equal");
         predicateFunctions.add("urn:abc4trust:1.0:function:anyURI-not-equal");
         predicateFunctions.add("urn:abc4trust:1.0:function:string-equal-oneof");
-        predicateFunctions.add("urn:abc4trust:1.0:function:boolean-equal-oneof");
-        predicateFunctions.add("urn:abc4trust:1.0:function:integer-equal-oneof");
+        predicateFunctions
+                .add("urn:abc4trust:1.0:function:boolean-equal-oneof");
+        predicateFunctions
+                .add("urn:abc4trust:1.0:function:integer-equal-oneof");
         predicateFunctions.add("urn:abc4trust:1.0:function:date-equal-oneof");
         predicateFunctions.add("urn:abc4trust:1.0:function:time-equal-oneof");
-        predicateFunctions.add("urn:abc4trust:1.0:function:dateTime-equal-oneof");
+        predicateFunctions
+                .add("urn:abc4trust:1.0:function:dateTime-equal-oneof");
         predicateFunctions.add("urn:abc4trust:1.0:function:anyURI-equal-oneof");
     }
-    
+
     @GET()
     @Path("/protected/profile/")
     public Response profile() {
@@ -157,9 +180,12 @@ public class VerificationServiceGUI {
             ul.appendChild(new Li().appendChild(new A().setHref(
                     "./issuerParameters").appendChild(
                     new Text("Manage issuer parameters"))));
-            ul.appendChild(new Li().appendChild(new A().setHref(
-                    "./resources").appendChild(
-                    new Text("Manage resources and/or presentation policies"))));
+            ul.appendChild(new Li()
+                    .appendChild(new A()
+                            .setHref("./resources")
+                            .appendChild(
+                                    new Text(
+                                            "Manage resources and/or presentation policies"))));
 
             mainDiv.appendChild(ul);
 
@@ -174,19 +200,27 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @POST()
-    @Path("/protected/deleteIssuerParameters") 
+    @Path("/protected/deleteIssuerParameters")
     public Response deleteIssuerParameters(
-            @FormParam("is") String issuerParamsUid) {
+            @FormParam("is") final String issuerParamsUid) {
         log.entry();
-        
+
         try {
-            RESTHelper.deleteRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/issuerParameters/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration
+                    .getVerificationServiceURL()
+                    + "protected/issuerParameters/delete/"
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
-        }
-        catch(Exception e) {
+        } catch (RuntimeException e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -195,19 +229,20 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @POST()
-    @Path("/protected/deleteCredentialSpecification") 
+    @Path("/protected/deleteCredentialSpecification")
     public Response deleteCredentialSpecification(
-            @FormParam("cs") String credSpecUid) {
+            @FormParam("cs") final String credSpecUid) {
         log.entry();
-        
+
         try {
-            RESTHelper.deleteRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/credentialSpecification/delete/"
+            RESTHelper.deleteRequest(ServicesConfiguration
+                    .getVerificationServiceURL()
+                    + "protected/credentialSpecification/delete/"
                     + URLEncoder.encode(credSpecUid, "UTF-8"));
             return credentialSpecifications();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -216,7 +251,7 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @GET()
     @Path("/protected/issuerParameters/")
     public Response issuerParameters() {
@@ -224,9 +259,11 @@ public class VerificationServiceGUI {
 
         try {
             Settings settings = (Settings) RESTHelper.getRequest(
-                    ServicesConfiguration.getVerificationServiceURL() + "getSettings/", Settings.class);
+                    ServicesConfiguration.getVerificationServiceURL()
+                            + "getSettings/", Settings.class);
 
-            Html html = VerificationGUI.getHtmlPramble("Issuer Parameters", request);
+            Html html = VerificationGUI.getHtmlPramble("Issuer Parameters",
+                    request);
             Div mainDiv = new Div().setCSSClass("mainDiv");
             html.appendChild(VerificationGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text(
@@ -266,572 +303,723 @@ public class VerificationServiceGUI {
             mainDiv.appendChild(tbl);
 
             return Response.ok(html.write()).build();
+        } catch (RuntimeException e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/addCredSpecAlt/")
-    public Response addCredSpecAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid, @FormParam("puid") String puid) {
+    public Response addCredSpecAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("cs", credSpecUid);
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/addCredentialSpecificationAlternative/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/deleteCredSpecAlt/")
-    public Response deleteCredSpecAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("cs") String credSpecUid, @FormParam("puid") String puid) {
+    public Response deleteCredSpecAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("cs") final String credSpecUid,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("cs", credSpecUid);
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/addIssuerAlt/")
-    public Response addIssuerAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid, @FormParam("puid") String puid) {
+    public Response addIssuerAlt(@FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("ip") final String issuerParamsUid,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("ip", issuerParamsUid);
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addIssuerAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/addIssuerAlternative/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/deleteIssuerAlt/")
-    public Response deleteIssuerAlt(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("ip") String issuerParamsUid, @FormParam("puid") String puid) {
+    public Response deleteIssuerAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("ip") final String issuerParamsUid,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("ip", issuerParamsUid);
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deleteIssuerAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/deleteIssuerAlternative/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/deleteAlias/")
-    public Response deleteAlias(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("puid") String puid) {
+    public Response deleteAlias(@FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deleteAlias/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/deleteAlias/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/addAlias/")
-    public Response addAlias(@FormParam("resource") String resource, @FormParam("al") String alias,
-            @FormParam("puid") String puid) {
+    public Response addAlias(@FormParam("resource") final String resource,
+            @FormParam("al") final String alias,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addAlias/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/addAlias/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/addPolicyAlt")
-    public Response addPolicyAlt(@FormParam("resource") String resource, @FormParam("puid") String puid) {
+    public Response addPolicyAlt(@FormParam("resource") final String resource,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("puid", puid);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addPolicyAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/addPolicyAlternative/"
+                                    + URLEncoder.encode(resource, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/deletePolicyAlt")
-    public Response deletePolicyAlt(@FormParam("resource") String resource, @FormParam("puid") String puid) {
+    public Response deletePolicyAlt(
+            @FormParam("resource") final String resource,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("puid", puid);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deletePolicyAlternative/"
-                    + URLEncoder.encode(resource, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/deletePolicyAlternative/"
+                                    + URLEncoder.encode(resource, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
-    
+
     @POST()
     @Path("/protected/createResource")
-    public Response createResource(@FormParam("rs") String resourceString, @FormParam("ru") String redirectURI) {
+    public Response createResource(
+            @FormParam("rs") final String resourceString,
+            @FormParam("ru") final String redirectURI) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("redirectURI", redirectURI);
-            
-            RESTHelper.putRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/resource/create/"
-                    + URLEncoder.encode(resourceString, "UTF-8"), params);
-            
+
+            RESTHelper.putRequest(
+                    ServicesConfiguration.getVerificationServiceURL()
+                            + "protected/resource/create/"
+                            + URLEncoder.encode(resourceString, "UTF-8"),
+                    params);
+
             return log.exit(presentationPolicy(resourceString));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
-    @Path("/protected/addPredicate/") 
-    public Response addPredicate(@FormParam("resource") String resource, @FormParam("cv") String constantValue,
-            @FormParam("at") String attribute, @FormParam("p") String predicate, @FormParam("al") String alias,
-            @FormParam("puid") String puid) {
+    @Path("/protected/addPredicate/")
+    public Response addPredicate(@FormParam("resource") final String resource,
+            @FormParam("cv") final String constantValue,
+            @FormParam("at") final String attribute,
+            @FormParam("p") final String predicate,
+            @FormParam("al") final String alias,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("cv", constantValue);
             params.add("at", attribute);
             params.add("p", predicate);
             params.add("al", alias);
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/addPredicate/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/addPredicate/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/deletePredicate/")
-    public Response deletePredicate(@FormParam("resource") String resource, @FormParam("index") int index,
-            @FormParam("puid") String puid) {
+    public Response deletePredicate(
+            @FormParam("resource") final String resource,
+            @FormParam("index") final int index,
+            @FormParam("puid") final String puid) {
         log.entry();
-        
+
         try {
             MultivaluedMap<String, String> params = new MultivaluedMapImpl();
             params.add("index", Integer.toString(index));
-            
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/deletePredicate/"
-                    + URLEncoder.encode(resource, "UTF-8") + "/" + URLEncoder.encode(puid, "UTF-8"), params);
-            
+
+            RESTHelper
+                    .postRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/deletePredicate/"
+                                    + URLEncoder.encode(resource, "UTF-8")
+                                    + "/" + URLEncoder.encode(puid, "UTF-8"),
+                            params);
+
             return log.exit(presentationPolicy(resource));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @GET()
     @Path("/protected/resource")
-    public Response presentationPolicy(@QueryParam("resource") String resource) {
+    public Response presentationPolicy(
+            @QueryParam("resource") final String resource) {
         log.entry();
-        
+
         try {
-            Html html = VerificationGUI.getHtmlPramble("Presentation Policy", request);
+            Html html = VerificationGUI.getHtmlPramble("Presentation Policy",
+                    request);
             Div mainDiv = new Div();
             html.appendChild(VerificationGUI.getBody(mainDiv));
-            
-            PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper.getRequest(
-                    ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/get/"
-                    + URLEncoder.encode(resource, "UTF-8"), PresentationPolicyAlternatives.class);
-            
-            
-            mainDiv.appendChild(new H2().appendChild(new Text("Redirect URI")));
-            
-            String redirectURI = (String) RESTHelper.getRequest(
-                    ServicesConfiguration.getVerificationServiceURL() + "protected/redirectURI/get/" + 
-                            URLEncoder.encode(resource, "UTF-8"));
-            
-            Form f = new Form("./changeRedirectURI");
-            f.appendChild(new Label().appendChild(new Text("Redirect URI: ")));
-            f.appendChild(new Input().setType("text").setName("uri").setValue(redirectURI));
-            f.appendChild(new Input().setType("submit").setValue("Change"));
-            f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-            mainDiv.appendChild(f);
-            
-            mainDiv.appendChild(new H2().appendChild(new Text("Presentation Policy Alternatives")));
-            
-            
-            f = new Form("./addPolicyAlt").setMethod("post");
-            f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
+
+            PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper
+                    .getRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/get/"
+                                    + URLEncoder.encode(resource, "UTF-8"),
+                            PresentationPolicyAlternatives.class);
+
+            mainDiv.appendChild(new H2().appendChild(new Text(
+                    "Presentation Policy Alternatives")));
+
+            Form f = new Form("./addPolicyAlt").setMethod("post");
+            f.appendChild(new Input().setType("hidden").setName("resource")
+                    .setValue(resource));
             f.appendChild(new Label().appendChild(new Text("Policy UID: ")));
             f.appendChild(new Input().setType("text").setName("puid"));
-            f.appendChild(new Input().setType("submit").setValue("Add new policy alternative"));
+            f.appendChild(new Input().setType("submit").setValue(
+                    "Add new policy alternative"));
             mainDiv.appendChild(f);
-            
-            
-            for(PresentationPolicy pp : ppa.getPresentationPolicy()) {
+
+            for (PresentationPolicy pp : ppa.getPresentationPolicy()) {
                 Div ppDiv = new Div();
                 mainDiv.appendChild(ppDiv);
-                ppDiv.appendChild(new H3().appendChild(new Text(pp.getPolicyUID().toString())));
-                
-                f = new Form("./deletePolicyAlt").setMethod("post").setCSSClass("raw");
-                f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                f.appendChild(new Input().setType("submit").setValue("Delete this policy alternative"));
+                ppDiv.appendChild(new H3().appendChild(new Text(pp
+                        .getPolicyUID().toString())));
+
+                f = new Form("./deletePolicyAlt").setMethod("post")
+                        .setCSSClass("raw");
+                f.appendChild(new Input().setType("hidden").setName("resource")
+                        .setValue(resource));
+                f.appendChild(new Input().setType("hidden").setName("puid")
+                        .setValue(pp.getPolicyUID().toString()));
+                f.appendChild(new Input().setType("submit").setValue(
+                        "Delete this policy alternative"));
                 ppDiv.appendChild(f);
-                
+
                 Ul ul = new Ul();
                 ppDiv.appendChild(ul);
-                
+
                 int j = 0;
-                
-                for(AttributePredicate ap : pp.getAttributePredicate()) {
+
+                for (AttributePredicate ap : pp.getAttributePredicate()) {
                     List<Object> objs = ap.getAttributeOrConstantValue();
                     String s = "";
-                    for(Object obj : objs) {
-                        if(obj instanceof Attribute) {
-                            Attribute attrib = (Attribute)obj;
-                            s += (attrib).getAttributeType().toString() + " (" +  attrib.getCredentialAlias().toString() +")" + ";";
+                    for (Object obj : objs) {
+                        if (obj instanceof Attribute) {
+                            Attribute attrib = (Attribute) obj;
+                            s += (attrib).getAttributeType().toString() + " ("
+                                    + attrib.getCredentialAlias().toString()
+                                    + ")" + ";";
                         } else {
-                            log.info("InstanceOf Element? " + (obj instanceof Element));
-                            Element i = (Element)obj;
+                            log.info("InstanceOf Element? "
+                                    + (obj instanceof Element));
+                            Element i = (Element) obj;
                             s += i.getTextContent() + ";";
                             log.info("Node name is: " + (i.getNodeName()));
                         }
                     }
-                    
-                    f = new Form("./deletePredicate").setMethod("post").setCSSClass("inl");
-                    
-                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                    f.appendChild(new Input().setType("hidden").setName("index").setValue(Integer.toString(j)));
-                    f.appendChild(new Input().setType("submit").setValue("Delete"));
-                    
-                    
-                    ul.appendChild(new Li().appendChild(
-                            new B().appendChild(new Text(ap.getFunction().toString())))
+
+                    f = new Form("./deletePredicate").setMethod("post")
+                            .setCSSClass("inl");
+
+                    f.appendChild(new Input().setType("hidden")
+                            .setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid")
+                            .setValue(pp.getPolicyUID().toString()));
+                    f.appendChild(new Input().setType("hidden")
+                            .setName("index").setValue(Integer.toString(j)));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            "Delete"));
+
+                    ul.appendChild(new Li()
+                            .appendChild(
+                                    new B().appendChild(new Text(ap
+                                            .getFunction().toString())))
                             .appendChild(new Text(" - " + s)).appendChild(f));
-                    
+
                     j += 1;
                 }
-                
-                Settings settings = (Settings) RESTHelper.getRequest(ServicesConfiguration.getVerificationServiceURL()
-                        + "getSettings/", Settings.class);
+
+                Settings settings = (Settings) RESTHelper.getRequest(
+                        ServicesConfiguration.getVerificationServiceURL()
+                                + "getSettings/", Settings.class);
 
                 List<CredentialSpecification> credSpecsSettings = settings.credentialSpecifications;
                 List<IssuerParameters> issuerParamsSettings = settings.issuerParametersList;
-                
+
                 Select s;
-                
-                
+
                 List<CredentialInPolicy> cips = pp.getCredential();
-                for(CredentialInPolicy cip : cips) {
-                    
+                for (CredentialInPolicy cip : cips) {
+
                     Div groupDiv = new Div().setCSSClass("group");
                     mainDiv.appendChild(groupDiv);
-                    
-                    groupDiv.appendChild(new H4().appendChild(new Text(cip.getAlias().toString())));
-                    
+
+                    groupDiv.appendChild(new H4().appendChild(new Text(cip
+                            .getAlias().toString())));
+
                     Div subGroupDiv = new Div().setCSSClass("group");
                     groupDiv.appendChild(subGroupDiv);
-                    
-                    subGroupDiv.appendChild(new H5().appendChild(new Text("Credential specification alternatives")));
-                    List<URI> credSpecs = cip.getCredentialSpecAlternatives().getCredentialSpecUID();
+
+                    subGroupDiv.appendChild(new H5().appendChild(new Text(
+                            "Credential specification alternatives")));
+                    List<URI> credSpecs = cip.getCredentialSpecAlternatives()
+                            .getCredentialSpecUID();
                     ul = new Ul();
                     List<String> credAttributes = new ArrayList<String>();
-                    for(URI uri : credSpecs) {
-                        f = new Form("./deleteCredSpecAlt").setMethod("post").setCSSClass("inl");
-                        f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
-                        f.appendChild(new Input().setType("hidden").setName("cs").setValue(uri.toString()));
-                        f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                        f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                        f.appendChild(new Input().setType("submit").setValue("Delete"));
-                        ul.appendChild(new Li().appendChild(new Text(uri.toString())).appendChild(f));
-                        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
-                                ServicesConfiguration.getVerificationServiceURL() + "protected/credentialSpecification/get/"
-                                + URLEncoder.encode(uri.toString(), "UTF-8"), CredentialSpecification.class);
-                        for(AttributeDescription attrDescs : credSpec.getAttributeDescriptions().getAttributeDescription()) {
+                    for (URI uri : credSpecs) {
+                        f = new Form("./deleteCredSpecAlt").setMethod("post")
+                                .setCSSClass("inl");
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("al")
+                                .setValue(cip.getAlias().toString()));
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("cs").setValue(uri.toString()));
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("resource").setValue(resource));
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("puid")
+                                .setValue(pp.getPolicyUID().toString()));
+                        f.appendChild(new Input().setType("submit").setValue(
+                                "Delete"));
+                        ul.appendChild(new Li().appendChild(
+                                new Text(uri.toString())).appendChild(f));
+                        CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
+                                .getRequest(
+                                        ServicesConfiguration
+                                                .getVerificationServiceURL()
+                                                + "protected/credentialSpecification/get/"
+                                                + URLEncoder
+                                                        .encode(uri.toString(),
+                                                                "UTF-8"),
+                                        CredentialSpecification.class);
+                        for (AttributeDescription attrDescs : credSpec
+                                .getAttributeDescriptions()
+                                .getAttributeDescription()) {
                             credAttributes.add(attrDescs.getType().toString());
                         }
-                        
+
                     }
                     subGroupDiv.appendChild(ul);
-                    
-                    
+
                     s = new Select().setName("cs");
-                    for(CredentialSpecification cs : credSpecsSettings) {
+                    for (CredentialSpecification cs : credSpecsSettings) {
                         Option o = new Option();
                         o.setValue(cs.getSpecificationUID().toString());
-                        o.appendChild(new Text(cs.getSpecificationUID().toString()));
+                        o.appendChild(new Text(cs.getSpecificationUID()
+                                .toString()));
                         s.appendChild(o);
                     }
-                    
+
                     f = new Form("./addCredSpecAlt").setMethod("post");
                     f.appendChild(s);
                     f.appendChild(new Br());
-                    f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
-                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                    f.appendChild(new Input().setType("submit").setValue("Add credential specification alternative"));
+                    f.appendChild(new Input().setType("hidden").setName("al")
+                            .setValue(cip.getAlias().toString()));
+                    f.appendChild(new Input().setType("hidden")
+                            .setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid")
+                            .setValue(pp.getPolicyUID().toString()));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            "Add credential specification alternative"));
                     subGroupDiv.appendChild(f);
-                    
-                    subGroupDiv.appendChild(new H5().appendChild(new Text("Issuer alternatives")));
+
+                    subGroupDiv.appendChild(new H5().appendChild(new Text(
+                            "Issuer alternatives")));
                     ul = new Ul();
-                    for(IssuerParametersUID uid : cip.getIssuerAlternatives().getIssuerParametersUID()) {
-                        f = new Form("./deleteIssuerAlt").setMethod("post").setCSSClass("inl");
-                        f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
-                        f.appendChild(new Input().setType("hidden").setName("ip").setValue(uid.getValue().toString()));
-                        f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                        f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                        f.appendChild(new Input().setType("submit").setValue("Delete"));
-                        if(uid.getRevocationInformationUID() != null)
-                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString() + " (" + uid.getRevocationInformationUID().toString()  +")")).appendChild(f));
-                        else
-                            ul.appendChild(new Li().appendChild(new Text(uid.getValue().toString())).appendChild(f));
+                    for (IssuerParametersUID uid : cip.getIssuerAlternatives()
+                            .getIssuerParametersUID()) {
+                        f = new Form("./deleteIssuerAlt").setMethod("post")
+                                .setCSSClass("inl");
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("al")
+                                .setValue(cip.getAlias().toString()));
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("ip")
+                                .setValue(uid.getValue().toString()));
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("resource").setValue(resource));
+                        f.appendChild(new Input().setType("hidden")
+                                .setName("puid")
+                                .setValue(pp.getPolicyUID().toString()));
+                        f.appendChild(new Input().setType("submit").setValue(
+                                "Delete"));
+                        if (uid.getRevocationInformationUID() != null) {
+                            ul.appendChild(new Li().appendChild(
+                                    new Text(uid.getValue().toString()
+                                            + " ("
+                                            + uid.getRevocationInformationUID()
+                                                    .toString() + ")"))
+                                    .appendChild(f));
+                        } else {
+                            ul.appendChild(new Li().appendChild(
+                                    new Text(uid.getValue().toString()))
+                                    .appendChild(f));
+                        }
                     }
                     subGroupDiv.appendChild(ul);
-                    
+
                     s = new Select().setName("ip");
-                    for(IssuerParameters ip : issuerParamsSettings) {
+                    for (IssuerParameters ip : issuerParamsSettings) {
                         Option o = new Option();
                         o.setValue(ip.getParametersUID().toString());
                         o.appendChild(new Text(ip.getParametersUID().toString()));
                         s.appendChild(o);
                     }
-                    
+
                     f = new Form("./addIssuerAlt").setMethod("post");
                     f.appendChild(s);
                     f.appendChild(new Br());
-                    f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
-                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                    f.appendChild(new Input().setType("submit").setValue("Add issuer alternative"));
+                    f.appendChild(new Input().setType("hidden").setName("al")
+                            .setValue(cip.getAlias().toString()));
+                    f.appendChild(new Input().setType("hidden")
+                            .setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid")
+                            .setValue(pp.getPolicyUID().toString()));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            "Add issuer alternative"));
                     subGroupDiv.appendChild(f);
-                    
+
                     f = new Form("./addPredicate").setMethod("post");
                     subGroupDiv = new Div().setCSSClass("group");
                     groupDiv.appendChild(subGroupDiv);
                     subGroupDiv.appendChild(f);
-                    
+
                     s = new Select().setName("p");
-                    for(String fp : predicateFunctions) {
+                    for (String fp : predicateFunctions) {
                         Option o = new Option();
                         o.setValue(fp);
                         o.appendChild(new Text(fp));
                         s.appendChild(o);
                     }
-                    
-                    f.appendChild(new Label().appendChild(new Text("Predicate function:"))).appendChild(new Br());
+
+                    f.appendChild(
+                            new Label().appendChild(new Text(
+                                    "Predicate function:"))).appendChild(
+                            new Br());
                     f.appendChild(s);
                     f.appendChild(new Br());
-                    
+
                     s = new Select().setName("at");
-                    for(String at : credAttributes) {
+                    for (String at : credAttributes) {
                         Option o = new Option();
                         o.setValue(at);
                         o.appendChild(new Text(at));
                         s.appendChild(o);
                     }
-                    
-                    f.appendChild(new Label().appendChild(new Text("Attribute:"))).appendChild(new Br());
+
+                    f.appendChild(
+                            new Label().appendChild(new Text("Attribute:")))
+                            .appendChild(new Br());
                     f.appendChild(s);
                     f.appendChild(new Br());
-                    
-                    f.appendChild(new Label().appendChild(new Text("Constant value:"))).appendChild(new Br());
+
+                    f.appendChild(
+                            new Label()
+                                    .appendChild(new Text("Constant value:")))
+                            .appendChild(new Br());
                     f.appendChild(new Input().setType("text").setName("cv"));
                     f.appendChild(new Br());
-                    
-                    f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
-                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                    f.appendChild(new Input().setType("submit").setValue(("Add predicate")));
-                    
+
+                    f.appendChild(new Input().setType("hidden").setName("al")
+                            .setValue(cip.getAlias().toString()));
+                    f.appendChild(new Input().setType("hidden")
+                            .setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid")
+                            .setValue(pp.getPolicyUID().toString()));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            ("Add predicate")));
+
                     f = new Form("./deleteAlias").setMethod(("post"));
-                    f.appendChild(new Input().setType("hidden").setName("al").setValue(cip.getAlias().toString()));
-                    f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                    f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
-                    f.appendChild(new Input().setType("submit").setValue(("Delete this alias")));
+                    f.appendChild(new Input().setType("hidden").setName("al")
+                            .setValue(cip.getAlias().toString()));
+                    f.appendChild(new Input().setType("hidden")
+                            .setName("resource").setValue(resource));
+                    f.appendChild(new Input().setType("hidden").setName("puid")
+                            .setValue(pp.getPolicyUID().toString()));
+                    f.appendChild(new Input().setType("submit").setValue(
+                            ("Delete this alias")));
                     groupDiv.appendChild(f.setCSSClass("raw"));
                 }
-                
+
                 f = new Form("./addAlias").setMethod("post");
-                f.appendChild(new Input().setType("hidden").setName("resource").setValue(resource));
-                f.appendChild(new Label().appendChild(new Text("Alias name (URI):"))).appendChild(new Br());
-                f.appendChild(new Input().setType("hidden").setName("puid").setValue(pp.getPolicyUID().toString()));
+                f.appendChild(new Input().setType("hidden").setName("resource")
+                        .setValue(resource));
+                f.appendChild(
+                        new Label().appendChild(new Text("Alias name (URI):")))
+                        .appendChild(new Br());
+                f.appendChild(new Input().setType("hidden").setName("puid")
+                        .setValue(pp.getPolicyUID().toString()));
                 f.appendChild(new Input().setType("text").setName("al"));
-                f.appendChild(new Input().setType("submit").setValue(("Add new alias")));
+                f.appendChild(new Input().setType("submit").setValue(
+                        ("Add new alias")));
                 mainDiv.appendChild(f);
-                
 
             }
-            
-            
-            
+
             return log.exit(Response.ok(html.write()).build());
-        }
-        catch(Exception e) {
+        } catch (RuntimeException e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(VerificationGUI.errorPage(
-                            ExceptionDumper.dumpExceptionStr(e, log),
-                            request).write()).build());
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        } catch (Exception e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
     }
-    
+
     @GET()
     @Path("/protected/credentialSpecification/")
-    public Response credentialSpecification(@QueryParam("cs") String credSpecUid) {
+    public Response credentialSpecification(
+            @QueryParam("cs") final String credSpecUid) {
         log.entry();
-        
+
         try {
-            Html html = VerificationGUI.getHtmlPramble("Credential Specification", request);
+            Html html = VerificationGUI.getHtmlPramble(
+                    "Credential Specification", request);
             Div mainDiv = new Div();
             html.appendChild(VerificationGUI.getBody(mainDiv));
             Div credDiv = new Div().setCSSClass("credDiv");
             mainDiv.appendChild(credDiv);
-            
-            CredentialSpecification credSpec = (CredentialSpecification) RESTHelper.getRequest(
-                    ServicesConfiguration.getVerificationServiceURL() + "protected/credentialSpecification/get/"
-                    + URLEncoder.encode(credSpecUid, "UTF-8"), CredentialSpecification.class);
-    
+
+            CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
+                    .getRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/credentialSpecification/get/"
+                                    + URLEncoder.encode(credSpecUid, "UTF-8"),
+                            CredentialSpecification.class);
+
             AttributeDescriptions attribDescs = credSpec
                     .getAttributeDescriptions();
             List<AttributeDescription> attrDescs = attribDescs
                     .getAttributeDescription();
             credDiv.appendChild(new H2().appendChild(new Text(credSpec
                     .getSpecificationUID().toString())));
-    
+
             for (AttributeDescription attrDesc : attrDescs) {
                 String name = attrDesc.getType().toString();
                 String encoding = attrDesc.getEncoding().toString();
                 String type = attrDesc.getDataType().toString();
-    
+
                 credDiv.appendChild(new H3().appendChild(new Text(name)));
                 Div topGroup = new Div().setCSSClass("group");
                 Div group = new Div().setCSSClass("group");
@@ -840,58 +1028,57 @@ public class VerificationServiceGUI {
                 Tr tr = null;
                 tr = new Tr()
                         .setCSSClass("heading")
-                        .appendChild(
-                                new Td().appendChild(new Text("DataType")))
-                        .appendChild(
-                                new Td().appendChild(new Text("Encoding")));
+                        .appendChild(new Td().appendChild(new Text("DataType")))
+                        .appendChild(new Td().appendChild(new Text("Encoding")));
                 tbl.appendChild(tr);
-    
+
                 credDiv.appendChild(topGroup);
                 topGroup.appendChild(group);
                 group = new Div().setCSSClass("group");
-    
+
                 Table fdTbl = new Table();
                 tr = new Tr()
                         .setCSSClass("heading")
-                        .appendChild(
-                                new Td().appendChild(new Text("Language")))
-                        .appendChild(
-                                new Td().appendChild(new Text("Value")));
+                        .appendChild(new Td().appendChild(new Text("Language")))
+                        .appendChild(new Td().appendChild(new Text("Value")));
                 fdTbl.appendChild(tr);
-    
+
                 for (FriendlyDescription fd : attrDesc
                         .getFriendlyAttributeName()) {
                     tr = new Tr()
                             .appendChild(
-                                    new Td().appendChild(new Text(fd
-                                            .getLang())))
+                                    new Td().appendChild(new Text(fd.getLang())))
                             .appendChild(
-                                    new Td().appendChild(new Text(fd
-                                            .getValue())));
+                                    new Td().appendChild(new Text(fd.getValue())));
                     fdTbl.appendChild(tr);
                 }
-    
-                tr = new Tr().appendChild(
-                        new Td().appendChild(new Text(type))).appendChild(
-                        new Td().appendChild(new Text(encoding)));
+
+                tr = new Tr().appendChild(new Td().appendChild(new Text(type)))
+                        .appendChild(new Td().appendChild(new Text(encoding)));
                 tbl.appendChild(tr);
                 group.appendChild(fdTbl);
-                
+
                 topGroup.appendChild(group);
-            }  
-            
-            Form f = new Form("./deleteCredentialSpecification")
-                .setMethod("post").setCSSClass("raw");
-                f.appendChild(new Input().setType("submit").setValue(
-                        "Delete credential specification"));
+            }
+
+            Form f = new Form("./deleteCredentialSpecification").setMethod(
+                    "post").setCSSClass("raw");
+            f.appendChild(new Input().setType("submit").setValue(
+                    "Delete credential specification"));
             f.appendChild(new Input().setType("hidden")
                     .setValue(credSpec.getSpecificationUID().toString())
                     .setName("cs"));
             mainDiv.appendChild(f);
-            
+
             return log.exit(Response.ok(html.write()).build());
-        }
-        catch(Exception e) {
+        } catch (RuntimeException e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -900,18 +1087,19 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/deleteResource")
-    public Response deleteResource(@FormParam("resource") String resource) {
+    public Response deleteResource(@FormParam("resource") final String resource) {
         log.entry();
-        
+
         try {
-            RESTHelper.deleteRequest(ServicesConfiguration.getVerificationServiceURL()+"protected/resource/delete/" + 
-                    URLEncoder.encode(resource, "UTF-8"));
+            RESTHelper.deleteRequest(ServicesConfiguration
+                    .getVerificationServiceURL()
+                    + "protected/resource/delete/"
+                    + URLEncoder.encode(resource, "UTF-8"));
             return resources();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -920,53 +1108,67 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @GET()
     @Path("/protected/resources")
     public Response resources() {
         log.entry();
-        
+
         try {
-            PresentationPolicyAlternativesCollection ppac = 
-                    (PresentationPolicyAlternativesCollection) RESTHelper.getRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/presentationPolicyAlternatives/list",
-                    PresentationPolicyAlternativesCollection.class);
-            
+            PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
+                    .getRequest(
+                            ServicesConfiguration.getVerificationServiceURL()
+                                    + "protected/presentationPolicyAlternatives/list",
+                            PresentationPolicyAlternativesCollection.class);
+
             Html html = VerificationGUI.getHtmlPramble("Resources", request);
             Div mainDiv = new Div();
             html.appendChild(VerificationGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Resources")));
-            
+
             Ul ul = new Ul();
-            
+
             int i = 0;
-            for(String ppaUri : ppac.uris) {
+            for (String ppaUri : ppac.uris) {
                 A a = new A();
-                a.setHref("./resource?resource="+URLEncoder.encode(ppaUri.toString(),"UTF-8"));
+                a.setHref("./resource?resource="
+                        + URLEncoder.encode(ppaUri.toString(), "UTF-8"));
                 a.appendChild(new Text(ppaUri.toString()));
-                Form f = new Form("./deleteResource").setCSSClass("inl").setMethod("post");
-                f.appendChild(new Input().setType("hidden").setName("resource").setValue(ppaUri.toString()));
+                Form f = new Form("./deleteResource").setCSSClass("inl")
+                        .setMethod("post");
+                f.appendChild(new Input().setType("hidden").setName("resource")
+                        .setValue(ppaUri.toString()));
                 f.appendChild(new Input().setType("submit").setValue("Delete"));
-                ul.appendChild(new Li().appendChild(a).appendChild(new Text(": " + ppac.redirectURIs.get(i)))
+                ul.appendChild(new Li().appendChild(a)
+                        .appendChild(new Text(": " + ppac.redirectURIs.get(i)))
                         .appendChild(f));
-                
+
                 i++;
             }
-            
+
             mainDiv.appendChild(ul);
-            
+
             Form f = new Form("./createResource").setMethod("post");
-            f.appendChild(new Label().appendChild(new Text("Resource string: ")));
+            f.appendChild(new Label()
+                    .appendChild(new Text("Resource string: ")));
             f.appendChild(new Input().setType("text").setName("rs"));
             f.appendChild(new Br());
             f.appendChild(new Label().appendChild(new Text("Redirect URL: ")));
             f.appendChild(new Input().setType("text").setName("ru"));
             f.appendChild(new Br());
-            f.appendChild(new Input().setType("submit").setValue("Create resource"));
+            f.appendChild(new Input().setType("submit").setValue(
+                    "Create resource"));
             mainDiv.appendChild(f);
-            
+
             return log.exit(Response.ok(html.write()).build());
-        }
-        catch(Exception e) {
+        } catch (RuntimeException e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -975,31 +1177,36 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @GET()
     @Path("/protected/loadSettings")
     public Response loadSettings() {
         log.entry();
-        
+
         try {
-            Html html = VerificationGUI.getHtmlPramble("Load Settings", request);
+            Html html = VerificationGUI
+                    .getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();
             html.appendChild(VerificationGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Load Settings")));
             P p = new P().setCSSClass("info");
-            p.appendChild(new Text("Download settings from a settings provider or issuer. Please be careful to only" +
-                    " download settings from trusted sources as this will overwrite certain critical settings."));
+            p.appendChild(new Text(
+                    "Download settings from a settings provider or issuer. Please be careful to only"
+                            + " download settings from trusted sources as this will overwrite certain critical settings."));
             mainDiv.appendChild(p);
             Form f = new Form("./loadSettings2").setMethod("post");
             Table tbl = new Table();
-            tbl.appendChild(new Tr().appendChild(new Td().appendChild(new Label().appendChild(new Text("Settings provider URL:"))))
-                    .appendChild(new Td().appendChild(new Input().setType("text").setName("url"))));
+            tbl.appendChild(new Tr().appendChild(
+                    new Td().appendChild(new Label().appendChild(new Text(
+                            "Settings provider URL:")))).appendChild(
+                    new Td().appendChild(new Input().setType("text").setName(
+                            "url"))));
             f.appendChild(tbl);
-            f.appendChild(new Input().setType("Submit").setValue("Download settings"));
+            f.appendChild(new Input().setType("Submit").setValue(
+                    "Download settings"));
             mainDiv.appendChild(f);
             return log.exit(Response.ok(html.write()).build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -1008,25 +1215,29 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @POST()
     @Path("/protected/loadSettings2")
-    public Response loadSettings2(@FormParam("url") String url) {
+    public Response loadSettings2(@FormParam("url") final String url) {
         log.entry();
-        
+
         try {
-            RESTHelper.postRequest(ServicesConfiguration.getVerificationServiceURL() + "protected/loadSettings?url=" + URLEncoder.encode(url, "UTF-8"));
-            
-            Html html = VerificationGUI.getHtmlPramble("Load Settings", request);
+            RESTHelper.postRequest(ServicesConfiguration
+                    .getVerificationServiceURL()
+                    + "protected/loadSettings?url="
+                    + URLEncoder.encode(url, "UTF-8"));
+
+            Html html = VerificationGUI
+                    .getHtmlPramble("Load Settings", request);
             Div mainDiv = new Div();
             html.appendChild(VerificationGUI.getBody(mainDiv));
             mainDiv.appendChild(new H2().appendChild(new Text("Load Settings")));
             P p = new P().setCSSClass("success");
-            p.appendChild(new Text("You've successfully downloaded the settings."));
+            p.appendChild(new Text(
+                    "You've successfully downloaded the settings."));
             mainDiv.appendChild(p);
             return log.exit(Response.ok(html.write()).build());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -1035,15 +1246,16 @@ public class VerificationServiceGUI {
                             .write()).build());
         }
     }
-    
+
     @GET()
     @Path("/protected/credentialSpecifications/")
     public Response credentialSpecifications() {
         log.entry();
 
         try {
-            Settings settings = (Settings) RESTHelper.getRequest(ServicesConfiguration.getVerificationServiceURL()
-                    + "getSettings/", Settings.class);
+            Settings settings = (Settings) RESTHelper.getRequest(
+                    ServicesConfiguration.getVerificationServiceURL()
+                            + "getSettings/", Settings.class);
 
             List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
@@ -1054,32 +1266,42 @@ public class VerificationServiceGUI {
             mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
             mainDiv.appendChild(new H3().appendChild(new Text(
                     "Credential Specifications")));
-            
+
             Ul ul = new Ul();
 
             for (CredentialSpecification credSpec : credSpecs) {
-                
-                List<FriendlyDescription> friendlies = credSpec.getFriendlyCredentialName();
+
+                List<FriendlyDescription> friendlies = credSpec
+                        .getFriendlyCredentialName();
 
                 String friendlyDesc = "n/a";
-                if(friendlies.size() > 0)
+                if (friendlies.size() > 0) {
                     friendlyDesc = friendlies.get(0).getValue();
-                
-                String href = "./credentialSpecification?cs=" + URLEncoder.encode(
-                        credSpec.getSpecificationUID().toString(),
-                        "UTF-8");
-                Li li = new Li().appendChild(
-                        new A().setHref(href).appendChild(new B().appendChild(new Text(credSpec.getSpecificationUID().toString()))));
+                }
+
+                String href = "./credentialSpecification?cs="
+                        + URLEncoder.encode(credSpec.getSpecificationUID()
+                                .toString(), "UTF-8");
+                Li li = new Li().appendChild(new A().setHref(href).appendChild(
+                        new B().appendChild(new Text(credSpec
+                                .getSpecificationUID().toString()))));
                 li.appendChild(new Text(" - " + friendlyDesc));
-                
+
                 ul.appendChild(li);
-              
+
             }
-            
+
             mainDiv.appendChild(ul);
 
             return log.exit(Response.ok(html.write()).build());
 
+        } catch (RuntimeException e) {
+            log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         } catch (Exception e) {
             log.catching(e);
             return log.exit(Response

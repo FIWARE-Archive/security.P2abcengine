@@ -23,11 +23,12 @@ import eu.abc4trust.xml.ObjectFactory;
 
 public class JdbcAttributeValueProvider extends AttributeValueProvider {
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(JdbcAttributeValueProvider.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(JdbcAttributeValueProvider.class));
 
-    private ObjectFactory of;
+    private final ObjectFactory of;
 
-    public JdbcAttributeValueProvider(IssuanceConfiguration config) {
+    public JdbcAttributeValueProvider(final IssuanceConfiguration config) {
         super(config);
         of = new ObjectFactory();
     }
@@ -37,8 +38,9 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
     }
 
     @SuppressWarnings("resource")
-    public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
-            String uid, CredentialSpecification credSpec) throws Exception {
+    public List<eu.abc4trust.xml.Attribute> getAttributes(final String query,
+            final String uid, final CredentialSpecification credSpec)
+            throws Exception {
 
         Connection conn = null;
         ResultSet rs = null;
@@ -88,7 +90,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
                                     .getEncoding()
                                     .toString()
                                     .equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
-                        value = (String) value.toString();
+                        value = value.toString();
                     } else {
                         throw new RuntimeException(
                                 "Unsupported combination of encoding and dataType!");
@@ -107,20 +109,38 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
             } else {
                 throw new RuntimeException("Didn't get a result :(");
             }
-        } catch (Exception e) {
-            logger.catching( e);
+        }
+
+        catch (RuntimeException e) {
+            logger.catching(e);
+            throw new RuntimeException(e);
+        }
+
+        catch (Exception e) {
+            logger.catching(e);
             throw new RuntimeException(e);
         } finally {
-            if (conn != null)
-                try {
-                    if (rs != null)
-                        rs.close();
-                    if (stmt != null)
-                        stmt.close();
-                    conn.close();
-                } catch (SQLException e) {
-                    logger.catching( e);
+            try {
+                if (rs != null) {
+                    rs.close();
                 }
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
         }
 
     }

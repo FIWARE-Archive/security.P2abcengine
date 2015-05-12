@@ -56,18 +56,20 @@ public class UserGUI {
 
     private static String cssURL = "/css/style.css";
 
-    public static Html getHtmlPramble(String title, HttpServletRequest req) {
+    public static Html getHtmlPramble(final String title,
+            final HttpServletRequest req) {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
         html.appendChild(head);
         head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
                 .setRel("stylesheet").setType("text/css"));
-        head.appendChild(new Script("").setSrc(req.getContextPath() + "/csrf.js").setType("text/javascript"));
+        head.appendChild(new Script("").setSrc(
+                req.getContextPath() + "/csrf.js").setType("text/javascript"));
         return html;
     }
 
-    public static Body getBody(Div mainDiv) {
+    public static Body getBody(final Div mainDiv) {
         Div containerDiv = new Div().setCSSClass("containerDiv");
         containerDiv.appendChild(new H1().appendChild(new Text("User")));
         Div navDiv = new Div().setCSSClass("navDiv");
@@ -84,10 +86,10 @@ public class UserGUI {
         navDiv.appendChild(new Div().setStyle("clear: both"));
         Body body = new Body().appendChild(containerDiv);
         body.setAttribute("onload", "csrf();");
-        return body; 
+        return body;
     }
 
-    public static Html errorPage(String msg, HttpServletRequest req) {
+    public static Html errorPage(final String msg, final HttpServletRequest req) {
         Html html = getHtmlPramble("ERROR", req);
         Div mainDiv = new Div().setCSSClass("mainDiv");
         html.appendChild(getBody(mainDiv));
@@ -96,16 +98,14 @@ public class UserGUI {
                 new Text(msg)));
         return html;
     }
-    
-    public static Div getDivForCredential(Credential cred) {
+
+    public static Div getDivForCredential(final Credential cred) {
         URI uri = cred.getCredentialDescription().getCredentialUID();
         Div credDiv = new Div().setCSSClass("credDiv");
-        CredentialDescription credDesc = cred
-                .getCredentialDescription();
-        String credSpec = credDesc.getCredentialSpecificationUID()
-                .toString();
-        credDiv.appendChild(new H4().appendChild(new Text(credSpec
-                + " (" + uri.toString() + ")")));
+        CredentialDescription credDesc = cred.getCredentialDescription();
+        String credSpec = credDesc.getCredentialSpecificationUID().toString();
+        credDiv.appendChild(new H4().appendChild(new Text(credSpec + " ("
+                + uri.toString() + ")")));
         List<Attribute> attribs = credDesc.getAttribute();
         Table tbl = new Table();
         credDiv.appendChild(tbl);
@@ -115,14 +115,13 @@ public class UserGUI {
                 .appendChild(new Td().appendChild(new Text("Value")));
         tbl.appendChild(tr);
         for (Attribute attrib : attribs) {
-            AttributeDescription attribDesc = attrib
-                    .getAttributeDescription();
+            AttributeDescription attribDesc = attrib.getAttributeDescription();
             String name = attribDesc.getFriendlyAttributeName().get(0)
                     .getValue();
-            tr = new Tr().appendChild(
-                    new Td().appendChild(new Text(name))).appendChild(
-                    new Td().appendChild(new Text(attrib
-                            .getAttributeValue().toString())));
+            tr = new Tr().appendChild(new Td().appendChild(new Text(name)))
+                    .appendChild(
+                            new Td().appendChild(new Text(attrib
+                                    .getAttributeValue().toString())));
             tbl.appendChild(tr);
         }
         return credDiv;
@@ -138,18 +137,29 @@ public class UserGUI {
      *            Id of the policy used by the TokenCandidates
      * @param uiContext
      *            Context string
-     * @param backURL URL to go back.
-     * @param applicationData ApplicationData
-     * @param userServiceURL URL of the user service
+     * @param backURL
+     *            URL to go back.
+     * @param applicationData
+     *            ApplicationData
+     * @param userServiceURL
+     *            URL of the user service
      * @return Div (HTML)
-     * @throws JAXBException on error
-     * @throws UnsupportedEncodingException on error 
-     * @throws UniformInterfaceException  on error
-     * @throws ClientHandlerException on error
-     * @throws NamingException 
+     * @throws JAXBException
+     *             on error
+     * @throws UnsupportedEncodingException
+     *             on error
+     * @throws UniformInterfaceException
+     *             on error
+     * @throws ClientHandlerException
+     *             on error
+     * @throws NamingException
      */
-    public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-            int policyId, String uiContext, String applicationData, String backURL, String userServiceURL) throws ClientHandlerException, UniformInterfaceException, UnsupportedEncodingException, JAXBException, NamingException {
+    public static Div getDivForTokenCandidates(final List<TokenCandidate> tcs,
+            final int policyId, final String uiContext,
+            final String applicationData, final String backURL,
+            final String userServiceURL) throws ClientHandlerException,
+            UniformInterfaceException, UnsupportedEncodingException,
+            JAXBException, NamingException {
         Div enclosing = new Div();
 
         for (TokenCandidate tc : tcs) {
@@ -162,18 +172,19 @@ public class UserGUI {
                     + tc.credentials.size())));
 
             for (CredentialInUi c : tc.credentials) {
-                
-                if(c.uri.toString().startsWith("IdmxCredential/"))
-                    c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
-                
-                Credential cred = (Credential) RESTHelper.getRequest(userServiceURL + "credential/get/"
-                        + URLEncoder.encode(c.uri.toString(), "UTF-8"), Credential.class);
-                
-                enclosing.appendChild(getDivForCredential(cred));
-                
-                Form f = new Form(backURL).setMethod("post");
 
-                
+                if (c.uri.toString().startsWith("IdmxCredential/")) {
+                    c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
+                }
+
+                Credential cred = (Credential) RESTHelper.getRequest(
+                        userServiceURL + "credential/get/"
+                                + URLEncoder.encode(c.uri.toString(), "UTF-8"),
+                        Credential.class);
+
+                enclosing.appendChild(getDivForCredential(cred));
+
+                Form f = new Form(backURL).setMethod("post");
 
                 f.appendChild(new Input().setType("hidden").setName("apdata")
                         .setValue(applicationData));
@@ -187,16 +198,18 @@ public class UserGUI {
                                                 // stuff)
                         .setValue(Integer.toString(tc.candidateId)));
 
-                f.appendChild(new Label().appendChild(new Text("PseudonymID: ")));
+                f.appendChild(new Label()
+                        .appendChild(new Text("PseudonymID: ")));
                 Select sel = new Select();
                 sel.setName("pseudonymId");
                 for (PseudonymListCandidate pc : tc.pseudonymCandidates) {
                     sel.appendChild(new Option().appendChild(new Text(Integer
                             .toString(pc.candidateId)))); // chosenPseudonymList
                     System.out.println("____P_____");
-                    for(PseudonymInUi p : pc.pseudonyms) {
+                    for (PseudonymInUi p : pc.pseudonyms) {
                         System.out.println(p.uri.toString());
-                        System.out.println(p.pseudonym.getPseudonymUID().toString());
+                        System.out.println(p.pseudonym.getPseudonymUID()
+                                .toString());
                     }
                     // TODO: What the hell is this pseudonym thing?
                 }

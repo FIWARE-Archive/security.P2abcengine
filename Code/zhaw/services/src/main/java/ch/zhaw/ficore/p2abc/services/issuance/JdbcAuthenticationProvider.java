@@ -26,7 +26,8 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public class JdbcAuthenticationProvider extends AuthenticationProvider {
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
     private String userId;
 
     /**
@@ -35,7 +36,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public JdbcAuthenticationProvider(IssuanceConfiguration configuration) {
+    public JdbcAuthenticationProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -49,20 +50,26 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
     /**
      * Performs the authentication. Uses a dummy hardcoded combination of a
      * username "CaroleKing" and "Jazzman" as the password.
-     * @throws NamingException 
+     * 
+     * @throws NamingException
      */
-    public boolean authenticate(AuthenticationInformation authInfo) throws NamingException {
+    public boolean authenticate(final AuthenticationInformation authInfo)
+            throws NamingException {
         logger.info("jdbc auth");
 
-        if (!(authInfo instanceof AuthInfoSimple))
+        if (!(authInfo instanceof AuthInfoSimple)) {
             return false;
+        }
 
         AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 
         String bindQuery = ServicesConfiguration.getIssuanceConfiguration()
                 .getBindQuery();
+
+        String unameHash = DigestUtils.sha1Hex(simpleAuth.username);
+
         bindQuery = QueryHelper.buildQuery(bindQuery,
-                QueryHelper.sqlSanitize(simpleAuth.username));
+                QueryHelper.sqlSanitize(unameHash));
 
         Connection conn = null;
         ResultSet rs = null;
@@ -79,31 +86,47 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(bindQuery);
 
-            String pwHash = DigestUtils.sha1Hex(simpleAuth.password);
+            String pwHash = null;
+            String salt = null;
             String dbHash = "";
             if (rs.next()) {
                 dbHash = rs.getString(1);
+                salt = rs.getString(2);
             }
+            pwHash = DigestUtils.sha1Hex(salt + simpleAuth.password);
 
             if (pwHash.equals(dbHash)) {
-                userId = simpleAuth.username;
+                userId = unameHash;
                 return true;
             }
 
             return false;
 
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return false;
         } finally {
-            if (conn != null)
-                try {
+            try {
+                if (rs != null) {
                     rs.close();
-                    stmt.close();
-                    conn.close();
-                } catch (SQLException e) {
-                    logger.catching( e);
                 }
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                logger.catching(e);
+            }
         }
     }
 

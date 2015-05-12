@@ -26,14 +26,15 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
     /* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
-    public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
+    public static final Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
     /*
      * Mapping encodings determine how we encode the values (for the syntax
      * mapping) in the credential
      */
-    public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
+    public static final Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(LdapAttributeInfoProvider.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(LdapAttributeInfoProvider.class));
 
     /* Ldap Syntax Constants */
     private static final String directoryStringOid = "1.3.6.1.4.1.1466.115.121.1.15";
@@ -70,7 +71,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public LdapAttributeInfoProvider(IssuanceConfiguration configuration) {
+    public LdapAttributeInfoProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -87,7 +88,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      * 
      * @return an AttributeInfoCollection, null if something went wrong
      */
-    public AttributeInfoCollection getAttributes(String name) {
+    public AttributeInfoCollection getAttributes(final String name) {
         logger.entry();
 
         LdapConnection con = null;
@@ -128,15 +129,16 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
             return logger.exit(aic);
         } catch (Exception e) {
-            logger.catching( e);
+            logger.catching(e);
             return logger.exit(null);
         } finally {
-            if (con != null)
+            if (con != null) {
                 try {
                     con.close();
                 } catch (NamingException e) {
-                    logger.catching( e);
+                    logger.catching(e);
                 }
+            }
         }
     }
 
@@ -152,10 +154,11 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
     private String getMapping(String syntax) {
         syntax = syntax.replaceAll("\\{\\d+\\}$", ""); // Strip away length
                                                        // restrictions
-        if (syntaxMappings.containsKey(syntax))
+        if (syntaxMappings.containsKey(syntax)) {
             return syntaxMappings.get(syntax).get(0);
-        else
+        } else {
             return "xs:string"; // use string as default mapping
+        }
     }
 
     /**
@@ -166,11 +169,12 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
      *            An mapping as returned by getMapping.
      * @return the recommended encoding
      */
-    private String getEncoding(String mapping) {
-        if (mappingEncodings.containsKey(mapping))
+    private String getEncoding(final String mapping) {
+        if (mappingEncodings.containsKey(mapping)) {
             return mappingEncodings.get(mapping).get(0);
-        else
+        } else {
             throw new RuntimeException(
                     "Can not determine encoding for mapping: " + mapping);
+        }
     }
 }

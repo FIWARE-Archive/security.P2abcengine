@@ -15,7 +15,7 @@ public class QueryHelper {
      *            User's uid
      * @return resulting query
      */
-    public static String buildQuery(String query, String uid) {
+    public static String buildQuery(final String query, final String uid) {
         /*
          * TODO: Provide some mechanism to actually allow someone to use "_UID_"
          * in the query without being replaced by uid.
@@ -30,7 +30,7 @@ public class QueryHelper {
      *            Input string
      * @return sanitized input
      */
-    public static String ldapSanitize(String input) {
+    public static String ldapSanitize(final String input) {
         // TODO: Read the ldap RFC to correctly sanitize strings....
         return input.replaceAll("[^a-zA-Z]", "");
     }
@@ -42,8 +42,8 @@ public class QueryHelper {
      *            Input string
      * @return sanitized input
      */
-    public static String sqlSanitize(String input) {
+    public static String sqlSanitize(final String input) {
         // TODO: Read some RFC or google how to properly sanitize this....
-        return ldapSanitize(input);
+        return input.replaceAll("[^a-zA-Z0-9]", "");
     }
 }

@@ -55,13 +55,14 @@ public interface IssuanceStorage {
      *             when something went wrong.
      */
     public List<URI> listQueryRules() throws Exception;
-    
+
     /**
      * Deletes a QueryRule
      * 
      * @param credSpecUid
-     *              UID of the CredentialSpecification
-     * @throws Exception when something went wrong.
+     *            UID of the CredentialSpecification
+     * @throws Exception
+     *             when something went wrong.
      */
     public void deleteQueryRule(URI credSpecUid) throws Exception;
 

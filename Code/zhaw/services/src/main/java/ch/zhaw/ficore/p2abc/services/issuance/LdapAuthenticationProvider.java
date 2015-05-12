@@ -21,7 +21,8 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public class LdapAuthenticationProvider extends AuthenticationProvider {
 
-    private static final XLogger logger = new XLogger(LoggerFactory.getLogger(LdapAuthenticationProvider.class));
+    private static final XLogger logger = new XLogger(
+            LoggerFactory.getLogger(LdapAuthenticationProvider.class));
     private boolean authenticated = false;
     private String uid;
 
@@ -31,7 +32,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
      * @param configuration
      *            Configuration (Issuance)
      */
-    public LdapAuthenticationProvider(IssuanceConfiguration configuration) {
+    public LdapAuthenticationProvider(final IssuanceConfiguration configuration) {
         super(configuration);
     }
 
@@ -46,9 +47,10 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
      * Performs the authentication through Ldap.
      * 
      * @return true if successful, false otherwise.
-     * @throws NamingException 
+     * @throws NamingException
      */
-    public boolean authenticate(AuthenticationInformation authInfo) throws NamingException {
+    public boolean authenticate(final AuthenticationInformation authInfo)
+            throws NamingException {
         boolean isGood = true;
 
         logger.entry();
@@ -79,7 +81,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                         .newSearch().search("", bindQuery);
                 String binddn = null;
                 if (results.hasMore()) {
-                    SearchResult sr = (SearchResult) results.next();
+                    SearchResult sr = results.next();
                     binddn = sr.getName();
                 }
 
@@ -105,21 +107,23 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
                     adminConnection.close();
                 }
             } catch (Exception e) {
-                logger.catching( e);
+                logger.catching(e);
                 return logger.exit(false);
             } finally {
                 try {
-                    if (adminConnection != null)
+                    if (adminConnection != null) {
                         adminConnection.close();
+                    }
                 } catch (Exception e) {
-                    logger.catching( e);
+                    logger.catching(e);
                     isGood = false;
                 }
                 try {
-                    if (userConnection != null)
+                    if (userConnection != null) {
                         userConnection.close();
+                    }
                 } catch (Exception e) {
-                    logger.catching( e);
+                    logger.catching(e);
                     isGood = false;
                 }
             }
@@ -133,9 +137,10 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
     }
 
     public String getUserID() {
-        if (!authenticated)
+        if (!authenticated) {
             throw new IllegalStateException(
                     "Must successfully authenticate prior to calling this method!");
+        }
 
         return uid;
     }

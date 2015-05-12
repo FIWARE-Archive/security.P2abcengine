@@ -19,19 +19,20 @@ public class IssuerGUI {
 
     private static String cssURL = "/css/style.css";
 
-
-    public static Html getHtmlPramble(String title, HttpServletRequest req) {
+    public static Html getHtmlPramble(final String title,
+            final HttpServletRequest req) {
         Html html = new Html();
         Head head = new Head().appendChild(new Title().appendChild(new Text(
                 title)));
         html.appendChild(head);
         head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
                 .setRel("stylesheet").setType("text/css"));
-        head.appendChild(new Script("").setSrc(req.getContextPath() + "csrf.js").setType("text/javascript"));
+        head.appendChild(new Script("").setSrc(
+                req.getContextPath() + "/csrf.js").setType("text/javascript"));
         return html;
     }
 
-    public static Body getBody(Div mainDiv) {
+    public static Body getBody(final Div mainDiv) {
         Div containerDiv = new Div().setCSSClass("containerDiv");
         containerDiv.appendChild(new H1().appendChild(new Text("Issuer")));
         Div navDiv = new Div().setCSSClass("navDiv");
@@ -44,10 +45,10 @@ public class IssuerGUI {
         navDiv.appendChild(new Div().setStyle("clear: both"));
         Body body = new Body().appendChild(containerDiv);
         body.setAttribute("onload", "csrf();");
-        return body; 
+        return body;
     }
 
-    public static Html errorPage(String msg, HttpServletRequest req) {
+    public static Html errorPage(final String msg, final HttpServletRequest req) {
         Html html = getHtmlPramble("ERROR", req);
         Div mainDiv = new Div().setCSSClass("mainDiv");
         html.appendChild(getBody(mainDiv));

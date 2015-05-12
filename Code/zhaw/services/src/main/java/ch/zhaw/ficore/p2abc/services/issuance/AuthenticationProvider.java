@@ -16,10 +16,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public abstract class AuthenticationProvider {
 
-    protected IssuanceConfiguration configuration;
-
-    public AuthenticationProvider(IssuanceConfiguration configuration) {
-        this.configuration = configuration;
+    public AuthenticationProvider(final IssuanceConfiguration configuration) {
     }
 
     /**
@@ -32,7 +29,7 @@ public abstract class AuthenticationProvider {
      * @return an implementation of an AuthenticationProvider
      */
     public static AuthenticationProvider getAuthenticationProvider(
-            IssuanceConfiguration configuration) {
+            final IssuanceConfiguration configuration) {
         switch (configuration.getAuthenticationSource()) {
         case FAKE:
             return new FakeAuthenticationProvider(configuration);
@@ -40,6 +37,8 @@ public abstract class AuthenticationProvider {
             return new LdapAuthenticationProvider(configuration);
         case JDBC:
             return new JdbcAuthenticationProvider(configuration);
+        case KEYROCK:
+            return new KeyrockAuthenticationProvider(configuration);
         default:
             throw new RuntimeException(configuration.getAttributeSource()
                     + " is not a supported AuthenticationProvider!");
@@ -54,9 +53,10 @@ public abstract class AuthenticationProvider {
      *            AuthenticationInformation as given by a user.
      * @return true if AuthenticationInformation is correct (e.g. username,
      *         password is correct)
-     * @throws NamingException 
+     * @throws NamingException
      */
-    public abstract boolean authenticate(AuthenticationInformation authInfo) throws NamingException;
+    public abstract boolean authenticate(AuthenticationInformation authInfo)
+            throws NamingException;
 
     /**
      * Called when this AuthenticationProvider is no longer required. Providers

@@ -16,20 +16,20 @@ import eu.abc4trust.xml.PresentationPolicyAlternatives;
 
 public class GenericVerificationStorage implements VerificationStorage {
 
-    private URIBytesStorage presentationPolicyStorage;
-    private URIBytesStorage redirectURIStorage;
+    private final URIBytesStorage presentationPolicyStorage;
+    private final URIBytesStorage redirectURIStorage;
 
     @Inject
     public GenericVerificationStorage(
-            @Named("presentationPolicyStorage") URIBytesStorage presentationPolicyStorage,
-            @Named("redirectURIStorage") URIBytesStorage redirectURIStorage) {
+            @Named("presentationPolicyStorage") final URIBytesStorage presentationPolicyStorage,
+            @Named("redirectURIStorage") final URIBytesStorage redirectURIStorage) {
 
         this.presentationPolicyStorage = presentationPolicyStorage;
         this.redirectURIStorage = redirectURIStorage;
     }
 
-    public void addPresentationPolicyAlternatives(URI uri,
-            PresentationPolicyAlternatives ppa) throws IOException {
+    public void addPresentationPolicyAlternatives(final URI uri,
+            final PresentationPolicyAlternatives ppa) throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(ppa);
             presentationPolicyStorage.put(uri, data);
@@ -38,7 +38,8 @@ public class GenericVerificationStorage implements VerificationStorage {
         }
     }
 
-    public void addRedirectURI(URI key, URI value) throws IOException {
+    public void addRedirectURI(final URI key, final URI value)
+            throws IOException {
         try {
             byte[] data = SerializationUtils.serialize(value);
             redirectURIStorage.put(key, data);
@@ -46,34 +47,34 @@ public class GenericVerificationStorage implements VerificationStorage {
             throw new IOException(e);
         }
     }
-    
-    public List<PresentationPolicyAlternatives> listPresentationPolicyAlternatives() throws IOException {
+
+    public List<PresentationPolicyAlternatives> listPresentationPolicyAlternatives()
+            throws IOException {
         try {
             List<PresentationPolicyAlternatives> ppas = new ArrayList<PresentationPolicyAlternatives>();
-            for(URI uri : presentationPolicyStorage.keys()) {
+            for (URI uri : presentationPolicyStorage.keys()) {
                 ppas.add(getPresentationPolicyAlternatives(uri));
             }
             return ppas;
-        }
-        catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
-    
-    public List<URI> listResourceURIs() throws IOException {
-        try {
-            return presentationPolicyStorage.keys();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
 
-    public PresentationPolicyAlternatives getPresentationPolicyAlternatives(URI uri)
-            throws IOException {
+    public List<URI> listResourceURIs() throws IOException {
         try {
-            if (!presentationPolicyStorage.containsKey(uri))
+            return presentationPolicyStorage.keys();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
+    public PresentationPolicyAlternatives getPresentationPolicyAlternatives(
+            final URI uri) throws IOException {
+        try {
+            if (!presentationPolicyStorage.containsKey(uri)) {
                 return null;
+            }
 
             byte[] data = presentationPolicyStorage.get(uri);
             return (PresentationPolicyAlternatives) SerializationUtils
@@ -83,10 +84,11 @@ public class GenericVerificationStorage implements VerificationStorage {
         }
     }
 
-    public URI getRedirectURI(URI key) throws IOException {
+    public URI getRedirectURI(final URI key) throws IOException {
         try {
-            if (!presentationPolicyStorage.containsKey(key))
+            if (!presentationPolicyStorage.containsKey(key)) {
                 return null;
+            }
 
             byte[] data = redirectURIStorage.get(key);
             return (URI) SerializationUtils.deserialize(data);
@@ -94,21 +96,20 @@ public class GenericVerificationStorage implements VerificationStorage {
             throw new IOException(e);
         }
     }
-    
-    public void deleteRedirectURI(URI key) throws IOException {
+
+    public void deleteRedirectURI(final URI key) throws IOException {
         try {
             redirectURIStorage.delete(key);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
-    
-    public void deletePresentationPolicyAlternatives(URI key) throws IOException {
+
+    public void deletePresentationPolicyAlternatives(final URI key)
+            throws IOException {
         try {
             presentationPolicyStorage.delete(key);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
