@@ -23,12 +23,12 @@ import com.sun.jersey.spi.container.ContainerRequestFilter;
 
 public class PrivacyReqFilter  implements ContainerRequestFilter{
 	
-	private static String callbackRegex = null;
-	private static String resourceName = null;
-	private static String verifierURL = null;
-	private static String pathRegex = null;
-	private static List<String> tokens = new ArrayList<String>();
-	private static int MAX_TOKENS = 4096;
+	private String callbackRegex = null;
+	private String resourceName = null;
+	private String verifierURL = null;
+	private String pathRegex = null;
+	private List<String> tokens = new ArrayList<String>();
+	private static final int MAX_TOKENS = 4096;
 
 	@Override
 	public ContainerRequest filter(ContainerRequest req) {

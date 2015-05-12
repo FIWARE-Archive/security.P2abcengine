@@ -311,8 +311,15 @@ public class IssuanceGUI {
             mainDiv.appendChild(f);
 
             return Response.ok(html.write()).build();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.catching( e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
+        } catch(Exception e) {
+        	logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -497,8 +504,15 @@ public class IssuanceGUI {
             mainDiv.appendChild(tbl);
 
             return Response.ok(html.write()).build();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.catching( e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(IssuerGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
+        } catch (Exception e) {
+        	logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(IssuerGUI.errorPage(
@@ -668,8 +682,15 @@ public class IssuanceGUI {
 
             return logger.exit(Response.ok(html.write()).build());
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.catching( e);
+            return logger.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(UserGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, logger),
+                            request).write()).build());
+        } catch(Exception e) {
+        	logger.catching( e);
             return logger.exit(Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(UserGUI.errorPage(

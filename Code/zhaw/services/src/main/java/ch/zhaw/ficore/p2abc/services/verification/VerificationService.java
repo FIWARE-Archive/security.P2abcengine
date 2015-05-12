@@ -168,7 +168,7 @@ public class VerificationService {
     @Path("/protected/reset")
     public Response reset() throws Exception { /* [FLOW TEST] */
         log.entry();
-        VerificationHelper verficationHelper = VerificationHelper
+        VerificationHelper
                 .getInstance();
 
         URIBytesStorage.clearEverything();
@@ -939,8 +939,13 @@ public class VerificationService {
 
             verificationHelper.verificationStorage.addPresentationPolicyAlternatives(new URI(resource), ppa);
         }
+        catch(RuntimeException e) {
+        	log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
         catch(Exception e) {
-
+        	log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
         }
 
         return Response.ok().build();
@@ -1633,7 +1638,12 @@ public class VerificationService {
             return log.exit(Response.ok(
                     redirect.toString() + "?accesstoken="
                             + URLEncoder.encode(token, "UTF-8")).build());
-        } catch (Exception e) {
+        } 
+        catch (RuntimeException e) {
+        	log.catching(e);
+            return log.exit(ExceptionDumper.dumpException(e, log));
+        }
+        catch (Exception e) {
             log.catching(e);
             return log.exit(ExceptionDumper.dumpException(e, log));
         }

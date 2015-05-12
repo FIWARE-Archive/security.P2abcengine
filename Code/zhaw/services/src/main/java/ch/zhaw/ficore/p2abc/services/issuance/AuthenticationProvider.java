@@ -16,10 +16,8 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
  */
 public abstract class AuthenticationProvider {
 
-    protected IssuanceConfiguration configuration;
 
     public AuthenticationProvider(IssuanceConfiguration configuration) {
-        this.configuration = configuration;
     }
 
     /**

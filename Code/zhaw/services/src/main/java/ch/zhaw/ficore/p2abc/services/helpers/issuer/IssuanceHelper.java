@@ -26,8 +26,10 @@ package ch.zhaw.ficore.p2abc.services.helpers.issuer;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.security.SecureRandom;
@@ -84,15 +86,16 @@ public class IssuanceHelper extends AbstractHelper {
             ClassLoader cl = IssuanceHelper.class.getClassLoader();
             String resourcePath = URLDecoder.decode(cl.getResource(path).getFile(),"utf-8");
             File f = new File(resourcePath);
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            String lines = "";
+            InputStreamReader is = new InputStreamReader(new FileInputStream(f), "UTF-8");
+            BufferedReader br = new BufferedReader(is);
             String line = "";
+            StringBuilder lines = new StringBuilder();
             while ((line = br.readLine()) != null)
-                lines += line + "\n";
+                lines.append(line + "\n");
             br.close();
             log.info("*** " + path);
-            log.info(lines);
-            return lines;
+            log.info(lines.toString());
+            return lines.toString();
         } catch (Exception e) {
             throw new RuntimeException("readTextFile(" + path + ") failed: " + e.getMessage());
         }

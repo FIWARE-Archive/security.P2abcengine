@@ -276,8 +276,8 @@ public class VerificationHelper extends AbstractHelper {
         return pp_alternatives;
     }
 
-    public static boolean cacheRevocationInformation = false;
-    public static long REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES = 60;
+    public final static boolean cacheRevocationInformation = false;
+    public final static long REVOCATION_INFORMATION_MAX_TIME_TO_EXPIRE_IN_MINUTTES = 60;
     private static Map<URI, RevocationInformation> revocationInformationCache = new HashMap<URI, RevocationInformation>();
     
     public PresentationPolicyAlternatives modifyPPA(

@@ -26,12 +26,12 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
     /* Syntax mappings determine to which xml-Datatype we map an ldap-Datatype */
-    public static Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
+    public static final Map<String, List<String>> syntaxMappings = new HashMap<String, List<String>>();
     /*
      * Mapping encodings determine how we encode the values (for the syntax
      * mapping) in the credential
      */
-    public static Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
+    public static final Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
     private static final XLogger logger = new XLogger(LoggerFactory.getLogger(LdapAttributeInfoProvider.class));
 

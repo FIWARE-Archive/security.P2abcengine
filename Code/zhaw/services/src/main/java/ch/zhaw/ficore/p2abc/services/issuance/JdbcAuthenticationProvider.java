@@ -103,14 +103,24 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             logger.catching( e);
             return false;
         } finally {
-            if (conn != null)
-                try {
-                    rs.close();
-                    stmt.close();
-                    conn.close();
-                } catch (SQLException e) {
-                    logger.catching( e);
-                }
+        	 try {
+                 if (rs != null)
+                     rs.close();
+             } catch (SQLException e) {
+                 logger.catching( e);
+             }
+             try {
+                 if (stmt != null)
+                     stmt.close();
+             } catch (SQLException e) {
+                 logger.catching( e);
+             }
+             try {
+                 if (conn != null)
+                 	conn.close();
+             } catch (SQLException e) {
+                 logger.catching( e);
+             }
         }
     }
 

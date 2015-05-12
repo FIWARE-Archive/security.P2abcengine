@@ -186,6 +186,14 @@ public class VerificationServiceGUI {
                     + URLEncoder.encode(issuerParamsUid, "UTF-8"));
             return issuerParameters();
         }
+        catch(RuntimeException e) {
+        	log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
         catch(Exception e) {
             log.catching(e);
             return log.exit(Response
@@ -266,7 +274,16 @@ public class VerificationServiceGUI {
             mainDiv.appendChild(tbl);
 
             return Response.ok(html.write()).build();
-        } catch (Exception e) {
+        } 
+        catch (RuntimeException e) {
+        	log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+        catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)
@@ -783,6 +800,14 @@ public class VerificationServiceGUI {
             
             return log.exit(Response.ok(html.write()).build());
         }
+        catch(RuntimeException e) {
+        	log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
         catch(Exception e) {
             log.catching(e);
             return log.exit(Response
@@ -880,6 +905,14 @@ public class VerificationServiceGUI {
             
             return log.exit(Response.ok(html.write()).build());
         }
+        catch(RuntimeException e) {
+        	log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
         catch(Exception e) {
             log.catching(e);
             return log.exit(Response
@@ -954,6 +987,14 @@ public class VerificationServiceGUI {
             mainDiv.appendChild(f);
             
             return log.exit(Response.ok(html.write()).build());
+        }
+        catch(RuntimeException e) {
+        	log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
         }
         catch(Exception e) {
             log.catching(e);
@@ -1069,7 +1110,16 @@ public class VerificationServiceGUI {
 
             return log.exit(Response.ok(html.write()).build());
 
-        } catch (Exception e) {
+        } 
+        catch (RuntimeException e) {
+        	log.catching(e);
+            return log.exit(Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(VerificationGUI.errorPage(
+                            ExceptionDumper.dumpExceptionStr(e, log), request)
+                            .write()).build());
+        }
+        catch (Exception e) {
             log.catching(e);
             return log.exit(Response
                     .status(Response.Status.BAD_REQUEST)

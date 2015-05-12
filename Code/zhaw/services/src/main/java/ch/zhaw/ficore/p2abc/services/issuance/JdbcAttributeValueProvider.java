@@ -107,17 +107,32 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
             } else {
                 throw new RuntimeException("Didn't get a result :(");
             }
-        } catch (Exception e) {
+        } 
+        
+        catch(RuntimeException e) {
+        	logger.catching( e);
+            throw new RuntimeException(e);
+        }
+      
+        catch (Exception e) {
             logger.catching( e);
             throw new RuntimeException(e);
         } finally {
-            if (conn != null)
                 try {
                     if (rs != null)
                         rs.close();
+                } catch (SQLException e) {
+                    logger.catching( e);
+                }
+                try {
                     if (stmt != null)
                         stmt.close();
-                    conn.close();
+                } catch (SQLException e) {
+                    logger.catching( e);
+                }
+                try {
+                    if (conn != null)
+                    	conn.close();
                 } catch (SQLException e) {
                     logger.catching( e);
                 }
