@@ -43,7 +43,7 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
 			}
 
 			String accesstoken = (String) req.getQueryParameters()
-					.get("accesstoken").get(0);
+			        .get("accesstoken").get(0);
 			if (accesstoken == null) {
 				return denyRequest(req);
 			}
@@ -51,7 +51,7 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
 			/* Ok. Let's ask the verifier about this */
 			try {
 				String url = verifierURL + "/verifyAccessToken?accesstoken="
-						+ URLEncoder.encode(accesstoken, "UTF-8");
+				        + URLEncoder.encode(accesstoken, "UTF-8");
 				String result = (String) RESTHelper.getRequestUnauth(url);
 
 				if (result.equals(resourceName)) {
@@ -63,7 +63,7 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
 						tokens.add(accesstoken);
 
 						MultivaluedMap<String, String> headers = req
-								.getRequestHeaders();
+						        .getRequestHeaders();
 						headers.add("X-P2ABC-ACCESSTOKEN", accesstoken);
 						req.setHeaders((InBoundHeaders) headers);
 					}
@@ -91,8 +91,8 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
 
 	public ContainerRequest denyRequest(ContainerRequest req) {
 		throw new WebApplicationException(Response
-				.status(Response.Status.FORBIDDEN).entity("Request denied!")
-				.build());
+		        .status(Response.Status.FORBIDDEN).entity("Request denied!")
+		        .build());
 	}
 
 	public PrivacyReqFilter() throws NamingException {
@@ -100,7 +100,7 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
 		Context envCtx = (Context) initCtx.lookup("java:/comp/env");
 
 		callbackRegex = (String) envCtx
-				.lookup("cfg/p2abc-filter/callbackRegex");
+		        .lookup("cfg/p2abc-filter/callbackRegex");
 		pathRegex = (String) envCtx.lookup("cfg/p2abc-filter/pathRegex");
 		resourceName = (String) envCtx.lookup("cfg/p2abc-filter/resourceName");
 		verifierURL = (String) envCtx.lookup("cfg/p2abc-filter/verifierURL");

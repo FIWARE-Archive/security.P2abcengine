@@ -22,12 +22,12 @@ public class VerificationGUI {
 	public static Html getHtmlPramble(String title, HttpServletRequest req) {
 		Html html = new Html();
 		Head head = new Head().appendChild(new Title().appendChild(new Text(
-				title)));
+		        title)));
 		html.appendChild(head);
 		head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
-				.setRel("stylesheet").setType("text/css"));
+		        .setRel("stylesheet").setType("text/css"));
 		head.appendChild(new Script("").setSrc(
-				req.getContextPath() + "/csrf.js").setType("text/javascript"));
+		        req.getContextPath() + "/csrf.js").setType("text/javascript"));
 		return html;
 	}
 
@@ -38,9 +38,9 @@ public class VerificationGUI {
 		containerDiv.appendChild(navDiv);
 		containerDiv.appendChild(mainDiv);
 		navDiv.appendChild(new A().setHref("./profile").appendChild(
-				new Text("Profile")));
+		        new Text("Profile")));
 		navDiv.appendChild(new A().setHref("./loadSettings").appendChild(
-				new Text("Load Settings")));
+		        new Text("Load Settings")));
 		navDiv.appendChild(new Div().setStyle("clear: both"));
 		Body body = new Body().appendChild(containerDiv);
 		body.setAttribute("onload", "csrf();");
@@ -53,7 +53,7 @@ public class VerificationGUI {
 		html.appendChild(getBody(mainDiv));
 		mainDiv.appendChild(new H2().appendChild(new Text("Error")));
 		mainDiv.appendChild(new P().setCSSClass("error").appendChild(
-				new Text(msg)));
+		        new Text(msg)));
 		return html;
 	}
 }

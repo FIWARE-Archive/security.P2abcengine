@@ -36,7 +36,7 @@ public class FakeAttributeInfoProvider extends AttributeInfoProvider {
 	public AttributeInfoCollection getAttributes(String name) {
 		AttributeInfoCollection aiCol = new AttributeInfoCollection(name);
 		aiCol.addAttribute("someAttribute", "xs:integer",
-				"urn:abc4trust:1.0:encoding:integer:signed");
+		        "urn:abc4trust:1.0:encoding:integer:signed");
 		return aiCol;
 	}
 }

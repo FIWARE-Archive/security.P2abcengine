@@ -27,13 +27,13 @@ public class CSRFReqFilter implements ContainerRequestFilter {
 
 			if (csrf_cookie == null)
 				throw new RuntimeException("CSRF Protection Triggered: "
-						+ arg0.getPath());
+				        + arg0.getPath());
 
 			String csrf_cookie_val = csrf_cookie.getValue();
 
 			if (!csrf.equals(csrf_cookie_val))
 				throw new RuntimeException("CSRF Protection Triggered: "
-						+ arg0.getPath());
+				        + arg0.getPath());
 
 		}
 

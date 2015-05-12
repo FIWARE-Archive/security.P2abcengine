@@ -81,14 +81,14 @@ import eu.abc4trust.xml.SystemParameters;
 public class UserService {
 
 	private static final CryptoEngine CRYPTO_ENGINE = CryptoEngine.IDEMIX; // use
-																			// idemix
-																			// always
-																			// --
-																			// munt
+	                                                                       // idemix
+	                                                                       // always
+	                                                                       // --
+	                                                                       // munt
 
 	private final ObjectFactory of = new ObjectFactory();
 	private static final XLogger log = new XLogger(
-			LoggerFactory.getLogger(UserService.class));
+	        LoggerFactory.getLogger(UserService.class));
 
 	private final String fileStoragePrefix = ""; // no prefix -- munt
 
@@ -183,8 +183,8 @@ public class UserService {
 			ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
 			createABCEBoolean.setValue(b);
 			return log.exit(Response.ok(
-					this.of.createABCEBoolean(createABCEBoolean),
-					MediaType.APPLICATION_XML).build());
+			        this.of.createABCEBoolean(createABCEBoolean),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception ex) {
 			log.catching(ex);
 			return log.exit(ExceptionDumper.dumpException(ex, log));
@@ -244,10 +244,10 @@ public class UserService {
 			UserHelper instance = UserHelper.getInstance();
 
 			UiPresentationArguments uiPresentationArguments = instance
-					.getEngine().createPresentationToken(p, d);
+			        .getEngine().createPresentationToken(p, d);
 			return log.exit(Response.ok(
-					ObjectFactoryReturnTypes.wrap(uiPresentationArguments),
-					MediaType.APPLICATION_XML).build());
+			        ObjectFactoryReturnTypes.wrap(uiPresentationArguments),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -285,20 +285,20 @@ public class UserService {
 			UserHelper instance = UserHelper.getInstance();
 
 			PresentationToken presentationToken = instance.getEngine()
-					.createPresentationToken(upr);
+			        .createPresentationToken(upr);
 			/*
 			 * VerifierIdentity vi =
 			 * presentationToken.getPresentationTokenDescription
 			 * ().getMessage().getVerifierIdentity(); if(vi == null) {
 			 * presentationToken
-			 * .getPresentationTokenDescription().getMessage().setVerifierIdentity
-			 * (new VerifierIdentity()); vi =
+			 * .getPresentationTokenDescription().getMessage().
+			 * setVerifierIdentity (new VerifierIdentity()); vi =
 			 * presentationToken.getPresentationTokenDescription
 			 * ().getMessage().getVerifierIdentity(); vi.getContent().clear(); }
 			 */
 			return log.exit(Response.ok(
-					of.createPresentationToken(presentationToken),
-					MediaType.APPLICATION_XML).build());
+			        of.createPresentationToken(presentationToken),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -333,27 +333,27 @@ public class UserService {
 
 		try {
 			Settings settings = (Settings) RESTHelper.getRequest(url,
-					Settings.class);
+			        Settings.class);
 
 			for (IssuerParameters ip : settings.issuerParametersList) {
 				Response r = this.storeIssuerParameters(ip.getParametersUID(),
-						ip);
+				        ip);
 				if (r.getStatus() != 200)
 					throw new RuntimeException(
-							"Could not load issuer parameters!");
+					        "Could not load issuer parameters!");
 			}
 
 			for (CredentialSpecification cs : settings.credentialSpecifications) {
 				Response r = this.storeCredentialSpecification(
-						cs.getSpecificationUID(), cs);
+				        cs.getSpecificationUID(), cs);
 				if (r.getStatus() != 200)
 					throw new RuntimeException(
-							"Could not load credential specification!");
+					        "Could not load credential specification!");
 			}
 
 			Response r = this.storeSystemParameters(settings.systemParameters);
 			log.info(settings.systemParameters + "|"
-					+ settings.systemParameters.toString());
+			        + settings.systemParameters.toString());
 			if (r.getStatus() != 200)
 				throw new RuntimeException("Could not load system parameters!");
 
@@ -402,7 +402,7 @@ public class UserService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof IssuerParameters) {
 					IssuerParameters ip = (IssuerParameters) obj;
 
@@ -418,7 +418,7 @@ public class UserService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof CredentialSpecification) {
 					credSpecs.add((CredentialSpecification) obj);
 				}
@@ -428,19 +428,19 @@ public class UserService {
 			settings.issuerParametersList = issuerParams;
 			try {
 				settings.systemParameters = /* SystemParametersUtil.serialize */(instance.keyManager
-						.getSystemParameters());
+				        .getSystemParameters());
 			} catch (Exception e) {
 
 			}
 
 			return log.exit(Response.ok(settings, MediaType.APPLICATION_XML)
-					.build());
+			        .build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(
-					Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, log)))
-					.build();
+			        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, log)))
+			        .build();
 		}
 	}
 
@@ -474,7 +474,7 @@ public class UserService {
 
 			for (URI uri : credentialUids) {
 				eu.abc4trust.xml.Credential cred = instance.credentialManager
-						.getCredential(uri);
+				        .getCredential(uri);
 				credentials.add(cred);
 			}
 
@@ -482,13 +482,13 @@ public class UserService {
 			credCol.credentials = credentials;
 
 			return log.exit(Response.ok(credCol, MediaType.APPLICATION_XML)
-					.build());
+			        .build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(
-					Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, log)))
-					.build();
+			        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, log)))
+			        .build();
 		}
 	}
 
@@ -523,21 +523,21 @@ public class UserService {
 			UserHelper instance = UserHelper.getInstance();
 
 			Credential cred = instance.credentialManager.getCredential(new URI(
-					credUid));
+			        credUid));
 
 			if (cred == null) {
 				return log.exit(Response.status(Response.Status.NOT_FOUND)
-						.entity(errNoCred).build());
+				        .entity(errNoCred).build());
 			}
 
 			return log.exit(Response.ok(of.createCredential(cred),
-					MediaType.APPLICATION_XML).build());
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(
-					Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, log)))
-					.build();
+			        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, log)))
+			        .build();
 		}
 	}
 
@@ -613,10 +613,10 @@ public class UserService {
 			DummyForNewABCEInterfaces d = null;
 
 			IssuanceReturn issuanceReturn = instance.getEngine()
-					.issuanceProtocolStep(m, d);
+			        .issuanceProtocolStep(m, d);
 			return log.exit(Response.ok(
-					ObjectFactoryReturnTypes.wrap(issuanceReturn),
-					MediaType.APPLICATION_XML).build());
+			        ObjectFactoryReturnTypes.wrap(issuanceReturn),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -651,10 +651,10 @@ public class UserService {
 			UserHelper instance = UserHelper.getInstance();
 
 			IssuanceMessage issuanceMessage = instance.getEngine()
-					.issuanceProtocolStep(uir);
+			        .issuanceProtocolStep(uir);
 			return log.exit(Response.ok(
-					new ObjectFactory().createIssuanceMessage(issuanceMessage),
-					MediaType.APPLICATION_XML).build());
+			        new ObjectFactory().createIssuanceMessage(issuanceMessage),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -683,7 +683,7 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
 	/* [FLOW TESTS] */
 	public Response deleteCredential(
-			@PathParam("credentialUid") String credentialUid) {
+	        @PathParam("credentialUid") String credentialUid) {
 		log.entry();
 
 		try {
@@ -695,14 +695,14 @@ public class UserService {
 				credentialUid = "IdmxCredential/" + credentialUid;
 
 			boolean r = instance.credentialManager.deleteCredential(new URI(
-					credentialUid));
+			        credentialUid));
 
 			ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
 			createABCEBoolean.setValue(r);
 
 			return log.exit(Response.ok(
-					of.createABCEBoolean(createABCEBoolean),
-					MediaType.APPLICATION_XML).build());
+			        of.createABCEBoolean(createABCEBoolean),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -734,16 +734,16 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
 	/* [TEST EXISTS] */
 	public Response storeCredentialSpecification(
-			@PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
-			CredentialSpecification credSpec) {
+	        @PathParam("credentialSpecifationUid") URI credentialSpecificationUid,
+	        CredentialSpecification credSpec) {
 		log.entry();
 
 		try {
 
 			if (!credentialSpecificationUid.toString().equals(
-					credSpec.getSpecificationUID().toString()))
+			        credSpec.getSpecificationUID().toString()))
 				return log.exit(Response.status(Response.Status.CONFLICT)
-						.entity(errCredSpecUid).build());
+				        .entity(errCredSpecUid).build());
 
 			this.initializeHelper();
 
@@ -752,14 +752,14 @@ public class UserService {
 			KeyManager keyManager = instance.keyManager;
 
 			boolean r = keyManager.storeCredentialSpecification(
-					credentialSpecificationUid, credSpec);
+			        credentialSpecificationUid, credSpec);
 
 			ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
 			createABCEBoolean.setValue(r);
 
 			return log.exit(Response.ok(
-					of.createABCEBoolean(createABCEBoolean),
-					MediaType.APPLICATION_XML).build());
+			        of.createABCEBoolean(createABCEBoolean),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -789,7 +789,7 @@ public class UserService {
 	@Path("/credentialSpecification/get/{credentialSpecificationUid}")
 	/* [TEST EXISTS] */
 	public Response getCredentialSpecification(
-			@PathParam("credentialSpecificationUid") String credSpecUid) {
+	        @PathParam("credentialSpecificationUid") String credSpecUid) {
 		log.entry();
 
 		try {
@@ -800,15 +800,15 @@ public class UserService {
 			KeyManager keyManager = instance.keyManager;
 
 			CredentialSpecification credSpec = keyManager
-					.getCredentialSpecification(new URI(credSpecUid));
+			        .getCredentialSpecification(new URI(credSpecUid));
 
 			if (credSpec == null)
 				return log.exit(Response.status(Response.Status.NOT_FOUND)
-						.entity(errNotFound).build());
+				        .entity(errNotFound).build());
 
 			return log.exit(Response.ok(
-					of.createCredentialSpecification(credSpec),
-					MediaType.APPLICATION_XML).build());
+			        of.createCredentialSpecification(credSpec),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -849,8 +849,8 @@ public class UserService {
 				gkeyStorage.delete(new URI(credSpecUid));
 			} else {
 				return log.exit(
-						Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-								.entity(errNotImplemented)).build();
+				        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				                .entity(errNotImplemented)).build();
 			}
 
 			return log.exit(Response.ok("OK").build());
@@ -899,8 +899,8 @@ public class UserService {
 			}
 
 			return log.exit(Response.ok(
-					of.createABCEBoolean(createABCEBoolean),
-					MediaType.APPLICATION_XML).build());
+			        of.createABCEBoolean(createABCEBoolean),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -932,28 +932,28 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
 	/* [TEST EXISTS] */
 	public Response storeIssuerParameters(
-			@PathParam("issuerParametersUid") URI issuerParametersUid,
-			IssuerParameters issuerParameters) {
+	        @PathParam("issuerParametersUid") URI issuerParametersUid,
+	        IssuerParameters issuerParameters) {
 
 		log.entry();
 
 		log.info("UserService - storeIssuerParameters - issuerParametersUid: "
-				+ issuerParametersUid + ", "
-				+ issuerParameters.getParametersUID());
+		        + issuerParametersUid + ", "
+		        + issuerParameters.getParametersUID());
 		try {
 			this.initializeHelper();
 
 			UserHelper instance = UserHelper.getInstance();
 
 			if (!(issuerParametersUid.toString().equals(issuerParameters
-					.getParametersUID().toString())))
+			        .getParametersUID().toString())))
 				return log.exit(Response.status(Response.Status.CONFLICT)
-						.entity(errIssParamsUid).build());
+				        .entity(errIssParamsUid).build());
 
 			KeyManager keyManager = instance.keyManager;
 
 			boolean r = keyManager.storeIssuerParameters(issuerParametersUid,
-					issuerParameters);
+			        issuerParameters);
 
 			ABCEBoolean createABCEBoolean = this.of.createABCEBoolean();
 			createABCEBoolean.setValue(r);
@@ -961,8 +961,8 @@ public class UserService {
 			log.info("UserService - storeIssuerParameters - done ");
 
 			return log.exit(Response.ok(
-					of.createABCEBoolean(createABCEBoolean),
-					MediaType.APPLICATION_XML).build());
+			        of.createABCEBoolean(createABCEBoolean),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));
@@ -986,7 +986,7 @@ public class UserService {
 	@Path("/issuerParameters/delete/{issuerParametersUid}")
 	/* [TEST EXISTS] */
 	public Response deleteIssuerParameters(
-			@PathParam("issuerParametersUid") String issuerParametersUid) {
+	        @PathParam("issuerParametersUid") String issuerParametersUid) {
 		log.entry();
 
 		try {
@@ -1002,8 +1002,8 @@ public class UserService {
 				gkeyStorage.delete(new URI(issuerParametersUid));
 			} else {
 				return log.exit(
-						Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-								.entity(errNotImplemented)).build();
+				        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				                .entity(errNotImplemented)).build();
 			}
 
 			return log.exit(Response.ok("OK").build());
@@ -1027,11 +1027,11 @@ public class UserService {
 				log.info("Initializing UserHelper");
 
 				UserHelper
-						.initInstanceForService(
-								CRYPTO_ENGINE,
-								this.fileStoragePrefix,
-								StorageModuleFactory
-										.getModulesForServiceConfiguration(ServiceType.USER));
+				        .initInstanceForService(
+				                CRYPTO_ENGINE,
+				                this.fileStoragePrefix,
+				                StorageModuleFactory
+				                        .getModulesForServiceConfiguration(ServiceType.USER));
 
 				log.info("UserHelper is initialized");
 			}
@@ -1066,7 +1066,7 @@ public class UserService {
 	@Path("/extractIssuanceMessage/")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
 	public Response extractIssuanceMessage(
-			IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /*
+	        IssuanceMessageAndBoolean issuanceMessageAndBoolean) { /*
 																	 * [FLOW
 																	 * TEST]
 																	 */
@@ -1075,13 +1075,13 @@ public class UserService {
 		try {
 
 			IssuanceMessage issuanceMessage = issuanceMessageAndBoolean
-					.getIssuanceMessage();
+			        .getIssuanceMessage();
 
 			ObjectFactory of = new ObjectFactory();
 
 			return log.exit(Response.ok(
-					of.createIssuanceMessage(issuanceMessage),
-					MediaType.APPLICATION_XML).build());
+			        of.createIssuanceMessage(issuanceMessage),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			log.catching(e);
 			return log.exit(ExceptionDumper.dumpException(e, log));

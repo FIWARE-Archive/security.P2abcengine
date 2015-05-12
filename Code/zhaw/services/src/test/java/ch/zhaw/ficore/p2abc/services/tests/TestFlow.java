@@ -56,7 +56,7 @@ public class TestFlow extends JerseyTest {
 		userServiceURL = getBaseURI() + userServiceURL;
 		verificationServiceURL = getBaseURI() + verificationServiceURL;
 		verificationServiceURLUnprot = getBaseURI()
-				+ verificationServiceURLUnprot;
+		        + verificationServiceURLUnprot;
 		issuanceServiceURL = getBaseURI() + issuanceServiceURL;
 		issuanceServiceURLUnprot = getBaseURI() + issuanceServiceURLUnprot;
 	}
@@ -75,7 +75,7 @@ public class TestFlow extends JerseyTest {
 		this.setUp();
 		// Create initial context
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				"org.apache.naming.java.javaURLContextFactory");
+		        "org.apache.naming.java.javaURLContextFactory");
 		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
 		InitialContext ic = new InitialContext();
 
@@ -102,10 +102,10 @@ public class TestFlow extends JerseyTest {
 		ic.bind("java:/comp/env/cfg/restAuthPassword", "");
 		ic.bind("java:/comp/env/cfg/restAuthUser", "flow");
 		ic.bind("java:/comp/env/cfg/issuanceServiceURL", getBaseURI()
-				+ "issuance/");
+		        + "issuance/");
 		ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI() + "user/");
 		ic.bind("java:/comp/env/cfg/verificationServiceURL", getBaseURI()
-				+ "verification/");
+		        + "verification/");
 		ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
 		SQLiteDataSource ds = new SQLiteDataSource();
@@ -160,8 +160,8 @@ public class TestFlow extends JerseyTest {
 	 */
 	@Test
 	public void flowTest() throws UnsupportedEncodingException,
-			InterruptedException, JAXBException, ClientHandlerException,
-			UniformInterfaceException, NamingException {
+	        InterruptedException, JAXBException, ClientHandlerException,
+	        UniformInterfaceException, NamingException {
 		System.out.println("hi there");
 
 		/*
@@ -244,7 +244,7 @@ public class TestFlow extends JerseyTest {
 
 			String uiIssuanceReturn = readTextFile("/uiIssuanceReturn.xml");
 			uiIssuanceReturn = replaceContextString(uiIssuanceReturn,
-					contextString);
+			        contextString);
 			System.out.println("--- uiIssuanceReturn");
 			System.out.println(uiIssuanceReturn);
 
@@ -268,14 +268,14 @@ public class TestFlow extends JerseyTest {
 
 			String uiPresentationReturn = readTextFile("/uiPresentationReturn.xml");
 			uiPresentationReturn = replaceContextString(uiPresentationReturn,
-					contextString);
+			        contextString);
 
 			String presentationToken = testCreatePresentationTokenUi(uiPresentationReturn);
 
 			String rPresentationToken = presentationToken.replaceAll(
-					"<\\?xml(.*)\\?>", "");
+			        "<\\?xml(.*)\\?>", "");
 			String rPresentationPolicyAlternatives = presentationPolicyAlternatives
-					.replaceAll("<\\?xml(.*)\\?>", "");
+			        .replaceAll("<\\?xml(.*)\\?>", "");
 
 			String ppapt = "";
 			ppapt += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
@@ -303,11 +303,11 @@ public class TestFlow extends JerseyTest {
 				String presentationPolicyAlternatives_ = testRequestResource();
 
 				PresentationPolicyAlternatives ppa = (PresentationPolicyAlternatives) RESTHelper
-						.fromXML(PresentationPolicyAlternatives.class,
-								presentationPolicyAlternatives_);
+				        .fromXML(PresentationPolicyAlternatives.class,
+				                presentationPolicyAlternatives_);
 
 				ApplicationData apd = ppa.getPresentationPolicy().get(0)
-						.getMessage().getApplicationData();
+				        .getMessage().getApplicationData();
 				System.out.println("APD: " + apd.getContent().get(0));
 
 				String presentationReturn_ = testCreatePresentationToken(presentationPolicyAlternatives_);
@@ -316,7 +316,7 @@ public class TestFlow extends JerseyTest {
 
 				String uiPresentationReturn_ = readTextFile("/uiPresentationReturn.xml");
 				uiPresentationReturn_ = replaceContextString(
-						uiPresentationReturn_, contextString_);
+				        uiPresentationReturn_, contextString_);
 
 				String presentationToken_ = testCreatePresentationTokenUi(uiPresentationReturn_);
 				/*
@@ -350,29 +350,29 @@ public class TestFlow extends JerseyTest {
 
 		/* Test user credentials */
 		CredentialCollection credCol = (CredentialCollection) RESTHelper
-				.getRequest(userServiceURL + "credential/list",
-						CredentialCollection.class);
+		        .getRequest(userServiceURL + "credential/list",
+		                CredentialCollection.class);
 		System.out.println("Found " + credCol.credentials.size()
-				+ " credentials!");
+		        + " credentials!");
 		List<Credential> creds = credCol.credentials;
 		assertEquals(creds.size(), 3);
 		for (Credential c : creds) {
 			String credUID = c.getCredentialDescription().getCredentialUID()
-					.toString();
+			        .toString();
 			System.out.println(credUID);
 			credUID = credUID.split("/")[1];
 			Credential c1 = (Credential) RESTHelper.getRequest(userServiceURL
-					+ "credential/get/" + credUID, Credential.class);
+			        + "credential/get/" + credUID, Credential.class);
 			assertEquals(c1.getCredentialDescription().getCredentialUID()
-					.toString().endsWith(credUID), true);
+			        .toString().endsWith(credUID), true);
 			RESTHelper.deleteRequest(userServiceURL + "credential/delete/"
-					+ credUID);
+			        + credUID);
 		}
 
 		credCol = (CredentialCollection) RESTHelper.getRequest(userServiceURL
-				+ "credential/list", CredentialCollection.class);
+		        + "credential/list", CredentialCollection.class);
 		System.out.println("Found " + credCol.credentials.size()
-				+ " credentials!");
+		        + " credentials!");
 		creds = credCol.credentials;
 		assertEquals(creds.size(), 0);
 
@@ -417,16 +417,16 @@ public class TestFlow extends JerseyTest {
 	}
 
 	public void testLoadSettingsVerification()
-			throws UnsupportedEncodingException {
+	        throws UnsupportedEncodingException {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "loadSettings?url="
-				+ URLEncoder.encode(issuanceServiceURLUnprot + "getSettings",
-						"UTF-8"));
+		        + "loadSettings?url="
+		        + URLEncoder.encode(issuanceServiceURLUnprot + "getSettings",
+		                "UTF-8"));
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class);
+		        ClientResponse.class);
 		assertOk(response);
 	}
 
@@ -434,12 +434,12 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "loadSettings?url="
-				+ URLEncoder.encode(issuanceServiceURLUnprot + "getSettings",
-						"UTF-8"));
+		        + "loadSettings?url="
+		        + URLEncoder.encode(issuanceServiceURLUnprot + "getSettings",
+		                "UTF-8"));
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class);
+		        ClientResponse.class);
 		assertOk(response);
 	}
 
@@ -447,10 +447,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURLUnprot
-				+ "requestResource2/resource");
+		        + "requestResource2/resource");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, pt);
+		        ClientResponse.class, pt);
 		assertOk(response);
 
 		return response.getEntity(String.class);
@@ -460,10 +460,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURLUnprot
-				+ "requestResource/resource");
+		        + "requestResource/resource");
 
 		ClientResponse response = webResource.type("application/xml").get(
-				ClientResponse.class);
+		        ClientResponse.class);
 		assertOk(response);
 
 		return response.getEntity(String.class);
@@ -473,22 +473,22 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "presentationPolicyAlternatives/store/resource");
+		        + "presentationPolicyAlternatives/store/resource");
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, ppa);
+		        ClientResponse.class, ppa);
 		assertOk(response);
 	}
 
 	public void testStoreRedirectURI(String uri)
-			throws UnsupportedEncodingException {
+	        throws UnsupportedEncodingException {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "redirectURI/store/resource");
+		        + "redirectURI/store/resource");
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, uri);
+		        ClientResponse.class, uri);
 		assertOk(response);
 	}
 
@@ -496,10 +496,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURLUnprot
-				+ "verifyTokenAgainstPolicy");
+		        + "verifyTokenAgainstPolicy");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, ppapt);
+		        ClientResponse.class, ppapt);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -508,10 +508,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "createPresentationTokenUi");
+		        + "createPresentationTokenUi");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, pr);
+		        ClientResponse.class, pr);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -520,10 +520,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "createPresentationToken");
+		        + "createPresentationToken");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, ppa);
+		        ClientResponse.class, ppa);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -532,10 +532,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURLUnprot
-				+ "createPresentationPolicy");
+		        + "createPresentationPolicy");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, ppa);
+		        ClientResponse.class, ppa);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -544,10 +544,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "issuanceProtocolStep");
+		        + "issuanceProtocolStep");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, im);
+		        ClientResponse.class, im);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -556,10 +556,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURLUnprot
-				+ "issuanceProtocolStep");
+		        + "issuanceProtocolStep");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, im);
+		        ClientResponse.class, im);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -568,10 +568,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "issuanceProtocolStepUi");
+		        + "issuanceProtocolStepUi");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, uir);
+		        ClientResponse.class, uir);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -580,10 +580,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "issuanceProtocolStep");
+		        + "issuanceProtocolStep");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, im);
+		        ClientResponse.class, im);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -592,10 +592,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "extractIssuanceMessage");
+		        + "extractIssuanceMessage");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, imab);
+		        ClientResponse.class, imab);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -604,10 +604,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURLUnprot
-				+ "issuanceRequest");
+		        + "issuanceRequest");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, ir);
+		        ClientResponse.class, ir);
 		assertOk(response);
 		return response.getEntity(String.class);
 	}
@@ -616,10 +616,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "issuerParameters/store/" + issuanceURI);
+		        + "issuerParameters/store/" + issuanceURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, p);
+		        ClientResponse.class, p);
 		assertOk(response);
 	}
 
@@ -627,10 +627,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "issuerParameters/store/" + issuanceURI);
+		        + "issuerParameters/store/" + issuanceURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, p);
+		        ClientResponse.class, p);
 		assertOk(response);
 	}
 
@@ -638,10 +638,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "setupIssuerParameters/");
+		        + "setupIssuerParameters/");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, input);
+		        ClientResponse.class, input);
 		assertOk(response);
 
 		return response.getEntity(String.class);
@@ -651,10 +651,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "systemParameters/store");
+		        + "systemParameters/store");
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, sp);
+		        ClientResponse.class, sp);
 		assertOk(response);
 	}
 
@@ -662,10 +662,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "systemParameters/store");
+		        + "systemParameters/store");
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, sp);
+		        ClientResponse.class, sp);
 		assertOk(response);
 	}
 
@@ -673,10 +673,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(userServiceURL
-				+ "credentialSpecification/store/" + credSpecURI);
+		        + "credentialSpecification/store/" + credSpecURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, credSpec);
+		        ClientResponse.class, credSpec);
 		assertOk(response);
 	}
 
@@ -684,10 +684,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "credentialSpecification/store/" + credSpecURI);
+		        + "credentialSpecification/store/" + credSpecURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, credSpec);
+		        ClientResponse.class, credSpec);
 		assertOk(response);
 	}
 
@@ -699,7 +699,7 @@ public class TestFlow extends JerseyTest {
 		WebResource webResource = client.resource(issuanceServiceURL + uri);
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class);
+		        ClientResponse.class);
 		assertOk(response);
 
 		return response.getEntity(String.class);
@@ -709,7 +709,7 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "issuancePolicy/get/" + credSpecURI);
+		        + "issuancePolicy/get/" + credSpecURI);
 
 		ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -722,10 +722,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "issuancePolicy/store/" + credSpecURI);
+		        + "issuancePolicy/store/" + credSpecURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, ip);
+		        ClientResponse.class, ip);
 		assertOk(response);
 	}
 
@@ -733,7 +733,7 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "queryRule/get/" + credSpecURI);
+		        + "queryRule/get/" + credSpecURI);
 
 		ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -746,10 +746,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "queryRule/store/" + credSpecURI);
+		        + "queryRule/store/" + credSpecURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, queryRule);
+		        ClientResponse.class, queryRule);
 		assertOk(response);
 	}
 
@@ -757,7 +757,7 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "credentialSpecification/get/" + credSpecURI);
+		        + "credentialSpecification/get/" + credSpecURI);
 
 		ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -770,10 +770,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "credentialSpecification/store/" + credSpecURI);
+		        + "credentialSpecification/store/" + credSpecURI);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, credSpec);
+		        ClientResponse.class, credSpec);
 		assertOk(response);
 	}
 
@@ -781,10 +781,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURLUnprot
-				+ "testAuthentication");
+		        + "testAuthentication");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, authRequest);
+		        ClientResponse.class, authRequest);
 
 		assertOk(response);
 
@@ -795,10 +795,10 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "credentialSpecification/generate");
+		        + "credentialSpecification/generate");
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, attributeInfoCollection);
+		        ClientResponse.class, attributeInfoCollection);
 
 		assertOk(response);
 
@@ -809,7 +809,7 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(issuanceServiceURL
-				+ "attributeInfoCollection/" + credSpecName);
+		        + "attributeInfoCollection/" + credSpecName);
 
 		ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -832,7 +832,7 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client
-				.resource(issuanceServiceURL + "status");
+		        .resource(issuanceServiceURL + "status");
 
 		ClientResponse response = webResource.get(ClientResponse.class);
 
@@ -843,7 +843,7 @@ public class TestFlow extends JerseyTest {
 		Client client = getClient();
 
 		WebResource webResource = client.resource(verificationServiceURL
-				+ "status");
+		        + "status");
 
 		ClientResponse response = webResource.get(ClientResponse.class);
 

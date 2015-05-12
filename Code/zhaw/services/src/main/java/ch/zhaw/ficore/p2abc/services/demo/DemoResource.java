@@ -30,7 +30,7 @@ public class DemoResource {
 	@GET()
 	@Path("/page/")
 	public Response resource(@QueryParam("accesstoken") String accessToken)
-			throws Exception {
+	        throws Exception {
 		try {
 
 			return Response.ok(resource()).build();
@@ -49,11 +49,11 @@ public class DemoResource {
 	public String resource() {
 		Html html = new Html();
 		Head head = new Head().appendChild(new Title().appendChild(new Text(
-				"Demo-Resource")));
+		        "Demo-Resource")));
 		html.appendChild(head);
 		head.appendChild(new Link()
-				.setHref(request.getContextPath() + "/css/style.css")
-				.setRel("stylesheet").setType("text/css"));
+		        .setHref(request.getContextPath() + "/css/style.css")
+		        .setRel("stylesheet").setType("text/css"));
 
 		Div mainDiv = new Div().setCSSClass("mainDiv");
 		mainDiv.appendChild(new H2().appendChild(new Text("Demo-Resource")));
@@ -64,7 +64,7 @@ public class DemoResource {
 
 		P p = new P().setCSSClass("success");
 		p.appendChild(new Text(
-				"Welcome! You have been granted access to this resource. "));
+		        "Welcome! You have been granted access to this resource. "));
 		mainDiv.appendChild(p);
 
 		return html.write();
@@ -73,11 +73,11 @@ public class DemoResource {
 	public String error() {
 		Html html = new Html();
 		Head head = new Head().appendChild(new Title().appendChild(new Text(
-				"Demo-Resource")));
+		        "Demo-Resource")));
 		html.appendChild(head);
 		head.appendChild(new Link()
-				.setHref(request.getContextPath() + "/css/style.css")
-				.setRel("stylesheet").setType("text/css"));
+		        .setHref(request.getContextPath() + "/css/style.css")
+		        .setRel("stylesheet").setType("text/css"));
 
 		Div mainDiv = new Div().setCSSClass("mainDiv");
 		mainDiv.appendChild(new H2().appendChild(new Text("Demo-Resource")));
@@ -88,7 +88,7 @@ public class DemoResource {
 
 		P p = new P().setCSSClass("error");
 		p.appendChild(new Text(
-				"We are sorry but the access token you provided was invalid and we therefore can not grant you access to this resource!"));
+		        "We are sorry but the access token you provided was invalid and we therefore can not grant you access to this resource!"));
 		mainDiv.appendChild(p);
 
 		return html.write();

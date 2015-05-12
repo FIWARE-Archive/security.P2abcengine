@@ -16,7 +16,7 @@ import com.google.inject.Module;
 public class StorageModuleFactory {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(StorageModuleFactory.class.getName()));
+	        LoggerFactory.getLogger(StorageModuleFactory.class.getName()));
 
 	/**
 	 * Factory method. Returns an array of Modules.
@@ -27,7 +27,7 @@ public class StorageModuleFactory {
 	 *         bindings.
 	 */
 	public static synchronized Module[] getModulesForServiceConfiguration(
-			ServiceType type) {
+	        ServiceType type) {
 		logger.entry();
 
 		return logger.exit(new Module[] { new SqliteStorageModule(type) });

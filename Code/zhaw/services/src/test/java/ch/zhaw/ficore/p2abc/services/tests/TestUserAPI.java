@@ -53,7 +53,7 @@ public class TestUserAPI extends JerseyTest {
 		System.out.println("init [TestVerificationAPI]");
 		// Create initial context
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				"org.apache.naming.java.javaURLContextFactory");
+		        "org.apache.naming.java.javaURLContextFactory");
 		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
 		InitialContext ic = new InitialContext();
 
@@ -99,9 +99,9 @@ public class TestUserAPI extends JerseyTest {
 	@Before
 	public void doReset() throws Exception {
 		RESTHelper.postRequest(userServiceURL + "reset"); // make sure the
-															// service is
-															// *clean* before
-															// each test.
+		                                                  // service is
+		                                                  // *clean* before
+		                                                  // each test.
 	}
 
 	@AfterClass
@@ -154,7 +154,7 @@ public class TestUserAPI extends JerseyTest {
 		orig.setSpecificationUID(new URI("urn:fiware:cred"));
 		AttributeDescriptions attrDescs = new AttributeDescriptions();
 		List<AttributeDescription> lsAttrDesc = attrDescs
-				.getAttributeDescription();
+		        .getAttributeDescription();
 
 		AttributeDescription ad = new AttributeDescription();
 		ad.setDataType(new URI("xs:integer"));
@@ -172,13 +172,13 @@ public class TestUserAPI extends JerseyTest {
 		orig.setAttributeDescriptions(attrDescs);
 
 		RESTHelper.putRequest(
-				userServiceURL + "credentialSpecification/store/"
-						+ URLEncoder.encode("urn:fiware:cred", "UTF-8"),
-				RESTHelper.toXML(CredentialSpecification.class,
-						of.createCredentialSpecification(orig)));
+		        userServiceURL + "credentialSpecification/store/"
+		                + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
+		        RESTHelper.toXML(CredentialSpecification.class,
+		                of.createCredentialSpecification(orig)));
 
 		RESTHelper.getRequest(userServiceURL + "credentialSpecification/get/"
-				+ URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+		        + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
 	}
 
 	/**
@@ -200,8 +200,8 @@ public class TestUserAPI extends JerseyTest {
 		/* First we need to actually store one. So we call a test... */
 		testStoreGetCredSpec();
 		RESTHelper.deleteRequest(userServiceURL
-				+ "credentialSpecification/delete/"
-				+ URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+		        + "credentialSpecification/delete/"
+		        + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
 	}
 
 	/**
@@ -223,16 +223,16 @@ public class TestUserAPI extends JerseyTest {
 		ip.setCredentialSpecUID(new URI("urn:cs"));
 
 		RESTHelper.putRequest(
-				userServiceURL + "issuerParameters/store/"
-						+ URLEncoder.encode("urn:ip", "UTF-8"),
-				RESTHelper.toXML(IssuerParameters.class,
-						of.createIssuerParameters(ip)));
+		        userServiceURL + "issuerParameters/store/"
+		                + URLEncoder.encode("urn:ip", "UTF-8"),
+		        RESTHelper.toXML(IssuerParameters.class,
+		                of.createIssuerParameters(ip)));
 
 		Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
-				+ "getSettings", Settings.class);
+		        + "getSettings", Settings.class);
 		assertEquals(settings.issuerParametersList.size(), 1);
 		assertEquals(settings.issuerParametersList.get(0).getParametersUID()
-				.toString(), "urn:ip");
+		        .toString(), "urn:ip");
 	}
 
 	/**
@@ -250,10 +250,10 @@ public class TestUserAPI extends JerseyTest {
 	public void testDeleteIssuerParams() throws Exception {
 		testStoreIssuerParams();
 		RESTHelper.deleteRequest(userServiceURL + "issuerParameters/delete/"
-				+ URLEncoder.encode("urn:ip", "UTF-8"));
+		        + URLEncoder.encode("urn:ip", "UTF-8"));
 
 		Settings settings = (Settings) RESTHelper.getRequest(userServiceURL
-				+ "getSettings", Settings.class);
+		        + "getSettings", Settings.class);
 		assertEquals(settings.issuerParametersList.size(), 0);
 	}
 }

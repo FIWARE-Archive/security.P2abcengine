@@ -42,7 +42,7 @@ public class TestVerifierAPI extends JerseyTest {
 		super("ch.zhaw.ficore.p2abc.services");
 		verificationServiceURL = getBaseURI() + verificationServiceURL;
 		verificationServiceURLUnprot = getBaseURI()
-				+ verificationServiceURLUnprot;
+		        + verificationServiceURLUnprot;
 	}
 
 	private static String getBaseURI() {
@@ -58,7 +58,7 @@ public class TestVerifierAPI extends JerseyTest {
 		System.out.println("init [TestVerificationAPI]");
 		// Create initial context
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				"org.apache.naming.java.javaURLContextFactory");
+		        "org.apache.naming.java.javaURLContextFactory");
 		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
 		InitialContext ic = new InitialContext();
 
@@ -104,13 +104,13 @@ public class TestVerifierAPI extends JerseyTest {
 	@Before
 	public void doReset() throws Exception {
 		RESTHelper.postRequest(verificationServiceURL + "reset"); // make sure
-																	// the
-																	// service
-																	// is
-																	// *clean*
-																	// before
-																	// each
-																	// test.
+		                                                          // the
+		                                                          // service
+		                                                          // is
+		                                                          // *clean*
+		                                                          // before
+		                                                          // each
+		                                                          // test.
 	}
 
 	@AfterClass
@@ -164,12 +164,12 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("redirectURI", "http://localhost/foo");
 
 		RESTHelper.putRequest(verificationServiceURL + "resource/create/test",
-				params);
+		        params);
 
 		PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
-				.getRequest(verificationServiceURL
-						+ "presentationPolicyAlternatives/list",
-						PresentationPolicyAlternativesCollection.class);
+		        .getRequest(verificationServiceURL
+		                + "presentationPolicyAlternatives/list",
+		                PresentationPolicyAlternativesCollection.class);
 
 		assertEquals(ppac.uris.size(), 1);
 		assertEquals(ppac.uris.get(0), "test");
@@ -206,17 +206,17 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("puid", "urn:policy");
 
 		RESTHelper.postRequest(verificationServiceURL
-				+ "presentationPolicyAlternatives/addPolicyAlternative/test",
-				params);
+		        + "presentationPolicyAlternatives/addPolicyAlternative/test",
+		        params);
 
 		PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper
-				.getRequest(verificationServiceURL
-						+ "presentationPolicyAlternatives/get/test",
-						PresentationPolicyAlternatives.class);
+		        .getRequest(verificationServiceURL
+		                + "presentationPolicyAlternatives/get/test",
+		                PresentationPolicyAlternatives.class);
 
 		assertEquals(ppas.getPresentationPolicy().size(), 1);
 		assertEquals(ppas.getPresentationPolicy().get(0).getPolicyUID()
-				.toString(), "urn:policy");
+		        .toString(), "urn:policy");
 	}
 
 	/**
@@ -244,15 +244,15 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("puid", "urn:policy");
 
 		RESTHelper
-				.postRequest(
-						verificationServiceURL
-								+ "presentationPolicyAlternatives/deletePolicyAlternative/test",
-						params);
+		        .postRequest(
+		                verificationServiceURL
+		                        + "presentationPolicyAlternatives/deletePolicyAlternative/test",
+		                params);
 
 		PresentationPolicyAlternatives ppas = (PresentationPolicyAlternatives) RESTHelper
-				.getRequest(verificationServiceURL
-						+ "presentationPolicyAlternatives/get/test",
-						PresentationPolicyAlternatives.class);
+		        .getRequest(verificationServiceURL
+		                + "presentationPolicyAlternatives/get/test",
+		                PresentationPolicyAlternatives.class);
 
 		assertEquals(ppas.getPresentationPolicy().size(), 0);
 	}
@@ -277,12 +277,12 @@ public class TestVerifierAPI extends JerseyTest {
 		testCreateResource();
 
 		RESTHelper.deleteRequest(verificationServiceURL
-				+ "resource/delete/test");
+		        + "resource/delete/test");
 
 		PresentationPolicyAlternativesCollection ppac = (PresentationPolicyAlternativesCollection) RESTHelper
-				.getRequest(verificationServiceURL
-						+ "presentationPolicyAlternatives/list",
-						PresentationPolicyAlternativesCollection.class);
+		        .getRequest(verificationServiceURL
+		                + "presentationPolicyAlternatives/list",
+		                PresentationPolicyAlternativesCollection.class);
 
 		assertEquals(ppac.uris.size(), 0);
 	}
@@ -311,9 +311,9 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("al", "somealias");
 
 		RESTHelper.postRequest(
-				verificationServiceURL
-						+ "presentationPolicyAlternatives/addAlias/test/"
-						+ URLEncoder.encode("urn:policy", "UTF-8"), params);
+		        verificationServiceURL
+		                + "presentationPolicyAlternatives/addAlias/test/"
+		                + URLEncoder.encode("urn:policy", "UTF-8"), params);
 	}
 
 	/**
@@ -338,8 +338,8 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("al", "somealias");
 
 		RESTHelper.postRequest(verificationServiceURL
-				+ "presentationPolicyAlternatives/deleteAlias/test/"
-				+ URLEncoder.encode("urn:policy", "UTF-8"), params);
+		        + "presentationPolicyAlternatives/deleteAlias/test/"
+		        + URLEncoder.encode("urn:policy", "UTF-8"), params);
 	}
 
 	/**
@@ -366,8 +366,8 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("ip", "urn:issuer-alt");
 
 		RESTHelper.postRequest(verificationServiceURL
-				+ "presentationPolicyAlternatives/addIssuerAlternative/test/"
-				+ URLEncoder.encode("urn:policy", "UTF-8"), params);
+		        + "presentationPolicyAlternatives/addIssuerAlternative/test/"
+		        + URLEncoder.encode("urn:policy", "UTF-8"), params);
 	}
 
 	/**
@@ -395,11 +395,11 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("ip", "urn:issuer-alt");
 
 		RESTHelper
-				.postRequest(
-						verificationServiceURL
-								+ "presentationPolicyAlternatives/deleteIssuerAlternative/test/"
-								+ URLEncoder.encode("urn:policy", "UTF-8"),
-						params);
+		        .postRequest(
+		                verificationServiceURL
+		                        + "presentationPolicyAlternatives/deleteIssuerAlternative/test/"
+		                        + URLEncoder.encode("urn:policy", "UTF-8"),
+		                params);
 	}
 
 	/**
@@ -426,11 +426,11 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("cs", "urn:cred-alt");
 
 		RESTHelper
-				.postRequest(
-						verificationServiceURL
-								+ "presentationPolicyAlternatives/addCredentialSpecificationAlternative/test/"
-								+ URLEncoder.encode("urn:policy", "UTF-8"),
-						params);
+		        .postRequest(
+		                verificationServiceURL
+		                        + "presentationPolicyAlternatives/addCredentialSpecificationAlternative/test/"
+		                        + URLEncoder.encode("urn:policy", "UTF-8"),
+		                params);
 	}
 
 	/**
@@ -458,11 +458,11 @@ public class TestVerifierAPI extends JerseyTest {
 		params.add("cs", "urn:cred-alt");
 
 		RESTHelper
-				.postRequest(
-						verificationServiceURL
-								+ "presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/test/"
-								+ URLEncoder.encode("urn:policy", "UTF-8"),
-						params);
+		        .postRequest(
+		                verificationServiceURL
+		                        + "presentationPolicyAlternatives/deleteCredentialSpecificationAlternative/test/"
+		                        + URLEncoder.encode("urn:policy", "UTF-8"),
+		                params);
 	}
 
 	/**
@@ -495,7 +495,7 @@ public class TestVerifierAPI extends JerseyTest {
 		orig.setSpecificationUID(new URI("urn:fiware:cred"));
 		AttributeDescriptions attrDescs = new AttributeDescriptions();
 		List<AttributeDescription> lsAttrDesc = attrDescs
-				.getAttributeDescription();
+		        .getAttributeDescription();
 
 		AttributeDescription ad = new AttributeDescription();
 		ad.setDataType(new URI("xs:integer"));
@@ -513,14 +513,14 @@ public class TestVerifierAPI extends JerseyTest {
 		orig.setAttributeDescriptions(attrDescs);
 
 		RESTHelper.putRequest(
-				verificationServiceURL + "credentialSpecification/store/"
-						+ URLEncoder.encode("urn:fiware:cred", "UTF-8"),
-				RESTHelper.toXML(CredentialSpecification.class,
-						of.createCredentialSpecification(orig)));
+		        verificationServiceURL + "credentialSpecification/store/"
+		                + URLEncoder.encode("urn:fiware:cred", "UTF-8"),
+		        RESTHelper.toXML(CredentialSpecification.class,
+		                of.createCredentialSpecification(orig)));
 
 		RESTHelper.getRequest(verificationServiceURL
-				+ "credentialSpecification/get/"
-				+ URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+		        + "credentialSpecification/get/"
+		        + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
 	}
 
 	/**
@@ -543,8 +543,8 @@ public class TestVerifierAPI extends JerseyTest {
 		/* First we need to actually store one. So we call a test... */
 		testStoreGetCredSpec();
 		RESTHelper.deleteRequest(verificationServiceURL
-				+ "credentialSpecification/delete/"
-				+ URLEncoder.encode("urn:fiware:cred", "UTF-8"));
+		        + "credentialSpecification/delete/"
+		        + URLEncoder.encode("urn:fiware:cred", "UTF-8"));
 	}
 
 	/**
@@ -566,16 +566,16 @@ public class TestVerifierAPI extends JerseyTest {
 		ip.setCredentialSpecUID(new URI("urn:cs"));
 
 		RESTHelper.putRequest(
-				verificationServiceURL + "issuerParameters/store/"
-						+ URLEncoder.encode("urn:ip", "UTF-8"),
-				RESTHelper.toXML(IssuerParameters.class,
-						of.createIssuerParameters(ip)));
+		        verificationServiceURL + "issuerParameters/store/"
+		                + URLEncoder.encode("urn:ip", "UTF-8"),
+		        RESTHelper.toXML(IssuerParameters.class,
+		                of.createIssuerParameters(ip)));
 
 		Settings settings = (Settings) RESTHelper.getRequest(
-				verificationServiceURLUnprot + "getSettings", Settings.class);
+		        verificationServiceURLUnprot + "getSettings", Settings.class);
 		assertEquals(settings.issuerParametersList.size(), 1);
 		assertEquals(settings.issuerParametersList.get(0).getParametersUID()
-				.toString(), "urn:ip");
+		        .toString(), "urn:ip");
 	}
 
 	/**
@@ -593,11 +593,11 @@ public class TestVerifierAPI extends JerseyTest {
 	public void testDeleteIssuerParams() throws Exception {
 		testStoreIssuerParams();
 		RESTHelper.deleteRequest(verificationServiceURL
-				+ "issuerParameters/delete/"
-				+ URLEncoder.encode("urn:ip", "UTF-8"));
+		        + "issuerParameters/delete/"
+		        + URLEncoder.encode("urn:ip", "UTF-8"));
 
 		Settings settings = (Settings) RESTHelper.getRequest(
-				verificationServiceURLUnprot + "getSettings", Settings.class);
+		        verificationServiceURLUnprot + "getSettings", Settings.class);
 		assertEquals(settings.issuerParametersList.size(), 0);
 	}
 

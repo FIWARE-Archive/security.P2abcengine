@@ -17,7 +17,7 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
  */
 public abstract class AttributeInfoProvider {
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(AttributeInfoProvider.class));
+	        LoggerFactory.getLogger(AttributeInfoProvider.class));
 
 	protected IssuanceConfiguration configuration;
 
@@ -35,7 +35,7 @@ public abstract class AttributeInfoProvider {
 	 * @return an implementation of an AttributeInfoProvider
 	 */
 	public static AttributeInfoProvider getAttributeInfoProvider(
-			IssuanceConfiguration configuration) {
+	        IssuanceConfiguration configuration) {
 		logger.entry();
 
 		switch (configuration.getAttributeSource()) {
@@ -47,7 +47,7 @@ public abstract class AttributeInfoProvider {
 			return logger.exit(new JdbcAttributeInfoProvider(configuration));
 		default:
 			logger.error("Identity source "
-					+ configuration.getAttributeSource() + " not supported");
+			        + configuration.getAttributeSource() + " not supported");
 			return logger.exit(null);
 		}
 	}

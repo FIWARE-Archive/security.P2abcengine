@@ -30,60 +30,60 @@ public class LdapAttributeValueProvider extends AttributeValueProvider {
 	}
 
 	public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
-			String uid, CredentialSpecification credSpec) throws Exception {
+	        String uid, CredentialSpecification credSpec) throws Exception {
 
 		LdapConnection connection = null;
 
 		try {
 			query = QueryHelper
-					.buildQuery(query, QueryHelper.ldapSanitize(uid));
+			        .buildQuery(query, QueryHelper.ldapSanitize(uid));
 			ConnectionParameters cfg = configuration
-					.getAttributeConnectionParameters();
+			        .getAttributeConnectionParameters();
 			connection = new LdapConnection(cfg);
 
 			LdapSearch srch = connection.newSearch();
 			// srch.setName("dc=example, dc=com");
 
 			AttributeDescriptions attrDescs = credSpec
-					.getAttributeDescriptions();
+			        .getAttributeDescriptions();
 			List<AttributeDescription> descriptions = attrDescs
-					.getAttributeDescription();
+			        .getAttributeDescription();
 			IssuancePolicyAndAttributes ipa = of
-					.createIssuancePolicyAndAttributes();
+			        .createIssuancePolicyAndAttributes();
 			List<eu.abc4trust.xml.Attribute> attributes = ipa.getAttribute();
 			for (AttributeDescription attrDesc : descriptions) {
 
 				Object value = srch.getAttribute("", query, attrDesc.getType()
-						.toString());
+				        .toString());
 
 				/*
 				 * TODO: We can't support arbitrary types here (yet). Currently
 				 * only integer/string are supported
 				 */
 				if (attrDesc.getDataType().toString().equals("xs:integer")
-						&& attrDesc
-								.getEncoding()
-								.toString()
-								.equals("urn:abc4trust:1.0:encoding:integer:signed")) {
+				        && attrDesc
+				                .getEncoding()
+				                .toString()
+				                .equals("urn:abc4trust:1.0:encoding:integer:signed")) {
 					value = BigInteger.valueOf((Integer
-							.parseInt(((String) value))));
+					        .parseInt(((String) value))));
 				} else if (attrDesc.getDataType().toString()
-						.equals("xs:string")
-						&& attrDesc
-								.getEncoding()
-								.toString()
-								.equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
+				        .equals("xs:string")
+				        && attrDesc
+				                .getEncoding()
+				                .toString()
+				                .equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
 					value = (String) value.toString();
 				} else {
 					throw new RuntimeException(
-							"Unsupported combination of encoding and dataType!");
+					        "Unsupported combination of encoding and dataType!");
 				}
 
 				eu.abc4trust.xml.Attribute attrib = of.createAttribute();
 				attrib.setAttributeDescription(attrDesc);
 				attrib.setAttributeValue(value);
 				attrib.setAttributeUID(new URI(ServicesConfiguration
-						.getURIBase() + "ldap:" + attrDesc.getType().toString()));
+				        .getURIBase() + "ldap:" + attrDesc.getType().toString()));
 				attributes.add(attrib);
 			}
 			return attributes;

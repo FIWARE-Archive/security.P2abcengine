@@ -22,7 +22,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 public class LdapAuthenticationProvider extends AuthenticationProvider {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(LdapAuthenticationProvider.class));
+	        LoggerFactory.getLogger(LdapAuthenticationProvider.class));
 	private boolean authenticated = false;
 	private String uid;
 
@@ -50,7 +50,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	 * @throws NamingException
 	 */
 	public boolean authenticate(AuthenticationInformation authInfo)
-			throws NamingException {
+	        throws NamingException {
 		boolean isGood = true;
 
 		logger.entry();
@@ -63,22 +63,22 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 		if (isGood) {
 			AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 			IssuanceConfiguration configuration = ServicesConfiguration
-					.getIssuanceConfiguration();
+			        .getIssuanceConfiguration();
 
 			LdapConnection adminConnection = null;
 			LdapConnection userConnection = null;
 
 			try {
 				String bindQuery = QueryHelper.buildQuery(
-						configuration.getBindQuery(),
-						QueryHelper.ldapSanitize(simpleAuth.username));
+				        configuration.getBindQuery(),
+				        QueryHelper.ldapSanitize(simpleAuth.username));
 
 				ConnectionParameters adminCfg = configuration
-						.getAuthenticationConnectionParameters();
+				        .getAuthenticationConnectionParameters();
 				adminConnection = new LdapConnection(adminCfg);
 
 				NamingEnumeration<SearchResult> results = adminConnection
-						.newSearch().search("", bindQuery);
+				        .newSearch().search("", bindQuery);
 				String binddn = null;
 				if (results.hasMore()) {
 					SearchResult sr = (SearchResult) results.next();
@@ -87,15 +87,15 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 
 				if (binddn == null) {
 					logger.warn("Couldn't find DN for user "
-							+ simpleAuth.username);
+					        + simpleAuth.username);
 					isGood = false;
 				}
 
 				if (isGood) {
 					ConnectionParameters userCfg = new ConnectionParameters(
-							adminCfg.getServerName(), adminCfg.getServerPort(),
-							adminCfg.getServerPort(), adminCfg.getServerPort(),
-							binddn, simpleAuth.password, adminCfg.usesTls());
+					        adminCfg.getServerName(), adminCfg.getServerPort(),
+					        adminCfg.getServerPort(), adminCfg.getServerPort(),
+					        binddn, simpleAuth.password, adminCfg.usesTls());
 					// Implicit authentication
 					userConnection = new LdapConnection(userCfg);
 
@@ -137,7 +137,7 @@ public class LdapAuthenticationProvider extends AuthenticationProvider {
 	public String getUserID() {
 		if (!authenticated)
 			throw new IllegalStateException(
-					"Must successfully authenticate prior to calling this method!");
+			        "Must successfully authenticate prior to calling this method!");
 
 		return uid;
 	}

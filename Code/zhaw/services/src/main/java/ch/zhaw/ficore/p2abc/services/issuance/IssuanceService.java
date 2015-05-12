@@ -70,7 +70,7 @@ public class IssuanceService {
 	HttpServletRequest request;
 
 	private static final URI CRYPTOMECHANISM_URI_IDEMIX = URI
-			.create("urn:abc4trust:1.0:algorithm:idemix");
+	        .create("urn:abc4trust:1.0:algorithm:idemix");
 
 	private static final String errNoCredSpec = "CredentialSpecification is missing!";
 	private static final String errNoIssuancePolicy = "IssuancePolicy is missing!";
@@ -84,10 +84,10 @@ public class IssuanceService {
 	private ObjectFactory of = new ObjectFactory();
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(IssuanceService.class));
+	        LoggerFactory.getLogger(IssuanceService.class));
 
 	public IssuanceService() throws ClassNotFoundException, SQLException,
-			UnsafeTableNameException {
+	        UnsafeTableNameException {
 		setup();
 	}
 
@@ -101,16 +101,16 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			String ipDefault = IssuanceHelper
-					.readTextFile("defaultIssuancePolicy.xml");
+			        .readTextFile("defaultIssuancePolicy.xml");
 			IssuancePolicy ip = (IssuancePolicy) RESTHelper.fromXML(
-					IssuancePolicy.class, ipDefault);
+			        IssuancePolicy.class, ipDefault);
 
 			instance.issuanceStorage.addIssuancePolicy(new URI(defaultIPUid),
-					ip);
+			        ip);
 
 			if (!instance.keyManager.hasSystemParameters())
 				this.setupSystemParameters(sysParamsSecurityLevel, new URI(
-						sysParamsCryptoMechanism));
+				        sysParamsCryptoMechanism));
 		} catch (Exception e) {
 			ExceptionDumper.dumpExceptionStr(e, logger);
 		}
@@ -195,16 +195,16 @@ public class IssuanceService {
 
 		try {
 			IssuanceConfiguration configuration = ServicesConfiguration
-					.getIssuanceConfiguration();
+			        .getIssuanceConfiguration();
 			authProvider = AuthenticationProvider
-					.getAuthenticationProvider(configuration);
+			        .getAuthenticationProvider(configuration);
 
 			if (authProvider.authenticate(authReq.authInfo)) {
 				authProvider.shutdown();
 				return Response.ok("OK").build();
 			} else {
 				return Response.status(Response.Status.FORBIDDEN).entity("ERR")
-						.build();
+				        .build();
 			}
 		} catch (Exception e) {
 			logger.catching(e);
@@ -245,12 +245,12 @@ public class IssuanceService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof IssuerParameters) {
 					IssuerParameters ip = (IssuerParameters) obj;
 
 					SystemParameters serializeSp = SystemParametersUtil
-							.serialize(ip.getSystemParameters());
+					        .serialize(ip.getSystemParameters());
 
 					ip.setSystemParameters(serializeSp);
 
@@ -262,7 +262,7 @@ public class IssuanceService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof CredentialSpecification) {
 					credSpecs.add((CredentialSpecification) obj);
 				}
@@ -271,17 +271,17 @@ public class IssuanceService {
 			settings.credentialSpecifications = credSpecs;
 			settings.issuerParametersList = issuerParams;
 			settings.systemParameters = SystemParametersUtil
-					.serialize(instance.keyManager.getSystemParameters());
+			        .serialize(instance.keyManager.getSystemParameters());
 
 			return logger.exit(Response.ok(settings, MediaType.APPLICATION_XML)
-					.build());
+			        .build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger
-					.exit(Response
-							.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, logger)))
-					.build();
+			        .exit(Response
+			                .status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+			        .build();
 		}
 	}
 
@@ -338,11 +338,11 @@ public class IssuanceService {
 
 		try {
 			IssuanceConfiguration configuration = ServicesConfiguration
-					.getIssuanceConfiguration();
+			        .getIssuanceConfiguration();
 			attrValProvider = AttributeValueProvider
-					.getAttributeValueProvider(configuration);
+			        .getAttributeValueProvider(configuration);
 			authProvider = AuthenticationProvider
-					.getAuthenticationProvider(configuration);
+			        .getAuthenticationProvider(configuration);
 
 			if (!authProvider.authenticate(request.authRequest.authInfo))
 				return Response.status(Response.Status.FORBIDDEN).build();
@@ -351,47 +351,47 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			CredentialSpecification credSpec = instance.keyManager
-					.getCredentialSpecification(new URI(
-							request.credentialSpecificationUid));
+			        .getCredentialSpecification(new URI(
+			                request.credentialSpecificationUid));
 			IssuancePolicy ip = instance.issuanceStorage
-					.getIssuancePolicy(new URI(
-							request.credentialSpecificationUid));
+			        .getIssuancePolicy(new URI(
+			                request.credentialSpecificationUid));
 			QueryRule qr = instance.issuanceStorage.getQueryRule(new URI(
-					request.credentialSpecificationUid));
+			        request.credentialSpecificationUid));
 
 			if (ip == null) {
 				// No specific issuance policy was registered so we'll use a
 				// default one.
 				ip = instance.issuanceStorage.getIssuancePolicy(new URI(
-						defaultIPUid));
+				        defaultIPUid));
 				if (ip != null) {
 					ip.getCredentialTemplate().setCredentialSpecUID(
-							new URI(request.credentialSpecificationUid));
+					        new URI(request.credentialSpecificationUid));
 					ip.getCredentialTemplate().setIssuerParametersUID(
-							new URI(request.credentialSpecificationUid
-									+ ":issuer-params"));
+					        new URI(request.credentialSpecificationUid
+					                + ":issuer-params"));
 				}
 			}
 
 			if (credSpec == null)
 				return Response
-						.status(Response.Status.NOT_FOUND)
-						.entity(errNoCredSpec + ": "
-								+ request.credentialSpecificationUid).build();
+				        .status(Response.Status.NOT_FOUND)
+				        .entity(errNoCredSpec + ": "
+				                + request.credentialSpecificationUid).build();
 			if (ip == null)
 				return Response.status(Response.Status.NOT_FOUND)
-						.entity(errNoIssuancePolicy).build();
+				        .entity(errNoIssuancePolicy).build();
 			if (qr == null)
 				return Response.status(Response.Status.NOT_FOUND)
-						.entity(errNoQueryRule).build();
+				        .entity(errNoQueryRule).build();
 
 			IssuancePolicyAndAttributes ipa = of
-					.createIssuancePolicyAndAttributes();
+			        .createIssuancePolicyAndAttributes();
 
 			ipa.setIssuancePolicy(ip);
 			ipa.getAttribute().addAll(
-					attrValProvider.getAttributes(qr.queryString,
-							authProvider.getUserID(), credSpec));
+			        attrValProvider.getAttributes(qr.queryString,
+			                authProvider.getUserID(), credSpec));
 
 			return logger.exit(initIssuanceProtocol(ipa));
 		} catch (Exception e) {
@@ -444,7 +444,7 @@ public class IssuanceService {
 		logger.entry();
 
 		logger.info("IssuanceService - step - context : "
-				+ issuanceMessage.getContext());
+		        + issuanceMessage.getContext());
 
 		try {
 			CryptoEngine engine = this.getCryptoEngine(issuanceMessage);
@@ -454,27 +454,27 @@ public class IssuanceService {
 			IssuanceMessageAndBoolean response;
 			try {
 				response = IssuanceHelper.getInstance().issueStep(engine,
-						issuanceMessage);
+				        issuanceMessage);
 			} catch (Exception e) {
 				logger.info("- got Exception from IssuaceHelper/ABCE Engine - processing IssuanceMessage from user");
 				e.printStackTrace();
 				throw new IllegalStateException(
-						"Failed to proces IssuanceMessage from user");
+				        "Failed to proces IssuanceMessage from user");
 			}
 
 			IssuanceMessage issuanceMessageFromResponce = response
-					.getIssuanceMessage();
+			        .getIssuanceMessage();
 			if (response.isLastMessage()) {
 				logger.info(" - last message for context : "
-						+ issuanceMessageFromResponce.getContext());
+				        + issuanceMessageFromResponce.getContext());
 			} else {
 				logger.info(" - more steps context : "
-						+ issuanceMessageFromResponce.getContext());
+				        + issuanceMessageFromResponce.getContext());
 			}
 
 			return logger.exit(Response.ok(
-					this.of.createIssuanceMessageAndBoolean(response),
-					MediaType.APPLICATION_XML).build());
+			        this.of.createIssuanceMessageAndBoolean(response),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -514,10 +514,10 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			if (instance.keyManager.getCredentialSpecification(new URI(
-					credSpecUid)) == null)
+			        credSpecUid)) == null)
 				return logger.exit(
-						Response.status(Response.Status.NOT_FOUND).entity(
-								errNoCredSpec)).build();
+				        Response.status(Response.Status.NOT_FOUND).entity(
+				                errNoCredSpec)).build();
 
 			// @#@#^%$ KeyStorage has no delete()
 			if (instance.keyStorage instanceof GenericKeyStorage) {
@@ -525,17 +525,17 @@ public class IssuanceService {
 				keyStorage.delete(new URI(credSpecUid));
 			} else {
 				return logger.exit(
-						Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-								.entity(errNotImplemented)).build();
+				        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				                .entity(errNotImplemented)).build();
 			}
 
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception e) {
 			return logger
-					.exit(Response
-							.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, logger)))
-					.build();
+			        .exit(Response
+			                .status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+			        .build();
 		}
 	}
 
@@ -563,7 +563,7 @@ public class IssuanceService {
 	@DELETE()
 	@Path("/protected/credentialSpecification/deleteAttribute/{credentialSpecificationUid}")
 	public Response deleteAttribute(@FormParam("i") int index, /* [TEST EXISTS] */
-			@PathParam("credentialSpecificationUid") String credSpecUid) {
+	        @PathParam("credentialSpecificationUid") String credSpecUid) {
 
 		logger.entry();
 
@@ -576,39 +576,39 @@ public class IssuanceService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof CredentialSpecification) {
 					if (((CredentialSpecification) obj).getSpecificationUID()
-							.toString().equals(credSpecUid)) {
+					        .toString().equals(credSpecUid)) {
 						credSpec = (CredentialSpecification) obj;
 					}
 				}
 			}
 
 			if (credSpec == null
-					|| index >= credSpec.getAttributeDescriptions()
-							.getAttributeDescription().size()) {
+			        || index >= credSpec.getAttributeDescriptions()
+			                .getAttributeDescription().size()) {
 				return logger
-						.exit(Response
-								.status(Response.Status.NOT_FOUND)
-								.entity("Credential specification or attribute description could not be found!"))
-						.build();
+				        .exit(Response
+				                .status(Response.Status.NOT_FOUND)
+				                .entity("Credential specification or attribute description could not be found!"))
+				        .build();
 			}
 
 			credSpec.getAttributeDescriptions().getAttributeDescription()
-					.remove(index);
+			        .remove(index);
 
 			instance.keyManager.storeCredentialSpecification(new URI(
-					credSpecUid), credSpec);
+			        credSpecUid), credSpec);
 
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger
-					.exit(Response
-							.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, logger)))
-					.build();
+			        .exit(Response
+			                .status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+			        .build();
 		}
 	}
 
@@ -646,8 +646,8 @@ public class IssuanceService {
 																		 * EXISTS
 																		 * ]
 																		 */
-			@PathParam("credentialSpecificationUid") String credSpecUid,
-			@FormParam("language") String language) {
+	        @PathParam("credentialSpecificationUid") String credSpecUid,
+	        @FormParam("language") String language) {
 
 		logger.entry();
 
@@ -660,27 +660,27 @@ public class IssuanceService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof CredentialSpecification) {
 					if (((CredentialSpecification) obj).getSpecificationUID()
-							.toString().equals(credSpecUid)) {
+					        .toString().equals(credSpecUid)) {
 						credSpec = (CredentialSpecification) obj;
 					}
 				}
 			}
 
 			if (credSpec == null
-					|| index >= credSpec.getAttributeDescriptions()
-							.getAttributeDescription().size()) {
+			        || index >= credSpec.getAttributeDescriptions()
+			                .getAttributeDescription().size()) {
 				return logger
-						.exit(Response
-								.status(Response.Status.NOT_FOUND)
-								.entity("Credential specification or attribute description could not be found!"))
-						.build();
+				        .exit(Response
+				                .status(Response.Status.NOT_FOUND)
+				                .entity("Credential specification or attribute description could not be found!"))
+				        .build();
 			}
 
 			AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
-					.getAttributeDescription().get(index);
+			        .getAttributeDescription().get(index);
 
 			FriendlyDescription fd = null;
 
@@ -694,21 +694,21 @@ public class IssuanceService {
 				attrDesc.getFriendlyAttributeName().remove(fd);
 			else
 				return logger.exit(
-						Response.status(Response.Status.NOT_FOUND).entity(
-								"Friendly description could not be found!"))
-						.build();
+				        Response.status(Response.Status.NOT_FOUND).entity(
+				                "Friendly description could not be found!"))
+				        .build();
 
 			instance.keyManager.storeCredentialSpecification(new URI(
-					credSpecUid), credSpec);
+			        credSpecUid), credSpec);
 
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger
-					.exit(Response
-							.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, logger)))
-					.build();
+			        .exit(Response
+			                .status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+			        .build();
 		}
 	}
 
@@ -748,9 +748,9 @@ public class IssuanceService {
 																				 * EXISTS
 																				 * ]
 																				 */
-			@PathParam("credentialSpecificationUid") String credSpecUid,
-			@FormParam("language") String language,
-			@FormParam("value") String value) {
+	        @PathParam("credentialSpecificationUid") String credSpecUid,
+	        @FormParam("language") String language,
+	        @FormParam("value") String value) {
 
 		logger.entry();
 
@@ -763,27 +763,27 @@ public class IssuanceService {
 
 			for (URI uri : instance.keyStorage.listUris()) {
 				Object obj = SerializationUtils.deserialize(instance.keyStorage
-						.getValue(uri));
+				        .getValue(uri));
 				if (obj instanceof CredentialSpecification) {
 					if (((CredentialSpecification) obj).getSpecificationUID()
-							.toString().equals(credSpecUid)) {
+					        .toString().equals(credSpecUid)) {
 						credSpec = (CredentialSpecification) obj;
 					}
 				}
 			}
 
 			if (credSpec == null
-					|| credSpec.getAttributeDescriptions()
-							.getAttributeDescription().size() <= index) {
+			        || credSpec.getAttributeDescriptions()
+			                .getAttributeDescription().size() <= index) {
 				return logger
-						.exit(Response
-								.status(Response.Status.NOT_FOUND)
-								.entity("Credential specification or attribute description could not be found!"))
-						.build();
+				        .exit(Response
+				                .status(Response.Status.NOT_FOUND)
+				                .entity("Credential specification or attribute description could not be found!"))
+				        .build();
 			}
 
 			AttributeDescription attrDesc = credSpec.getAttributeDescriptions()
-					.getAttributeDescription().get(index);
+			        .getAttributeDescription().get(index);
 
 			FriendlyDescription fd = new FriendlyDescription();
 			fd.setLang(language);
@@ -792,16 +792,16 @@ public class IssuanceService {
 			attrDesc.getFriendlyAttributeName().add(fd);
 
 			instance.keyManager.storeCredentialSpecification(new URI(
-					credSpecUid), credSpec);
+			        credSpecUid), credSpec);
 
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger
-					.exit(Response
-							.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, logger)))
-					.build();
+			        .exit(Response
+			                .status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+			        .build();
 		}
 	}
 
@@ -834,12 +834,12 @@ public class IssuanceService {
 	@Consumes({ MediaType.APPLICATION_XML })
 	public Response storeCredentialSpecification( /* [TEST EXISTS] */
 	@PathParam("credentialSpecifationUid") URI credentialSpecifationUid,
-			CredentialSpecification credSpec) {
+	        CredentialSpecification credSpec) {
 
 		logger.entry();
 
 		logger.info("IssuanceService - storeCredentialSpecification: \""
-				+ credentialSpecifationUid + "\"");
+		        + credentialSpecifationUid + "\"");
 
 		try {
 			this.initializeHelper(CryptoEngine.IDEMIX);
@@ -847,19 +847,19 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			if (!credSpec.getSpecificationUID().toString()
-					.equals(credentialSpecifationUid.toString())) {
+			        .equals(credentialSpecifationUid.toString())) {
 				return logger.exit(Response.status(Response.Status.CONFLICT)
-						.entity(errCredSpecUid).build());
+				        .entity(errCredSpecUid).build());
 			}
 
 			KeyManager keyManager = instance.keyManager;
 
 			boolean r1 = keyManager.storeCredentialSpecification(
-					credentialSpecifationUid, credSpec);
+			        credentialSpecifationUid, credSpec);
 
 			if (!r1)
 				throw new RuntimeException(
-						"Could not store the credential specification.");
+				        "Could not store the credential specification.");
 
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception ex) {
@@ -892,7 +892,7 @@ public class IssuanceService {
 		logger.entry();
 
 		logger.info("IssuanceService - getCredentialSpecification: "
-				+ credentialSpecificationUid);
+		        + credentialSpecificationUid);
 
 		try {
 			this.initializeHelper(CryptoEngine.IDEMIX);
@@ -900,16 +900,16 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			CredentialSpecification credSpec = instance.keyManager
-					.getCredentialSpecification(new URI(
-							credentialSpecificationUid));
+			        .getCredentialSpecification(new URI(
+			                credentialSpecificationUid));
 
 			if (credSpec == null) {
 				return logger.exit(Response.status(Response.Status.NOT_FOUND)
-						.entity(errNoCredSpec).build());
+				        .entity(errNoCredSpec).build());
 			} else
 				return logger.exit(Response.ok(
-						of.createCredentialSpecification(credSpec),
-						MediaType.APPLICATION_XML).build());
+				        of.createCredentialSpecification(credSpec),
+				        MediaType.APPLICATION_XML).build());
 		} catch (Exception ex) {
 			logger.catching(ex);
 			return logger.exit(ExceptionDumper.dumpException(ex, logger));
@@ -946,7 +946,7 @@ public class IssuanceService {
 		try {
 			URI algorithmID = new URI("urn:abc4trust:1.0:algorithm:idemix");
 			URI hashAlgorithm = new URI(
-					"urn:abc4trust:1.0:hashalgorithm:sha-256");
+			        "urn:abc4trust:1.0:hashalgorithm:sha-256");
 			IssuerParametersInput ip = new IssuerParametersInput();
 
 			ip.setAlgorithmID(algorithmID);
@@ -955,7 +955,7 @@ public class IssuanceService {
 			ip.setCredentialSpecUID(new URI(credSpecUid));
 			ip.setParametersUID(new URI(credSpecUid + ":issuer-params"));
 			ip.setRevocationParametersUID(new URI(credSpecUid
-					+ ":revocation-params"));
+			        + ":revocation-params"));
 
 			Response r = setupIssuerParameters(ip);
 
@@ -968,10 +968,10 @@ public class IssuanceService {
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger
-					.exit(Response
-							.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity(ExceptionDumper.dumpExceptionStr(e, logger)))
-					.build();
+			        .exit(Response
+			                .status(Response.Status.INTERNAL_SERVER_ERROR)
+			                .entity(ExceptionDumper.dumpExceptionStr(e, logger)))
+			        .build();
 		}
 	}
 
@@ -1008,8 +1008,8 @@ public class IssuanceService {
 				gkeyStorage.delete(new URI(issuerParametersUid));
 			} else {
 				return logger.exit(
-						Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-								.entity(errNotImplemented)).build();
+				        Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				                .entity(errNotImplemented)).build();
 			}
 
 			return logger.exit(Response.ok("OK").build());
@@ -1045,7 +1045,7 @@ public class IssuanceService {
 	@Consumes({ MediaType.APPLICATION_XML })
 	public Response storeQueryRule( /* [TEST EXISTS] */
 	@PathParam("credentialSpecificationUid") String credentialSpecificationUid,
-			QueryRule rule) {
+	        QueryRule rule) {
 
 		logger.entry();
 
@@ -1054,7 +1054,7 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			instance.issuanceStorage.addQueryRule(new URI(
-					credentialSpecificationUid), rule);
+			        credentialSpecificationUid), rule);
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception e) {
 			logger.catching(e);
@@ -1124,13 +1124,13 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			QueryRule rule = instance.issuanceStorage.getQueryRule(new URI(
-					credentialSpecificationUid));
+			        credentialSpecificationUid));
 			if (rule == null)
 				return logger.exit(Response.status(Response.Status.NOT_FOUND)
-						.build());
+				        .build());
 			else
 				return logger.exit(Response.ok(rule, MediaType.APPLICATION_XML)
-						.build());
+				        .build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1169,7 +1169,7 @@ public class IssuanceService {
 			qrc.queryRules = queryRules;
 			qrc.uris = uriStrings;
 			return logger.exit(Response.ok(qrc, MediaType.APPLICATION_XML)
-					.build());
+			        .build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1203,7 +1203,7 @@ public class IssuanceService {
 	@Consumes({ MediaType.APPLICATION_XML })
 	public Response storeIssuancePolicy( /* [TEST EXISTS] */
 	@PathParam("credentialSpecificationUid") String credentialSpecificationUid,
-			IssuancePolicy policy) {
+	        IssuancePolicy policy) {
 
 		logger.entry();
 
@@ -1212,7 +1212,7 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			instance.issuanceStorage.addIssuancePolicy(new URI(
-					credentialSpecificationUid), policy);
+			        credentialSpecificationUid), policy);
 			return logger.exit(Response.ok("OK").build());
 		} catch (Exception e) {
 			logger.catching(e);
@@ -1252,13 +1252,13 @@ public class IssuanceService {
 			IssuanceHelper instance = IssuanceHelper.getInstance();
 
 			IssuancePolicy policy = instance.issuanceStorage
-					.getIssuancePolicy(new URI(credentialSpecificationUid));
+			        .getIssuancePolicy(new URI(credentialSpecificationUid));
 			if (policy == null)
 				return logger.exit(Response.status(Response.Status.NOT_FOUND)
-						.build());
+				        .build());
 			else
 				return logger.exit(Response.ok(of.createIssuancePolicy(policy),
-						MediaType.APPLICATION_XML).build());
+				        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1304,12 +1304,12 @@ public class IssuanceService {
 
 		try {
 			IssuanceConfiguration configuration = ServicesConfiguration
-					.getIssuanceConfiguration();
+			        .getIssuanceConfiguration();
 			attribInfoProvider = AttributeInfoProvider
-					.getAttributeInfoProvider(configuration);
+			        .getAttributeInfoProvider(configuration);
 
 			return Response.ok(attribInfoProvider.getAttributes(name),
-					MediaType.APPLICATION_XML).build();
+			        MediaType.APPLICATION_XML).build();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1342,9 +1342,9 @@ public class IssuanceService {
 		try {
 
 			return Response
-					.ok(of.createCredentialSpecification(new CredentialSpecGenerator()
-							.generateCredentialSpecification(attrInfoCol)),
-							MediaType.APPLICATION_XML).build();
+			        .ok(of.createCredentialSpecification(new CredentialSpecGenerator()
+			                .generateCredentialSpecification(attrInfoCol)),
+			                MediaType.APPLICATION_XML).build();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1393,17 +1393,17 @@ public class IssuanceService {
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
 	/* UNUSED */
 	public Response setupSystemParameters(
-			@QueryParam("securityLevel") int securityLevel,
-			@QueryParam("cryptoMechanism") URI cryptoMechanism) {
+	        @QueryParam("securityLevel") int securityLevel,
+	        @QueryParam("cryptoMechanism") URI cryptoMechanism) {
 
 		logger.entry();
 
 		try {
 			logger.info("IssuanceService - setupSystemParameters "
-					+ securityLevel + ", " + cryptoMechanism);
+			        + securityLevel + ", " + cryptoMechanism);
 
 			CryptoEngine cryptoEngine = this
-					.parseCryptoMechanism(cryptoMechanism);
+			        .parseCryptoMechanism(cryptoMechanism);
 
 			this.initializeHelper(cryptoEngine);
 
@@ -1414,15 +1414,15 @@ public class IssuanceService {
 			int uproveKeylength = this.parseUProveSecurityLevel(securityLevel);
 
 			SystemParameters systemParameters = issuanceHelper
-					.createNewSystemParametersWithIdemixSpecificKeylength(
-							idemixKeylength, uproveKeylength);
+			        .createNewSystemParametersWithIdemixSpecificKeylength(
+			                idemixKeylength, uproveKeylength);
 
 			SystemParameters serializeSp = SystemParametersUtil
-					.serialize(systemParameters);
+			        .serialize(systemParameters);
 
 			return logger.exit(Response.ok(
-					this.of.createSystemParameters(serializeSp),
-					MediaType.APPLICATION_XML).build());
+			        this.of.createSystemParameters(serializeSp),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1473,8 +1473,8 @@ public class IssuanceService {
 
 		try {
 			CryptoEngine cryptoEngine = this
-					.parseCryptoMechanism(issuerParametersInput
-							.getAlgorithmID());
+			        .parseCryptoMechanism(issuerParametersInput
+			                .getAlgorithmID());
 
 			this.initializeHelper(cryptoEngine);
 
@@ -1487,35 +1487,35 @@ public class IssuanceService {
 
 			KeyManager keyManager = instance.keyManager;
 			SystemParameters systemParameters = keyManager
-					.getSystemParameters();
+			        .getSystemParameters();
 
 			URI credentialSpecUid = issuerParametersInput
-					.getCredentialSpecUID();
+			        .getCredentialSpecUID();
 			logger.info("Retrieving credential specification "
-					+ credentialSpecUid.toString());
+			        + credentialSpecUid.toString());
 			CredentialSpecification credspec = keyManager
-					.getCredentialSpecification(credentialSpecUid);
+			        .getCredentialSpecification(credentialSpecUid);
 
 			logger.info("Got credential specification "
-					+ ((credspec == null) ? "(null)" : "non-null"));
+			        + ((credspec == null) ? "(null)" : "non-null"));
 
 			if (credspec == null) {
 				return logger.exit(Response
-						.status(Response.Status.NOT_FOUND)
-						.entity(errNoCredSpec + "("
-								+ credentialSpecUid.toString() + ")").build());
+				        .status(Response.Status.NOT_FOUND)
+				        .entity(errNoCredSpec + "("
+				                + credentialSpecUid.toString() + ")").build());
 			}
 
 			URI issuerParametersUid = issuerParametersInput.getParametersUID();
 			URI hash = hashAlgorithm;
 			URI revocationParametersUid = issuerParametersInput
-					.getRevocationParametersUID();
+			        .getRevocationParametersUID();
 			List<FriendlyDescription> friendlyDescriptions = issuerParametersInput
-					.getFriendlyIssuerDescription();
+			        .getFriendlyIssuerDescription();
 			IssuerParameters issuerParameters = instance.setupIssuerParameters(
-					cryptoEngine, credspec, systemParameters,
-					issuerParametersUid, hash, revocationParametersUid,
-					systemAndIssuerParamsPrefix, friendlyDescriptions);
+			        cryptoEngine, credspec, systemParameters,
+			        issuerParametersUid, hash, revocationParametersUid,
+			        systemAndIssuerParamsPrefix, friendlyDescriptions);
 
 			logger.info("IssuanceService - issuerParameters generated");
 
@@ -1524,12 +1524,12 @@ public class IssuanceService {
 				logger.info(obj + "-" + obj.getClass());
 
 			SystemParameters serializeSp = SystemParametersUtil
-					.serialize(systemParameters);
+			        .serialize(systemParameters);
 
 			issuerParameters.setSystemParameters(serializeSp);
 			return logger.exit(Response.ok(
-					this.of.createIssuerParameters(issuerParameters),
-					MediaType.APPLICATION_XML).build());
+			        this.of.createIssuerParameters(issuerParameters),
+			        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1549,12 +1549,12 @@ public class IssuanceService {
 				logger.info("Initializing IssuanceHelper");
 
 				IssuanceHelper
-						.initInstanceForService(
-								cryptoEngine,
-								"",
-								"",
-								StorageModuleFactory
-										.getModulesForServiceConfiguration(ServiceType.ISSUANCE));
+				        .initInstanceForService(
+				                cryptoEngine,
+				                "",
+				                "",
+				                StorageModuleFactory
+				                        .getModulesForServiceConfiguration(ServiceType.ISSUANCE));
 
 				logger.info("IssuanceHelper is initialized");
 			}
@@ -1569,7 +1569,7 @@ public class IssuanceService {
 			return 1024;
 		}
 		return com.ibm.zurich.idmx.utils.SystemParameters
-				.equivalentRsaLength(securityLevel);
+		        .equivalentRsaLength(securityLevel);
 	}
 
 	private int parseUProveSecurityLevel(int securityLevel) {
@@ -1580,7 +1580,7 @@ public class IssuanceService {
 			return 3072;
 		}
 		throw new RuntimeException("Unsupported securitylevel: \""
-				+ securityLevel + "\"");
+		        + securityLevel + "\"");
 	}
 
 	private CryptoEngine parseCryptoMechanism(URI cryptoMechanism) {
@@ -1591,28 +1591,28 @@ public class IssuanceService {
 			return CryptoEngine.IDEMIX;
 		}
 		throw new IllegalArgumentException("Unkown crypto mechanism: \""
-				+ cryptoMechanism + "\"");
+		        + cryptoMechanism + "\"");
 	}
 
 	private void validateInput(IssuerParametersInput issuerParametersTemplate) {
 		if (issuerParametersTemplate == null) {
 			throw new IllegalArgumentException(
-					"issuer paramters input is required");
+			        "issuer paramters input is required");
 		}
 
 		if (issuerParametersTemplate.getCredentialSpecUID() == null) {
 			throw new IllegalArgumentException(
-					"Credential specifation UID is required");
+			        "Credential specifation UID is required");
 		}
 
 		if (issuerParametersTemplate.getParametersUID() == null) {
 			throw new IllegalArgumentException(
-					"Issuer parameters UID is required");
+			        "Issuer parameters UID is required");
 		}
 
 		if (issuerParametersTemplate.getAlgorithmID() == null) {
 			throw new IllegalArgumentException(
-					"Crypto Algorithm ID is required");
+			        "Crypto Algorithm ID is required");
 		}
 
 		if (issuerParametersTemplate.getHashAlgorithm() == null) {
@@ -1620,7 +1620,7 @@ public class IssuanceService {
 		}
 
 		if (!issuerParametersTemplate.getHashAlgorithm().equals(
-				CryptoUriUtil.getHashSha256())) {
+		        CryptoUriUtil.getHashSha256())) {
 			throw new IllegalArgumentException("Unknown hashing algorithm");
 		}
 
@@ -1659,21 +1659,21 @@ public class IssuanceService {
 	// @Path("/protected/initIssuanceProtocol/")
 	// @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
 	private Response initIssuanceProtocol(
-			IssuancePolicyAndAttributes issuancePolicyAndAttributes)
-			throws Exception {
+	        IssuancePolicyAndAttributes issuancePolicyAndAttributes)
+	        throws Exception {
 
 		logger.entry();
 
 		try {
 			IssuancePolicy ip = issuancePolicyAndAttributes.getIssuancePolicy();
 			List<Attribute> attributes = issuancePolicyAndAttributes
-					.getAttribute();
+			        .getAttribute();
 
 			URI issuerParametersUid = ip.getCredentialTemplate()
-					.getIssuerParametersUID();
+			        .getIssuerParametersUID();
 
 			CryptoEngine cryptoEngine = this
-					.getCryptoEngine(issuerParametersUid);
+			        .getCryptoEngine(issuerParametersUid);
 
 			this.initializeHelper(cryptoEngine);
 
@@ -1682,13 +1682,13 @@ public class IssuanceService {
 			IssuanceHelper issuanceHelper = IssuanceHelper.getInstance();
 
 			IssuanceMessageAndBoolean issuanceMessageAndBoolean = issuanceHelper
-					.initIssuanceProtocol(ip, attributes);
+			        .initIssuanceProtocol(ip, attributes);
 
 			return logger
-					.exit(Response
-							.ok(this.of
-									.createIssuanceMessageAndBoolean(issuanceMessageAndBoolean),
-									MediaType.APPLICATION_XML).build());
+			        .exit(Response
+			                .ok(this.of
+			                        .createIssuanceMessageAndBoolean(issuanceMessageAndBoolean),
+			                        MediaType.APPLICATION_XML).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(ExceptionDumper.dumpException(e, logger));
@@ -1705,15 +1705,15 @@ public class IssuanceService {
 	}
 
 	private void initIssuanceProtocolValidateInput(
-			IssuancePolicyAndAttributes issuancePolicyAndAttributes) {
+	        IssuancePolicyAndAttributes issuancePolicyAndAttributes) {
 		if (issuancePolicyAndAttributes == null) {
 			throw new IllegalArgumentException(
-					"\"issuancePolicyAndAttributes\" is required.");
+			        "\"issuancePolicyAndAttributes\" is required.");
 		}
 
 		if (issuancePolicyAndAttributes.getIssuancePolicy() == null) {
 			throw new IllegalArgumentException(
-					"\"Issuance policy\" is required.");
+			        "\"Issuance policy\" is required.");
 		}
 
 		if (issuancePolicyAndAttributes.getAttribute() == null) {

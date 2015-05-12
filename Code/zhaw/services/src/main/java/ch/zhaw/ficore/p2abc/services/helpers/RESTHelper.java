@@ -42,7 +42,7 @@ public class RESTHelper {
 		JAXBContext context = JAXBContext.newInstance(clazz);
 		javax.xml.bind.Marshaller m = context.createMarshaller();
 		m.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT,
-				Boolean.FALSE);
+		        Boolean.FALSE);
 		StringWriter w = new StringWriter();
 		m.marshal(obj, w);
 		return w.toString();
@@ -87,198 +87,198 @@ public class RESTHelper {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static Object postRequest(String url, String xml, Class clazz)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, xml);
+		        ClientResponse.class, xml);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("postRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return fromXML(clazz, response.getEntity(String.class));
 	}
 
 	public static Object postRequest(String url, String xml)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class, xml);
+		        ClientResponse.class, xml);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("postRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static Object postRequest(String url, Class clazz)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class);
+		        ClientResponse.class);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("postRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return fromXML(clazz, response.getEntity(String.class));
 	}
 
 	public static Object postRequest(String url) throws ClientHandlerException,
-			UniformInterfaceException, JAXBException, NamingException {
+	        UniformInterfaceException, JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").post(
-				ClientResponse.class);
+		        ClientResponse.class);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("postRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	public static Object postRequest(String url,
-			MultivaluedMap<String, String> params)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        MultivaluedMap<String, String> params)
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type(
-				MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(
-				ClientResponse.class, params);
+		        MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(
+		        ClientResponse.class, params);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("postRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	public static String postRequest(String url,
-			MultivaluedMap<String, String> params, String user, String password)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        MultivaluedMap<String, String> params, String user, String password)
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(user, password));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type(
-				MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(
-				ClientResponse.class, params);
+		        MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(
+		        ClientResponse.class, params);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("postRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static Object putRequest(String url, String xml, Class clazz)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, xml);
+		        ClientResponse.class, xml);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("putRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return fromXML(clazz, response.getEntity(String.class));
 	}
 
 	public static Object putRequest(String url, String xml)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").put(
-				ClientResponse.class, xml);
+		        ClientResponse.class, xml);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("putRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	public static Object putRequest(String url,
-			MultivaluedMap<String, String> params)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        MultivaluedMap<String, String> params)
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type(
-				MediaType.APPLICATION_FORM_URLENCODED_TYPE).put(
-				ClientResponse.class, params);
+		        MediaType.APPLICATION_FORM_URLENCODED_TYPE).put(
+		        ClientResponse.class, params);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("putRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static Object getRequest(String url, Class clazz)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
@@ -286,17 +286,17 @@ public class RESTHelper {
 
 		if (response.getStatus() != 200)
 			throw new RESTException("getRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return fromXML(clazz, response.getEntity(String.class));
 	}
 
 	public static Object getRequest(String url) throws ClientHandlerException,
-			UniformInterfaceException, JAXBException, NamingException {
+	        UniformInterfaceException, JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
@@ -304,8 +304,8 @@ public class RESTHelper {
 
 		if (response.getStatus() != 200)
 			throw new RESTException("getRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
@@ -322,8 +322,8 @@ public class RESTHelper {
 	 * @throws NamingException
 	 */
 	public static Object getRequestUnauth(String url)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 
 		WebResource webResource = client.resource(url);
@@ -332,50 +332,50 @@ public class RESTHelper {
 
 		if (response.getStatus() != 200)
 			throw new RESTException("getRequest failed for: " + url + " got "
-					+ response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	public static Object deleteRequest(String url)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type("application/xml").delete(
-				ClientResponse.class);
+		        ClientResponse.class);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("deleteRequest failed for: " + url
-					+ " got " + response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + " got " + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
 
 	public static Object deleteRequest(String url,
-			MultivaluedMap<String, String> params)
-			throws ClientHandlerException, UniformInterfaceException,
-			JAXBException, NamingException {
+	        MultivaluedMap<String, String> params)
+	        throws ClientHandlerException, UniformInterfaceException,
+	        JAXBException, NamingException {
 		Client client = getSSLClient();
 		client.addFilter(new HTTPBasicAuthFilter(ServicesConfiguration
-				.getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
+		        .getRestAuthUser(), ServicesConfiguration.getRestAuthPassword()));
 
 		WebResource webResource = client.resource(url);
 
 		ClientResponse response = webResource.type(
-				MediaType.APPLICATION_FORM_URLENCODED_TYPE).delete(
-				ClientResponse.class, params);
+		        MediaType.APPLICATION_FORM_URLENCODED_TYPE).delete(
+		        ClientResponse.class, params);
 
 		if (response.getStatus() != 200)
 			throw new RESTException("deleteRequest failed for: " + url
-					+ " got " + response.getStatus() + "|"
-					+ response.getEntity(String.class), response.getStatus());
+			        + " got " + response.getStatus() + "|"
+			        + response.getEntity(String.class), response.getStatus());
 
 		return response.getEntity(String.class);
 	}
@@ -384,7 +384,7 @@ public class RESTHelper {
 		ClientConfig config = new DefaultClientConfig();
 
 		config.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES,
-				new HTTPSProperties(getHostnameVerifier(), getSSLContext()));
+		        new HTTPSProperties(getHostnameVerifier(), getSSLContext()));
 
 		return Client.create(config);
 	}
@@ -393,7 +393,7 @@ public class RESTHelper {
 		return new HostnameVerifier() {
 
 			public boolean verify(String hostname,
-					javax.net.ssl.SSLSession sslSession) {
+			        javax.net.ssl.SSLSession sslSession) {
 				return true;
 			}
 		};
@@ -403,14 +403,14 @@ public class RESTHelper {
 		javax.net.ssl.TrustManager x509 = new javax.net.ssl.X509TrustManager() {
 
 			public void checkClientTrusted(
-					java.security.cert.X509Certificate[] arg0, String arg1)
-					throws java.security.cert.CertificateException {
+			        java.security.cert.X509Certificate[] arg0, String arg1)
+			        throws java.security.cert.CertificateException {
 				return;
 			}
 
 			public void checkServerTrusted(
-					java.security.cert.X509Certificate[] arg0, String arg1)
-					throws java.security.cert.CertificateException {
+			        java.security.cert.X509Certificate[] arg0, String arg1)
+			        throws java.security.cert.CertificateException {
 				return;
 			}
 

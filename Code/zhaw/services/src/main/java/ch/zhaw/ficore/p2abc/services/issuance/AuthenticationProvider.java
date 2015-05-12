@@ -29,7 +29,7 @@ public abstract class AuthenticationProvider {
 	 * @return an implementation of an AuthenticationProvider
 	 */
 	public static AuthenticationProvider getAuthenticationProvider(
-			IssuanceConfiguration configuration) {
+	        IssuanceConfiguration configuration) {
 		switch (configuration.getAuthenticationSource()) {
 		case FAKE:
 			return new FakeAuthenticationProvider(configuration);
@@ -41,7 +41,7 @@ public abstract class AuthenticationProvider {
 			return new KeyrockAuthenticationProvider(configuration);
 		default:
 			throw new RuntimeException(configuration.getAttributeSource()
-					+ " is not a supported AuthenticationProvider!");
+			        + " is not a supported AuthenticationProvider!");
 		}
 	}
 
@@ -56,7 +56,7 @@ public abstract class AuthenticationProvider {
 	 * @throws NamingException
 	 */
 	public abstract boolean authenticate(AuthenticationInformation authInfo)
-			throws NamingException;
+	        throws NamingException;
 
 	/**
 	 * Called when this AuthenticationProvider is no longer required. Providers

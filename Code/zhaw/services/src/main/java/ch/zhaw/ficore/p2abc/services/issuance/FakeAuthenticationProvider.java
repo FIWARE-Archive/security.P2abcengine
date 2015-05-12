@@ -40,7 +40,7 @@ public class FakeAuthenticationProvider extends AuthenticationProvider {
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 
 		if (simpleAuth.username.equals("CaroleKing")
-				&& simpleAuth.password.equals("Jazzman"))
+		        && simpleAuth.password.equals("Jazzman"))
 			return true;
 
 		return false;

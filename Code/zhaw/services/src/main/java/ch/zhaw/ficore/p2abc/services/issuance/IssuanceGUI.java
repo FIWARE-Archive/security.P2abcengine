@@ -68,7 +68,7 @@ public class IssuanceGUI {
 	private ObjectFactory of = new ObjectFactory();
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(IssuanceGUI.class));
+	        LoggerFactory.getLogger(IssuanceGUI.class));
 
 	public IssuanceGUI() {
 	}
@@ -76,7 +76,7 @@ public class IssuanceGUI {
 	@POST()
 	@Path("/protected/deleteAttribute")
 	public Response deleteAttribute(@FormParam("cs") String credSpecUid,
-			@FormParam("i") int index) {
+	        @FormParam("i") int index) {
 		logger.entry();
 
 		try {
@@ -84,52 +84,52 @@ public class IssuanceGUI {
 			params.add("i", Integer.toString(index));
 
 			RESTHelper
-					.deleteRequest(
-							ServicesConfiguration.getIssuanceServiceURL()
-									+ "protected/credentialSpecification/deleteAttribute/"
-									+ URLEncoder.encode(credSpecUid, "UTF-8"),
-							params);
+			        .deleteRequest(
+			                ServicesConfiguration.getIssuanceServiceURL()
+			                        + "protected/credentialSpecification/deleteAttribute/"
+			                        + URLEncoder.encode(credSpecUid, "UTF-8"),
+			                params);
 
 			return credentialSpecifications();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
 	@POST()
 	@Path("/protected/deleteCredentialSpecification/")
 	public Response deleteCredentialSpecification(
-			@FormParam("cs") String credSpecUid) {
+	        @FormParam("cs") String credSpecUid) {
 		logger.entry();
 
 		try {
 			RESTHelper.deleteRequest(ServicesConfiguration
-					.getIssuanceServiceURL()
-					+ "protected/credentialSpecification/delete/"
-					+ URLEncoder.encode(credSpecUid, "UTF-8"));
+			        .getIssuanceServiceURL()
+			        + "protected/credentialSpecification/delete/"
+			        + URLEncoder.encode(credSpecUid, "UTF-8"));
 
 			return credentialSpecifications();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
 	@POST()
 	@Path("/protected/addFriendlyDescription/")
 	public Response addFriendlyDescription(@FormParam("i") int index,
-			@FormParam("cs") String credSpecUid,
-			@FormParam("language") String language,
-			@FormParam("value") String value) {
+	        @FormParam("cs") String credSpecUid,
+	        @FormParam("language") String language,
+	        @FormParam("value") String value) {
 		logger.entry();
 
 		try {
@@ -139,28 +139,28 @@ public class IssuanceGUI {
 			params.add("value", value);
 
 			RESTHelper
-					.putRequest(
-							ServicesConfiguration.getIssuanceServiceURL()
-									+ "protected/credentialSpecification/addFriendlyDescriptionAttribute/"
-									+ URLEncoder.encode(credSpecUid, "UTF-8"),
-							params);
+			        .putRequest(
+			                ServicesConfiguration.getIssuanceServiceURL()
+			                        + "protected/credentialSpecification/addFriendlyDescriptionAttribute/"
+			                        + URLEncoder.encode(credSpecUid, "UTF-8"),
+			                params);
 
 			return credentialSpecifications();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
 	@POST()
 	@Path("/protected/deleteFriendlyDescription/")
 	public Response deleteFriendlyDescription(@FormParam("i") int index,
-			@FormParam("cs") String credSpecUid,
-			@FormParam("language") String language) {
+	        @FormParam("cs") String credSpecUid,
+	        @FormParam("language") String language) {
 		logger.entry();
 
 		try {
@@ -169,20 +169,20 @@ public class IssuanceGUI {
 			params.add("language", language);
 
 			RESTHelper
-					.deleteRequest(
-							ServicesConfiguration.getIssuanceServiceURL()
-									+ "protected/credentialSpecification/deleteFriendlyDescriptionAttribute/"
-									+ URLEncoder.encode(credSpecUid, "UTF-8"),
-							params);
+			        .deleteRequest(
+			                ServicesConfiguration.getIssuanceServiceURL()
+			                        + "protected/credentialSpecification/deleteFriendlyDescriptionAttribute/"
+			                        + URLEncoder.encode(credSpecUid, "UTF-8"),
+			                params);
 
 			return credentialSpecifications();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -193,25 +193,25 @@ public class IssuanceGUI {
 
 		try {
 			RESTHelper.postRequest(ServicesConfiguration
-					.getIssuanceServiceURL()
-					+ "protected/issuerParameters/generate/"
-					+ URLEncoder.encode(credSpecUid, "UTF-8"));
+			        .getIssuanceServiceURL()
+			        + "protected/issuerParameters/generate/"
+			        + URLEncoder.encode(credSpecUid, "UTF-8"));
 
 			return issuerParameters();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
 	@POST()
 	@Path("/protected/addQueryRule")
 	public Response addQueryRule(@FormParam("cs") String credSpecUid,
-			@FormParam("qr") String query) {
+	        @FormParam("qr") String query) {
 		logger.entry();
 
 		try {
@@ -219,19 +219,19 @@ public class IssuanceGUI {
 			qr.queryString = query;
 
 			RESTHelper.putRequest(
-					ServicesConfiguration.getIssuanceServiceURL()
-							+ "protected/queryRule/store/"
-							+ URLEncoder.encode(credSpecUid, "UTF-8"),
-					RESTHelper.toXML(QueryRule.class, qr));
+			        ServicesConfiguration.getIssuanceServiceURL()
+			                + "protected/queryRule/store/"
+			                + URLEncoder.encode(credSpecUid, "UTF-8"),
+			        RESTHelper.toXML(QueryRule.class, qr));
 
 			return queryRules();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -242,9 +242,9 @@ public class IssuanceGUI {
 
 		try {
 			QueryRuleCollection qrc = (QueryRuleCollection) RESTHelper
-					.getRequest(ServicesConfiguration.getIssuanceServiceURL()
-							+ "protected/queryRule/list",
-							QueryRuleCollection.class);
+			        .getRequest(ServicesConfiguration.getIssuanceServiceURL()
+			                + "protected/queryRule/list",
+			                QueryRuleCollection.class);
 
 			Html html = IssuerGUI.getHtmlPramble("Query Rules", request);
 			Div mainDiv = new Div().setCSSClass("mainDiv");
@@ -255,12 +255,12 @@ public class IssuanceGUI {
 			Tr tr = null;
 
 			tr = new Tr()
-					.appendChild(
-							new Td().appendChild(new Text(
-									"Credential specification")))
-					.appendChild(new Td().appendChild(new Text("Query string")))
-					.appendChild(new Td().appendChild(new Text("Action")))
-					.setCSSClass("heading");
+			        .appendChild(
+			                new Td().appendChild(new Text(
+			                        "Credential specification")))
+			        .appendChild(new Td().appendChild(new Text("Query string")))
+			        .appendChild(new Td().appendChild(new Text("Action")))
+			        .setCSSClass("heading");
 			tbl.appendChild(tr);
 
 			for (int i = 0; i < qrc.queryRules.size(); i++) {
@@ -268,25 +268,25 @@ public class IssuanceGUI {
 				QueryRule qr = qrc.queryRules.get(i);
 
 				String qs = (qr.queryString.length() > 0) ? qr.queryString
-						: "(empty)";
+				        : "(empty)";
 				String cs = uri.toString();
 
 				Form f = new Form("./deleteQueryRule").setMethod("post")
-						.setCSSClass("nopad");
+				        .setCSSClass("nopad");
 				f.appendChild(new Input().setType("hidden").setName("cs")
-						.setValue(cs));
+				        .setValue(cs));
 				f.appendChild(new Input().setType("submit").setValue("Delete"));
 
 				tr = new Tr().appendChild(new Td().appendChild(new Text(cs)))
-						.appendChild(new Td().appendChild(new Text(qs)))
-						.appendChild(new Td().appendChild(f));
+				        .appendChild(new Td().appendChild(new Text(qs)))
+				        .appendChild(new Td().appendChild(f));
 				tbl.appendChild(tr);
 			}
 			mainDiv.appendChild(tbl);
 
 			Settings settings = (Settings) RESTHelper.getRequest(
-					ServicesConfiguration.getIssuanceServiceURL()
-							+ "getSettings/", Settings.class);
+			        ServicesConfiguration.getIssuanceServiceURL()
+			                + "getSettings/", Settings.class);
 
 			List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
@@ -295,26 +295,26 @@ public class IssuanceGUI {
 				Option o = new Option();
 				o.setValue(credSpec.getSpecificationUID().toString());
 				o.appendChild(new Text(credSpec.getSpecificationUID()
-						.toString()));
+				        .toString()));
 				s.appendChild(o);
 			}
 
 			Form f = new Form("./addQueryRule").setMethod("post");
 			tbl = new Table();
 			tr = new Tr().appendChild(
-					new Td().appendChild(new Label().appendChild(new Text(
-							"Credential specification:")))).appendChild(
-					new Td().appendChild(s));
+			        new Td().appendChild(new Label().appendChild(new Text(
+			                "Credential specification:")))).appendChild(
+			        new Td().appendChild(s));
 			tbl.appendChild(tr);
 			tr = new Tr().appendChild(
-					new Td().appendChild(new Label().appendChild(new Text(
-							"Query string:")))).appendChild(
-					new Td().appendChild(new Input().setType("text").setName(
-							"qr")));
+			        new Td().appendChild(new Label().appendChild(new Text(
+			                "Query string:")))).appendChild(
+			        new Td().appendChild(new Input().setType("text").setName(
+			                "qr")));
 			tbl.appendChild(tr);
 			f.appendChild(tbl);
 			f.appendChild(new Input().setType("submit").setValue(
-					"Add query rule"));
+			        "Add query rule"));
 
 			mainDiv.appendChild(f);
 
@@ -322,17 +322,17 @@ public class IssuanceGUI {
 		} catch (RuntimeException e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -343,35 +343,35 @@ public class IssuanceGUI {
 
 		try {
 			AttributeInfoCollection aic = (AttributeInfoCollection) RESTHelper
-					.getRequest(
-							ServicesConfiguration.getIssuanceServiceURL()
-									+ "protected/attributeInfoCollection/"
-									+ URLEncoder.encode(name, "UTF-8"),
-							AttributeInfoCollection.class);
+			        .getRequest(
+			                ServicesConfiguration.getIssuanceServiceURL()
+			                        + "protected/attributeInfoCollection/"
+			                        + URLEncoder.encode(name, "UTF-8"),
+			                AttributeInfoCollection.class);
 
 			CredentialSpecification credSpec = (CredentialSpecification) RESTHelper
-					.postRequest(ServicesConfiguration.getIssuanceServiceURL()
-							+ "protected/credentialSpecification/generate",
-							RESTHelper
-									.toXML(AttributeInfoCollection.class, aic),
-							CredentialSpecification.class);
+			        .postRequest(ServicesConfiguration.getIssuanceServiceURL()
+			                + "protected/credentialSpecification/generate",
+			                RESTHelper
+			                        .toXML(AttributeInfoCollection.class, aic),
+			                CredentialSpecification.class);
 
 			RESTHelper.putRequest(
-					ServicesConfiguration.getIssuanceServiceURL()
-							+ "protected/credentialSpecification/store/"
-							+ URLEncoder.encode(credSpec.getSpecificationUID()
-									.toString(), "UTF-8"), RESTHelper.toXML(
-							CredentialSpecification.class,
-							of.createCredentialSpecification(credSpec)));
+			        ServicesConfiguration.getIssuanceServiceURL()
+			                + "protected/credentialSpecification/store/"
+			                + URLEncoder.encode(credSpec.getSpecificationUID()
+			                        .toString(), "UTF-8"), RESTHelper.toXML(
+			                CredentialSpecification.class,
+			                of.createCredentialSpecification(credSpec)));
 
 			return credentialSpecifications();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -382,28 +382,28 @@ public class IssuanceGUI {
 
 		try {
 			Html html = IssuerGUI.getHtmlPramble(
-					"Obtain credential specification [1]", request);
+			        "Obtain credential specification [1]", request);
 			Div mainDiv = new Div().setCSSClass("mainDiv");
 			html.appendChild(IssuerGUI.getBody(mainDiv));
 			mainDiv.appendChild(new H2().appendChild(new Text(
-					"Obtain credential specification")));
+			        "Obtain credential specification")));
 			mainDiv.appendChild(new P()
-					.setCSSClass("info")
-					.appendChild(
-							new Text(
-									"Please enter the name of the structure or data container in the underlying identity source you whish to "
-											+ "generate a credential specification from. For an LDAP identity source this might be the name of an object class or "
-											+ "for SQL name might be the name of a table. However, the exact behaviour of name is provider specific. Please refer to your service's"
-											+ " configuration. ")));
+			        .setCSSClass("info")
+			        .appendChild(
+			                new Text(
+			                        "Please enter the name of the structure or data container in the underlying identity source you whish to "
+			                                + "generate a credential specification from. For an LDAP identity source this might be the name of an object class or "
+			                                + "for SQL name might be the name of a table. However, the exact behaviour of name is provider specific. Please refer to your service's"
+			                                + " configuration. ")));
 
 			Form f = new Form("./obtainCredentialSpecification2")
-					.setMethod("post");
+			        .setMethod("post");
 			Table tbl = new Table();
 			Tr tr = new Tr();
 			tr.appendChild(new Td().appendChild(new Label()
-					.appendChild(new Text("Name:"))));
+			        .appendChild(new Text("Name:"))));
 			tr.appendChild(new Td().appendChild(new Input().setType("text")
-					.setName("n")));
+			        .setName("n")));
 			tbl.appendChild(tr);
 			f.appendChild(tbl);
 			f.appendChild(new Input().setType("submit").setValue("Obtain"));
@@ -414,32 +414,32 @@ public class IssuanceGUI {
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
 	@POST()
 	@Path("/protected/deleteIssuerParameters")
 	public Response deleteIssuerParameters(
-			@FormParam("is") String issuerParamsUid) {
+	        @FormParam("is") String issuerParamsUid) {
 		logger.entry();
 
 		try {
 			RESTHelper.deleteRequest(ServicesConfiguration
-					.getIssuanceServiceURL()
-					+ "protected/issuerParameters/delete/"
-					+ URLEncoder.encode(issuerParamsUid, "UTF-8"));
+			        .getIssuanceServiceURL()
+			        + "protected/issuerParameters/delete/"
+			        + URLEncoder.encode(issuerParamsUid, "UTF-8"));
 			return issuerParameters();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -450,17 +450,17 @@ public class IssuanceGUI {
 
 		try {
 			RESTHelper.deleteRequest(ServicesConfiguration
-					.getIssuanceServiceURL()
-					+ "protected/queryRule/delete/"
-					+ URLEncoder.encode(credSpecUid, "UTF-8"));
+			        .getIssuanceServiceURL()
+			        + "protected/queryRule/delete/"
+			        + URLEncoder.encode(credSpecUid, "UTF-8"));
 			return queryRules();
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -471,14 +471,14 @@ public class IssuanceGUI {
 
 		try {
 			Settings settings = (Settings) RESTHelper.getRequest(
-					ServicesConfiguration.getIssuanceServiceURL()
-							+ "getSettings/", Settings.class);
+			        ServicesConfiguration.getIssuanceServiceURL()
+			                + "getSettings/", Settings.class);
 
 			Html html = IssuerGUI.getHtmlPramble("Issuer Parameters", request);
 			Div mainDiv = new Div().setCSSClass("mainDiv");
 			html.appendChild(IssuerGUI.getBody(mainDiv));
 			mainDiv.appendChild(new H2().appendChild(new Text(
-					"Issuer Parameters")));
+			        "Issuer Parameters")));
 
 			List<IssuerParameters> issuerParams = settings.issuerParametersList;
 
@@ -486,14 +486,14 @@ public class IssuanceGUI {
 			Tr tr = null;
 
 			tr = new Tr()
-					.appendChild(
-							new Td().appendChild(new Text(
-									"Issuer Parameters Uid")))
-					.appendChild(
-							new Td().appendChild(new Text(
-									"Credential Specification Uid")))
-					.appendChild(new Td().appendChild(new Text("Action")))
-					.setCSSClass("heading");
+			        .appendChild(
+			                new Td().appendChild(new Text(
+			                        "Issuer Parameters Uid")))
+			        .appendChild(
+			                new Td().appendChild(new Text(
+			                        "Credential Specification Uid")))
+			        .appendChild(new Td().appendChild(new Text("Action")))
+			        .setCSSClass("heading");
 			tbl.appendChild(tr);
 
 			for (IssuerParameters ip : issuerParams) {
@@ -501,14 +501,14 @@ public class IssuanceGUI {
 				String is = ip.getParametersUID().toString();
 
 				Form f = new Form("./deleteIssuerParameters").setMethod("post")
-						.setCSSClass("nopad");
+				        .setCSSClass("nopad");
 				f.appendChild(new Input().setType("hidden").setName("is")
-						.setValue(is));
+				        .setValue(is));
 				f.appendChild(new Input().setType("submit").setValue("Delete"));
 
 				tr = new Tr().appendChild(new Td().appendChild(new Text(is)))
-						.appendChild(new Td().appendChild(new Text(cs)))
-						.appendChild(new Td().appendChild(f));
+				        .appendChild(new Td().appendChild(new Text(cs)))
+				        .appendChild(new Td().appendChild(f));
 				tbl.appendChild(tr);
 			}
 			mainDiv.appendChild(tbl);
@@ -517,17 +517,17 @@ public class IssuanceGUI {
 		} catch (RuntimeException e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(IssuerGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(IssuerGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -538,8 +538,8 @@ public class IssuanceGUI {
 
 		try {
 			Settings settings = (Settings) RESTHelper.getRequest(
-					ServicesConfiguration.getIssuanceServiceURL()
-							+ "getSettings/", Settings.class);
+			        ServicesConfiguration.getIssuanceServiceURL()
+			                + "getSettings/", Settings.class);
 
 			List<CredentialSpecification> credSpecs = settings.credentialSpecifications;
 
@@ -549,7 +549,7 @@ public class IssuanceGUI {
 
 			mainDiv.appendChild(new H2().appendChild(new Text("Profile")));
 			mainDiv.appendChild(new H3().appendChild(new Text(
-					"Credential Specifications")));
+			        "Credential Specifications")));
 
 			for (CredentialSpecification credSpec : credSpecs) {
 				int index = 0;
@@ -558,11 +558,11 @@ public class IssuanceGUI {
 				mainDiv.appendChild(credDiv);
 
 				AttributeDescriptions attribDescs = credSpec
-						.getAttributeDescriptions();
+				        .getAttributeDescriptions();
 				List<AttributeDescription> attrDescs = attribDescs
-						.getAttributeDescription();
+				        .getAttributeDescription();
 				credDiv.appendChild(new H4().appendChild(new Text(credSpec
-						.getSpecificationUID().toString())));
+				        .getSpecificationUID().toString())));
 
 				for (AttributeDescription attrDesc : attrDescs) {
 					String name = attrDesc.getType().toString();
@@ -576,11 +576,11 @@ public class IssuanceGUI {
 					group.appendChild(tbl);
 					Tr tr = null;
 					tr = new Tr()
-							.setCSSClass("heading")
-							.appendChild(
-									new Td().appendChild(new Text("DataType")))
-							.appendChild(
-									new Td().appendChild(new Text("Encoding")));
+					        .setCSSClass("heading")
+					        .appendChild(
+					                new Td().appendChild(new Text("DataType")))
+					        .appendChild(
+					                new Td().appendChild(new Text("Encoding")));
 					tbl.appendChild(tr);
 
 					credDiv.appendChild(topGroup);
@@ -589,105 +589,105 @@ public class IssuanceGUI {
 
 					Table fdTbl = new Table();
 					tr = new Tr()
-							.setCSSClass("heading")
-							.appendChild(
-									new Td().appendChild(new Text("Language")))
-							.appendChild(
-									new Td().appendChild(new Text("Value")))
-							.appendChild(
-									new Td().appendChild(new Text("Action")));
+					        .setCSSClass("heading")
+					        .appendChild(
+					                new Td().appendChild(new Text("Language")))
+					        .appendChild(
+					                new Td().appendChild(new Text("Value")))
+					        .appendChild(
+					                new Td().appendChild(new Text("Action")));
 					fdTbl.appendChild(tr);
 
 					Form f = null;
 
 					for (FriendlyDescription fd : attrDesc
-							.getFriendlyAttributeName()) {
+					        .getFriendlyAttributeName()) {
 						f = new Form("./deleteFriendlyDescription").setMethod(
-								"post").setCSSClass("nopad");
+						        "post").setCSSClass("nopad");
 						f.appendChild(new Input().setType("hidden")
-								.setName("language").setValue(fd.getLang()));
+						        .setName("language").setValue(fd.getLang()));
 						f.appendChild(new Input()
-								.setType("hidden")
-								.setValue(
-										credSpec.getSpecificationUID()
-												.toString()).setName("cs"));
+						        .setType("hidden")
+						        .setValue(
+						                credSpec.getSpecificationUID()
+						                        .toString()).setName("cs"));
 						f.appendChild(new Input().setType("hidden")
-								.setValue(Integer.toString(index)).setName("i"));
+						        .setValue(Integer.toString(index)).setName("i"));
 						f.appendChild(new Input().setType("submit").setValue(
-								"delete"));
+						        "delete"));
 						tr = new Tr()
-								.appendChild(
-										new Td().appendChild(new Text(fd
-												.getLang())))
-								.appendChild(
-										new Td().appendChild(new Text(fd
-												.getValue())))
-								.appendChild(new Td().appendChild(f));
+						        .appendChild(
+						                new Td().appendChild(new Text(fd
+						                        .getLang())))
+						        .appendChild(
+						                new Td().appendChild(new Text(fd
+						                        .getValue())))
+						        .appendChild(new Td().appendChild(f));
 						fdTbl.appendChild(tr);
 					}
 
 					tr = new Tr().appendChild(
-							new Td().appendChild(new Text(type))).appendChild(
-							new Td().appendChild(new Text(encoding)));
+					        new Td().appendChild(new Text(type))).appendChild(
+					        new Td().appendChild(new Text(encoding)));
 					tbl.appendChild(tr);
 					group.appendChild(fdTbl);
 
 					f = new Form("./addFriendlyDescription").setMethod("post");
 					tbl = new Table().setCSSClass("pad");
 					tr = new Tr().appendChild(
-							new Td().appendChild(new Label()
-									.appendChild(new Text("Language:"))))
-							.appendChild(
-									new Td().appendChild(new Input().setType(
-											"text").setName("language")));
+					        new Td().appendChild(new Label()
+					                .appendChild(new Text("Language:"))))
+					        .appendChild(
+					                new Td().appendChild(new Input().setType(
+					                        "text").setName("language")));
 					tbl.appendChild(tr);
 					tr = new Tr().appendChild(
-							new Td().appendChild(new Label()
-									.appendChild(new Text("Value:"))))
-							.appendChild(
-									new Td().appendChild(new Input().setType(
-											"text").setName("value")));
+					        new Td().appendChild(new Label()
+					                .appendChild(new Text("Value:"))))
+					        .appendChild(
+					                new Td().appendChild(new Input().setType(
+					                        "text").setName("value")));
 					tbl.appendChild(tr);
 					f.appendChild(tbl);
 					f.appendChild(new Input().setType("submit").setValue(
-							"Add new friendly description"));
+					        "Add new friendly description"));
 					f.appendChild(new Input()
-							.setType("hidden")
-							.setValue(credSpec.getSpecificationUID().toString())
-							.setName("cs"));
+					        .setType("hidden")
+					        .setValue(credSpec.getSpecificationUID().toString())
+					        .setName("cs"));
 					f.appendChild(new Input().setType("hidden")
-							.setValue(Integer.toString(index)).setName("i"));
+					        .setValue(Integer.toString(index)).setName("i"));
 					group.appendChild(f);
 
 					topGroup.appendChild(group);
 					f = new Form("./deleteAttribute").setMethod("post");
 					f.appendChild(new Input().setType("submit").setValue(
-							"Delete attribute"));
+					        "Delete attribute"));
 					f.appendChild(new Input()
-							.setType("hidden")
-							.setValue(credSpec.getSpecificationUID().toString())
-							.setName("cs"));
+					        .setType("hidden")
+					        .setValue(credSpec.getSpecificationUID().toString())
+					        .setName("cs"));
 					f.appendChild(new Input().setType("hidden")
-							.setValue(Integer.toString(index)).setName("i"));
+					        .setValue(Integer.toString(index)).setName("i"));
 					topGroup.appendChild(f);
 
 					index++;
 				}
 
 				Form f = new Form("./deleteCredentialSpecification")
-						.setMethod("post");
+				        .setMethod("post");
 				f.appendChild(new Input().setType("submit").setValue(
-						"Delete credential specification"));
+				        "Delete credential specification"));
 				f.appendChild(new Input().setType("hidden")
-						.setValue(credSpec.getSpecificationUID().toString())
-						.setName("cs"));
+				        .setValue(credSpec.getSpecificationUID().toString())
+				        .setName("cs"));
 				credDiv.appendChild(f);
 				f = new Form("./generateIssuerParameters").setMethod("post");
 				f.appendChild(new Input().setType("submit").setValue(
-						"Generate issuer parameters"));
+				        "Generate issuer parameters"));
 				f.appendChild(new Input().setType("hidden")
-						.setValue(credSpec.getSpecificationUID().toString())
-						.setName("cs"));
+				        .setValue(credSpec.getSpecificationUID().toString())
+				        .setName("cs"));
 				credDiv.appendChild(f);
 			}
 
@@ -696,17 +696,17 @@ public class IssuanceGUI {
 		} catch (RuntimeException e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(UserGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(UserGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(UserGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(UserGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 
@@ -731,13 +731,13 @@ public class IssuanceGUI {
 
 			Ul ul = new Ul();
 			ul.appendChild(new Li().appendChild(new A().setHref(
-					"./issuerParameters").appendChild(
-					new Text("Manage issuer parameters"))));
+			        "./issuerParameters").appendChild(
+			        new Text("Manage issuer parameters"))));
 			ul.appendChild(new Li().appendChild(new A().setHref(
-					"./credentialSpecifications").appendChild(
-					new Text("Manage credential specifications"))));
+			        "./credentialSpecifications").appendChild(
+			        new Text("Manage credential specifications"))));
 			ul.appendChild(new Li().appendChild(new A().setHref("./queryRules")
-					.appendChild(new Text("Manage query rules"))));
+			        .appendChild(new Text("Manage query rules"))));
 
 			mainDiv.appendChild(ul);
 
@@ -746,10 +746,10 @@ public class IssuanceGUI {
 		} catch (Exception e) {
 			logger.catching(e);
 			return logger.exit(Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(UserGUI.errorPage(
-							ExceptionDumper.dumpExceptionStr(e, logger),
-							request).write()).build());
+			        .status(Response.Status.BAD_REQUEST)
+			        .entity(UserGUI.errorPage(
+			                ExceptionDumper.dumpExceptionStr(e, logger),
+			                request).write()).build());
 		}
 	}
 

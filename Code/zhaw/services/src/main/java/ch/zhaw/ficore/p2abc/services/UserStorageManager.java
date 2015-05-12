@@ -43,10 +43,10 @@ public class UserStorageManager {
 	private static final boolean WIPE_STOARAGE_FILES = false;
 
 	public static KeyManager getKeyManager(String fileStoragePrefix)
-			throws Exception {
+	        throws Exception {
 
 		AbceConfigurationImpl configuration = setupStorageFilesForConfiguration(
-				fileStoragePrefix, WIPE_STOARAGE_FILES);
+		        fileStoragePrefix, WIPE_STOARAGE_FILES);
 
 		Module m = new AbceKeyManagerConfigurationModule(configuration);
 		Injector injector = Guice.createInjector(m);
@@ -54,11 +54,11 @@ public class UserStorageManager {
 	}
 
 	protected static AbceConfigurationImpl setupStorageFilesForConfiguration(
-			String fileStoragePrefix, boolean wipe_existing_storage)
-			throws Exception {
+	        String fileStoragePrefix, boolean wipe_existing_storage)
+	        throws Exception {
 		AbceConfigurationImpl configuration = new AbceConfigurationImpl();
 		configuration.setKeyStorageFile(FileSystem.getFile(fileStoragePrefix
-				+ "keystorage", wipe_existing_storage));
+		        + "keystorage", wipe_existing_storage));
 		Random random = new SecureRandom(); // new Random(1985)
 		configuration.setPrng(random);
 

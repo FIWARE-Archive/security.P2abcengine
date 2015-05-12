@@ -50,7 +50,7 @@ public class TestFlowGUI extends JerseyTest {
 		userServiceURL = getBaseURI() + userServiceURL;
 		verificationServiceURL = getBaseURI() + verificationServiceURL;
 		verificationServiceURLUnprot = getBaseURI()
-				+ verificationServiceURLUnprot;
+		        + verificationServiceURLUnprot;
 		issuanceServiceURL = getBaseURI() + issuanceServiceURL;
 		issuanceServiceURLUnprot = getBaseURI() + issuanceServiceURLUnprot;
 		userGUI = getBaseURI() + userGUI;
@@ -73,7 +73,7 @@ public class TestFlowGUI extends JerseyTest {
 		this.setUp();
 		// Create initial context
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				"org.apache.naming.java.javaURLContextFactory");
+		        "org.apache.naming.java.javaURLContextFactory");
 		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
 		InitialContext ic = new InitialContext();
 
@@ -100,10 +100,10 @@ public class TestFlowGUI extends JerseyTest {
 		ic.bind("java:/comp/env/cfg/restAuthPassword", "");
 		ic.bind("java:/comp/env/cfg/restAuthUser", "flow");
 		ic.bind("java:/comp/env/cfg/issuanceServiceURL", getBaseURI()
-				+ "issuance/");
+		        + "issuance/");
 		ic.bind("java:/comp/env/cfg/userServiceURL", getBaseURI() + "user/");
 		ic.bind("java:/comp/env/cfg/verificationServiceURL", getBaseURI()
-				+ "verification/");
+		        + "verification/");
 		ic.bind("java:/comp/env/cfg/verifierIdentity", "unknown");
 
 		SQLiteDataSource ds = new SQLiteDataSource();
@@ -130,8 +130,8 @@ public class TestFlowGUI extends JerseyTest {
 
 	@Test
 	public void flow() throws InterruptedException, ClientHandlerException,
-			UniformInterfaceException, JAXBException,
-			UnsupportedEncodingException, NamingException {
+	        UniformInterfaceException, JAXBException,
+	        UnsupportedEncodingException, NamingException {
 
 		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 
@@ -144,10 +144,10 @@ public class TestFlowGUI extends JerseyTest {
 		 * the issuance-service and check if it was created
 		 */
 		RESTHelper.postRequest(issuanceGUI
-				+ "protected/obtainCredentialSpecification2", params);
+		        + "protected/obtainCredentialSpecification2", params);
 		RESTHelper.getRequest(issuanceServiceURL
-				+ "credentialSpecification/get/"
-				+ URLEncoder.encode("urn:fiware:privacy:test", "utf-8"));
+		        + "credentialSpecification/get/"
+		        + URLEncoder.encode("urn:fiware:privacy:test", "utf-8"));
 
 		/*
 		 * Generate issuer parameters for the credential specification
@@ -156,7 +156,7 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("cs", "urn:fiware:privacy:test");
 
 		RESTHelper.postRequest(issuanceGUI
-				+ "protected/generateIssuerParameters", params);
+		        + "protected/generateIssuerParameters", params);
 
 		/*
 		 * Add a dummy query rule
@@ -175,7 +175,7 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("url", url);
 		RESTHelper.postRequest(userGUI + "loadSettings2", params);
 		RESTHelper.postRequest(verificationGUI + "protected/loadSettings2",
-				params);
+		        params);
 
 		/*
 		 * Obtain a credential from the issuer
@@ -184,12 +184,12 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("un", "CaroleKing");
 		params.add("pw", "Jazzman");
 		params.add(
-				"is",
-				issuanceServiceURLUnprot.substring(0,
-						issuanceServiceURLUnprot.lastIndexOf("/")));
+		        "is",
+		        issuanceServiceURLUnprot.substring(0,
+		                issuanceServiceURLUnprot.lastIndexOf("/")));
 		params.add("cs", "urn:fiware:privacy:test");
 		String result = (String) RESTHelper.postRequest(userGUI
-				+ "obtainCredential2", params);
+		        + "obtainCredential2", params);
 		System.out.println("CTX: " + getContextString(result));
 
 		params = new MultivaluedMapImpl();
@@ -206,7 +206,7 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("rs", "resource");
 		params.add("ru", "http://google.com");
 		RESTHelper.postRequest(verificationGUI + "protected/createResource",
-				params);
+		        params);
 
 		/*
 		 * Add a policy alternative
@@ -215,7 +215,7 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("resource", "resource");
 		params.add("puid", "urn:policy");
 		RESTHelper.postRequest(verificationGUI + "protected/addPolicyAlt",
-				params);
+		        params);
 
 		/*
 		 * Add a new alias
@@ -235,7 +235,7 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("resource", "resource");
 		params.add("cs", "urn:fiware:privacy:test");
 		RESTHelper.postRequest(verificationGUI + "protected/addCredSpecAlt",
-				params);
+		        params);
 
 		/*
 		 * Add an issuerparams alternative
@@ -246,21 +246,21 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("resource", "resource");
 		params.add("ip", "urn:fiware:privacy:test:issuer-params");
 		RESTHelper.postRequest(verificationGUI + "protected/addIssuerAlt",
-				params);
+		        params);
 
 		/*
 		 * Add a predicate
 		 */
 		params = new MultivaluedMapImpl();
 		params.add("p",
-				"urn:oasis:names:tc:xacml:1.0:function:integer-greater-than");
+		        "urn:oasis:names:tc:xacml:1.0:function:integer-greater-than");
 		params.add("at", "someAttribute");
 		params.add("cv", "12");
 		params.add("puid", "urn:policy");
 		params.add("al", "test");
 		params.add("resource", "resource");
 		RESTHelper.postRequest(verificationGUI + "protected/addPredicate",
-				params);
+		        params);
 
 		/*
 		 * Attempt a resource request.
@@ -268,7 +268,7 @@ public class TestFlowGUI extends JerseyTest {
 		params = new MultivaluedMapImpl();
 		params.add("r", "resource");
 		params.add("vu", verificationServiceURLUnprot.substring(0,
-				verificationServiceURLUnprot.lastIndexOf('/')));
+		        verificationServiceURLUnprot.lastIndexOf('/')));
 		RESTHelper.postRequest(userGUI + "requestResource2", params);
 
 		/*
@@ -279,7 +279,7 @@ public class TestFlowGUI extends JerseyTest {
 		params.add("resource", "resource");
 		params.add("index", "0");
 		RESTHelper.postRequest(verificationGUI + "protected/deletePredicate",
-				params);
+		        params);
 
 		/*
 		 * while(true) { System.out.println("GONE TO SLEEP!");

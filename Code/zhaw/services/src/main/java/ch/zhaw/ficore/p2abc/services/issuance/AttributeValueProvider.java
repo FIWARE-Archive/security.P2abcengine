@@ -43,7 +43,7 @@ public abstract class AttributeValueProvider {
 	 * @return an implementation of an AttributeValueProvider
 	 */
 	public static AttributeValueProvider getAttributeValueProvider(
-			IssuanceConfiguration configuration) {
+	        IssuanceConfiguration configuration) {
 		switch (configuration.getAttributeSource()) {
 		case LDAP:
 			return new LdapAttributeValueProvider(configuration);
@@ -79,6 +79,6 @@ public abstract class AttributeValueProvider {
 	 *             when something went wrong.
 	 */
 	public abstract List<eu.abc4trust.xml.Attribute> getAttributes(
-			String query, String uid, CredentialSpecification credSpec)
-			throws Exception;
+	        String query, String uid, CredentialSpecification credSpec)
+	        throws Exception;
 }

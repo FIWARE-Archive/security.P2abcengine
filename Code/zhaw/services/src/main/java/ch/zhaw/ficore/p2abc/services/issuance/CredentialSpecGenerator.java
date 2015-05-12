@@ -32,13 +32,13 @@ public class CredentialSpecGenerator {
 	 * @return corresponding CredentialSpecification
 	 */
 	public CredentialSpecification generateCredentialSpecification(
-			AttributeInfoCollection attrInfoCol) {
+	        AttributeInfoCollection attrInfoCol) {
 		ObjectFactory of = new ObjectFactory();
 		try {
 			CredentialSpecification credSpec = of
-					.createCredentialSpecification();
+			        .createCredentialSpecification();
 			credSpec.setSpecificationUID(new URI(ServicesConfiguration
-					.getURIBase() + attrInfoCol.name));
+			        .getURIBase() + attrInfoCol.name));
 
 			credSpec.setVersion("1.0");
 			credSpec.setKeyBinding(true);
@@ -47,7 +47,7 @@ public class CredentialSpecGenerator {
 			AttributeDescriptions attrDescs = of.createAttributeDescriptions();
 			attrDescs.setMaxLength(256);
 			List<AttributeDescription> descriptions = attrDescs
-					.getAttributeDescription();
+			        .getAttributeDescription();
 
 			for (AttributeInformation attrInfo : attrInfoCol.attributes) {
 
@@ -58,10 +58,10 @@ public class CredentialSpecGenerator {
 				descriptions.add(attr);
 
 				List<FriendlyDescription> friendlies = attr
-						.getFriendlyAttributeName();
+				        .getFriendlyAttributeName();
 				for (LanguageValuePair lvp : attrInfo.friendlyDescriptions) {
 					FriendlyDescription friendlyDesc = of
-							.createFriendlyDescription();
+					        .createFriendlyDescription();
 					friendlyDesc.setLang(lvp.language);
 					friendlyDesc.setValue(lvp.value);
 					friendlies.add(friendlyDesc);

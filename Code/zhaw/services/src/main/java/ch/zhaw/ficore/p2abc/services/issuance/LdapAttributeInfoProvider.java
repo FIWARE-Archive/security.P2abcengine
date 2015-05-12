@@ -34,7 +34,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	public static final Map<String, List<String>> mappingEncodings = new HashMap<String, List<String>>();
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(LdapAttributeInfoProvider.class));
+	        LoggerFactory.getLogger(LdapAttributeInfoProvider.class));
 
 	/* Ldap Syntax Constants */
 	private static final String directoryStringOid = "1.3.6.1.4.1.1466.115.121.1.15";
@@ -60,9 +60,9 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 		mappingEncodings.put("xs:integer", new ArrayList<String>());
 
 		mappingEncodings.get("xs:string").add(
-				"urn:abc4trust:1.0:encoding:string:sha-256");
+		        "urn:abc4trust:1.0:encoding:string:sha-256");
 		mappingEncodings.get("xs:integer").add(
-				"urn:abc4trust:1.0:encoding:integer:signed");
+		        "urn:abc4trust:1.0:encoding:integer:signed");
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
 		try {
 			ConnectionParameters cfg = configuration
-					.getAuthenticationConnectionParameters();
+			        .getAuthenticationConnectionParameters();
 			// cfg.setAuth(configuration.getLdapUser(),
 			// configuration.getLdapPassword());
 			con = new LdapConnection(cfg);
@@ -111,18 +111,18 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 
 			for (int i = 0; i < must.size(); i++) {
 				Attributes attrAnswer = schema
-						.getAttributes("AttributeDefinition/" + must.get(i));
+				        .getAttributes("AttributeDefinition/" + must.get(i));
 				String mapping = getMapping(attrAnswer.get("syntax").get(0)
-						.toString());
+				        .toString());
 				String encoding = getEncoding(mapping);
 				aic.addAttribute(must.get(i).toString(), mapping, encoding);
 			}
 
 			for (int i = 0; i < may.size(); i++) {
 				Attributes attrAnswer = schema
-						.getAttributes("AttributeDefinition/" + may.get(i));
+				        .getAttributes("AttributeDefinition/" + may.get(i));
 				String mapping = getMapping(attrAnswer.get("syntax").get(0)
-						.toString());
+				        .toString());
 				String encoding = getEncoding(mapping);
 				aic.addAttribute(may.get(i).toString(), mapping, encoding);
 			}
@@ -152,7 +152,7 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 	 */
 	private String getMapping(String syntax) {
 		syntax = syntax.replaceAll("\\{\\d+\\}$", ""); // Strip away length
-														// restrictions
+		                                               // restrictions
 		if (syntaxMappings.containsKey(syntax))
 			return syntaxMappings.get(syntax).get(0);
 		else
@@ -172,6 +172,6 @@ public class LdapAttributeInfoProvider extends AttributeInfoProvider {
 			return mappingEncodings.get(mapping).get(0);
 		else
 			throw new RuntimeException(
-					"Can not determine encoding for mapping: " + mapping);
+			        "Can not determine encoding for mapping: " + mapping);
 	}
 }

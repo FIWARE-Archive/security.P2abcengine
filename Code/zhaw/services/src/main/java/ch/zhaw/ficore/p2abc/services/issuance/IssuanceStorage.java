@@ -20,7 +20,7 @@ public interface IssuanceStorage {
 	 *             when something went wrong.
 	 */
 	public void addIssuancePolicy(URI credSpecUid, IssuancePolicy policy)
-			throws Exception;
+	        throws Exception;
 
 	/**
 	 * Add (and possibly overwrite an existing) QueryRule bound to a

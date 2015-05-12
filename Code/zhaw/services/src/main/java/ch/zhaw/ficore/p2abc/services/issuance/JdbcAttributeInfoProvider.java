@@ -23,7 +23,7 @@ import ch.zhaw.ficore.p2abc.xml.AttributeInfoCollection;
 public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(JdbcAttributeInfoProvider.class));
+	        LoggerFactory.getLogger(JdbcAttributeInfoProvider.class));
 
 	/**
 	 * Constructor
@@ -57,11 +57,11 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 		try {
 
 			ConnectionParameters connParams = ServicesConfiguration
-					.getIssuanceConfiguration()
-					.getAttributeConnectionParameters();
+			        .getIssuanceConfiguration()
+			        .getAttributeConnectionParameters();
 			Class.forName(connParams.getDriverString());
 			conn = DriverManager
-					.getConnection(connParams.getConnectionString());
+			        .getConnection(connParams.getConnectionString());
 
 			DatabaseMetaData md = conn.getMetaData();
 			rs = md.getColumns(null, null, name, null);
@@ -75,18 +75,18 @@ public class JdbcAttributeInfoProvider extends AttributeInfoProvider {
 
 				if (type == java.sql.Types.VARCHAR) {
 					aiCol.addAttribute(rs.getString(4), "xs:string",
-							"urn:abc4trust:1.0:encoding:string:sha-256");
+					        "urn:abc4trust:1.0:encoding:string:sha-256");
 				} else if (type == java.sql.Types.BIGINT
-						|| type == java.sql.Types.INTEGER
-						|| type == java.sql.Types.SMALLINT) {
+				        || type == java.sql.Types.INTEGER
+				        || type == java.sql.Types.SMALLINT) {
 					aiCol.addAttribute(rs.getString(4), "xs:integer",
-							"urn:abc4trust:1.0:encoding:integer:signed");
+					        "urn:abc4trust:1.0:encoding:integer:signed");
 
 				} else if (type == java.sql.Types.TIMESTAMP
-						|| type == java.sql.Types.TIME
-						|| type == java.sql.Types.DATE) {
+				        || type == java.sql.Types.TIME
+				        || type == java.sql.Types.DATE) {
 					aiCol.addAttribute(rs.getString(4), "xs:dateTime",
-							"urn:abc4trust:1.0:encoding:dateTime:unix:unsigned");
+					        "urn:abc4trust:1.0:encoding:dateTime:unix:unsigned");
 				} else {
 					throw new RuntimeException("Unknown type: " + type);
 				}

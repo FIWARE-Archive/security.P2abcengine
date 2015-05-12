@@ -24,7 +24,7 @@ import eu.abc4trust.xml.ObjectFactory;
 public class JdbcAttributeValueProvider extends AttributeValueProvider {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(JdbcAttributeValueProvider.class));
+	        LoggerFactory.getLogger(JdbcAttributeValueProvider.class));
 
 	private ObjectFactory of;
 
@@ -39,7 +39,7 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
 
 	@SuppressWarnings("resource")
 	public List<eu.abc4trust.xml.Attribute> getAttributes(String query,
-			String uid, CredentialSpecification credSpec) throws Exception {
+	        String uid, CredentialSpecification credSpec) throws Exception {
 
 		Connection conn = null;
 		ResultSet rs = null;
@@ -48,27 +48,27 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
 		try {
 
 			ConnectionParameters connParams = ServicesConfiguration
-					.getIssuanceConfiguration()
-					.getAttributeConnectionParameters();
+			        .getIssuanceConfiguration()
+			        .getAttributeConnectionParameters();
 			Class.forName(connParams.getDriverString());
 			conn = DriverManager
-					.getConnection(connParams.getConnectionString());
+			        .getConnection(connParams.getConnectionString());
 
 			String sqlQuery = QueryHelper.buildQuery(query,
-					QueryHelper.sqlSanitize(uid));
+			        QueryHelper.sqlSanitize(uid));
 
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sqlQuery);
 
 			if (rs.next()) {
 				AttributeDescriptions attrDescs = credSpec
-						.getAttributeDescriptions();
+				        .getAttributeDescriptions();
 				List<AttributeDescription> descriptions = attrDescs
-						.getAttributeDescription();
+				        .getAttributeDescription();
 				IssuancePolicyAndAttributes ipa = of
-						.createIssuancePolicyAndAttributes();
+				        .createIssuancePolicyAndAttributes();
 				List<eu.abc4trust.xml.Attribute> attributes = ipa
-						.getAttribute();
+				        .getAttribute();
 				for (AttributeDescription attrDesc : descriptions) {
 					Object value = rs.getString(attrDesc.getType().toString());
 
@@ -77,31 +77,31 @@ public class JdbcAttributeValueProvider extends AttributeValueProvider {
 					 * Currently only integer/string are supported
 					 */
 					if (attrDesc.getDataType().toString().equals("xs:integer")
-							&& attrDesc
-									.getEncoding()
-									.toString()
-									.equals("urn:abc4trust:1.0:encoding:integer:signed")) {
+					        && attrDesc
+					                .getEncoding()
+					                .toString()
+					                .equals("urn:abc4trust:1.0:encoding:integer:signed")) {
 						value = BigInteger.valueOf((Integer
-								.parseInt(((String) value))));
+						        .parseInt(((String) value))));
 					} else if (attrDesc.getDataType().toString()
-							.equals("xs:string")
-							&& attrDesc
-									.getEncoding()
-									.toString()
-									.equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
+					        .equals("xs:string")
+					        && attrDesc
+					                .getEncoding()
+					                .toString()
+					                .equals("urn:abc4trust:1.0:encoding:string:sha-256")) {
 						value = (String) value.toString();
 					} else {
 						throw new RuntimeException(
-								"Unsupported combination of encoding and dataType!");
+						        "Unsupported combination of encoding and dataType!");
 					}
 
 					eu.abc4trust.xml.Attribute attrib = of.createAttribute();
 					attrib.setAttributeDescription(attrDesc);
 					attrib.setAttributeValue(value);
 					attrib.setAttributeUID(new URI(ServicesConfiguration
-							.getURIBase()
-							+ "jdbc:"
-							+ attrDesc.getType().toString()));
+					        .getURIBase()
+					        + "jdbc:"
+					        + attrDesc.getType().toString()));
 					attributes.add(attrib);
 				}
 				return attributes;

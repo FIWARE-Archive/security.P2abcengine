@@ -50,15 +50,15 @@ import eu.abc4trust.smartcardManager.AbcSmartcardManager;
 public class UserHelper extends AbstractHelper {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(UserHelper.class));
+	        LoggerFactory.getLogger(UserHelper.class));
 
 	public ReloadTokensCommunicationStrategy reloadTokens = null;
 	static UserHelper instance;
 	public KeyStorage keyStorage;
 
 	public static synchronized UserHelper initInstanceForService(
-			CryptoEngine cryptoEngine, String fileStoragePrefix,
-			Module... modules) throws URISyntaxException {
+	        CryptoEngine cryptoEngine, String fileStoragePrefix,
+	        Module... modules) throws URISyntaxException {
 
 		initializeInstanceField(cryptoEngine, fileStoragePrefix, modules);
 
@@ -72,11 +72,11 @@ public class UserHelper extends AbstractHelper {
 	}
 
 	private static synchronized void initializeInstanceField(
-			CryptoEngine cryptoEngine, String fileStoragePrefix,
-			Module... modules) throws URISyntaxException {
+	        CryptoEngine cryptoEngine, String fileStoragePrefix,
+	        Module... modules) throws URISyntaxException {
 		if (instance != null) {
 			throw new IllegalStateException(
-					"initInstance can only be called once!");
+			        "initInstance can only be called once!");
 		}
 		logger.info("UserHelper.initInstance");
 		instance = new UserHelper(cryptoEngine, fileStoragePrefix, modules);
@@ -87,10 +87,10 @@ public class UserHelper extends AbstractHelper {
 	}
 
 	public static synchronized UserHelper getInstance()
-			throws KeyManagerException {
+	        throws KeyManagerException {
 		if (instance == null) {
 			throw new IllegalStateException(
-					"initInstance not called before using UserHelper!");
+			        "initInstance not called before using UserHelper!");
 		}
 		return instance;
 	}
@@ -101,9 +101,9 @@ public class UserHelper extends AbstractHelper {
 	public CredentialManager credentialManager;
 
 	private UserHelper(CryptoEngine cryptoEngine, String fileStoragePrefix,
-			Module... modules) throws URISyntaxException {
+	        Module... modules) throws URISyntaxException {
 		logger.info("UserHelper : : create instance " + cryptoEngine + " : "
-				+ fileStoragePrefix);
+		        + fileStoragePrefix);
 		this.cryptoEngine = cryptoEngine;
 		try {
 			Module m = ProductionModuleFactory.newModule(cryptoEngine);
@@ -113,18 +113,18 @@ public class UserHelper extends AbstractHelper {
 			this.keyManager = injector.getInstance(KeyManager.class);
 			this.keyStorage = injector.getInstance(KeyStorage.class);
 			this.credentialManager = injector
-					.getInstance(CredentialManager.class);
+			        .getInstance(CredentialManager.class);
 			this.smartcardManager = injector
-					.getInstance(AbcSmartcardManager.class);
+			        .getInstance(AbcSmartcardManager.class);
 			this.cardStorage = injector.getInstance(CardStorage.class);
 			this.reloadTokens = injector
-					.getInstance(ReloadTokensCommunicationStrategy.class);
+			        .getInstance(ReloadTokensCommunicationStrategy.class);
 			//
 			UserAbcEngine e = injector.getInstance(UserAbcEngine.class);
 			this.engine = new SynchronizedUserAbcEngineImpl(e);
 
 			if ((cryptoEngine == CryptoEngine.UPROVE)
-					|| (cryptoEngine == CryptoEngine.BRIDGED)) {
+			        || (cryptoEngine == CryptoEngine.BRIDGED)) {
 				throw new RuntimeException("We only support Idemix. Sorry :(");
 			}
 

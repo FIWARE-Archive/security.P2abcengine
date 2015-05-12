@@ -27,7 +27,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 public class JdbcAuthenticationProvider extends AuthenticationProvider {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
+	        LoggerFactory.getLogger(JdbcAuthenticationProvider.class));
 	private String userId;
 
 	/**
@@ -54,7 +54,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 	 * @throws NamingException
 	 */
 	public boolean authenticate(AuthenticationInformation authInfo)
-			throws NamingException {
+	        throws NamingException {
 		logger.info("jdbc auth");
 
 		if (!(authInfo instanceof AuthInfoSimple))
@@ -63,12 +63,12 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 		AuthInfoSimple simpleAuth = (AuthInfoSimple) authInfo;
 
 		String bindQuery = ServicesConfiguration.getIssuanceConfiguration()
-				.getBindQuery();
+		        .getBindQuery();
 
 		String unameHash = DigestUtils.sha1Hex(simpleAuth.username);
 
 		bindQuery = QueryHelper.buildQuery(bindQuery,
-				QueryHelper.sqlSanitize(unameHash));
+		        QueryHelper.sqlSanitize(unameHash));
 
 		Connection conn = null;
 		ResultSet rs = null;
@@ -77,11 +77,11 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
 		try {
 
 			ConnectionParameters connParams = ServicesConfiguration
-					.getIssuanceConfiguration()
-					.getAuthenticationConnectionParameters();
+			        .getIssuanceConfiguration()
+			        .getAuthenticationConnectionParameters();
 			Class.forName(connParams.getDriverString());
 			conn = DriverManager
-					.getConnection(connParams.getConnectionString());
+			        .getConnection(connParams.getConnectionString());
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(bindQuery);
 

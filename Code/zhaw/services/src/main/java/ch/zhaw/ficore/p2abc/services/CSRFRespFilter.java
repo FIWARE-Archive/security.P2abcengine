@@ -16,7 +16,7 @@ public class CSRFRespFilter implements ContainerResponseFilter {
 
 	@Override
 	public ContainerResponse filter(ContainerRequest arg0,
-			ContainerResponse arg1) {
+	        ContainerResponse arg1) {
 		List<Object> ls = new ArrayList<Object>();
 		ls.add("csrf=" + randomString());
 		arg1.getHttpHeaders().put(HttpHeaders.SET_COOKIE, ls);
@@ -29,7 +29,7 @@ public class CSRFRespFilter implements ContainerResponseFilter {
 		SecureRandom sr = new SecureRandom();
 
 		char[] chars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7',
-				'8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+		        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 		for (int i = 0; i < NUM_HEX_DIGITS; i++) {
 			int n = sr.nextInt(0x10);

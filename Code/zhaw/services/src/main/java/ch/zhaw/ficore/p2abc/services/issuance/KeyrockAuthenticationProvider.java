@@ -32,7 +32,7 @@ import ch.zhaw.ficore.p2abc.xml.AuthenticationInformation;
 public class KeyrockAuthenticationProvider extends AuthenticationProvider {
 
 	private static final XLogger logger = new XLogger(
-			LoggerFactory.getLogger(KeyrockAuthenticationProvider.class));
+	        LoggerFactory.getLogger(KeyrockAuthenticationProvider.class));
 	private String userId;
 
 	/**
@@ -59,7 +59,7 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
 	 * @throws NamingException
 	 */
 	public boolean authenticate(AuthenticationInformation authInfo)
-			throws NamingException {
+	        throws NamingException {
 		logger.info("keyrock auth");
 
 		if (!(authInfo instanceof AuthInfoKeyrock))
@@ -70,9 +70,9 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
 		try {
 
 			String json = (String) RESTHelper
-					.getRequestUnauth("https://account.lab.fiware.org/user?access_token="
-							+ URLEncoder.encode(keyrockAuth.accessToken,
-									"UTF-8"));
+			        .getRequestUnauth("https://account.lab.fiware.org/user?access_token="
+			                + URLEncoder.encode(keyrockAuth.accessToken,
+			                        "UTF-8"));
 			JSONObject result = (JSONObject) JSONValue.parse(json);
 
 			logger.info(json);

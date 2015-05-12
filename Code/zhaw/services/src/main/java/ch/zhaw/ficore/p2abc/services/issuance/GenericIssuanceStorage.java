@@ -21,8 +21,8 @@ public class GenericIssuanceStorage implements IssuanceStorage {
 
 	@Inject
 	public GenericIssuanceStorage(
-			@Named("issuancePolicyStorage") URIBytesStorage issuancePolicyStorage,
-			@Named("queryRuleStorage") URIBytesStorage queryRuleStorage) {
+	        @Named("issuancePolicyStorage") URIBytesStorage issuancePolicyStorage,
+	        @Named("queryRuleStorage") URIBytesStorage queryRuleStorage) {
 
 		this.issuancePolicyStorage = issuancePolicyStorage;
 		this.queryRuleStorage = queryRuleStorage;
@@ -38,7 +38,7 @@ public class GenericIssuanceStorage implements IssuanceStorage {
 	}
 
 	public void addIssuancePolicy(URI uri, IssuancePolicy policy)
-			throws IOException {
+	        throws IOException {
 		try {
 			byte[] data = SerializationUtils.serialize(policy);
 			issuancePolicyStorage.put(uri, data);

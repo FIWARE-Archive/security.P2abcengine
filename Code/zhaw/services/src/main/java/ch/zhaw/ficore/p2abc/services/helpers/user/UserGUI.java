@@ -59,12 +59,12 @@ public class UserGUI {
 	public static Html getHtmlPramble(String title, HttpServletRequest req) {
 		Html html = new Html();
 		Head head = new Head().appendChild(new Title().appendChild(new Text(
-				title)));
+		        title)));
 		html.appendChild(head);
 		head.appendChild(new Link().setHref(req.getContextPath() + cssURL)
-				.setRel("stylesheet").setType("text/css"));
+		        .setRel("stylesheet").setType("text/css"));
 		head.appendChild(new Script("").setSrc(
-				req.getContextPath() + "/csrf.js").setType("text/javascript"));
+		        req.getContextPath() + "/csrf.js").setType("text/javascript"));
 		return html;
 	}
 
@@ -75,13 +75,13 @@ public class UserGUI {
 		containerDiv.appendChild(navDiv);
 		containerDiv.appendChild(mainDiv);
 		navDiv.appendChild(new A().setHref("./obtainCredential").appendChild(
-				new Text("Obtain Credential")));
+		        new Text("Obtain Credential")));
 		navDiv.appendChild(new A().setHref("./requestResource").appendChild(
-				new Text("Request Resource")));
+		        new Text("Request Resource")));
 		navDiv.appendChild(new A().setHref("./profile").appendChild(
-				new Text("Profile")));
+		        new Text("Profile")));
 		navDiv.appendChild(new A().setHref("./loadSettings").appendChild(
-				new Text("Load Settings")));
+		        new Text("Load Settings")));
 		navDiv.appendChild(new Div().setStyle("clear: both"));
 		Body body = new Body().appendChild(containerDiv);
 		body.setAttribute("onload", "csrf();");
@@ -94,7 +94,7 @@ public class UserGUI {
 		html.appendChild(getBody(mainDiv));
 		mainDiv.appendChild(new H2().appendChild(new Text("Error")));
 		mainDiv.appendChild(new P().setCSSClass("error").appendChild(
-				new Text(msg)));
+		        new Text(msg)));
 		return html;
 	}
 
@@ -104,23 +104,23 @@ public class UserGUI {
 		CredentialDescription credDesc = cred.getCredentialDescription();
 		String credSpec = credDesc.getCredentialSpecificationUID().toString();
 		credDiv.appendChild(new H4().appendChild(new Text(credSpec + " ("
-				+ uri.toString() + ")")));
+		        + uri.toString() + ")")));
 		List<Attribute> attribs = credDesc.getAttribute();
 		Table tbl = new Table();
 		credDiv.appendChild(tbl);
 		Tr tr = null;
 		tr = new Tr().setCSSClass("heading")
-				.appendChild(new Td().appendChild(new Text("Name")))
-				.appendChild(new Td().appendChild(new Text("Value")));
+		        .appendChild(new Td().appendChild(new Text("Name")))
+		        .appendChild(new Td().appendChild(new Text("Value")));
 		tbl.appendChild(tr);
 		for (Attribute attrib : attribs) {
 			AttributeDescription attribDesc = attrib.getAttributeDescription();
 			String name = attribDesc.getFriendlyAttributeName().get(0)
-					.getValue();
+			        .getValue();
 			tr = new Tr().appendChild(new Td().appendChild(new Text(name)))
-					.appendChild(
-							new Td().appendChild(new Text(attrib
-									.getAttributeValue().toString())));
+			        .appendChild(
+			                new Td().appendChild(new Text(attrib
+			                        .getAttributeValue().toString())));
 			tbl.appendChild(tr);
 		}
 		return credDiv;
@@ -154,10 +154,10 @@ public class UserGUI {
 	 * @throws NamingException
 	 */
 	public static Div getDivForTokenCandidates(List<TokenCandidate> tcs,
-			int policyId, String uiContext, String applicationData,
-			String backURL, String userServiceURL)
-			throws ClientHandlerException, UniformInterfaceException,
-			UnsupportedEncodingException, JAXBException, NamingException {
+	        int policyId, String uiContext, String applicationData,
+	        String backURL, String userServiceURL)
+	        throws ClientHandlerException, UniformInterfaceException,
+	        UnsupportedEncodingException, JAXBException, NamingException {
 		Div enclosing = new Div();
 
 		for (TokenCandidate tc : tcs) {
@@ -167,7 +167,7 @@ public class UserGUI {
 			enclosing.appendChild(div);
 
 			div.appendChild(new H4().appendChild(new Text("Credentials "
-					+ tc.credentials.size())));
+			        + tc.credentials.size())));
 
 			for (CredentialInUi c : tc.credentials) {
 
@@ -175,51 +175,51 @@ public class UserGUI {
 					c.uri = c.uri.toString().replaceAll("IdmxCredential/", "");
 
 				Credential cred = (Credential) RESTHelper.getRequest(
-						userServiceURL + "credential/get/"
-								+ URLEncoder.encode(c.uri.toString(), "UTF-8"),
-						Credential.class);
+				        userServiceURL + "credential/get/"
+				                + URLEncoder.encode(c.uri.toString(), "UTF-8"),
+				        Credential.class);
 
 				enclosing.appendChild(getDivForCredential(cred));
 
 				Form f = new Form(backURL).setMethod("post");
 
 				f.appendChild(new Input().setType("hidden").setName("apdata")
-						.setValue(applicationData));
+				        .setValue(applicationData));
 				f.appendChild(new Input().setType("hidden").setName("uic")
-						.setValue(uiContext));
+				        .setValue(uiContext));
 				f.appendChild(new Input().setType("hidden").setName("policyId") // chosenPolicy
-						.setValue(Integer.toString(policyId)));
+				        .setValue(Integer.toString(policyId)));
 				f.appendChild(new Input().setType("hidden")
-						.setName("candidateId") // chosenPresentationToken or
-												// chosenIssuanceToken (weird
-												// stuff)
-						.setValue(Integer.toString(tc.candidateId)));
+				        .setName("candidateId") // chosenPresentationToken or
+				                                // chosenIssuanceToken (weird
+				                                // stuff)
+				        .setValue(Integer.toString(tc.candidateId)));
 
 				f.appendChild(new Label()
-						.appendChild(new Text("PseudonymID: ")));
+				        .appendChild(new Text("PseudonymID: ")));
 				Select sel = new Select();
 				sel.setName("pseudonymId");
 				for (PseudonymListCandidate pc : tc.pseudonymCandidates) {
 					sel.appendChild(new Option().appendChild(new Text(Integer
-							.toString(pc.candidateId)))); // chosenPseudonymList
+					        .toString(pc.candidateId)))); // chosenPseudonymList
 					System.out.println("____P_____");
 					for (PseudonymInUi p : pc.pseudonyms) {
 						System.out.println(p.uri.toString());
 						System.out.println(p.pseudonym.getPseudonymUID()
-								.toString());
+						        .toString());
 					}
 					// TODO: What the hell is this pseudonym thing?
 				}
 				f.appendChild(sel);
 				f.appendChild(new Br());
 				f.appendChild(new Input().setType("submit").setValue(
-						"Continue using this candidate."));
+				        "Continue using this candidate."));
 
 				enclosing.appendChild(f);
 			}
 		}
 		P p = new P().appendChild(new B().appendChild(new Text(
-				"Revealed attributes")));
+		        "Revealed attributes")));
 		enclosing.appendChild(p);
 
 		Ul ul = new Ul();
@@ -229,7 +229,7 @@ public class UserGUI {
 			for (RevealedAttributeValue reveal : reveals) {
 				for (FriendlyDescription desc : reveal.descriptions) {
 					ul.appendChild(new Li().appendChild(new Text(desc
-							.getValue())));
+					        .getValue())));
 				}
 			}
 		}
@@ -239,7 +239,7 @@ public class UserGUI {
 		ul = new Ul();
 
 		p = new P()
-				.appendChild(new B().appendChild(new Text("Revealed facts")));
+		        .appendChild(new B().appendChild(new Text("Revealed facts")));
 		enclosing.appendChild(p);
 
 		for (TokenCandidate tc : tcs) {
@@ -247,7 +247,7 @@ public class UserGUI {
 			for (RevealedFact fact : facts) {
 				for (FriendlyDescription desc : fact.descriptions) {
 					ul.appendChild(new Li().appendChild(new Text(desc
-							.getValue())));
+					        .getValue())));
 				}
 			}
 		}

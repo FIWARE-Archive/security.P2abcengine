@@ -8,13 +8,13 @@ import eu.abc4trust.xml.PresentationPolicyAlternatives;
 public interface VerificationStorage {
 
 	public void addPresentationPolicyAlternatives(URI uri,
-			PresentationPolicyAlternatives ppa) throws Exception;
+	        PresentationPolicyAlternatives ppa) throws Exception;
 
 	public PresentationPolicyAlternatives getPresentationPolicyAlternatives(
-			URI uri) throws Exception;
+	        URI uri) throws Exception;
 
 	public List<PresentationPolicyAlternatives> listPresentationPolicyAlternatives()
-			throws Exception;
+	        throws Exception;
 
 	public List<URI> listResourceURIs() throws Exception;
 
