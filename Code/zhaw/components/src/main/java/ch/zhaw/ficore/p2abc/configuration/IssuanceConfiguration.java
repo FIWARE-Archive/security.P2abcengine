@@ -46,10 +46,21 @@ public class IssuanceConfiguration {
     @XmlElement(name = "bind-query")
     private String bindQuery;
 
+    /** Creates an empty issuance configuration. */
     public IssuanceConfiguration() {
         super();
     }
 
+    /** Creates an issuance configuration.
+     *
+     * @param attributeSource the attribute source to use
+     * @param attributeConnectionParameters what connection parameters to use
+     *     for the attribute source
+     * @param authenticationSource what authentication source to use
+     * @param authenticationConnectionParameters what connection parameters
+     *     to use for the authentication source
+     * @param bindQuery the bind query to use
+     */
     public IssuanceConfiguration(final IdentitySource attributeSource,
             final ConnectionParameters attributeConnectionParameters,
             final IdentitySource authenticationSource,
@@ -59,32 +70,33 @@ public class IssuanceConfiguration {
         this.attributeSource = attributeSource;
         this.attributeConnectionParameters = attributeConnectionParameters;
         this.authenticationSource = authenticationSource;
-        this.authenticationConnectionParameters = authenticationConnectionParameters;
+        this.authenticationConnectionParameters
+            = authenticationConnectionParameters;
         this.bindQuery = bindQuery;
     }
 
-    public IdentitySource getAttributeSource() {
+    public final IdentitySource getAttributeSource() {
         return attributeSource;
     }
 
-    public ConnectionParameters getAttributeConnectionParameters() {
+    public final ConnectionParameters getAttributeConnectionParameters() {
         return attributeConnectionParameters;
     }
 
-    public IdentitySource getAuthenticationSource() {
+    public final IdentitySource getAuthenticationSource() {
         return authenticationSource;
     }
 
-    public ConnectionParameters getAuthenticationConnectionParameters() {
+    public final ConnectionParameters getAuthenticationConnectionParameters() {
         return authenticationConnectionParameters;
     }
 
-    public String getBindQuery() {
+    public final String getBindQuery() {
         return bindQuery;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this)
                 .append("attributeSource", attributeSource)
                 .append("attributeConnectionParameters",
@@ -95,14 +107,14 @@ public class IssuanceConfiguration {
                 .append("bindQuery", bindQuery).toString();
     }
 
-    public void setFakeSources() {
+    /** Makes this configuration use a fake source for attributes and
+     * authentication.
+     *
+     * WARNING: Do not use this in production.
+     */
+    public final void setFakeSources() {
         attributeSource = IdentitySource.FAKE;
         authenticationSource = IdentitySource.FAKE;
-    }
-
-    public boolean isPlausible() {
-        // TODO Auto-generated method stub
-        return true;
     }
 
 }

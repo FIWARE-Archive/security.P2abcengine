@@ -25,6 +25,7 @@ public class ConnectionParameters {
     private String connectionString;
     private String driverString;
 
+    /** Creates new connection parameters. */
     public ConnectionParameters() {
         super();
     }
@@ -65,76 +66,76 @@ public class ConnectionParameters {
         this.useTls = useTls;
     }
 
-    public String getServerName() {
+    public final String getServerName() {
         return serverName;
     }
 
-    public void setServerName(final String serverName) {
+    public final void setServerName(final String serverName) {
         this.serverName = serverName;
     }
 
-    public int getServerPort() {
+    public final int getServerPort() {
         return serverPort;
     }
 
-    public void setServerPort(final int serverPort) {
+    public final void setServerPort(final int serverPort) {
         this.serverPort = serverPort;
     }
 
-    public String getAuthenticationMethod() {
+    public final String getAuthenticationMethod() {
         return authenticationMethod;
     }
 
-    public void setAuthenticationMethod(final String authenticationMethod) {
+    public final void setAuthenticationMethod(final String authenticationMethod) {
         this.authenticationMethod = authenticationMethod;
     }
 
-    public String getUser() {
+    public final String getUser() {
         return user;
     }
 
-    public void setUser(final String user) {
+    public final void setUser(final String user) {
         this.user = user;
     }
 
-    public String getPassword() {
+    public final String getPassword() {
         return password;
     }
 
-    public void setPassword(final String password) {
+    public final void setPassword(final String password) {
         this.password = password;
     }
 
-    public boolean usesTls() {
+    public final boolean usesTls() {
         return useTls;
     }
 
-    public void setUseTls(final boolean useTls) {
+    public final void setUseTls(final boolean useTls) {
         this.useTls = useTls;
     }
 
-    public boolean getUseTls() {
+    public final boolean getUseTls() {
         return useTls;
     }
 
-    public void setConnectionString(final String connectionString) {
+    public final void setConnectionString(final String connectionString) {
         this.connectionString = connectionString;
     }
 
-    public String getConnectionString() {
+    public final String getConnectionString() {
         return connectionString;
     }
 
-    public void setDriverString(final String driverString) {
+    public final void setDriverString(final String driverString) {
         this.driverString = driverString;
     }
 
-    public String getDriverString() {
+    public final String getDriverString() {
         return driverString;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this).append("serverName", serverName)
                 .append("serverPort", serverPort).append("user", user)
                 .append("password", "(withheld)").append("useTls", useTls)
