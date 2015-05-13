@@ -10,6 +10,11 @@ import eu.abc4trust.xml.CredentialSpecification;
 import eu.abc4trust.xml.IssuerParameters;
 import eu.abc4trust.xml.SystemParameters;
 
+/** The XML for settings.
+ *
+ * @author Roman M&uuml;ntener &lt;roman.muentener@zhaw.ch&gt;
+ *
+ */
 @XmlRootElement(name = "settings", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
 public class Settings {
 

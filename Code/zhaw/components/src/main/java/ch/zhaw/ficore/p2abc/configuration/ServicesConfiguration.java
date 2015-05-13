@@ -25,23 +25,8 @@ import org.slf4j.ext.XLogger;
  * @author Stephan Neuhaus &lt;stephan.neuhaus@zhaw.ch&gt;
  * @version 1.0
  */
-public class ServicesConfiguration {
-
-    /** Configuration data for verification service. */
-    private VerificationConfiguration verificationConfiguration;
-
-    /** Configuration data for user service. */
-    private UserConfiguration userConfiguration;
-
+public final class ServicesConfiguration {
     private static XLogger logger = new XLogger(LoggerFactory.getLogger(ServicesConfiguration.class));
-
-    private static ServicesConfiguration instance = new ServicesConfiguration();
-
-    private static Context getEnvContext() throws NamingException {
-        final Context initCtx = new InitialContext();
-        final Context envCtx = (Context) initCtx.lookup("java:/comp/env");
-        return envCtx;
-    }
 
     /**
      * URI base The URI base is used as a prefix to URIs for example in the
@@ -54,22 +39,36 @@ public class ServicesConfiguration {
 
     }
 
-    public static synchronized Boolean getAllowFakeAccesstoken() {
-    	try {
-	    	final Context envCtx = ServicesConfiguration.getEnvContext();
-
-	    	try {
-	    		return (Boolean) envCtx.lookup("cfg/allowFakeAccesstoken");
-	    	}
-	    	catch(final Exception ex) {
-	    		return false;
-	    	}
-    	}
-    	catch(final Exception ex) {
-    		return false;
-    	}
+    private static Context getEnvContext() throws NamingException {
+        final Context initCtx = new InitialContext();
+        final Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+        return envCtx;
     }
 
+    /** Checks whether fake access tokens are allowed.
+     *
+     * @return whether fake access tokens are allowed
+     */
+    public static synchronized boolean getAllowFakeAccesstoken() {
+        try {
+            final Context envCtx = ServicesConfiguration.getEnvContext();
+
+            try {
+                return (Boolean) envCtx.lookup("cfg/allowFakeAccesstoken");
+            } catch (final Exception ex) {
+                return false;
+            }
+        } catch (final Exception ex) {
+            return false;
+        }
+    }
+
+    /** Retrieves the configured issuance service's URL.
+     *
+     * @return the configured issuance service's URL
+     *
+     * @throws NamingException when the URL isn't configured
+     */
     public static synchronized String getIssuanceServiceURL() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();
 
@@ -77,6 +76,12 @@ public class ServicesConfiguration {
                 .lookup("cfg/issuanceServiceURL");
     }
 
+    /** Retrieves the configured user service's URL.
+     *
+     * @return the configured user service's URL
+     *
+     * @throws NamingException when the URL isn't configured
+     */
     public static synchronized String getUserServiceURL() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();
 
@@ -84,24 +89,45 @@ public class ServicesConfiguration {
                 .lookup("cfg/userServiceURL");
     }
 
+    /** Retrieves the configured verification service's URL.
+     *
+     * @return the configured verification service's URL
+     *
+     * @throws NamingException when the URL isn't configured
+     */
     public static synchronized String getVerificationServiceURL() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();
 
         return (String) envCtx.lookup("cfg/verificationServiceURL");
     }
 
+    /** Retrieves the REST authentication user.
+     *
+     * @return the REST authentication user
+     * @throws NamingException when the user isn't configured
+     */
     public static synchronized String getRestAuthUser() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();
 
         return (String) envCtx.lookup("cfg/restAuthUser");
     }
 
+    /** Retrieves the REST authentication password.
+     *
+     * @return the REST authentication password
+     * @throws NamingException when the password isn't configured
+     */
     public static synchronized String getRestAuthPassword() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();
 
         return (String) envCtx.lookup("cfg/restAuthPassword");
     }
 
+    /** Retrieves the verifier identity.
+     *
+     * @return the verifier identity
+     * @throws NamingException when the verifier identity isn't configured
+     */
     public static synchronized String getVerifierIdentity() throws NamingException {
         final Context envCtx = ServicesConfiguration.getEnvContext();
 
@@ -121,7 +147,7 @@ public class ServicesConfiguration {
      * Returns the current issuance configuration.
      *
      * @return the current issuance parameters.
-     * @throws NamingException
+     * @throws NamingException when the issuance service isn't fully configured
      */
     public static synchronized IssuanceConfiguration getIssuanceConfiguration() throws NamingException {
         logger.entry();
@@ -147,15 +173,5 @@ public class ServicesConfiguration {
         return logger.exit(new IssuanceConfiguration(
                 sourceAttributes, cpAttributes, sourceAuthentication,
                 cpAuthentication, bindQuery));
-    }
-
-    public static synchronized VerificationConfiguration getVerificationConfiguration() {
-        logger.entry();
-        return logger.exit(instance.verificationConfiguration);
-    }
-
-    public static synchronized UserConfiguration getUserConfiguration() {
-        logger.entry();
-        return logger.exit(instance.userConfiguration);
     }
 }

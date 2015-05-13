@@ -32,7 +32,7 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         this.logStorageIssuer = logStorageIssuer;
     }
 
-    public boolean checkForPseudonym(final String primaryKey) throws IOException {
+    public final boolean checkForPseudonym(final String primaryKey) throws IOException {
         try {
             return pseudonymsStorageIssuer.containsKey(primaryKey);
         } catch (final Exception e) {
@@ -40,23 +40,25 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         }
     }
 
-    public void addPseudonymPrimaryKey(final String primaryKey) throws IOException {
+    public final void addPseudonymPrimaryKey(final String primaryKey) throws IOException {
         try {
-            pseudonymsStorageIssuer.put(primaryKey, new byte[] { (byte) 0 });
+            pseudonymsStorageIssuer.put(primaryKey, new byte[] {
+                    (byte) 0
+                });
         } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void deletePseudonym(final String primaryKey) throws Exception {
+    public final void deletePseudonym(final String primaryKey) throws Exception {
         pseudonymsStorageIssuer.delete(primaryKey);
     }
 
-    public byte[] getToken(final URI tokenuid) throws Exception {
+    public final byte[] getToken(final URI tokenuid) throws Exception {
         return tokensStorageIssuer.get(tokenuid);
     }
 
-    public void addToken(final URI tokenuid, final byte[] token) throws IOException {
+    public final void addToken(final URI tokenuid, final byte[] token) throws IOException {
         try {
             tokensStorageIssuer.put(tokenuid, token);
         } catch (final Exception e) {
@@ -64,7 +66,7 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         }
     }
 
-    public boolean deleteToken(final URI tokenuid) throws Exception {
+    public final boolean deleteToken(final URI tokenuid) throws Exception {
 
         // first remove stored pseudonyms for this token
 
@@ -95,7 +97,7 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         return true;
     }
 
-    public void addIssuanceLogEntry(final URI entryUID, final byte[] bytes)
+    public final void addIssuanceLogEntry(final URI entryUID, final byte[] bytes)
             throws IOException {
         try {
             logStorageIssuer.put(entryUID, bytes);
@@ -104,7 +106,7 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         }
     }
 
-    public byte[] getIssuanceLogEntry(final URI entryUID) throws Exception {
+    public final byte[] getIssuanceLogEntry(final URI entryUID) throws Exception {
         try {
             return logStorageIssuer.get(entryUID);
         } catch (final Exception e) {
@@ -112,7 +114,7 @@ public class GenericTokenStorageIssuer implements TokenStorageIssuer {
         }
     }
 
-    public boolean deleteIssuanceLogEntry(final URI entryUID) throws Exception {
+    public final boolean deleteIssuanceLogEntry(final URI entryUID) throws Exception {
         logStorageIssuer.delete(entryUID);
         return true;
     }

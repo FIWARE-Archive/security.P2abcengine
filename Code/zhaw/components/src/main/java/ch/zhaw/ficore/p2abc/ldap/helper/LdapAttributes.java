@@ -11,9 +11,11 @@ import javax.naming.directory.ModificationItem;
  * @author mroman
  *
  */
-public class LdapAttributes {
-    // Hidden default constructor. Do not use an instance of this class; use
-    // the static methods instead.
+public final class LdapAttributes {
+    /** Hidden default constructor.
+     *
+     * Do not use an instance of this class; use the static methods instead.
+     */
     private LdapAttributes() {
     }
 
@@ -37,13 +39,14 @@ public class LdapAttributes {
      *             if the initial context can't be retrieved or the replacement
      *             didn't work
      */
-    public static final void replaceAttribute(
+    public static void replaceAttribute(
             final String name, final Attribute attribute,
             final LdapConnection con) throws NamingException {
         final DirContext context = con.getInitialDirContext();
         // Attributes attributes = context.getAttributes(name);
-        final ModificationItem[] mods = new ModificationItem[] { new ModificationItem(
-                DirContext.REPLACE_ATTRIBUTE, attribute) };
+        final ModificationItem[] mods = new ModificationItem[] {
+                new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attribute)
+            };
         context.modifyAttributes(name, mods);
     }
 }

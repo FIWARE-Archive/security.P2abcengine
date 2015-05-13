@@ -7,25 +7,30 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/** The XML for attribute information.
+ *
+ * @author Roman M&uuml;ntener &lt;roman.muentener@zhaw.ch&gt;
+ *
+ */
 @XmlRootElement(name = "attribute", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
 public class AttributeInformation {
 
     @XmlElement(name = "name", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(
-            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
-            justification="Field is read from another project")
+            value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification = "Field is read from another project")
     public String name;
 
     @XmlElement(name = "mapping", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(
-            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
-            justification="Field is read from another project")
+            value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification = "Field is read from another project")
     public String mapping;
 
     @XmlElement(name = "encoding", required = true, namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(
-            value="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
-            justification="Field is read from another project")
+            value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+            justification = "Field is read from another project")
     public String encoding;
 
     @XmlElementWrapper(name = "friendly-descriptions", namespace = "http://abc4trust.eu/wp2/abcschemav1.0")
@@ -41,7 +46,7 @@ public class AttributeInformation {
         this.encoding = encoding;
     }
 
-    public void addFriendlyDescription(final String language, final String value) {
+    public final void addFriendlyDescription(final String language, final String value) {
         friendlyDescriptions.add(new LanguageValuePair(language, value));
     }
 }

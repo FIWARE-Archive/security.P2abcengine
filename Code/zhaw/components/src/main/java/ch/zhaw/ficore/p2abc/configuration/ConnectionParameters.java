@@ -51,8 +51,8 @@ public class ConnectionParameters {
      *            whether or not to use TLS
      */
     public ConnectionParameters(final String serverName, final int serverPort,
-            final int normalDefaultPort, final int tlsDefaultPort, final String user,
-            final String password, final boolean useTls) {
+            final int normalDefaultPort, final int tlsDefaultPort,
+            final String user, final String password, final boolean useTls) {
         super();
         this.serverName = serverName;
         if (serverPort > 0 && serverPort <= MAX_PORT) {

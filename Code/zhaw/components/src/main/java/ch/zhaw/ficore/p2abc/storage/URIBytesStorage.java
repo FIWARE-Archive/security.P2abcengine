@@ -19,8 +19,8 @@ public abstract class URIBytesStorage {
         instances.add(this);
     }
 
-    public static void clearEverything() throws Exception {
-        for(final URIBytesStorage instance : instances) {
+    public static final void clearEverything() throws Exception {
+        for (final URIBytesStorage instance : instances) {
             instance.deleteAll();
         }
     }
@@ -36,7 +36,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public void put(final URI uri, final byte[] bytes) throws Exception {
+    public final void put(final URI uri, final byte[] bytes) throws Exception {
         put(uri.toString(), bytes);
     }
 
@@ -54,7 +54,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public boolean putNew(final URI uri, final byte[] bytes) throws Exception {
+    public final boolean putNew(final URI uri, final byte[] bytes) throws Exception {
         return putNew(uri.toString(), bytes);
     }
 
@@ -69,7 +69,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public byte[] get(final URI uri) throws Exception {
+    public final byte[] get(final URI uri) throws Exception {
         return get(uri.toString());
     }
 
@@ -83,7 +83,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public List<URI> keys() throws Exception {
+    public final List<URI> keys() throws Exception {
         final List<URI> uris = new ArrayList<URI>();
         for (final String key : keysAsStrings()) {
             try {
@@ -96,6 +96,7 @@ public abstract class URIBytesStorage {
                  * URI. In such a case we just don't list it here. Storages
                  * using raw strings must use keysAsStrings(). -- munt
                  */
+                ; // empty
             }
         }
         return uris;
@@ -109,7 +110,7 @@ public abstract class URIBytesStorage {
      *             on any error
      *
      */
-    public List<byte[]> values() throws Exception {
+    public final List<byte[]> values() throws Exception {
         final List<String> keys = keysAsStrings();
         final List<byte[]> values = new ArrayList<byte[]>();
         for (final String key : keys) {
@@ -129,7 +130,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public boolean containsKey(final URI uri) throws Exception {
+    public final boolean containsKey(final URI uri) throws Exception {
         return containsKey(uri.toString());
     }
 
@@ -143,7 +144,7 @@ public abstract class URIBytesStorage {
      * @throws Exception
      *             on any error
      */
-    public void delete(final URI uri) throws Exception {
+    public final void delete(final URI uri) throws Exception {
         delete(uri.toString());
     }
 

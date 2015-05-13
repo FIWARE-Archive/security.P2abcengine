@@ -18,7 +18,7 @@ public class GenericSecretStorage implements SecretStorage {
         this.storage = storage;
     }
 
-    public void addSecret(final URI key, final byte[] bytes) throws IOException {
+    public final void addSecret(final URI key, final byte[] bytes) throws IOException {
         try {
             storage.put(key, bytes);
         } catch (final Exception e) {
@@ -26,7 +26,7 @@ public class GenericSecretStorage implements SecretStorage {
         }
     }
 
-    public byte[] getSecret(final URI key) throws IOException {
+    public final byte[] getSecret(final URI key) throws IOException {
         try {
             return storage.get(key);
         } catch (final Exception e) {
@@ -34,7 +34,7 @@ public class GenericSecretStorage implements SecretStorage {
         }
     }
 
-    public List<URI> listSecrets() throws IOException {
+    public final List<URI> listSecrets() throws IOException {
         try {
             return storage.keys();
         } catch (final Exception e) {
@@ -42,7 +42,7 @@ public class GenericSecretStorage implements SecretStorage {
         }
     }
 
-    public void deleteSecret(final URI key) throws IOException {
+    public final void deleteSecret(final URI key) throws IOException {
         try {
             storage.delete(key);
         } catch (final Exception e) {
