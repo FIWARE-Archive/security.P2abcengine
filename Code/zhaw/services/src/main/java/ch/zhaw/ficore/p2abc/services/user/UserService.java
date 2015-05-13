@@ -128,15 +128,10 @@ public class UserService {
     /**
      * @fiware-rest-path /protected/reset
      * @fiware-rest-method POST
-<<<<<<< HEAD
-     * @fiware-rest-description This method reloads the configuration of the webservice(s) and will completely wipe
-     * all storage of the webservice(s). Use with extreme caution!
-=======
      * @fiware-rest-description This method reloads the configuration of the
      *                          webservice(s) and will completely wipe all
      *                          storage of the webservice(s). Use with extreme
      *                          caution!
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      *
@@ -312,14 +307,6 @@ public class UserService {
      * @fiware-rest-path /loadSettings/
      * @fiware-rest-method POST
      * @fiware-rest-description Download and load settings from an issuer or any
-<<<<<<< HEAD
-     * settings provider. This method will cause the user service to make a
-     * <tt>GET</tt> request to the specified <tt>url</tt> and download the
-     * contents which must be valid <tt>Settings</tt>. DO NOT use this method
-     * with untrusted URLs or issuers (or any other settings providers) with
-     * DIFFERENT system parameters as this method will overwrite existing system
-     * parameters. See also {@link #getSettings()}.
-=======
      *                          settings provider. This method will cause the
      *                          user service to make a <tt>GET</tt> request to
      *                          the specified <tt>url</tt> and download the
@@ -329,7 +316,6 @@ public class UserService {
      *                          DIFFERENT system parameters as this method will
      *                          overwrite existing system parameters. See also
      *                          {@link #getSettings()}.
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-request-param url a valid URL (String)
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
@@ -519,14 +505,9 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 The credential could not be found.
      * @fiware-rest-return-type Credential
-<<<<<<< HEAD
-     *
-     * @param credUid UID of the credential
-=======
      *
      * @param credUid
      *            UID of the credential
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @GET()
@@ -568,37 +549,6 @@ public class UserService {
 
     /**
      * @fiware-rest-path /issuanceProtocolStep/
-<<<<<<< HEAD
-     * @fiware-rest-description
-     * This method performs one step in an interactive
-     * issuance protocol. On input an incoming issuance message im obtained from
-     * the Issuer, it either returns the outgoing issuance message that is to be
-     * sent back to the Issuer, an object that must be sent to the User
-     * Interface (UI) to allow the user to decide how to satisfy a policy (or
-     * confirm the only choice), or returns a description of the newly issued
-     * credential at successful completion of the protocol. In the first case,
-     * the Context attribute of the outgoing message has the same value as that
-     * of the incoming message, allowing the Issuer to link the different
-     * messages of this issuance protocol.
-     *
-     * If this is the first time this method is called for a given context, the
-     * method expects the issuance message to contain an issuance policy, and
-     * returns an object that is to be sent to the UI (allowing the user to
-     * chose his preferred way of generating the presentation token, or to
-     * confirm the only possible choice).
-     *
-     * This method throws an exception if the policy cannot be satisfied with
-     * the user's current credentials.
-     *
-     * If this method returns an IssuanceMessage, that message should be
-     * forwarded to the Issuer. If this method returns a CredentialDescription,
-     * then the issuance protocol was successful. If this method returns a
-     * UiIssuanceArguments, that object must be forwarded to the UI (or to some
-     * other component that is capable of rendering a UiIssuanceReturn object
-     * from a UiIssuanceArguments object); the method
-     * issuanceProtocolStep(UiIssuanceReturn) should then be invoked with the
-     * object returned by the UI.<br>
-=======
      * @fiware-rest-description This method performs one step in an interactive
      *                          issuance protocol. On input an incoming issuance
      *                          message im obtained from the Issuer, it either
@@ -639,7 +589,6 @@ public class UserService {
      *                          issuanceProtocolStep(UiIssuanceReturn) should
      *                          then be invoked with the object returned by the
      *                          UI.<br>
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessage
@@ -776,16 +725,6 @@ public class UserService {
      *                   /credentialSpecification/store/{credentialSpecificationUid
      *                   }
      * @fiware-rest-method PUT
-<<<<<<< HEAD
-     * @fiware-rest-description Stores a credential specification under the given
-     * UID.
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification
-     * @fiware-rest-response 200 OK
-     * @fiware-rest-response 500 ERROR
-     * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not match the actual
-     * UID or is invalid.
-     *
-=======
      * @fiware-rest-description Stores a credential specification under the
      *                          given UID.
      * @fiware-rest-path-param credentialSpecificationUid UID of the credential
@@ -795,7 +734,6 @@ public class UserService {
      * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not
      *                       match the actual UID or is invalid.
      *
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @param credentialSpecificationUid
      *            UID of the credential specification.
      * @param credSpec
@@ -854,14 +792,9 @@ public class UserService {
      * @fiware-rest-response 404 The credential specification could not be
      *                       found.
      * @fiware-rest-return-type CredentialSpecification
-<<<<<<< HEAD
-     *
-     * @param credSpecUid UID of the credential specification
-=======
      *
      * @param credSpecUid
      *            UID of the credential specification
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @GET()
@@ -901,13 +834,6 @@ public class UserService {
      *                   }
      * @fiware-rest-method DELETE
      * @fiware-rest-description Deletes a credential specification.
-<<<<<<< HEAD
-     * @fiware-rest-path-param credentialSpecificationUid UID of the credential specification to delete.
-     * @fiware-rest-response 200 OK
-     * @fiware-rest-response 500 ERROR
-     *
-     * @param credSpecUid UID of the credential specification to delete
-=======
      * @fiware-rest-patha-param >credentialSpecificationUid UID of the
      *                          credential specification to delete.
      * @fiware-rest-response 200 OK
@@ -915,7 +841,6 @@ public class UserService {
      *
      * @param credSpecUid
      *            UID of the credential specification to delete
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @DELETE()
@@ -1067,14 +992,9 @@ public class UserService {
      *                         to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-<<<<<<< HEAD
-     *
-     * @param issuerParametersUid UID of the issuer parameters
-=======
      *
      * @param issuerParametersUid
      *            UID of the issuer parameters
->>>>>>> 69f05281a6f5524b05f6c44b14e6c764da87e775
      * @return Response
      */
     @DELETE()

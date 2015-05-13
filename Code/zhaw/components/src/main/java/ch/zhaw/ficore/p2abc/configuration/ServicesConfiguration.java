@@ -48,19 +48,24 @@ public class ServicesConfiguration {
      * generation of CredentialSpecifications.
      */
     private static String uriBase = "urn:fiware:privacy:";
-    
+
+    /** Private do-nothing constructor to prevent construction of instances. */
+    private ServicesConfiguration() {
+
+    }
+
     public static synchronized Boolean getAllowFakeAccesstoken() {
     	try {
-	    	Context envCtx = ServicesConfiguration.getEnvContext();
-	    	
+	    	final Context envCtx = ServicesConfiguration.getEnvContext();
+
 	    	try {
 	    		return (Boolean) envCtx.lookup("cfg/allowFakeAccesstoken");
 	    	}
-	    	catch(Exception ex) {
+	    	catch(final Exception ex) {
 	    		return false;
 	    	}
     	}
-    	catch(Exception ex) {
+    	catch(final Exception ex) {
     		return false;
     	}
     }
@@ -110,10 +115,6 @@ public class ServicesConfiguration {
      */
     public static synchronized String getURIBase() {
         return uriBase;
-    }
-
-    /** Private do-nothing constructor to prevent construction of instances. */
-    public ServicesConfiguration() {
     }
 
     /**
