@@ -2,6 +2,8 @@ package ch.zhaw.ficore.p2abc.services.issuance;
 
 import java.net.URLEncoder;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -26,6 +28,7 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
     private static final XLogger logger = new XLogger(
             LoggerFactory.getLogger(KeyrockAuthenticationProvider.class));
     private String userId;
+    private final String keyrockURL = "";
 
     /**
      * Constructor
@@ -36,6 +39,24 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
     public KeyrockAuthenticationProvider(
             final IssuanceConfiguration configuration) {
         super(configuration);
+
+        Context initCtx = new InitialContext();
+        Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+
+        String url = "https://account.lab.fiware.org/";
+
+        try {
+            String cfgUrl = (String) envCtx.lookup("cfg/keyrock/baseURL");
+            if (cfgUrl != null) {
+                url = cfgUrl;
+            }
+        } catch (RuntimeException e) {
+
+        } catch (Exception e) {
+
+        }
+
+        keyrockURL = url;
     }
 
     /**
@@ -63,10 +84,9 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
 
         try {
 
-            String json = (String) RESTHelper
-                    .getRequestUnauth("https://account.lab.fiware.org/user?access_token="
-                            + URLEncoder.encode(keyrockAuth.accessToken,
-                                    "UTF-8"));
+            String json = (String) RESTHelper.getRequestUnauth(keyrockURL
+                    + "user?access_token="
+                    + URLEncoder.encode(keyrockAuth.accessToken, "UTF-8"));
             JSONObject result = (JSONObject) JSONValue.parse(json);
 
             logger.info(json);
