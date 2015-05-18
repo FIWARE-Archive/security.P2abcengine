@@ -28,7 +28,7 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
     private static final XLogger logger = new XLogger(
             LoggerFactory.getLogger(KeyrockAuthenticationProvider.class));
     private String userId;
-    private final String keyrockURL = "";
+    private String keyrockURL = "";
 
     /**
      * Constructor
@@ -40,12 +40,12 @@ public class KeyrockAuthenticationProvider extends AuthenticationProvider {
             final IssuanceConfiguration configuration) {
         super(configuration);
 
-        Context initCtx = new InitialContext();
-        Context envCtx = (Context) initCtx.lookup("java:/comp/env");
-
         String url = "https://account.lab.fiware.org/";
 
         try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:/comp/env");
+
             String cfgUrl = (String) envCtx.lookup("cfg/keyrock/baseURL");
             if (cfgUrl != null) {
                 url = cfgUrl;
