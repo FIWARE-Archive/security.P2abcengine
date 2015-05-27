@@ -15,7 +15,10 @@ public class PrivacyRespFilter implements ContainerResponseFilter {
 
         String accesstoken = req.getHeaderValue("X-P2ABC-ACCESSTOKEN");
 
-        List<Object> ls = new ArrayList<Object>();
+        List<Object> ls = resp.getHttpHeaders().get(HttpHeaders.SET_COOKIE);
+        if (ls == null) {
+            ls = new ArrayList<Object>();
+        }
         ls.add("x-p2abc-accesstoken=" + accesstoken);
         resp.getHttpHeaders().put(HttpHeaders.SET_COOKIE, ls);
         return resp;
