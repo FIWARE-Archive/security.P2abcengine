@@ -95,7 +95,7 @@ public class JdbcAuthenticationProvider extends AuthenticationProvider {
             }
             pwHash = DigestUtils.sha1Hex(salt + simpleAuth.password);
 
-            logger.info(unameHash + "," + pwHash + "," + dbHash);
+            // logger.info(unameHash + "," + pwHash + "," + dbHash);
 
             if (pwHash.equals(dbHash)) {
                 userId = unameHash;
