@@ -142,7 +142,6 @@
     <module>services</module>
     <module>components</module>
     <module>integration-tests</module>
-    <module>documenter</module>
   </modules>
   
 </project>
