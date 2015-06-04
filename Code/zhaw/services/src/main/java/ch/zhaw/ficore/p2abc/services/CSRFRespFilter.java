@@ -1,10 +1,9 @@
 package ch.zhaw.ficore.p2abc.services;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
@@ -16,11 +15,17 @@ public class CSRFRespFilter implements ContainerResponseFilter {
 
     @Override
     public ContainerResponse filter(final ContainerRequest arg0,
-            final ContainerResponse arg1) {
-        List<Object> ls = new ArrayList<Object>();
-        ls.add("csrf=" + randomString());
-        arg1.getHttpHeaders().put(HttpHeaders.SET_COOKIE, ls);
-        return arg1;
+            final ContainerResponse resp) {
+
+        NewCookie nc = new NewCookie("csrf", randomString());
+
+        Response response = resp.getResponse();
+        Response cookieResponse = Response.fromResponse(response).cookie(nc)
+                .build();
+
+        resp.setResponse(cookieResponse);
+
+        return resp;
     }
 
     private String randomString() {

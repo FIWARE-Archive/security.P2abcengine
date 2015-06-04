@@ -851,7 +851,22 @@ public class UserServiceGUI {
                 String clientSecret = (String) envCtx
                         .lookup("cfg/keyrock/clientSecret");
 
-                String url = "https://account.lab.fiware.org/oauth2/token";
+                String url = "https://account.lab.fiware.org/";
+
+                try {
+                    String cfgUrl = (String) envCtx
+                            .lookup("cfg/keyrock/baseURL");
+                    if (cfgUrl != null) {
+                        url = cfgUrl;
+                    }
+                } catch (RuntimeException e) {
+
+                } catch (Exception e) {
+
+                }
+
+                url += "oauth2/token";
+
                 MultivaluedMap<String, String> params = new MultivaluedMapImpl();
                 params.add("grant_type", "password");
                 params.add("password", password);

@@ -12,6 +12,9 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+
 import ch.zhaw.ficore.p2abc.services.helpers.RESTHelper;
 
 import com.sun.jersey.core.header.InBoundHeaders;
@@ -27,11 +30,18 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
     private final List<String> tokens = new ArrayList<String>();
     private static final int MAX_TOKENS = 4096;
 
+    /** The logger. */
+    private static final XLogger LOGGER = new XLogger(
+            LoggerFactory.getLogger(PrivacyReqFilter.class));
+
     @Override
     public ContainerRequest filter(final ContainerRequest req) {
         String path = req.getPath(false);
 
         if (path.matches(callbackRegex)) {
+
+            LOGGER.info("Callback detected!");
+
             /* this is the callback */
             List<String> temp = req.getQueryParameters().get("accesstoken");
 
@@ -63,6 +73,8 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
                                 .getRequestHeaders();
                         headers.add("X-P2ABC-ACCESSTOKEN", accesstoken);
                         req.setHeaders((InBoundHeaders) headers);
+                        LOGGER.info("Setting X-P2ABC-ACCESSTOKEN to "
+                                + accesstoken);
                     }
 
                     return req;
@@ -75,6 +87,9 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
                 return denyRequest(req);
             }
         } else if (path.matches(pathRegex)) {
+
+            LOGGER.info("Protected access detected!");
+
             Cookie cookie = req.getCookies().get("x-p2abc-accesstoken");
             if (cookie == null) {
                 return denyRequest(req);
@@ -83,6 +98,11 @@ public class PrivacyReqFilter implements ContainerRequestFilter {
             if (!tokens.contains(token)) {
                 return denyRequest(req);
             }
+
+            MultivaluedMap<String, String> headers = req.getRequestHeaders();
+            headers.add("X-P2ABC-ACCESSTOKEN", token);
+            req.setHeaders((InBoundHeaders) headers);
+            LOGGER.info("Setting X-P2ABC-ACCESSTOKEN to " + token);
         }
 
         return req;

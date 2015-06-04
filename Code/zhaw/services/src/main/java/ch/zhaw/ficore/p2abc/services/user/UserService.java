@@ -89,8 +89,6 @@ public class UserService {
     private static final XLogger log = new XLogger(
             LoggerFactory.getLogger(UserService.class));
 
-    private final String fileStoragePrefix = ""; // no prefix -- munt
-
     private static String errCredSpecUid = "The credential specification uid does not match or is invalid!";
     private static String errIssParamsUid = "The issuer parameters uid does not match or is invalid!";
     private static String errNotImplemented = "The requested operation is not supported and/or not implemented.";
@@ -116,7 +114,7 @@ public class UserService {
      * @fiware-rest-description If the service is running this method is
      *                          available.
      * @fiware-rest-response 200 OK
-     *
+     * 
      * @return Response
      */
     @GET()
@@ -134,7 +132,7 @@ public class UserService {
      *                          caution!
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     *
+     * 
      * @return Response
      * @throws Exception
      *             when something went wrong
@@ -163,7 +161,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type PresentationPolicyAlternatives
      * @fiware-rest-return-type ABCEBoolean
-     *
+     * 
      * @param p
      *            PresentationPolicyAlternatives
      * @return Response
@@ -207,7 +205,7 @@ public class UserService {
      *                          the policy, or by using different sets of
      *                          credentials to satisfy one alternative)
      *                          presentation tokens that satisfiy the policy.
-     *
+     * 
      *                          The return value of this method should be passed
      *                          to the User Interface (or to some other
      *                          component that is capable of rendering a
@@ -221,7 +219,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type PresentationPolicyAlternatives
      * @fiware-rest-return-type UiPresentationArguments
-     *
+     * 
      * @param p
      *            PresentationPolicyAlternatives
      * @return Response
@@ -264,7 +262,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type UiPresentationReturn
      * @fiware-rest-return-type PresentationToken
-     *
+     * 
      * @param upr
      *            UiPresentationReturn
      * @return Response
@@ -319,7 +317,7 @@ public class UserService {
      * @fiware-rest-request-param url a valid URL (String)
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     *
+     * 
      * @param url
      *            URL to download settings from.
      * @return Response
@@ -387,7 +385,7 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type Settings
-     *
+     * 
      * @return Response
      */
     @GET()
@@ -456,7 +454,7 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type CredentialCollection
-     *
+     * 
      * @return Response
      */
     @GET()
@@ -505,7 +503,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 404 The credential could not be found.
      * @fiware-rest-return-type Credential
-     *
+     * 
      * @param credUid
      *            UID of the credential
      * @return Response
@@ -564,7 +562,7 @@ public class UserService {
      *                          the incoming message, allowing the Issuer to
      *                          link the different messages of this issuance
      *                          protocol.
-     *
+     * 
      *                          If this is the first time this method is called
      *                          for a given context, the method expects the
      *                          issuance message to contain an issuance policy,
@@ -572,11 +570,11 @@ public class UserService {
      *                          UI (allowing the user to chose his preferred way
      *                          of generating the presentation token, or to
      *                          confirm the only possible choice).
-     *
+     * 
      *                          This method throws an exception if the policy
      *                          cannot be satisfied with the user's current
      *                          credentials.
-     *
+     * 
      *                          If this method returns an IssuanceMessage, that
      *                          message should be forwarded to the Issuer. If
      *                          this method returns a CredentialDescription,
@@ -593,7 +591,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessage
      * @fiware-rest-return-type IssuanceReturn
-     *
+     * 
      * @param jm
      *            IssuanceMessage
      * @return Response
@@ -640,7 +638,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type UiIssuanceReturn
      * @fiware-rest-return-type IssuanceMessage
-     *
+     * 
      * @param uir
      *            UiIssuanceReturn
      * @return Response
@@ -683,7 +681,7 @@ public class UserService {
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-return-type ABCEBoolean
-     *
+     * 
      * @param credentialUid
      *            - UID of the credential
      * @return Response
@@ -721,7 +719,7 @@ public class UserService {
     }
 
     /**
-     * @fiware-rest-path
+     * @fiware-rest-path 
      *                   /credentialSpecification/store/{credentialSpecificationUid
      *                   }
      * @fiware-rest-method PUT
@@ -733,7 +731,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-response 409 <tt>credentialSpecificationUid</tt> does not
      *                       match the actual UID or is invalid.
-     *
+     * 
      * @param credentialSpecificationUid
      *            UID of the credential specification.
      * @param credSpec
@@ -779,7 +777,7 @@ public class UserService {
     }
 
     /**
-     * @fiware-rest-path
+     * @fiware-rest-path 
      *                   /credentialSpecification/get/{credentialSpecificationUid
      *                   }
      * @fiware-rest-method GET
@@ -792,7 +790,7 @@ public class UserService {
      * @fiware-rest-response 404 The credential specification could not be
      *                       found.
      * @fiware-rest-return-type CredentialSpecification
-     *
+     * 
      * @param credSpecUid
      *            UID of the credential specification
      * @return Response
@@ -829,7 +827,7 @@ public class UserService {
     }
 
     /**
-     * @fiware-rest-path
+     * @fiware-rest-path 
      *                   /protected/credentialSpecification/delete/{credentialSpecificationUid
      *                   }
      * @fiware-rest-method DELETE
@@ -838,7 +836,7 @@ public class UserService {
      *                          credential specification to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     *
+     * 
      * @param credSpecUid
      *            UID of the credential specification to delete
      * @return Response
@@ -883,7 +881,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type SystemParameters
      * @fiware-rest-return-type ABCEBoolean
-     *
+     * 
      * @param systemParameters
      *            SystemParameters
      * @return Response
@@ -934,7 +932,7 @@ public class UserService {
      *                       is invalid.
      * @fiware-rest-input-type IssuerParameters
      * @fiware-rest-return-type ABCEBoolean
-     *
+     * 
      * @param issuerParametersUid
      *            UID of the IssuerParameters
      * @param issuerParameters
@@ -992,7 +990,7 @@ public class UserService {
      *                         to delete.
      * @fiware-rest-response 200 OK
      * @fiware-rest-response 500 ERROR
-     *
+     * 
      * @param issuerParametersUid
      *            UID of the issuer parameters
      * @return Response
@@ -1044,7 +1042,7 @@ public class UserService {
                 UserHelper
                         .initInstanceForService(
                                 CRYPTO_ENGINE,
-                                this.fileStoragePrefix,
+                                "",
                                 StorageModuleFactory
                                         .getModulesForServiceConfiguration(ServiceType.USER));
 
@@ -1072,7 +1070,7 @@ public class UserService {
      * @fiware-rest-response 500 ERROR
      * @fiware-rest-input-type IssuanceMessageAndBoolean
      * @fiware-rest-return-type IssuanceMessage
-     *
+     * 
      * @param issuanceMessageAndBoolean
      *            IssuanceMessageAndBoolean
      * @return Response
