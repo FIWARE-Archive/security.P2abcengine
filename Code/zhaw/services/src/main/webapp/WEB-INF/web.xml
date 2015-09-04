@@ -106,19 +106,19 @@
 	<env-entry>
 		<description> IssuanceServiceURL </description>
 		<env-entry-name>cfg/issuanceServiceURL</env-entry-name>
-		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/issuance/</env-entry-value>
+		<env-entry-value>http://localhost:12001/zhaw-p2abc-webservices/issuance/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> UserServiceURL </description>
 		<env-entry-name>cfg/userServiceURL</env-entry-name>
-		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/user/</env-entry-value>
+		<env-entry-value>http://localhost:12001/zhaw-p2abc-webservices/user/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> VerificationServiceURL </description>
 		<env-entry-name>cfg/verificationServiceURL</env-entry-name>
-		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/verification/</env-entry-value>
+		<env-entry-value>http://localhost:12001/zhaw-p2abc-webservices/verification/</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
@@ -136,13 +136,13 @@
 	<env-entry>
 		<description> AttributeSource </description>
 		<env-entry-name>cfg/Source/attributes</env-entry-name>
-		<env-entry-value> JDBC </env-entry-value>
+		<env-entry-value> FAKE </env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 	<env-entry>
 		<description> AuthenticationSource </description>
 		<env-entry-name>cfg/Source/authentication</env-entry-name>
-		<env-entry-value> JDBC </env-entry-value>
+		<env-entry-value> FAKE </env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 
@@ -170,7 +170,7 @@
 	</env-entry>
     <env-entry>
 		<env-entry-name>cfg/p2abc-filter/verifierURL</env-entry-name>
-		<env-entry-value>https://localhost:8443/zhaw-p2abc-webservices/verification</env-entry-value>
+		<env-entry-value>https://localhost:12001/zhaw-p2abc-webservices/verification</env-entry-value>
 		<env-entry-type> java.lang.String </env-entry-type>
 	</env-entry>
 
