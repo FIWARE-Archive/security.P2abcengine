@@ -12,6 +12,7 @@ You should familiarise yourself with the concepts of the Privacy GE as laid out 
 * A [Java JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) for Java version 8 (or probably higher). The runtime environment (JRE) will *not* suffice. (This is a prerequisite also for building IBM's P2ABC engine.)
 * A recent [git](http://www.git-scm.com/) client.
 * [Maven 3](https://maven.apache.org/) (this is a prerequisite also for building IBM's P2ABC engine).
+* The [P2ABC engine](https://github.com/p2abcengine/p2abcengine/), in a version from before January 2015.
 * The current version of the Privacy GEri, which is available from the [ZHAW github](https://github.engineering.zhaw.ch/neut/p2abcengine).
 
 You will also need either a functioning .NET environment or a mono executable; we have found no way to disable .NET support in the libary that does all the crypto.  The .NET environment will not be needed, it just has to look as if it was there. If you don't already have .NET and don't want mono, you could execute these commands in a directory on the servlet engine's execution path:
@@ -21,7 +22,7 @@ You will also need either a functioning .NET environment or a mono executable; w
       chmod 755 mono
     fi
 
-Next, build the P2ABC engine according to its [https://github.com/p2abcengine/p2abcengine/wiki/How-to-Build-the-ABC-Engine build instructions]. This will install the required JAR files in your local Maven repository. 
+Next, build the P2ABC engine according to its [build instructions](https://github.com/p2abcengine/p2abcengine/wiki/How-to-Build-the-ABC-Engine). This will install the required JAR files in your local Maven repository. 
 
 **Please NOTE** that ZHAW does *not* maintain the P2ABC engine, nor do we maintain its documentation. Should you find errors in the installation instructions or in the software, please address them to the maintainers of the P2ABC engine, not to us. If you find any, we *cannot* do anything about them even if we wanted to, except perhaps sympathise with you.
 
@@ -52,9 +53,9 @@ do this by specifing a maven profile such as:
 
 which will produce war-files using only the corresponding REST-service and GUI-service.
 
-### Deploying the GE
+### Deploying the Privacy GE
 
-The result of the previous step is that a file ```services/target/zhaw-p2abc-webservices.war``` (or ```services/target/zhaw-webservices-4.1.3-*PROFILE*.war```) has been created. This is the Privacy GE. You deploy it like you would deploy any other WAR; the precise mechanics depend on the servlet engine and your preferred mode of deployment.
+The result of the previous step is that files ```services/target/zhaw-webservices-4.1.3-*PROFILE*.war``` have been created, where ```PROFILE``` stands for ```user```, ```issuer```, or ```verifier```, and where the precise version number may vary. These are the services that make up the Privacy GE. You deploy them like you would deploy any other WAR; the precise mechanics depend on the servlet engine and your preferred mode of deployment.
 
 ## Providers
 
@@ -173,7 +174,7 @@ This resource entry is to configure the storage of the services. The web-service
         authenticationMethod="simple"
         user="uid=admin, ou=system"
         password="secret"
-        connectionString="jdbc:sqlite:/home/mroman/test.db"
+        connectionString="jdbc:sqlite:/tmp/test.db"
         driverString="org.sqlite.JDBC"
         useTls="false"/>
         
@@ -186,7 +187,7 @@ This resource entry is to configure the storage of the services. The web-service
         authenticationMethod="simple"
         user="uid=admin, ou=system"
         password="secret"
-        connectionString="jdbc:sqlite:/home/mroman/test.db"
+        connectionString="jdbc:sqlite:/tmp/test.db"
         driverString="org.sqlite.JDBC"
         useTls="false"/>
 
@@ -197,7 +198,7 @@ values it expects.
 
 For LDAP the Query is an LDAP Search Query. For SQL the Query is an SQL-Statement. 
 In Queries the String ```_UID_``` will be replaced with the user name as given in the
-authentication request by an end user. User names are restricted ASCII letters only.
+authentication request by an end user. User names are restricted to ASCII letters only.
 
 ### Verification Service
 
@@ -352,42 +353,54 @@ The Sanity Check Procedures are the steps that a System Administrator will take 
 Unit and integration tests of the p2abcengine run as self-hosted applications through the use of jersey. You can just run them through ```mvn test```. However, this does of course not test a live installation.
 The tests are self-embedded and self-configuring. 
 
-## End to End testing
-
-* This is basically quick testing to check that everything is up and running. It may be composed of a single test or a few of them.
-* E.g.: login on a web site and doing a basic query on a web form or API (provide URL and user/password)
 
 ## List of Running Processes
 
-This depends on how you host the RESTful services. Usually you'll want to do this using a tomcat and therefore your tomcat should be running. 
+The following processes must be running for the Privacy GE to work:
+
+* Web application server
+* Database server(s)
 
 ## Network interfaces Up & Open
 
-This also depends on how you host the services. Most likely you'll want them to run on port 443 using https but this is up to you. 
-
+Outgoing interfaces open for incoming connections on port 80 (if using plain HTTP) or 443 (if using HTTP with TLS; this is the preferred option).
+ 
 ## Databases
 
-This depends entirely on your configuration and what attribute and/or authentication providers you make use of.
+For the issuer:
+
+* Authentication provider
+* Attribute provider
+
+For the user:
+
+* Database holding the credentials
+
+For the verifier:
+
+* The verifier does not need any databases
+
 
 # Diagnosis Procedures
 
-The Diagnosis Procedures are the first steps that a System Administrator will take to locate the source of an error in a GE. Once the nature of the error is identified with these tests, the system admin will very often have to resort to more concrete and specific testing to pinpoint the exact point of error and a possible solution. Such specific testing is out of the scope of this section.
-
-The following sections have to be filled in with the information or an “N/A” (“Not Applicable”) where needed. Do not delete section titles in any case. 
-
 ## Resource Availability
 
-State the amount of available resources in terms of RAM and hard disk that are necessary to have a healthy enabler. This means that bellow these thresholds the enabler is likely to experience problems or bad performance. 
+The availability of all services can be checked with the ```status``` method:
+
+    curl -X GET https://service.example.com:8888/status/
+
+This should return a HTTP code of 200 (OK).
 
 ## Remote Service Access
 
-State what enablers talk with your enabler and give the parameters to characterise such connection. The administrator will use this information to verify that such links are available.
+N/A
 
 ## Resource Consumption
 
-State the amount of resources that are abnormally high or low. This applies to 
-RAM, CPU and i/o.
+N/A
 
 ## I/O flows
 
-State what a normal i/o flow is (in terms of flows in firewalls)
+* Issuer: I/O flows from the administrative network to the GE via the Issuer GUI, and also from the outside (from users) to the REST part of the issuer API
+* User: I/O flows from the user's browser to the user service and from the user's REST service to the issuer's and verifier's REST API. (Ephemeral port on localhost inbound, external port 80 or 443 outbound)
+* Verifier: I/O flows from the administrative network to the GE via the Verifier GUI, and also from the outside (from users) to the REST part of the verifier API.
