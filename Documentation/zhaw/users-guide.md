@@ -13,6 +13,20 @@ For the purposes of this guide, we will assume that the services are deployed un
 
 *NOTE*: You will see that the interaction through the APIs is vastly more complicated than the interaction through the GUIs. This is due to the library-like generic nature of the p2abcengine. The GIUs simplify this interaction by narrowing down choices.
 
+## Overview of Interactions
+
+1. Create system parameters and distribute them to user and verifier. The system parameters contain various things such as the issuer's public key and other cryptographic parameters. They must be the same for issuer, user, and verifier. Or rather, user and verifier must know about the system parameters used by the issuer.
+  
+2. Set up a credential specification. This entails obtaining the column names and types from the attribute provider and creating a credential specification from the available attributes.
+
+3. Create a query rule. This entails installing a SQL query that selects an integer attribute from the attribute provider. In this case, we will select an "income" attribute.
+  
+4. Create issuer parameters and an issuance policy. This is a file that says what kinds of credentials will be issued. Issuer, user, and verifier will need the same issuance policy.
+
+5. Create a credential. This is a multi-step process in which the user and issuer exchange a variety of messages. The user authenticates to the issuer using the authentication provider and the issuer then accumulates enough information through a multi-round protocol to issue the credential. The credential is stored in the user service.
+
+6. Create a presentation policy. The verifier wants to grant access to a resource only for people whose incomes are greater than 
+
 ## Set Up System Parameters
 
 First, create system parameters at the issuer.
