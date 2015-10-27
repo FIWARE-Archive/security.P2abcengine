@@ -4,10 +4,10 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
    xsi:schemaLocation="http://abc4trust.eu/wp2/abcschemav1.0 ../../../../../../../../abc4trust-xml/src/main/resources/xsd/schema.xsd"
    Version="1.0">
-  <abc:ParametersUID>http://mroman.ch/generic/issuance:idemix</abc:ParametersUID>
+  <abc:ParametersUID>urn:fiware:privacy:userdata:issuer-params</abc:ParametersUID>
   <abc:FriendlyIssuerDescription lang="en">Issuer parameters for generic</abc:FriendlyIssuerDescription>
   <abc:AlgorithmID>urn:abc4trust:1.0:algorithm:idemix</abc:AlgorithmID>
-  <abc:CredentialSpecUID>urn:fiware:privacy:credspec:userdata</abc:CredentialSpecUID>
+  <abc:CredentialSpecUID>urn:fiware:privacy:userdata</abc:CredentialSpecUID>
   <abc:HashAlgorithm>urn:abc4trust:1.0:hashalgorithm:sha-256</abc:HashAlgorithm>
   <abc:RevocationParametersUID>http://mroman.ch/RoomReservation/revocation</abc:RevocationParametersUID>
 </abc:IssuerParametersInput>

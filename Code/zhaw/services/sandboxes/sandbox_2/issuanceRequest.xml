@@ -1,9 +1,10 @@
-<issuance-request>
-	<auth-request>
-		<auth-info-simple>
-			<username>CaroleKing</username>
-			<password>Jazzman</password>
-		</auth-info-simple>
-	</auth-request>
-	<credential-specification-uid>urn:fiware:privacy:credspec:userdata</credential-specification-uid>
-</issuance-request>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<abc:issuance-request xmlns:abc="http://abc4trust.eu/wp2/abcschemav1.0">
+	<abc:auth-request>
+		<abc:auth-info-simple>
+			<abc:username>CaroleKing</abc:username>
+			<abc:password>Jazzman</abc:password>
+		</abc:auth-info-simple>
+	</abc:auth-request>
+	<abc:credential-specification-uid>urn:fiware:privacy:userdata</abc:credential-specification-uid>
+</abc:issuance-request>

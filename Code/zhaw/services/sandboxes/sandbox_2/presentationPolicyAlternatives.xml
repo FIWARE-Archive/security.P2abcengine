@@ -8,7 +8,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://abc4trust.eu/wp2/abcschemav1.0 ../../../../../../../../abc4trust-xml/src/main/resources/xsd/schema.xsd">
   <abc:PresentationPolicy
-    PolicyUID="http://mroman.ch/policies/generic">
+    PolicyUID="urn:fiware:privacy:policy:userdata">
     <abc:Message>
       <abc:ApplicationData>
         Generic
@@ -16,15 +16,15 @@
     </abc:Message>
     <abc:Credential Alias="#ticket">
       <abc:CredentialSpecAlternatives>
-        <abc:CredentialSpecUID>urn:fiware:privacy:credspec:userdata</abc:CredentialSpecUID>
+        <abc:CredentialSpecUID>urn:fiware:privacy:userdata</abc:CredentialSpecUID>
       </abc:CredentialSpecAlternatives>
       <abc:IssuerAlternatives>
-        <abc:IssuerParametersUID>http://mroman.ch/generic/issuance:idemix</abc:IssuerParametersUID>
+        <abc:IssuerParametersUID>urn:fiware:privacy:userdata:issuer-params</abc:IssuerParametersUID>
       </abc:IssuerAlternatives>
     </abc:Credential>
-    <abc:AttributePredicate Function="urn:oasis:names:tc:xacml:1.0:function:integer-equal">
-      <abc:Attribute CredentialAlias="#ticket" AttributeType="income" />
-      <abc:ConstantValue>12345</abc:ConstantValue>
+    <abc:AttributePredicate Function="urn:oasis:names:tc:xacml:1.0:function:integer-less-than">
+      <abc:Attribute CredentialAlias="#ticket" AttributeType="someAttribute" />
+      <abc:ConstantValue>125</abc:ConstantValue>
     </abc:AttributePredicate>
   </abc:PresentationPolicy>
   
