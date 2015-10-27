@@ -31,7 +31,7 @@ Now let's switch to the verifier. The first thing to do is load the system param
 
 Now let's look at the credential specification:
 
-![Verifier-Loaded-Credspec](user-guide-figures/Screen Shot 2015-10-27 at 13.50.06.png)
+![Verifier-Loaded-Credspec](user-guide-figures/Verifier-Loaded-Credspec.png)
 
 Back to the user. It's time to get a credential. First, we load the issuer settings and look at the available credential specification.
 
