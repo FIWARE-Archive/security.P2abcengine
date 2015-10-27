@@ -3,6 +3,72 @@ Privacy GEri Users and Programmer's Guide
 
 # User Guide
 
+We start with the issuer. A freshly installed issuer will look like this:
+
+![Issuer-Initial](user-guide-figures/Issuer-Initial.png)
+
+The first order of the day is to obtain a credential specification. We are here using the ```FAKE``` provider, which is useful for demo purposes, but which MUST NOT BE USED IN PRODUCTION. Note the informative message, which we can ignore in the ```FAKE``` provider.
+
+![Issuer-Obtain-Credspec](user-guide-figures/Issuer-Obtain-Credspec.png)
+
+The code will then look into the respective object (SQL table or LDAP schema) and extract the available attributes. You can then decide which of those attributes you want in your credential. All attributes that you later want to verify or that you want to compute predicates on must be present.
+
+![Issuer-Create-Credspec](user-guide-figures/Issuer-Create-Credspec.png)
+
+Now we have tied issuer parameters to credential specifications in the issuer parameters.
+
+![Issuer-Tie-Credspec](user-guide-figures/Issuer-Tie-Credspec.png)
+
+Now we need to specify a rule that tells us how to extract the attribute from the LDAP schema or SQL table. Since we're using the ```FAKE``` provider, we can put anything in that form field; in production, you may need to put other values here.
+
+![Issuer-Add-Query-Rule](user-guide-figures/Issuer-Add-Query-Rule.png)
+![Issuer-Query-Rule-Added](user-guide-figures/Issuer-Query-Rule-Added.png)
+
+Now let's switch to the verifier. The first thing to do is load the system parameters from the issuer.
+
+![Verifier-Load-System-Params](user-guide-figures/Verifier-Load-System-Params.png)
+![Verifier-Loaded-System-Params](user-guide-figures/Verifier-Loaded-System-Params.png) 
+
+Now let's look at the credential specification:
+
+![Verifier-Loaded-Credspec](user-guide-figures/Screen Shot 2015-10-27 at 13.50.06.png)
+
+Back to the user. It's time to get a credential. First, we load the issuer settings and look at the available credential specification.
+
+![User-Load-Settings](user-guide-figures/User-Load-Settings.png)
+![User-View-Credspec](user-guide-figures/User-View-Credspec.png)
+
+Now, to obtain a credential for that credential specification, we need to authenticate:
+
+![User-Authenticate](user-guide-figures/User-Authenticate.png)
+![User-Credential-Obtained](user-guide-figures/User-Credential-Obtained.png)
+![User-View-Credential](user-guide-figures/User-View-Credential.png)
+
+Back to the verifier. We now want to accept a credential for a resource only if the ```someAttribute``` value is less than 123.  For this, we first define a resource, which is simply a name associated with a redirection URL.
+
+![Verifier-Define-Resource](user-guide-figures/Verifier-Define-Resource.png)
+
+Now we define the presentation policy for this resource.
+
+![Verifier-Define-PresPol1](user-guide-figures/Verifier-Define-PresPol1.png)
+![Verifier-Define-PresPol2](user-guide-figures/Verifier-Define-PresPol2.png)
+
+Now finally back to the user. We want to access the resource ```resource```, which we know is protected by the verifier at a specific URL. (This step is made explicit here, but could just as well be automated by giving a specific link.)
+
+![User-Access-Resource](user-guide-figures/User-Access-Resource.png)
+
+The verifier asks us to prove that we possess a credential from our issuer in which ```someAttribute``` is less than 123. The user service goes through our credentials ans shows us all the credentials that match. If there were several, we could choose the one that we like best. (This step is automatable as well so that no actual user interaction is required.)
+
+![User-Prove-Predicate](user-guide-figures/User-Prove-Predicate.png)
+
+The verifier tells us that our presentation token has been verified and sends us a redirection URL. We cklick on that URL...
+
+![User-Redirect-Url](user-guide-figures/User-Redirect-Url.png)
+
+...and see the previously protected reesource. (This step too is automatable so that no actual user interaction is required.)
+
+![User-Resource-Accessed](user-guide-figures/User-Resource-Accessed.png)
+
 # Programmer's Guide
 
 For the purposes of this guide, we will assume that the services are deployed under these URLs:
@@ -25,7 +91,11 @@ For the purposes of this guide, we will assume that the services are deployed un
 
 5. Create a credential. This is a multi-step process in which the user and issuer exchange a variety of messages. The user authenticates to the issuer using the authentication provider and the issuer then accumulates enough information through a multi-round protocol to issue the credential. The credential is stored in the user service.
 
-6. Create a presentation policy. The verifier wants to grant access to a resource only for people whose incomes are greater than 
+6. Create a presentation policy. The verifier wants to grant access to a resource only for people whose incomes are less than 125. (The value of that attribute in the database is 100, so this should verify later.)
+
+7. Create a presentation token. This is a complicated process involving several user interactions (all pre-empted in the GUI version of the service) where the user is shown the credentials that satisfy the presentation policy and is asked to select one.
+
+8. The verifier finally verifies the presentation token sent to it by the user service.
 
 ## Set Up System Parameters
 
