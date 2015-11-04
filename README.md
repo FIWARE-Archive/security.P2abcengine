@@ -1,7 +1,7 @@
 Privacy GEri
 ===========
 
-This project is part of FIWARE. This project contains ZHAW's Privacy GEri in [FIWARE](https://www.fiware.eu).
+This project is part of FIWARE. This project contains ZHAW's Privacy GEri in [FIWARE](https://www.fiware.eu). Also check the FIWARE [Catalogue](http://catalogue.fiware.org) for more Generic Enablers.
 
 Copyright &copy; 2015 Zürcher Hochschule der Angewandten Wissenschaften
 (ZHAW).
