@@ -1,12 +1,31 @@
 FORMAT: 1A
 HOST: http://polls.apiblueprint.org/
+TITLE: PrivacyGE P2ABC API Open Specification
+DATE: October 2015
+VERSION:  4.0
+PREVIOUS_VERSION: 
+APIARY_PROJECT: 
 
 # PrivacyGE P2ABC API Open Specification
 
-This chapter describes the application programming interfaces (API) of the ABCE layer, focusing solely on the API that the ABCE layer exposes to the upper layers, in particular, to the application layer. This information is mainly intended for application developers who want to build applications that make use of ABCE technology.
+This specification describes the application programming interfaces (API) of the ABCE layer, focusing solely on the API that the ABCE layer exposes to the upper layers, in particular, to the application layer. This information is mainly intended for application developers who want to build applications that make use of ABCE technology.
 The interfaces are described in an object-oriented fashion as a list of methods that take input parameters of certain types and that produce an output of a certain return type. The data types of the input and return types either refer to XML artifacts as defined in Chapter 4 or to simple XML Schema datatypes such as boolean or string.
 For ease of integration with applications built on top of our ABCE layer, the actual implementation will offer the top-level ABCE interfaces described below as web services. The descriptions below must therefore be mapped to descriptions in the Web Services Description Language (WSDL). Doing so is straightforward, so for the sake of readability we stick to an object-oriented notation here.
 
+## Editors
+
+  + Stephan Neuhaus, ZHAW
+
+## Copyright
+
+This specification is licensed under the [FIWARE Open Specification License](http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_(implicit_patents_license)).
+  
+## Status
+
+This is a work in progress and is changing on a daily basis.
+
+
+This specification is licensed under the [FIWARE Open Specification License](http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_(implicit_patents_license)).
 # Protocol specification
 
 (This section was taken from Release 3 and was written by IBM Research.)
@@ -5282,4 +5301,3 @@ from anything that provides settings). To download settings use
             Settings
 
 + Response 500 (text/plain)
-
