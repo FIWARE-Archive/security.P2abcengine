@@ -3,7 +3,7 @@ Privacy GEri Users and Programmer's Guide
 
 # Before You Start
 
-You should familiarise yourself with the concepts of the Privacy GE as laid out in the Privacy GE architecture description; see also the [README](../../README.md).
+You should familiarise yourself with the concepts of the Privacy GE as laid out in the Privacy GE architecture description.
 
 # User Guide
 

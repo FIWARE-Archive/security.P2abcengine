@@ -3,7 +3,7 @@ Privacy GEri Installation and Administration Guide
 
 # Before You Start
 
-You should familiarise yourself with the concepts of the Privacy GE as laid out in the Privacy GE architecture description; see also the [README](../../README.md).  That document also has a complete glossary of all the terms that we will be using in this document.
+You should familiarise yourself with the concepts of the Privacy GE as laid out in the Privacy GE architecture description.
 
 # How to Build and Deploy
 
