@@ -1,6 +1,8 @@
 site_name: p2abcengine
 pages:
-- "Installation Guide": "installation-guide.md"
-- "User's Guide": "users-guide.md"
+- Home: index.md
+- Documentation:
+  - "Installation Guide": "installation-guide.md"
+  - "User's Guide": "users-guide.md"
 docs_dir: "Documentation/zhaw/"
 theme: readthedocs
