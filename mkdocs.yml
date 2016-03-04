@@ -1,4 +1,5 @@
 site_name: p2abcengine
+extra_css: ["https://fiware.org/style/fiware_readthedocs.css"]
 pages:
 - Home: index.md
 - Documentation:
