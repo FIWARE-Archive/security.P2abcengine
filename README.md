@@ -1,6 +1,6 @@
 [![License badge](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/zhaw-munt/p2abcengine/blob/master/Code/LICENSE.txt)
-[![Documentation badge](https://img.shields.io/badge/docs-latest-green.svg)](http://p2abcengine.readthedocs.org/en/latest/)
-[![Docker badge](https://img.shields.io/badge/docker-latest-blue.svg)](https://github.com/zhaw-munt/p2abcengine/tree/master/docker)
+[![Documentation badge](https://readthedocs.org/projects/p2abcengine/badge/?version=latest)](http://p2abcengine.readthedocs.org/en/latest/)
+[![Docker badge](https://img.shields.io/docker/pulls/fiware/p2abcengine-user.svg)](https://github.com/zhaw-munt/p2abcengine/tree/master/docker)
 [![Support badge]( https://img.shields.io/badge/support-issues-yellowgreen.svg)](https://github.com/zhaw-munt/p2abcengine/issues)
 
 Privacy GEri
